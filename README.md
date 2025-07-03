@@ -1,66 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🩺 Dokter L - Aplikasi Manajemen Klinik
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Dokter L** adalah aplikasi manajemen klinik berbasis web yang dibangun menggunakan [Laravel](https://laravel.com/), [Livewire](https://livewire.laravel.com/), dan [Volt](https://voltphp.dev/).  
+Proyek ini **masih dalam pengembangan (on track)** dan dirancang untuk membantu klinik dalam mengelola laporan keuangan, transaksi pasien, serta tampilan visual yang dinamis dan responsif.
 
-## About Laravel
+## 🧩 Fitur Sekarang
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- 🔐 **Autentikasi**: Login, register, reset password
+- 🌙 **Dark Mode**: Tampilan responsif dan nyaman di siang/malam hari
+- 🎨 **Komponen Dinamis**: Menggunakan Tailwind CSS + Livewire Volt
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🖼️ Cuplikan Logo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<div align="center">
+  <img src="public/assets/logo_dr_l.png" alt="Logo Dokter L" height="100">
+</div>
 
-## Learning Laravel
+## 📂 Struktur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+.
+├── app/
+│   ├── Livewire/           # Komponen Livewire (Volt)
+│   ├── Http/Controllers/   # Controller Laravel
+├── resources/views/        # Blade templates dan Livewire views
+├── public/assets/          # Logo, gambar, dll.
+├── routes/web.php          # Routing aplikasi
+├── vendor/                 # Laravel core (diubah: quotes Inspiring.php)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+````
 
-## Laravel Sponsors
+## 🛠️ Instalasi Lokal
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/mnfds/dokterL.git
+cd dokterL
+composer install
+npm install && npm run dev
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+````
 
-### Premium Partners
+## ⚙️ Teknologi
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+* Laravel v11
+* Livewire v3
+* Blade + Tailwind CSS v3
+* PowerGrid Livewire DataTables v6
+* Daisy UI v5
 
-## Contributing
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🗓️ Roadmap
 
-## Code of Conduct
+* [ ] Crud Master Data (User, Role, Jam Kerja, Poli, Layanan, Produk & Obat, Paket Bundling)
+* [ ] Manajemen Role & Permission
+* [ ] Antrian Real Time
+* [ ] Pasien Reservasi
+* [ ] Kajian Awal & Rekam Medis Dengan Metode SOAP
+* [ ] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
+* [ ] Transaksi Klinik
+* [ ] Manajemen Inventori (Obat, Produk, Barang)
+* [ ] Integrasi SatuSehat API
+* [ ] Manajemen Jadwal Dan Absensi Staff Klinik
+* [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
+* [ ] Laporan Keuangan Klinik
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 👤 Pengembang
 
-## Security Vulnerabilities
+* Muhammad Noor Firdaus ([@mnfds](https://github.com/mnfds))
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🧾 Konvensi Commit
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proyek ini mengikuti [Conventional Commits](https://www.conventionalcommits.org/) agar riwayat perubahan tetap jelas dan mudah dilacak.
+
+### Format umum
+
+```bash
+<type>(optional-scope): <deskripsi singkat>
+```
+
+### Jenis-jenis commit
+
+| Type       | Keterangan                           |
+| ---------- | ------------------------------------ |
+| `feat`     | Penambahan fitur baru                |
+| `fix`      | Perbaikan bug                        |
+| `docs`     | Perubahan dokumentasi (README, dll)  |
+| `style`    | Perubahan non-logik (indentasi, CSS) |
+| `refactor` | Refactor kode (tanpa fitur/bug)      |
+| `test`     | Penambahan/perbaikan testing         |
+| `chore`    | Tugas rutin, update dependensi, dll  |
+| `ci`       | Perubahan terkait CI/CD              |
+
+### Contoh
+
+```bash
+feat(auth): menambahkan tampilan login baru
+fix(laporan): perbaikan hitung total kas bulanan
+docs(readme): menambahkan panduan commit
+```
+
+---
