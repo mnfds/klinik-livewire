@@ -9,20 +9,20 @@
         <div class="max-w-5xl mx-auto px-4 space-y-6">
             <!-- Update Profile Info -->
             <div class="p-6 bg-base-100 rounded-box shadow">
-                <div class="max-w-2xl">
+                <div class="max-w-full">
                     <livewire:profile.update-profile-information-form />
                 </div>
             </div>
 
             <div class="p-6 bg-base-100 rounded-box shadow">
-                <div class="max-w-2xl">
+                <div class="max-w-full">
                     <livewire:biodata.manage-biodata />
                 </div>
             </div>
 
             <!-- Update Password -->
             <div class="p-6 bg-base-100 rounded-box shadow">
-                <div class="max-w-2xl">
+                <div class="max-w-full">
                     <livewire:profile.update-password-form />
                 </div>
             </div>

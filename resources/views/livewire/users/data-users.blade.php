@@ -44,46 +44,18 @@
                     </div> --}}
                     <div class="p-6 text-base-content space-y-4">
                         <div class="flex justify-between items-center mb-4">
-                            <input wire:model.debounce.500ms="search" type="text" placeholder="Cari nama/email..." class="input input-bordered w-full max-w-xs" />
                             <a href="{{ route('users.create') }}" class="btn btn-primary">
                                 Tambah User
                             </a>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="table table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Nama</th>
-                                        <th>Email</th>
-                                        <th>No. Telepon</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($users as $user)
-                                    <tr>
-                                        <td>{{ $user->biodata->nama_lengkap ?? '-' }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>{{ $user->biodata->telepon ?? '-' }}</td>
-                                        <td class="flex gap-2">
-                                            <a href="{{ route('users.edit', $user->id) }}"
-                                                class="btn btn-sm btn-warning">Edit</a>
-                                            <button wire:click="$emit('deleteUser', {{ $user->id }})"
-                                                class="btn btn-sm btn-error">Hapus</button>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center">Tidak ada data</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="mt-4">
-                            {{ $users->links() }}
-                        </div>
+                        <livewire:users-table />
+                        <script>
+                            window.addEventListener('show-delete-confirmation', event => {
+                                if (confirm('Yakin ingin menghapus user ini?')) {
+                                    Livewire.call('confirmDelete', event.detail.rowId);
+                                }
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

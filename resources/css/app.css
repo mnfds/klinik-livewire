@@ -11,6 +11,11 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+@source '../../app/Livewire/*Table.php';
+@source '../../app/Livewire/**/*Table.php';
+@source '../../vendor/power-components/livewire-powergrid/src/Themes/DaisyUI.php';
+@source '../../vendor/power-components/livewire-powergrid/resources/views/**/*.php';
+
 @theme {
   --font-sans:
     Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',

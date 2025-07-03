@@ -60,16 +60,55 @@ new class extends Component
 
         Session::flash('status', 'verification-link-sent');
     }
+
+    public function kirimUlangVerifikasi()
+    {
+        $user = Auth::user(); // pastikan user ada
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            event(new Registered($user)); // kirim ulang email verifikasi
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Email verifikasi dikirim ulang.']);
+        } else {
+            $this->dispatch('toast', ['type' => 'info', 'message' => 'Email sudah terverifikasi.']);
+        }
+    }
+
+    public function kirimResetPassword()
+    {
+        $user = Auth::user(); // atau berdasarkan email
+
+        if ($user) {
+            Password::sendResetLink(['email' => $user->email]);
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Link reset password dikirim.']);
+        } else {
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'User tidak ditemukan.']);
+        }
+    }
 }; ?>
 
 <section>
-    <header class="mb-4">
-        <h2 class="text-xl font-bold text-base-content">
-            {{ __('Informasi Akun') }}
-        </h2>
-        <p class="mt-1 text-sm text-base-content/70">
-            {{ __("Perbarui Username dan alamat email akun Anda.") }}
-        </p>
+    <header class="mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <!-- Judul dan Deskripsi -->
+            <div>
+                <h2 class="text-xl font-bold text-base-content">
+                    {{ __('Informasi Akun') }}
+                </h2>
+                <p class="mt-1 text-sm text-base-content/70">
+                    {{ __('Perbarui Username dan alamat email akun Anda.') }}
+                </p>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-wrap gap-2">
+                <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info">
+                    Verifikasi Email
+                </button>
+                <button type="button" wire:click="kirimResetPassword" class="btn btn-warning">
+                    Kirim Reset Password
+                </button>
+            </div>
+        </div>
     </header>
 
     <form wire:submit="updateProfileInformation" class="space-y-5">

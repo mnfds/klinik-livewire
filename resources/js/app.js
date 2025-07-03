@@ -1,4 +1,9 @@
+import 'alpinejs';
+
 import './bootstrap';
+
+// resources/js/app.js
+import './../../vendor/power-components/livewire-powergrid/dist/powergrid'
 
 function initThemeToggle() {
     const savedTheme = localStorage.getItem('theme') || 'pastel';

@@ -30,6 +30,9 @@
         <!-- Google Font Kapakana  -->
         <link href="https://fonts.googleapis.com/css2?family=Kapakana&display=swap" rel="stylesheet">
 
+        <!-- SweetAlert2 CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
@@ -44,6 +47,30 @@
                 {{ $slot }}
             </main>
         </div>
+
         @livewireScripts
+        <script>
+            Livewire.on('toast', (data) => {
+                const toast = Array.isArray(data) ? data[0] : data;
+                // console.log("Toast fixed:", toast);
+
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: toast.type ?? 'info',
+                    title: toast.message ?? '(Pesan tidak tersedia)',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @if (session('toast'))
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                Livewire.dispatch('toast', @json(session('toast')));
+            });
+        </script>
+    @endif
     </body>
 </html>
