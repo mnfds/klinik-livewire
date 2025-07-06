@@ -5,6 +5,7 @@ use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\JamKerja\DataJamKerja;
 
 // Route::view('/', 'welcome');
 
@@ -30,6 +31,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/create', function () {
         return view('pengguna.store');
     })->name('users.create');
+
+    // ====== JAM KERJA ====== //
+    Route::view('/jam-kerja', 'jamkerja.data')->name('jamkerja.data');
+    // ====== JAM KERJA ====== //
 
 });
 
