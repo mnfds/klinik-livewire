@@ -36,6 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/jam-kerja', 'jamkerja.data')->name('jamkerja.data');
     // ====== JAM KERJA ====== //
 
+    // ====== POLIKLINIK ====== //
+    Route::view('/poliklinik', 'poli.data')->name('poliklinik.data');
+    // ====== POLIKLINIK ====== //
+
 });
 
 

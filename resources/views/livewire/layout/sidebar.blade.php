@@ -47,7 +47,7 @@
                         ['name' => 'Staff', 'icon' => 'fa-solid fa-user-nurse', 'url' => 'users.data'],
                         ['name' => 'Role & Akses','icon' => 'fa-solid fa-unlock-keyhole',],
                         ['name' => 'Jam Kerja','icon' => 'fa-solid fa-business-time','url' => 'jamkerja.data'],
-                        ['name' => 'Poliklinik','icon' => 'fa-solid fa-house-chimney-medical',],
+                        ['name' => 'Poliklinik','icon' => 'fa-solid fa-house-chimney-medical','url'=> 'poliklinik.data'],
                         ['name' => 'Produk & Obat','icon' => 'fa-solid fa-pills',],
                         ['name' => 'Pelayanan','icon' => 'fa-solid fa-hand-holding-medical',],
                         ['name' => 'Paket Bundling','icon' => 'fa-solid fa-gifts',],
