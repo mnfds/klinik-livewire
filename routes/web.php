@@ -40,6 +40,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/poliklinik', 'poli.data')->name('poliklinik.data');
     // ====== POLIKLINIK ====== //
 
+    // ====== POLIKLINIK ====== //
+    Route::view('/role-akses', 'role.data')->name('role-akses.data');
+    // ====== POLIKLINIK ====== //
+
 });
 
 

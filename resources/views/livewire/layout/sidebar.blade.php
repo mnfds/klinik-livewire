@@ -45,7 +45,7 @@
                 @php
                     $masterLinks = [
                         ['name' => 'Staff', 'icon' => 'fa-solid fa-user-nurse', 'url' => 'users.data'],
-                        ['name' => 'Role & Akses','icon' => 'fa-solid fa-unlock-keyhole',],
+                        ['name' => 'Role & Akses','icon' => 'fa-solid fa-unlock-keyhole', 'url' => 'role-akses.data'],
                         ['name' => 'Jam Kerja','icon' => 'fa-solid fa-business-time','url' => 'jamkerja.data'],
                         ['name' => 'Poliklinik','icon' => 'fa-solid fa-house-chimney-medical','url'=> 'poliklinik.data'],
                         ['name' => 'Produk & Obat','icon' => 'fa-solid fa-pills',],
