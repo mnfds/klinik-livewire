@@ -40,17 +40,17 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/poliklinik', 'poli.data')->name('poliklinik.data');
     // ====== POLIKLINIK ====== //
 
-    // ====== POLIKLINIK ====== //
+    // ====== ROLE & AKSES ====== //
     Route::view('/role-akses', 'role.data')->name('role-akses.data');
-    // ====== POLIKLINIK ====== //
+    // ====== ROLE & AKSES ====== //
 
     // ====== PRODUK & OBAT ====== //
     Route::view('/produk-obat', 'produk-obat.data')->name('produk-obat.data');
     // ====== PRODUK & OBAT ====== //
 
-    // ====== PRODUK & OBAT ====== //
+    // ====== PELAYANAN ====== //
     Route::view('/pelayanan', 'pelayanan.data')->name('pelayanan.data');
-    // ====== PRODUK & OBAT ====== //
+    // ====== PELAYANAN ====== //
 
 });
 

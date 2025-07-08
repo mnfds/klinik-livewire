@@ -10,6 +10,8 @@ class StorePelayanan extends Component
     public $nama_pelayanan;
     public $harga_pelayanan;
     public $deskripsi;
+    public $diskon = 0;
+    public $harga_bersih;
 
     public function render()
     {
@@ -19,15 +21,25 @@ class StorePelayanan extends Component
     public function store()
     {
         $this->validate([
-            'nama_pelayanan' => 'required',
+            'nama_pelayanan'  => 'required',
             'harga_pelayanan' => 'required',
-            'deskripsi' => 'nullable',
+            'diskon'          => 'nullable|min:0|max:100',
+            'deskripsi'       => 'nullable',
         ]);
+
+         // Hitung harga bersih
+        $harga = (float) $this->harga_pelayanan;
+        $diskon = (float) $this->diskon;
+
+        $diskonNominal = ($harga * $diskon) / 100;
+        $this->harga_bersih = $harga - $diskonNominal;
 
         Pelayanan::create([
             'nama_pelayanan'   => $this->nama_pelayanan,
-            'harga_pelayanan'   => $this->harga_pelayanan,
-            'deskripsi'    => $this->deskripsi,
+            'harga_pelayanan'  => $this->harga_pelayanan,
+            'diskon'           => $this->diskon,
+            'harga_bersih'     => $this->harga_bersih,
+            'deskripsi'        => $this->deskripsi,
         ]);
 
         $this->dispatch('toast', [

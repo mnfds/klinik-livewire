@@ -44,6 +44,8 @@ final class PelayananTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('nama_pelayanan')
             ->add('harga_pelayanan', fn ($pelayanan) => number_format($pelayanan->harga_pelayanan, 0, ',', '.'))
+            ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0')
+            ->add('harga_bersih', fn ($pelayanan) => number_format($pelayanan->harga_bersih, 0, ',', '.'))
             ->add('deskripsi');
     }
 
@@ -56,9 +58,13 @@ final class PelayananTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Harga Pelayanan', 'harga_pelayanan')
+            Column::make('Harga Dasar', 'harga_pelayanan')
                 ->sortable()
                 ->searchable(),
+
+            Column::make('Diskon', 'diskon'),
+
+            Column::make('Harga Bersih', 'harga_bersih'),
 
             Column::make('Deskripsi', 'deskripsi'),
 
