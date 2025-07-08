@@ -44,6 +44,14 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/role-akses', 'role.data')->name('role-akses.data');
     // ====== POLIKLINIK ====== //
 
+    // ====== PRODUK & OBAT ====== //
+    Route::view('/produk-obat', 'produk-obat.data')->name('produk-obat.data');
+    // ====== PRODUK & OBAT ====== //
+
+    // ====== PRODUK & OBAT ====== //
+    Route::view('/pelayanan', 'pelayanan.data')->name('pelayanan.data');
+    // ====== PRODUK & OBAT ====== //
+
 });
 
 
