@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
     // ====== ROLE & AKSES ====== //
 
     // ====== PRODUK & OBAT ====== //
-    Route::view('/produk-obat', 'produk-obat.data')->name('produk-obat.data');
+    Route::view('/produk-obat', 'produkdanobat.data')->name('produk-obat.data');
     // ====== PRODUK & OBAT ====== //
 
     // ====== PELAYANAN ====== //
