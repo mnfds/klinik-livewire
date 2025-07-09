@@ -7,8 +7,9 @@ use Livewire\Component;
 
 class StoreProdukDanObat extends Component
 {
-    public $nama_dagang, $kode, $sediaan, $harga_jual, $stok;
-    public $expired_at, $batch, $lokasi, $supplier;
+    public $nama_dagang, $kode, $sediaan, $harga_dasar, $stok;
+    public $expired_at, $batch, $lokasi, $supplier, $harga_bersih;
+    public $diskon = 0;
 
     public function render()
     {
@@ -21,7 +22,8 @@ class StoreProdukDanObat extends Component
             'nama_dagang' => 'required|string',
             'kode' => 'required|string|unique:produk_dan_obats,kode',
             'sediaan' => 'required|string',
-            'harga_jual' => 'required|integer|min:0',
+            'harga_dasar' => 'required|integer|min:0',
+            'diskon' => 'nullable|min:0|max:100',
             'stok' => 'required|integer|min:0',
             'expired_at' => 'nullable|date',
             'batch' => 'nullable|string',
@@ -29,11 +31,21 @@ class StoreProdukDanObat extends Component
             'supplier' => 'nullable|string',
         ]);
 
+        // Hitung harga bersih
+        $harga = (float) $this->harga_dasar;
+        $diskon = (float) $this->diskon;
+
+        $diskonNominal = ($harga * $diskon) / 100;
+        $this->harga_bersih = $harga - $diskonNominal;
+
+
         ProdukDanObat::create([
             'nama_dagang' => $this->nama_dagang,
             'kode' => $this->kode,
             'sediaan' => $this->sediaan,
-            'harga_jual' => $this->harga_jual,
+            'harga_dasar' => $this->harga_dasar,
+            'diskon' => $this->diskon,
+            'harga_bersih' => $this->harga_bersih,
             'stok' => $this->stok,
             'expired_at' => $this->expired_at,
             'batch' => $this->batch,

@@ -8,9 +8,8 @@ use Livewire\Component;
 class UpdatePelayanan extends Component
 {
     public $pelayananId;
-    public $nama_pelayanan,$harga_pelayanan,$harga_bersih,$deskripsi;
+    public $nama_pelayanan, $harga_pelayanan, $harga_bersih, $deskripsi;
     public $diskon = 0;
-
 
     #[\Livewire\Attributes\On('editPelayanan')]
     public function editPelayanan($rowId): void
@@ -25,6 +24,7 @@ class UpdatePelayanan extends Component
         $this->diskon          = $pelayanan->diskon ?? 0;
         $this->harga_bersih    = $pelayanan->harga_bersih ?? $pelayanan->harga_pelayanan;
 
+        $this->dispatch('setHargaPelayanan', $this->harga_pelayanan);
         $this->dispatch('openModal');
     }
 
@@ -42,17 +42,17 @@ class UpdatePelayanan extends Component
     {
         $this->validate([
             'nama_pelayanan'   => 'required',
-            'harga_pelayanan'  => 'required|min:0',
-            'diskon'           => 'nullable|min:0|max:100',
+            'harga_pelayanan'  => 'required|numeric|min:0',
+            'diskon'           => 'nullable|numeric|min:0|max:100',
             'deskripsi'        => 'nullable|string',
         ]);
 
         Pelayanan::where('id', $this->pelayananId)->update([
-            'nama_pelayanan' => $this->nama_pelayanan,
+            'nama_pelayanan'  => $this->nama_pelayanan,
             'harga_pelayanan' => $this->harga_pelayanan,
-            'diskon' => $this->diskon,
-            'harga_bersih' => $this->harga_bersih,
-            'deskripsi' => $this->deskripsi,
+            'diskon'          => $this->diskon,
+            'harga_bersih'    => $this->harga_bersih,
+            'deskripsi'       => $this->deskripsi,
         ]);
 
         $this->dispatch('toast', [
@@ -71,3 +71,4 @@ class UpdatePelayanan extends Component
         return view('livewire.pelayanan.update-pelayanan');
     }
 }
+

@@ -1,7 +1,12 @@
 <dialog id="modaleditpelayanan" class="modal" wire:ignore.self x-data x-init="
     Livewire.on('closeModal', () => {
         document.getElementById('modaleditpelayanan')?.close()
-    })
+    });
+    Livewire.on('setHargaPelayanan', (value) => {
+        document.querySelectorAll('.input-rupiah').forEach((input) => {
+            if (input._cleave) input._cleave.setRawValue(value);
+        });
+    });
 ">
     <div class="modal-box">
         <h3 class="font-bold text-lg mb-2">Edit Pelayanan</h3>
@@ -13,10 +18,11 @@
                 <input type="text" class="input input-bordered" wire:model="nama_pelayanan">
             </div>
 
-            {{-- Harga Dasar --}}
+            {{-- Harga Pelayanan --}}
             <div class="form-control mb-2">
                 <label class="label">Harga Pelayanan</label>
-                <input type="number" class="input input-bordered" wire:model="harga_pelayanan">
+                <input type="text" class="input input-bordered input-rupiah" inputmode="numeric">
+                <input type="hidden" wire:model="harga_pelayanan" class="input-rupiah-hidden">
             </div>
 
             {{-- Diskon (%) --}}
@@ -28,7 +34,7 @@
             {{-- Harga Bersih --}}
             <div class="form-control mb-2">
                 <label class="label">Harga Bersih</label>
-                <input type="number" class="input input-bordered bg-base-200" wire:model="harga_bersih" readonly>
+                <input type="text" class="input input-bordered bg-base-200" value="Rp {{ number_format($harga_bersih ?? 0, 0, ',', '.') }}" readonly>
             </div>
 
             {{-- Deskripsi --}}

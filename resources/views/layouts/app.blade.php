@@ -33,6 +33,9 @@
         <!-- SweetAlert2 CDN -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+        <!-- Cleave JS -->
+        <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -73,6 +76,29 @@
             });
         </script>
     @endif
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.input-rupiah').forEach(function (inputEl) {
+                const hiddenEl = inputEl.parentElement.querySelector('.input-rupiah-hidden');
+
+                const cleave = new Cleave(inputEl, {
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand',
+                    delimiter: '.',
+                    numeralDecimalMark: ',',
+                });
+
+                // Simpan cleave instance agar bisa dipanggil ulang (misalnya dari Livewire)
+                inputEl._cleave = cleave;
+
+                inputEl.addEventListener('input', function () {
+                    const raw = cleave.getRawValue();
+                    hiddenEl.value = raw;
+                    hiddenEl.dispatchEvent(new Event('input'));
+                });
+            });
+        });
+    </script>
     @stack('scripts')
     </body>
 </html>

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('nama_dagang');
             $table->string('kode')->unique();
             $table->string('sediaan');
-            $table->unsignedBigInteger('harga_jual');
+            $table->unsignedBigInteger('harga_dasar');
+            $table->unsignedBigInteger('diskon')->nullable();
+            $table->unsignedBigInteger('harga_bersih')->nullable();
             $table->integer('stok');
             $table->date('expired_at')->nullable();
             $table->string('batch')->nullable();
