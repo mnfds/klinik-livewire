@@ -52,6 +52,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/pelayanan', 'pelayanan.data')->name('pelayanan.data');
     // ====== PELAYANAN ====== //
 
+    // ====== PELAYANAN ====== //
+    Route::view('/bundling', 'bundling.data')->name('bundling.data');
+    // ====== PELAYANAN ====== //
+
 });
 
 

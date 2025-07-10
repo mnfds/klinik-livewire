@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\ProdukDanObat;
+use App\Models\Bundling;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
@@ -12,9 +12,9 @@ use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
-final class ProdukObatTable extends PowerGridComponent
+final class BundlingTable extends PowerGridComponent
 {
-    public string $tableName = 'produk-obat-table-cjy7oz-table';
+    public string $tableName = 'bundling-table-jn1ccf-table';
 
     public function setUp(): array
     {
@@ -31,7 +31,7 @@ final class ProdukObatTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return ProdukDanObat::query();
+        return Bundling::query();
     }
 
     public function relationSearch(): array
@@ -42,58 +42,60 @@ final class ProdukObatTable extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            ->add('nama_dagang')
-            ->add('kode')
-            ->add('sediaan')
-            ->add('harga_dasar', fn ($produkdanobat) => number_format($produkdanobat->harga_dasar, 0, ',', '.'))
+            ->add('nama')
+            ->add('harga_formatted', fn ($row) => 'Rp'.number_format($row->harga, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
-            ->add('harga_bersih', fn ($produkdanobat) => number_format($produkdanobat->harga_bersih, 0, ',', '.'))
-            ->add('stok', fn ($produkdanobat) => number_format($produkdanobat->stok, 0, ',', '.'))
-            ->add('expired_at')
-            ->add('batch')
-            ->add('lokasi')
-            ->add('supplier');
+            ->add('harga_bersih_formatted', fn ($row) => 'Rp'.number_format($row->harga_bersih, 0, ',', '.'))
+            ->add('created_at')
+            ->add('isi_paket', function (Bundling $bundling) {
+                $pelayanan = $bundling->pelayananBundlings()
+                    ->with('pelayanan')
+                    ->get()
+                    ->pluck('pelayanan.nama_pelayanan');
+
+                $produk = $bundling->produkObatBundlings()
+                    ->with('produk')
+                    ->get()
+                    ->pluck('produk.nama_dagang');
+
+                $html = '';
+
+                if ($pelayanan->isNotEmpty()) {
+                    $html .= '<strong>Layanan:</strong><br>';
+                    $html .= $pelayanan->map(fn($p) => '• ' . e($p))->implode('<br>') . '<br>';
+                }
+
+                if ($produk->isNotEmpty()) {
+                    $html .= '<strong>Produk & Obat:</strong><br>';
+                    $html .= $produk->map(fn($p) => '• ' . e($p))->implode('<br>');
+                }
+
+                return $html ?: '-';
+            });
     }
 
     public function columns(): array
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Nama Produk/Obat', 'nama_dagang')
-                ->searchable(),
 
-            Column::make('Kode', 'kode')
-                ->searchable(),
-
-            Column::make('Satuan', 'sediaan')
-                ->searchable(),
-
-            Column::make('Harga Jual', 'harga_dasar')
-                ->sortable(),
-
-            Column::make('Diskon', 'diskon')
-                ->sortable(),
-
-            Column::make('Harga Bersih', 'harga_bersih')
-                ->sortable(),
-
-            Column::make('Stok Tersisa', 'stok')
-                ->sortable(),
-            
-            Column::make('Kadaluarsa', 'expired_at')
+            Column::make('Nama', 'nama')
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Batch', 'batch')
-                ->searchable(),
+            Column::make('Harga', 'harga_formatted', 'harga')
+                ->sortable(),
+                
+            Column::make('Diskon', 'diskon')
+                ->sortable(),
+                
+            Column::make('Harga Bersih', 'harga_bersih_formatted', 'harga_bersih')
+                ->sortable(),
 
-            Column::make('Lokasi', 'lokasi')
-                ->searchable(),
+            Column::make('Isi Paket', 'isi_paket')
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Supplier', 'supplier')
-                ->searchable(),
-
-            Column::action('Action')
+            Column::action('Aksi')
         ];
     }
 
@@ -109,26 +111,26 @@ final class ProdukObatTable extends PowerGridComponent
         $this->js('alert('.$rowId.')');
     }
 
-    public function actions(ProdukDanObat $row): array
+    public function actions(Bundling $row): array
     {
         return [
-            Button::add('editprodukdanobat')  
+            Button::add('editBundling')  
                 ->slot('<i class="fas fa-edit mr-1"></i> Edit')
                 ->attributes([
-                    'onclick' => 'modaleditprodukdanobat.showModal()',
+                    'onclick' => 'modalEditBundling.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('produkdanobat.update-produkdanobat', 'editProdukDanObat', ['rowId' => $row->id]),
-            
-            Button::add('deleteprodukdanobat')
+                ->dispatchTo('bundling.update-bundling', 'editBundling', ['rowId' => $row->id]),
+
+            Button::add('deleteButton')
                 ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('modaldeleteprodukdanobat', ['rowId' => $row->id]),
+                ->dispatch('deleteModalBundling', ['rowId' => $row->id]),
         ];
     }
 
-    #[\Livewire\Attributes\On('modaldeleteprodukdanobat')]
-    public function modaldeleteprodukdanobat($rowId): void
+    #[\Livewire\Attributes\On('deleteModalBundling')]
+    public function deleteModalBundling($rowId): void
     {
         $this->js(<<<JS
             Swal.fire({
@@ -141,16 +143,16 @@ final class ProdukObatTable extends PowerGridComponent
                 confirmButtonText: 'Ya, hapus!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('konfirmasideleteprodukdanobat', { rowId: $rowId });
+                    Livewire.dispatch('KonfirmasiDeleteBundling', { rowId: $rowId });
                 }
             });
         JS);
     }
 
-    #[\Livewire\Attributes\On('konfirmasideleteprodukdanobat')]
-    public function konfirmasideleteprodukdanobat($rowId): void
+    #[\Livewire\Attributes\On('KonfirmasiDeleteBundling')]
+    public function KonfirmasiDeleteBundling($rowId): void
     {
-        ProdukDanObat::findOrFail($rowId)->delete();
+        Bundling::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
 

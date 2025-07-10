@@ -50,7 +50,7 @@
                         ['name' => 'Poliklinik','icon' => 'fa-solid fa-house-chimney-medical','url' => 'poliklinik.data'],
                         ['name' => 'Produk & Obat','icon' => 'fa-solid fa-pills','url' => 'produk-obat.data'],
                         ['name' => 'Pelayanan','icon' => 'fa-solid fa-hand-holding-medical', 'url' => 'pelayanan.data'],
-                        ['name' => 'Paket Bundling','icon' => 'fa-solid fa-gifts',],
+                        ['name' => 'Paket Bundling','icon' => 'fa-solid fa-gifts', 'url' => 'bundling.data'],
                     ];
                 @endphp
 

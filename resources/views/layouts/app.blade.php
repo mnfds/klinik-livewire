@@ -36,6 +36,9 @@
         <!-- Cleave JS -->
         <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
 
+        <!-- Choices CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -53,6 +56,7 @@
         </div>
 
         @livewireScripts
+
         <script>
             Livewire.on('toast', (data) => {
                 const toast = Array.isArray(data) ? data[0] : data;
@@ -69,36 +73,51 @@
                 });
             });
         </script>
-    @if (session('toast'))
+        @if (session('toast'))
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    Livewire.dispatch('toast', @json(session('toast')));
+                });
+            </script>
+        @endif
+
+        <!-- Choices JS -->
+        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+        <!-- Init Cleave JS -->
         <script>
-            window.addEventListener('DOMContentLoaded', () => {
-                Livewire.dispatch('toast', @json(session('toast')));
+            document.addEventListener('DOMContentLoaded', function () {
+                initCleaveRupiah();
             });
+
+            // Fungsi reusable (bisa dipanggil ulang setelah Livewire re-render)
+            function initCleaveRupiah() {
+                document.querySelectorAll('.input-rupiah').forEach(function (inputEl) {
+                    // Hindari duplikasi init
+                    if (inputEl._cleave) return;
+
+                    const hiddenEl = inputEl.parentElement.querySelector('.input-rupiah-hidden');
+
+                    const cleave = new Cleave(inputEl, {
+                        numeral: true,
+                        numeralThousandsGroupStyle: 'thousand',
+                        delimiter: '.',
+                        numeralDecimalMark: ',',
+                    });
+
+                    inputEl._cleave = cleave;
+
+                    if (hiddenEl) {
+                        inputEl.addEventListener('input', function () {
+                            const raw = cleave.getRawValue();
+                            hiddenEl.value = raw;
+                            hiddenEl.dispatchEvent(new Event('input'));
+                        });
+                    }
+                });
+            }
         </script>
-    @endif
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.input-rupiah').forEach(function (inputEl) {
-                const hiddenEl = inputEl.parentElement.querySelector('.input-rupiah-hidden');
 
-                const cleave = new Cleave(inputEl, {
-                    numeral: true,
-                    numeralThousandsGroupStyle: 'thousand',
-                    delimiter: '.',
-                    numeralDecimalMark: ',',
-                });
-
-                // Simpan cleave instance agar bisa dipanggil ulang (misalnya dari Livewire)
-                inputEl._cleave = cleave;
-
-                inputEl.addEventListener('input', function () {
-                    const raw = cleave.getRawValue();
-                    hiddenEl.value = raw;
-                    hiddenEl.dispatchEvent(new Event('input'));
-                });
-            });
-        });
-    </script>
     @stack('scripts')
     </body>
 </html>
