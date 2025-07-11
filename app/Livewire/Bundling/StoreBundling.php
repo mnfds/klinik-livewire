@@ -6,22 +6,23 @@ use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\Pelayanan;
 use App\Models\ProdukDanObat;
-use Livewire\Volt\Compilers\Mount;
 
 class StoreBundling extends Component
 {
-    // Untuk select list
+    // List untuk pilihan select
     public $pelayananList = [];
     public $produkObatList = [];
 
-    // Untuk input form
+    // Input bundling utama
     public $nama;
     public $deskripsi;
     public $harga;
     public $diskon;
     public $harga_bersih;
-    public $pelayanan = [];      // multiple select
-    public $produk_obat = [];    // multiple select
+
+    // Form dinamis
+    public $pelayananInputs = [['pelayanan_id' => null, 'jumlah' => 1]];
+    public $produkInputs = [['produk_id' => null, 'jumlah' => 1]];
 
     public function mount()
     {
@@ -34,43 +35,70 @@ class StoreBundling extends Component
         return view('livewire.bundling.store-bundling');
     }
 
+    public function addPelayananRow()
+    {
+        $this->pelayananInputs[] = ['pelayanan_id' => null, 'jumlah' => 1];
+    }
+
+    public function removePelayananRow($index)
+    {
+        unset($this->pelayananInputs[$index]);
+        $this->pelayananInputs = array_values($this->pelayananInputs);
+    }
+
+    public function addProdukRow()
+    {
+        $this->produkInputs[] = ['produk_id' => null, 'jumlah' => 1];
+    }
+
+    public function removeProdukRow($index)
+    {
+        unset($this->produkInputs[$index]);
+        $this->produkInputs = array_values($this->produkInputs);
+    }
+
     public function store()
     {
-        $validated = $this->validate([
-            'nama'          => 'required|string|max:255',
-            'deskripsi'     => 'nullable|string|max:1000',
-            'harga'         => 'required|numeric|min:0',
-            'diskon'        => 'required|numeric|min:0|max:100',
-            'harga_bersih'  => 'required|numeric|min:0',
-            'pelayanan'     => 'nullable',
-            'produk_obat'   => 'nullable',
+        $this->validate([
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string|max:1000',
+            'harga' => 'required|numeric|min:0',
+            'diskon' => 'required|numeric|min:0|max:100',
+            'harga_bersih' => 'required|numeric|min:0',
+
+            'pelayananInputs.*.pelayanan_id' => 'nullable|exists:pelayanans,id',
+            'pelayananInputs.*.jumlah' => 'nullable|numeric|min:1',
+
+            'produkInputs.*.produk_id' => 'nullable|exists:produk_dan_obats,id',
+            'produkInputs.*.jumlah' => 'nullable|numeric|min:1',
         ]);
-
-        // Handle multiselect kosong yang dikirim sebagai string kosong atau array kosong
-        $pelayanan = is_string($validated['pelayanan']) ? json_decode($validated['pelayanan'], true) : $validated['pelayanan'];
-        $produkObat = is_string($validated['produk_obat']) ? json_decode($validated['produk_obat'], true) : $validated['produk_obat'];
-
-        $pelayanan = is_array($pelayanan) ? $pelayanan : [];
-        $produkObat = is_array($produkObat) ? $produkObat : [];
 
         $bundling = Bundling::create([
-            'nama'          => $validated['nama'],
-            'deskripsi'     => $validated['deskripsi'],
-            'harga'         => $validated['harga'],
-            'diskon'        => $validated['diskon'],
-            'harga_bersih'  => $validated['harga_bersih'],
+            'nama' => $this->nama,
+            'deskripsi' => $this->deskripsi,
+            'harga' => $this->harga,
+            'diskon' => $this->diskon,
+            'harga_bersih' => $this->harga_bersih,
         ]);
 
-        foreach ($pelayanan as $pelayananId) {
-            $bundling->pelayananBundlings()->create([
-                'pelayanan_id' => $pelayananId
-            ]);
+        // Simpan pelayanan
+        foreach ($this->pelayananInputs as $item) {
+            if ($item['pelayanan_id']) {
+                $bundling->pelayananBundlings()->create([
+                    'pelayanan_id' => $item['pelayanan_id'],
+                    'jumlah' => $item['jumlah'] ?? 1,
+                ]);
+            }
         }
 
-        foreach ($produkObat as $produkId) {
-            $bundling->produkObatBundlings()->create([
-                'produk_id' => $produkId
-            ]);
+        // Simpan produk
+        foreach ($this->produkInputs as $item) {
+            if ($item['produk_id']) {
+                $bundling->produkObatBundlings()->create([
+                    'produk_id' => $item['produk_id'],
+                    'jumlah' => $item['jumlah'] ?? 1,
+                ]);
+            }
         }
 
         $this->reset();
@@ -82,5 +110,4 @@ class StoreBundling extends Component
 
         return redirect()->route('bundling.data');
     }
-
 }

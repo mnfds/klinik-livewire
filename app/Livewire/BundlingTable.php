@@ -51,23 +51,23 @@ final class BundlingTable extends PowerGridComponent
                 $pelayanan = $bundling->pelayananBundlings()
                     ->with('pelayanan')
                     ->get()
-                    ->pluck('pelayanan.nama_pelayanan');
+                    ->map(fn($item) => '• ' . e($item->pelayanan->nama_pelayanan) . ' x ' . $item->jumlah);
 
                 $produk = $bundling->produkObatBundlings()
                     ->with('produk')
                     ->get()
-                    ->pluck('produk.nama_dagang');
+                    ->map(fn($item) => '• ' . e($item->produk->nama_dagang) . ' x ' . $item->jumlah);
 
                 $html = '';
 
                 if ($pelayanan->isNotEmpty()) {
                     $html .= '<strong>Layanan:</strong><br>';
-                    $html .= $pelayanan->map(fn($p) => '• ' . e($p))->implode('<br>') . '<br>';
+                    $html .= $pelayanan->implode('<br>') . '<br>';
                 }
 
                 if ($produk->isNotEmpty()) {
                     $html .= '<strong>Produk & Obat:</strong><br>';
-                    $html .= $produk->map(fn($p) => '• ' . e($p))->implode('<br>');
+                    $html .= $produk->implode('<br>');
                 }
 
                 return $html ?: '-';
@@ -103,12 +103,6 @@ final class BundlingTable extends PowerGridComponent
     {
         return [
         ];
-    }
-
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
     }
 
     public function actions(Bundling $row): array
