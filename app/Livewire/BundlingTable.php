@@ -109,7 +109,7 @@ final class BundlingTable extends PowerGridComponent
     {
         return [
             Button::add('editBundling')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Edit')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modalEditBundling.showModal()',
                     'class' => 'btn btn-primary'
@@ -117,7 +117,7 @@ final class BundlingTable extends PowerGridComponent
                 ->dispatchTo('bundling.update-bundling', 'editBundling', ['rowId' => $row->id]),
 
             Button::add('deleteButton')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('deleteModalBundling', ['rowId' => $row->id]),
         ];

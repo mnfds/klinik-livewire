@@ -96,7 +96,9 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        <li><x-side-link href="#" wire:navigate>Daftar Ajuan Lembur</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Lembur</x-side-link></li>
+                        <li><x-side-link href="#" wire:navigate>Daftar Ajuan Izin Keluar</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Izin Keluar</x-side-link></li>
                     </ul>
                 </li>
@@ -155,6 +157,27 @@
                         <li><x-side-link href="#" wire:navigate>Klinik</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Apotik</x-side-link></li>
                     </ul>
+                </li>
+                <li class="pt-2">
+                    <span class="text-sm text-base-content">Tentang Aplikasi</span>
+                </li>
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="ml-3">Update Terbaru</span>
+                    </x-side-link>
+                </li>
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-book"></i>
+                        <span class="ml-3">Panduan Pengguna</span>
+                    </x-side-link>
+                </li>
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-circle-question"></i>
+                        <span class="ml-3">Pertanyaan Umum</span>
+                    </x-side-link>
                 </li>
 
                 <!-- Repeat dropdowns for Persediaan, Antrian, Rawat Jalan, Transaksi etc... -->

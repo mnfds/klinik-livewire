@@ -82,7 +82,7 @@ final class PelayananTable extends PowerGridComponent
     {
         return [
             Button::add('editpelayanan')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Edit')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modaleditpelayanan.showModal()',
                     'class' => 'btn btn-primary'
@@ -90,7 +90,7 @@ final class PelayananTable extends PowerGridComponent
                 ->dispatchTo('pelayanan.update-pelayanan', 'editPelayanan', ['rowId' => $row->id]),
             
             Button::add('deletePelayanan')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('modaldeletepelayanan', ['rowId' => $row->id]),
         ];

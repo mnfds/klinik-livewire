@@ -93,7 +93,7 @@ final class JamKerjaTable extends PowerGridComponent
     {
         return [
             Button::add('editJamKerja')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Edit')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'my_modal_1.showModal()',
                     'class' => 'btn btn-primary'
@@ -101,7 +101,7 @@ final class JamKerjaTable extends PowerGridComponent
                 ->dispatchTo('jamkerja.update-jamkerja', 'editJamKerja', ['rowId' => $row->id]),
 
             Button::add('delete')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('delete', ['rowId' => $row->id]),
         ];

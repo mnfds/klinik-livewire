@@ -93,7 +93,7 @@ final class PoliklinikTable extends PowerGridComponent
             //     ->dispatch('edit', ['rowId' => $row->id]),
 
             Button::add('editpoli')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Edit')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modaleditpoli.showModal()',
                     'class' => 'btn btn-primary'
@@ -101,7 +101,7 @@ final class PoliklinikTable extends PowerGridComponent
                 ->dispatchTo('poli.update-poliklinik', 'editPoli', ['rowId' => $row->id]),
             
             Button::add('deletePoli')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('modaldeletepoli', ['rowId' => $row->id]),
         ];

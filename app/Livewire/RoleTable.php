@@ -83,7 +83,7 @@ final class RoleTable extends PowerGridComponent
             //     ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
             //     ->dispatch('edit', ['rowId' => $row->id])
             Button::add('editrole')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Akses Role')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Akses Role')
                 ->attributes([
                     'onclick' => 'modaleditrole.showModal()',
                     'class' => 'btn btn-primary'
@@ -91,7 +91,7 @@ final class RoleTable extends PowerGridComponent
                 ->dispatchTo('role.update-aksesrole', 'editaksesrole', ['rowId' => $row->id]),
             
             Button::add('deleterole')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('modaldeleterole', ['rowId' => $row->id]),
         ];

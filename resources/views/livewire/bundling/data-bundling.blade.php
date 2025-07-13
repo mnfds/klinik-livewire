@@ -41,7 +41,7 @@
                 
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
-                        <button onclick="document.getElementById('storeModalBundling').showModal()" class="btn btn-success">Tambah Bundling</button>
+                        <button onclick="document.getElementById('storeModalBundling').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Bundling</button>
                     </div>
                     <livewire:bundling-table />
                     <script>

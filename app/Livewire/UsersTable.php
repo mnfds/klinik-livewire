@@ -136,7 +136,7 @@ final class UsersTable extends PowerGridComponent
                 ]),
 
             Button::add('delete')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('delete', ['rowId' => $row->id]),
         ];

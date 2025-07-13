@@ -113,7 +113,7 @@ final class ProdukObatTable extends PowerGridComponent
     {
         return [
             Button::add('editprodukdanobat')  
-                ->slot('<i class="fas fa-edit mr-1"></i> Edit')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modaleditprodukdanobat.showModal()',
                     'class' => 'btn btn-primary'
@@ -121,7 +121,7 @@ final class ProdukObatTable extends PowerGridComponent
                 ->dispatchTo('produkdanobat.update-produkdanobat', 'editProdukDanObat', ['rowId' => $row->id]),
             
             Button::add('deleteprodukdanobat')
-                ->slot('<i class="fas fa-trash-alt mr-1"></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
                 ->dispatch('modaldeleteprodukdanobat', ['rowId' => $row->id]),
         ];
