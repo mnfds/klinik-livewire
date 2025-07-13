@@ -14,6 +14,7 @@ class StoreUsers extends Component
 {
     use WithFileUploads;
 
+    public $roles = [];
     // Untuk tabel users
     public $name, $email, $password, $role_id;
 
@@ -23,6 +24,11 @@ class StoreUsers extends Component
     // Foto
     public $foto_wajah;
     public $foto_wajah_preview;
+
+    public function mount()
+    {
+        $this->roles = \App\Models\Role::orderBy('nama_role')->pluck('nama_role', 'id')->toArray();
+    }
 
     public function render()
     {
@@ -49,7 +55,7 @@ class StoreUsers extends Component
             'name'           => ['required', 'string', 'max:255', 'unique:users'],
             'email'          => ['required', 'email', 'unique:users'],
             'password'       => ['required', 'min:6'],
-            'role_id'        => ['required'],
+            'role_id'        => ['nullable'],
 
             'nama_lengkap'   => ['required', 'string', 'max:255'],
             'telepon'        => ['nullable', 'string', 'max:20'],

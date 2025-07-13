@@ -13,19 +13,29 @@
             </div>
 
             {{-- Daftar Akses --}}
-            <div class="form-control mb-4">
+            <div class="form-control">
                 <label class="label">
                     <span class="label-text font-semibold">Daftar Akses</span>
                 </label>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto border p-2 rounded-box">
-                    @foreach ($allAkses as $akses)
-                        <label class="flex items-center space-x-2">
-                            <input type="checkbox"
-                                value="{{ $akses['id'] }}"
-                                wire:model.defer="selectedAkses"
-                                class="checkbox checkbox-primary">
-                            <span>{{ $akses['nama_akses'] }}</span>
-                        </label>
+
+                <div class="space-y-4 max-h-60 overflow-y-auto border p-2 rounded-box">
+                    @foreach ($this->groupedAkses as $group => $aksesGroup)
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-700 mb-1">
+                                {{ $aksesGroup->first()->nama_akses ?? 'Group ' . ($group ?? 'Lainnya') }}
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                @foreach ($aksesGroup as $akses)
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox"
+                                            value="{{ $akses->id }}"
+                                            wire:model.defer="selectedAkses"
+                                            class="checkbox checkbox-primary">
+                                        <span>{{ $akses->nama_akses }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
                     @endforeach
                 </div>
             </div>

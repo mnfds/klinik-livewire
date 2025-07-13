@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -35,13 +36,14 @@ final class UsersTable extends PowerGridComponent
     public function datasource(): \Illuminate\Database\Eloquent\Builder
     {
         // return DB::table('users');
-        return \App\Models\User::with('biodata');
+        return \App\Models\User::with(['biodata','role']);
     }
 
     public function relationSearch(): array
     {
         return [
             'biodata' => ['nama_lengkap', 'telepon'],
+            'role' => ['id', 'nama_role'],
         ];
     }
 
@@ -52,7 +54,9 @@ final class UsersTable extends PowerGridComponent
             ->add('biodata.nama_lengkap')
             ->add('name') //column ini isinya username
             ->add('email')
-            ->add('biodata.telepon');
+            ->add('biodata.telepon')
+            ->add('role.nama_role')
+            ->add('role_id');
     }
 
     public function columns(): array
@@ -69,6 +73,7 @@ final class UsersTable extends PowerGridComponent
             Column::make('Alamat Email', 'email'),
 
             Column::make('Telepon', 'biodata.telepon'),
+            Column::make('Role', 'role.nama_role', 'role_id'),
 
             Column::action('Action'),
 
@@ -78,6 +83,10 @@ final class UsersTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::select('role.nama_role', 'role_id')
+                ->dataSource(Role::all())
+                ->optionLabel('nama_role')
+                ->optionValue('id'),
         ];
     }
 

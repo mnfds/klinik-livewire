@@ -12,13 +12,20 @@ class StoreRole extends Component
 {
     public $nama_role;
     public $selectedAkses = [];
-    public $allAkses = [];
+    public $allAkses;
 
     public function mount()
     {
-        $this->allAkses = Akses::all()->toArray();
+        $this->allAkses = Akses::orderBy('nomor_group_akses')->get();
     }
 
+    public function getGroupedAksesProperty()
+    {
+        return $this->allAkses
+            ? $this->allAkses->groupBy('nomor_group_akses')
+            : collect();
+    }
+    
     public function store()
     {
         $this->validate([

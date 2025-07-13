@@ -44,7 +44,7 @@
                     </div> --}}
                     <div class="p-6 text-base-content space-y-4">
                         <div class="flex justify-between items-center mb-4">
-                            <a href="{{ route('users.create') }}" class="btn btn-primary">
+                            <a href="{{ route('users.create') }}" class="btn btn-success">
                                 Tambah User
                             </a>
                         </div>

@@ -85,11 +85,9 @@
                                 <label class="label"><span class="label-text">Role</span></label>
                                 <select wire:model.defer="role_id" class="select select-bordered w-full">
                                     <option value="">Pilih Role</option>
-                                    <option value="">role 1</option>
-                                    <option value="">role 2</option>
-                                    {{-- @foreach ($roles as $id => $name)
+                                    @foreach ($roles as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
-                                    @endforeach --}}
+                                    @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('role_id')" class="text-error text-sm mt-1" />
                             </div>

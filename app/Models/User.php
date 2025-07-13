@@ -24,11 +24,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'role_id',
     ];
 
     public function biodata()
     {
         return $this->hasOne(Biodata::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
     /**
      * The attributes that should be hidden for serialization.

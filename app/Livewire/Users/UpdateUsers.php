@@ -20,6 +20,7 @@ class UpdateUsers extends Component
     public $name, $email, $password, $role_id;
     public $nama_lengkap, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
     public $foto_wajah, $foto_wajah_preview;
+    public $roles = [];
 
     public function mount(User $user): void
     {
@@ -27,7 +28,7 @@ class UpdateUsers extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->password = '';
-        $this->role_id = ''; // set nanti kalau ada role
+        $this->role_id = $user->role_id;
         $biodata = $user->biodata;
         $this->nama_lengkap = $biodata->nama_lengkap ?? '';
         $this->telepon = $biodata->telepon ?? '';
@@ -38,6 +39,7 @@ class UpdateUsers extends Component
         $this->mulai_bekerja = $biodata->mulai_bekerja ?? '';
         $this->foto_wajah_preview = $biodata->foto_wajah ?? null;
 
+        $this->roles = \App\Models\Role::orderBy('nama_role')->pluck('nama_role', 'id')->toArray();
         // dd([$user,$biodata]);
     }  
 
@@ -51,6 +53,7 @@ class UpdateUsers extends Component
         $this->validate([
             'name' => 'required|string|max:255|unique:users,name,' . $this->user->id,
             'email' => 'required|email|unique:users,email,' . $this->user->id,
+            'role_id' => 'required|exists:roles,id',
             'nama_lengkap' => 'required|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'alamat' => 'nullable|string|max:255',
@@ -64,6 +67,7 @@ class UpdateUsers extends Component
         $this->user->update([
             'name' => $this->name,
             'email' => $this->email,
+            'role_id' => $this->role_id,
         ]);
 
         $fotoPath = $this->foto_wajah
