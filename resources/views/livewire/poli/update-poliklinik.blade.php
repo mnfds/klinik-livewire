@@ -3,19 +3,21 @@
         document.getElementById('modaleditpoli')?.close()
     })
 ">
-    <div class="modal-box">
-        <h3 class="font-bold text-lg mb-2">Edit Poliklinik</h3>
+    <div class="modal-box w-full max-w-md">
+        <h3 class="text-xl font-semibold mb-4">Edit Poliklinik</h3>
 
-        <form wire:submit.prevent="update">
-            <div class="form-control mb-2">
-                <label class="label">Nama Poli</label>
-                <input type="text" class="input input-bordered" wire:model="nama_poli">
+        <form wire:submit.prevent="update" class="space-y-4">
+            <div>
+                <label class="label font-medium">Nama Poli</label>
+                <input type="text" class="input input-bordered w-full" wire:model="nama_poli">
             </div>
-            <div class="form-control mb-2">
-                <label class="label">Kode Poli</label>
-                <input type="text" class="input input-bordered" wire:model="kode">
+
+            <div>
+                <label class="label font-medium">Kode Poli</label>
+                <input type="text" class="input input-bordered w-full" wire:model="kode">
             </div>
-            <div class="modal-action">
+
+            <div class="modal-action justify-end pt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>

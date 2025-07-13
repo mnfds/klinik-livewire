@@ -3,27 +3,27 @@
         document.getElementById('modaleditprodukdanobat')?.close()
     })
 ">
-    <div class="modal-box">
-        <h3 class="font-bold text-lg mb-2">Edit Produk & Obat</h3>
+    <div class="modal-box w-full max-w-4xl">
+        <h3 class="text-xl font-semibold mb-4">Edit Produk & Obat</h3>
 
-        <form wire:submit.prevent="update">
+        <form wire:submit.prevent="update" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             {{-- Nama Dagang --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Nama Dagang</label>
-                <input type="text" class="input input-bordered" wire:model="nama_dagang" required>
+                <input type="text" class="input input-bordered w-full" wire:model="nama_dagang" required>
             </div>
 
             {{-- Kode Produk --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Kode Produk</label>
-                <input type="text" class="input input-bordered" wire:model="kode" required>
+                <input type="text" class="input input-bordered w-full" wire:model="kode" required>
             </div>
 
             {{-- Sediaan --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Satuan</label>
-                <select class="select select-bordered" wire:model="sediaan" required>
+                <select class="select select-bordered w-full" wire:model="sediaan" required>
                     <option>Pilih Sediaan</option>
                     <option value="pcs">Pcs</option>
                     <option value="pot">Pot</option>
@@ -38,51 +38,56 @@
                     <option value="salep">Salep</option>
                     <option value="injeksi">Injeksi</option>
                     <option value="tube">Tube</option>
-                    {{-- Tambahkan satuan lain sesuai kebutuhan --}}
                 </select>
             </div>
 
             {{-- Harga Jual --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Harga Jual</label>
-                <input type="text" class="input input-bordered" id="harga_dasar_input" oninput="formatRupiahToHidden(this, 'harga_dasar_hidden')" value="{{ number_format($harga_dasar ?? 0, 0, ',', '.') }}" inputmode="numeric">
+                <input type="text" class="input input-bordered w-full"
+                    id="harga_dasar_input"
+                    oninput="formatRupiahToHidden(this, 'harga_dasar_hidden')"
+                    value="{{ number_format($harga_dasar ?? 0, 0, ',', '.') }}"
+                    inputmode="numeric"
+                >
                 <input type="hidden" wire:model="harga_dasar" id="harga_dasar_hidden">
             </div>
 
             {{-- Diskon (%) --}}
-            <div class="form-control mb-2">
-                <label class="label">Diskon (%)</label>
-                <input type="number" min="0" max="100" class="input input-bordered" wire:model="diskon">
+            <div>
+                <label class="label font-semibold">Diskon (%)</label>
+                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model="diskon">
             </div>
 
             {{-- Harga Bersih --}}
-            <div class="form-control mb-2">
-                <label class="label">Harga Bersih</label>
-                <input type="text" class="input input-bordered bg-base-200" value="Rp {{ number_format($harga_bersih ?? 0, 0, ',', '.') }}" readonly>
+            <div>
+                <label class="label font-semibold">Harga Bersih</label>
+                <input type="text" class="input input-bordered bg-base-200 w-full"
+                    value="Rp {{ number_format($harga_bersih ?? 0, 0, ',', '.') }}" readonly>
             </div>
 
             {{-- Stok --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Stok</label>
-                <input type="number" class="input input-bordered" wire:model="stok" min="0" required>
+                <input type="number" class="input input-bordered w-full" wire:model="stok" min="0" required>
             </div>
 
-            {{-- Tanggal Expired --}}
-            <div class="form-control">
+            {{-- Expired --}}
+            <div>
                 <label class="label font-semibold">Expired</label>
-                <input type="date" class="input input-bordered" wire:model="expired_at">
+                <input type="date" class="input input-bordered w-full" wire:model="expired_at">
             </div>
 
             {{-- Batch --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Batch</label>
-                <input type="text" class="input input-bordered" wire:model="batch">
+                <input type="text" class="input input-bordered w-full" wire:model="batch">
             </div>
 
             {{-- Lokasi --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Lokasi</label>
-                <select class="select select-bordered" wire:model="lokasi" required>
+                <select class="select select-bordered w-full" wire:model="lokasi" required>
                     <option>Pilih Lokasi Penyimpanan</option>
                     <option value="Gudang Utama">Gudang Utama</option>
                     <option value="Gudang Kecil">Gudang Kecil</option>
@@ -90,27 +95,27 @@
             </div>
 
             {{-- Supplier --}}
-            <div class="form-control">
+            <div>
                 <label class="label font-semibold">Supplier</label>
-                <input type="text" class="input input-bordered" wire:model="supplier">
+                <input type="text" class="input input-bordered w-full" wire:model="supplier">
             </div>
 
-            <div class="modal-action">
+            {{-- Tombol --}}
+            <div class="col-span-1 sm:col-span-2 flex justify-end gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
     </div>
+
     <script>
         function formatRupiahToHidden(inputEl, hiddenId) {
             const raw = inputEl.value.replace(/[^\d]/g, '');
             const formatted = new Intl.NumberFormat('id-ID').format(raw);
 
             inputEl.value = formatted;
-
             const hidden = document.getElementById(hiddenId);
             hidden.value = raw;
-
-            hidden.dispatchEvent(new Event('input')); // Trigger Livewire update
+            hidden.dispatchEvent(new Event('input'));
         }
     </script>
 </dialog>

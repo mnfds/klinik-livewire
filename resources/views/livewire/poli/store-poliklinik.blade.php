@@ -3,22 +3,24 @@
         document.getElementById('storeModalPoli')?.close()
     })
 ">
-    <div class="modal-box">
-        <h3 class="text-lg font-bold">Tambah Poliklinik</h3>
+    <div class="modal-box w-full max-w-md">
+        <h3 class="text-xl font-semibold mb-4">Tambah Poliklinik</h3>
 
-        <form wire:submit.prevent="store">
+        <form wire:submit.prevent="store" class="space-y-4">
 
-            <div class="form-control mb-2">
-                <label class="label">Nama Poli</label>
-                <input type="text" class="input input-bordered" wire:model.lazy="nama_poli" required>
+            <div>
+                <label class="label font-medium">Nama Poli</label>
+                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_poli" required>
             </div>
-            <div class="form-control mb-2">
-                <label class="label">Kode Poli</label>
-                <input type="text" class="input input-bordered" wire:model.lazy="kode">
+
+            <div>
+                <label class="label font-medium">Kode Poli</label>
+                <input type="text" class="input input-bordered w-full" wire:model.lazy="kode">
             </div>
-            <div class="modal-action">
+
+            <div class="modal-action justify-end pt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn" onclick="document.getElementById('storeModalPoli').close()">Batal</button>
+                <button type="button" class="btn btn-error" onclick="document.getElementById('storeModalPoli').close()">Batal</button>
             </div>
         </form>
     </div>
