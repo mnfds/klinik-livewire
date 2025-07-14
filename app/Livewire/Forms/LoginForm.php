@@ -39,7 +39,8 @@ class LoginForm extends Form
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'form.email' => trans('auth.failed'),
+                // 'form.email' => trans('auth.failed'),
+                'form.login' => trans('auth.failed'),
             ]);
         }
 

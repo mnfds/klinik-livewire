@@ -105,7 +105,7 @@
                         {{-- Telepon --}}
                         <div class="form-control">
                             <label class="label"><span class="label-text">Telepon</span></label>
-                            <input wire:model.defer="telepon" type="text" class="input input-bordered w-full" />
+                            <input wire:model.defer="telepon" type="text" inputmode="numeric" pattern="[0-9]*" class="input input-bordered w-full" />
                             <x-input-error :messages="$errors->get('telepon')" class="text-error text-sm mt-1" />
                         </div>
 
