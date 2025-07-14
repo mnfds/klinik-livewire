@@ -28,8 +28,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-control">
                     <label class="label font-semibold">Harga (Sebelum Diskon)</label>
-                    <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
-                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga">
+                    <input type="text" id="display_harga_bundling" class="input input-bordered input-rupiah w-full" wire:model.defer="harga_show" placeholder="Rp 0">
+                    <input type="hidden" wire:model.defer="harga" class="input-rupiah-hidden">
                 </div>
 
                 <div class="form-control">
@@ -41,8 +41,8 @@
             {{-- Harga Bersih --}}
             <div class="form-control">
                 <label class="label font-semibold">Harga Bersih (Setelah Diskon)</label>
-                <input type="text" class="input input-bordered input-rupiah bg-base-200 w-full" readonly>
-                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_bersih">
+                <input type="text" id="display_harga_bersih_bundling" class="input input-bordered input-rupiah bg-base-200 w-full" wire:model.defer="harga_bersih_show" readonly placeholder="Otomatis terhitung">
+                <input type="hidden" wire:model.defer="harga_bersih" class="input-rupiah-hidden">
             </div>
 
             {{-- Pelayanan --}}
@@ -116,10 +116,27 @@
 
         function reinitEditBundlingModalHelpers() {
             initCleaveRupiah();
+            isiAwalHargaBundlingEdit();
             hitungHargaBersihEdit();
 
             document.querySelector('#modalEditBundling input[wire\\:model\\.defer="harga"]')?.addEventListener('input', hitungHargaBersihEdit);
             document.querySelector('#modalEditBundling input[wire\\:model\\.defer="diskon"]')?.addEventListener('input', hitungHargaBersihEdit);
+        }
+
+        function isiAwalHargaBundlingEdit() {
+            const hargaDisplay = document.querySelector('#display_harga_bundling');
+            const hargaBersihDisplay = document.querySelector('#display_harga_bersih_bundling');
+
+            const hargaHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga"]')?.value || "0";
+            const hargaBersihHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
+
+            if (hargaDisplay && hargaDisplay._cleave) {
+                hargaDisplay._cleave.setRawValue(hargaHiddenValue);
+            }
+
+            if (hargaBersihDisplay && hargaBersihDisplay._cleave) {
+                hargaBersihDisplay._cleave.setRawValue(hargaBersihHiddenValue);
+            }
         }
 
         document.addEventListener('livewire:load', () => {

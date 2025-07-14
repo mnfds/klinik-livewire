@@ -44,29 +44,21 @@
             {{-- Harga Jual --}}
             <div>
                 <label class="label font-semibold">Harga Jual</label>
-                <input
-                    type="text"
-                    class="input input-bordered w-full"
-                    inputmode="numeric"
-                    wire:ignore
-                    oninput="formatRupiahLive(this)"
-                    id="harga_dasar_input"
-                >
-                <input type="hidden" wire:model="harga_dasar" id="harga_dasar_model">
+                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
             </div>
 
             {{-- Diskon --}}
             <div>
                 <label class="label font-semibold">Diskon (%)</label>
-                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.lazy="diskon">
+                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
             </div>
 
             {{-- Harga Bersih --}}
             <div>
                 <label class="label font-semibold">Harga Bersih (setelah diskon)</label>
-                <input type="text" class="input input-bordered bg-base-200 w-full"
-                    value="{{ number_format((float)$harga_dasar - ((float)$harga_dasar * (float)$diskon / 100), 0, ',', '.') }}"
-                    readonly>
+                <input type="text" class="input input-bordered input-rupiah bg-base-200 w-full" placeholder="Otomatis terhitung" readonly>
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_bersih">
             </div>
 
             {{-- Stok --}}
@@ -111,14 +103,61 @@
         </form>
     </div>
 
+    {{-- Script diseragamkan --}}
     <script>
-        function formatRupiahLive(input) {
-            let raw = input.value.replace(/[^\d]/g, '');
-            let formatted = new Intl.NumberFormat('id-ID').format(raw);
+        function hitungHargaBersihProduk() {
+            const root = document.querySelector('#storeModalProdukDanObat');
 
-            input.value = formatted;
-            document.getElementById('harga_dasar_model').value = raw;
-            document.getElementById('harga_dasar_model').dispatchEvent(new Event('input'));
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+            const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+            const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
+            const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
+
+            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+
+            const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const diskon = parseFloat(diskonInput.value || 0);
+            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+
+            hargaBersihInput.value = hargaBersih;
+
+            if (hargaBersihDisplay._cleave) {
+                hargaBersihDisplay._cleave.setRawValue(hargaBersih);
+            } else {
+                hargaBersihDisplay.value = hargaBersih;
+            }
+
+            hargaBersihInput.dispatchEvent(new Event('input'));
         }
+
+        function reinitHargaProdukListeners() {
+            const root = document.querySelector('#storeModalProdukDanObat');
+
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+            const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+
+            if (hargaInput) {
+                hargaInput.removeEventListener('input', hitungHargaBersihProduk);
+                hargaInput.addEventListener('input', hitungHargaBersihProduk);
+            }
+
+            if (diskonInput) {
+                diskonInput.removeEventListener('input', hitungHargaBersihProduk);
+                diskonInput.addEventListener('input', hitungHargaBersihProduk);
+            }
+
+            hitungHargaBersihProduk();
+        }
+
+        function reinitProdukModalHelpers() {
+            initCleaveRupiah(); // global
+            reinitHargaProdukListeners();
+        }
+
+        document.addEventListener('DOMContentLoaded', reinitProdukModalHelpers);
+        document.addEventListener('livewire:load', () => {
+            Livewire.hook('message.processed', reinitProdukModalHelpers);
+        });
+        document.addEventListener('livewire:navigated', reinitProdukModalHelpers);
     </script>
 </dialog>

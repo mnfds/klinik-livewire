@@ -41,29 +41,25 @@
                 </select>
             </div>
 
-            {{-- Harga Jual --}}
-            <div>
-                <label class="label font-semibold">Harga Jual</label>
-                <input type="text" class="input input-bordered w-full"
-                    id="harga_dasar_input"
-                    oninput="formatRupiahToHidden(this, 'harga_dasar_hidden')"
-                    value="{{ number_format($harga_dasar ?? 0, 0, ',', '.') }}"
-                    inputmode="numeric"
-                >
-                <input type="hidden" wire:model="harga_dasar" id="harga_dasar_hidden">
-            </div>
+            {{-- Harga & Diskon --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label font-semibold">Harga Jual</label>
+                    <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
+                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
+                </div>
 
-            {{-- Diskon (%) --}}
-            <div>
-                <label class="label font-semibold">Diskon (%)</label>
-                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model="diskon">
+                <div class="form-control">
+                    <label class="label font-semibold">Diskon (%)</label>
+                    <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
+                </div>
             </div>
 
             {{-- Harga Bersih --}}
-            <div>
+            <div class="form-control">
                 <label class="label font-semibold">Harga Bersih</label>
-                <input type="text" class="input input-bordered bg-base-200 w-full"
-                    value="Rp {{ number_format($harga_bersih ?? 0, 0, ',', '.') }}" readonly>
+                <input type="text" id="display_harga_bersih" class="input input-bordered input-rupiah bg-base-200 w-full" wire:model.defer="harga_bersih_show" placeholder="Otomatis terhitung" readonly>
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_bersih">
             </div>
 
             {{-- Stok --}}
@@ -107,15 +103,72 @@
         </form>
     </div>
 
+    {{-- Script --}}
     <script>
-        function formatRupiahToHidden(inputEl, hiddenId) {
-            const raw = inputEl.value.replace(/[^\d]/g, '');
-            const formatted = new Intl.NumberFormat('id-ID').format(raw);
+        function hitungHargaBersihProdukEdit() {
+            const hargaInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_dasar"]');
+            const diskonInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="diskon"]');
+            const hargaBersihInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_bersih"]');
+            const hargaBersihDisplay = document.querySelector('#modaleditprodukdanobat #display_harga_bersih');
 
-            inputEl.value = formatted;
-            const hidden = document.getElementById(hiddenId);
-            hidden.value = raw;
-            hidden.dispatchEvent(new Event('input'));
+            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+
+            const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const diskon = parseFloat(diskonInput.value || 0);
+            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+
+            hargaBersihInput.value = hargaBersih;
+            hargaBersihInput.dispatchEvent(new Event('input'));
+
+            if (hargaBersihDisplay._cleave) {
+                hargaBersihDisplay._cleave.setRawValue(hargaBersih);
+            }
         }
+
+        function isiAwalHargaDanBersihProdukEdit() {
+            const hargaDisplay = document.querySelector('#display_harga_dasar');
+            const hargaBersihDisplay = document.querySelector('#display_harga_bersih');
+
+            const hargaHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.value || "0";
+            const hargaBersihHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
+
+            if (hargaDisplay && hargaDisplay._cleave) {
+                hargaDisplay._cleave.setRawValue(hargaHiddenValue);
+            }
+
+            if (hargaBersihDisplay && hargaBersihDisplay._cleave) {
+                hargaBersihDisplay._cleave.setRawValue(hargaBersihHiddenValue);
+            }
+        }
+
+        function reinitUpdateProdukObatListeners() {
+            const hargaInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_dasar"]');
+            const diskonInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="diskon"]');
+
+            if (hargaInput) {
+                hargaInput.removeEventListener('input', hitungHargaBersihProdukEdit);
+                hargaInput.addEventListener('input', hitungHargaBersihProdukEdit);
+            }
+
+            if (diskonInput) {
+                diskonInput.removeEventListener('input', hitungHargaBersihProdukEdit);
+                diskonInput.addEventListener('input', hitungHargaBersihProdukEdit);
+            }
+
+            hitungHargaBersihProdukEdit();
+        }
+
+        function reinitUpdateProdukObatModalHelpers() {
+            initCleaveRupiah(); // inisialisasi semua input-rupiah
+            isiAwalHargaDanBersihProdukEdit(); // isi input harga awal dari Livewire
+            reinitUpdateProdukObatListeners(); // set event listener
+        }
+
+        document.addEventListener('DOMContentLoaded', reinitUpdateProdukObatModalHelpers);
+        document.addEventListener('livewire:load', () => {
+            Livewire.hook('message.processed', reinitUpdateProdukObatModalHelpers);
+        });
+        document.addEventListener('livewire:navigated', reinitUpdateProdukObatModalHelpers);
     </script>
+
 </dialog>

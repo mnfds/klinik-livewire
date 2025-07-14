@@ -12,6 +12,9 @@ class UpdateProdukDanObat extends Component
     public $stok,$expired_at,$batch,$lokasi,$supplier;
     public $diskon = 0;
 
+    public $harga_dasar_show;
+    public $harga_bersih_show;
+
     #[\Livewire\Attributes\On('editProdukDanObat')]
     public function editProdukDanObat($rowId): void
     {
@@ -30,6 +33,10 @@ class UpdateProdukDanObat extends Component
         $this->batch         =   $produkObat->batch;
         $this->lokasi        =   $produkObat->lokasi;
         $this->supplier      =   $produkObat->supplier;
+
+        $this->harga_dasar_show = (int) preg_replace('/\D/', '', $this->harga_dasar);
+        $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
+
 
         $this->dispatch('openModal');
     }

@@ -11,6 +11,8 @@ class UpdatePelayanan extends Component
     public $nama_pelayanan, $harga_pelayanan, $harga_bersih, $deskripsi;
     public $diskon = 0;
 
+    public $harga_pelayanan_show, $harga_bersih_show;
+
     #[\Livewire\Attributes\On('editPelayanan')]
     public function editPelayanan($rowId): void
     {
@@ -24,6 +26,8 @@ class UpdatePelayanan extends Component
         $this->diskon          = $pelayanan->diskon ?? 0;
         $this->harga_bersih    = $pelayanan->harga_bersih ?? $pelayanan->harga_pelayanan;
 
+        $this->harga_pelayanan_show = (int) preg_replace('/\D/', '', $this->harga_pelayanan);
+        $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
         $this->dispatch('setHargaPelayanan', $this->harga_pelayanan);
         $this->dispatch('openModal');
     }

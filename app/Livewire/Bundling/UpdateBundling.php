@@ -21,6 +21,8 @@ class UpdateBundling extends Component
     public $pelayananList = [];
     public $produkObatList = [];
 
+    public $harga_show, $harga_bersih_show;
+
     public function mount()
     {
         $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')->orderBy('nama_pelayanan')->get();
@@ -40,6 +42,9 @@ class UpdateBundling extends Component
         $this->harga = $bundling->harga;
         $this->diskon = $bundling->diskon;
         $this->harga_bersih = $bundling->harga_bersih;
+
+        $this->harga_show = (int) preg_replace('/\D/', '', $this->harga);
+        $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
 
         $this->pelayananInputs = $bundling->pelayananBundlings->map(function ($item) {
             return [

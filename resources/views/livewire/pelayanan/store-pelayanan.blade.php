@@ -14,35 +14,25 @@
                 <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_pelayanan">
             </div>
 
-            {{-- Harga Dasar --}}
-            <div class="form-control">
-                <label class="label font-semibold">Harga Dasar</label>
-                <input
-                    type="text"
-                    class="input input-bordered w-full"
-                    id="harga_pelayanan_input"
-                    oninput="formatRupiahToHidden(this, 'harga_pelayanan_hidden')"
-                    value="{{ number_format($harga_pelayanan ?? 0, 0, ',', '.') }}"
-                    inputmode="numeric"
-                >
-                <input type="hidden" wire:model="harga_pelayanan" id="harga_pelayanan_hidden">
-            </div>
+            {{-- Harga & Diskon --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label font-semibold">Harga Dasar</label>
+                    <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_pelayanan">
+                </div>
 
-            {{-- Diskon (%) --}}
-            <div class="form-control">
-                <label class="label font-semibold">Diskon (%)</label>
-                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model="diskon">
+                <div class="form-control">
+                    <label class="label font-semibold">Diskon (%)</label>
+                    <input type="number" class="input input-bordered w-full" placeholder="0-100" min="0" max="100" wire:model.defer="diskon">
+                </div>
             </div>
 
             {{-- Harga Bersih --}}
             <div class="form-control">
                 <label class="label font-semibold">Harga Bersih (setelah diskon)</label>
-                <input
-                    type="text"
-                    class="input input-bordered bg-base-200 w-full"
-                    value="Rp {{ number_format((float)$harga_pelayanan - ((float)$harga_pelayanan * (float)$diskon / 100), 0, ',', '.') }}"
-                    readonly
-                >
+                <input type="text" class="input input-bordered input-rupiah bg-base-200 w-full" placeholder="Otomatis terhitung" readonly>
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_bersih">
             </div>
 
             {{-- Deskripsi --}}
@@ -59,15 +49,61 @@
         </form>
     </div>
 
+    {{-- Script sesuai bundling --}}
     <script>
-        function formatRupiahToHidden(inputEl, hiddenId) {
-            const raw = inputEl.value.replace(/[^\d]/g, '');
-            const formatted = new Intl.NumberFormat('id-ID').format(raw);
+        function hitungHargaBersih() {
+            const root = document.querySelector('#storeModalPelayanan');
 
-            inputEl.value = formatted;
-            const hidden = document.getElementById(hiddenId);
-            hidden.value = raw;
-            hidden.dispatchEvent(new Event('input')); // Trigger Livewire
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_pelayanan"]')?.previousElementSibling;
+            const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+            const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
+            const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
+
+            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+
+            const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const diskon = parseFloat(diskonInput.value || 0);
+            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+
+            hargaBersihInput.value = hargaBersih;
+
+            if (hargaBersihDisplay._cleave) {
+                hargaBersihDisplay._cleave.setRawValue(hargaBersih);
+            } else {
+                hargaBersihDisplay.value = hargaBersih;
+            }
+
+            hargaBersihInput.dispatchEvent(new Event('input'));
         }
+
+        function reinitHargaBersihListeners() {
+            const root = document.querySelector('#storeModalPelayanan');
+
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_pelayanan"]')?.previousElementSibling;
+            const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+
+            if (hargaInput) {
+                hargaInput.removeEventListener('input', hitungHargaBersih);
+                hargaInput.addEventListener('input', hitungHargaBersih);
+            }
+
+            if (diskonInput) {
+                diskonInput.removeEventListener('input', hitungHargaBersih);
+                diskonInput.addEventListener('input', hitungHargaBersih);
+            }
+
+            hitungHargaBersih();
+        }
+
+        function reinitPelayananModalHelpers() {
+            initCleaveRupiah(); // kamu sudah punya global
+            reinitHargaBersihListeners();
+        }
+
+        document.addEventListener('DOMContentLoaded', reinitPelayananModalHelpers);
+        document.addEventListener('livewire:load', () => {
+            Livewire.hook('message.processed', reinitPelayananModalHelpers);
+        });
+        document.addEventListener('livewire:navigated', reinitPelayananModalHelpers);
     </script>
 </dialog>
