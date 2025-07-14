@@ -46,7 +46,7 @@ final class BundlingTable extends PowerGridComponent
             ->add('harga_formatted', fn ($row) => 'Rp'.number_format($row->harga, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih_formatted', fn ($row) => 'Rp'.number_format($row->harga_bersih, 0, ',', '.'))
-            ->add('created_at')
+            ->add('aktif')
             ->add('isi_paket', function (Bundling $bundling) {
                 $pelayanan = $bundling->pelayananBundlings()
                     ->with('pelayanan')
@@ -95,6 +95,8 @@ final class BundlingTable extends PowerGridComponent
             Column::make('Isi Paket', 'isi_paket')
                 ->bodyAttribute('whitespace-nowrap'),
 
+            Column::make('Aktif', 'aktif')->toggleable(),
+
             Column::action('Aksi')
         ];
     }
@@ -103,6 +105,20 @@ final class BundlingTable extends PowerGridComponent
     {
         return [
         ];
+    }
+
+    public function onUpdatedToggleable(string|int $id, string $field, string $value): void
+    {
+        Bundling::query()->find($id)->update([
+            $field => e($value),
+        ]);
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Paket Bundling berhasil diperbarui.'
+        ]);
+
+        $this->skipRender(); // agar tidak render ulang seluruh table
     }
 
     public function actions(Bundling $row): array
