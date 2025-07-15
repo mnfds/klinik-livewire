@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire\JamKerja;
+namespace App\Livewire\Jamkerja;
 
-use App\Models\JamKerja;
 use Livewire\Component;
+use App\Models\JamKerja;
 
-class UpdateJamKerja extends Component
+class Update extends Component
 {
     public $jamKerjaId;
 
@@ -15,8 +15,8 @@ class UpdateJamKerja extends Component
     public $jam_selesai;
     public $lewat_hari;
 
-    #[\Livewire\Attributes\On('editJamKerja')]
-    public function edit($rowId): void
+    #[\Livewire\Attributes\On('getupdate')]
+    public function getupdate($rowId): void
     {
         $this->jamKerjaId = $rowId;
 
@@ -73,4 +73,3 @@ class UpdateJamKerja extends Component
         return view('livewire.jam-kerja.update-jam-kerja');
     }
 }
-

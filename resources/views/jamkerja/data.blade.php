@@ -1,5 +1,5 @@
 <x-app-layout>
-    <livewire:jamkerja.DataJamKerja />
-    <livewire:jamkerja.update-jamkerja />
-    <livewire:jamkerja.store-jamkerja />
+    <livewire:jamkerja.data />
+    <livewire:jamkerja.store />
+    <livewire:jamkerja.update />
 </x-app-layout>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
     const savedTheme = localStorage.getItem('theme') || 'pastel';
     document.documentElement.setAttribute('data-theme', savedTheme);

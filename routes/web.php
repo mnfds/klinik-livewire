@@ -56,6 +56,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/bundling', 'bundling.data')->name('bundling.data');
     // ====== PELAYANAN ====== //
 
+    // ====== INVENTORY BARANG ====== //
+    Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
+    // ====== INVENTORY BARANG ====== //
+
 });
 
 

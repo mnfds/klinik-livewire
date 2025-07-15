@@ -104,16 +104,46 @@
                 </li>
 
                 <li x-data="{ open: false }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*')">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer">
                         <i class="fa-solid fa-boxes-stacked"></i>
                         <span class="flex-1 ml-3 text-left">Persediaan</span>
-                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                        <i class="fa-solid fa-chevron-right ml-auto transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
-                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="#" wire:navigate>Barang</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Produk & Obat</x-side-link></li>
+
+                    <ul x-show="open" x-collapse x-cloak class="pl-4 space-y-1 py-2">
+
+                        {{-- Submenu Barang --}}
+                        <li x-data="{ openSub: false }">
+                            <x-side-link @click.prevent="openSub = !openSub" class="cursor-pointer">
+                                <i class="fa-solid fa-box"></i>
+                                <span class="flex-1 ml-3 text-left">Barang</span>
+                                <i class="fa-solid fa-chevron-right ml-auto transition-transform duration-200" :class="openSub ? 'rotate-90' : ''"></i>
+                            </x-side-link>
+
+                            <ul x-show="openSub" x-collapse x-cloak class="pl-6 space-y-1 py-1">
+                                <li>
+                                    <x-side-link href="{{ route('barang.data') }}" :active="request()->routeIs('barang.data')" wire:navigate>
+                                        Daftar Barang
+                                    </x-side-link>
+                                </li>
+                                <li>
+                                    <x-side-link href="#" :active="request()->routeIs('mutasi.data')" wire:navigate>
+                                        Mutasi Barang
+                                    </x-side-link>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {{-- Submenu Produk & Obat --}}
+                        <li>
+                            <x-side-link href="#" :active="request()->routeIs('produk.data')" wire:navigate>
+                                <i class="fa-solid fa-capsules"></i>
+                                <span class="ml-3">Produk & Obat</span>
+                            </x-side-link>
+                        </li>
                     </ul>
                 </li>
+
                 <!-- Pelayanan Klinik Section -->
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Pelayanan Klinik</span>

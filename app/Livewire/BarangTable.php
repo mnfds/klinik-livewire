@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\JamKerja;
+use App\Models\Barang;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
@@ -12,9 +12,9 @@ use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
-final class JamKerjaTable extends PowerGridComponent
+final class BarangTable extends PowerGridComponent
 {
-    public string $tableName = 'jam-kerja-table-xhprc8-table';
+    public string $tableName = 'barang-table';
 
     public function setUp(): array
     {
@@ -31,40 +31,50 @@ final class JamKerjaTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return JamKerja::query();
+        return Barang::with('mutasi');
     }
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'mutasi' => [
+                'tipe',
+                'jumlah',
+                'lokasi',
+                'diajukan_oleh',
+                'disetujui_oleh',
+                'status',
+                'catatan',
+            ]
+        ];
     }
 
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            // ->add('id')
-            ->add('nama_shift')
-            ->add('tipe_shift')
-            ->add('jam_mulai')
-            ->add('jam_selesai')
-            ->add('lewat_hari');
+            ->add('nama')
+            ->add('kode')
+            ->add('stok')
+            ->add('mutasi.jumlah')
+            // ->add('sisa_stok', fn(Barang $barang) => $barang->stok - $barang->mutasi()->sum('jumlah'))
+            ->add('satuan')
+            ->add('lokasi')
+            ->add('keterangan')
+            ->add('tanggal', fn($row) => Carbon::parse($row->created_at)->format('d/m/Y'));
     }
 
     public function columns(): array
     {
         return [
             Column::make('#', '')->index(),
-
-            Column::make('Kode Shift', 'nama_shift')->sortable(),
-
-            Column::make('Tipe Shift', 'tipe_shift')->searchable(),
-
-            Column::make('Jam Mulai', 'jam_mulai'),
-
-            Column::make('Jam Selesai', 'jam_selesai'),
-
-            Column::make('Lintas Hari', 'lewat_hari')->toggleable(),
-
+            Column::make('Nama Barang', 'nama')->searchable()->sortable(),
+            Column::make('Kode', 'kode')->searchable()->sortable(),
+            Column::make('Stok Tersisa', 'stok')->sortable(),
+            Column::make('Jumlah Keluar', 'mutasi.jumlah')->sortable(),
+            Column::make('Satuan', 'satuan')->searchable(),
+            Column::make('Lokasi Disimpan', 'lokasi'),
+            Column::make('Ket', 'keterangan'),
+            Column::make('Dibuat', 'tanggal')->sortable(),
             Column::action('Action'),
         ];
     }
@@ -72,43 +82,31 @@ final class JamKerjaTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            // contoh: Filter lokasi
+            // Filter::inputText('lokasi')->operators(['contains']),
         ];
     }
 
-    public function onUpdatedToggleable(string|int $id, string $field, string $value): void
-    {
-        JamKerja::query()->find($id)->update([
-            $field => e($value),
-        ]);
-
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Jam Kerja berhasil diperbarui.'
-        ]);
-
-        $this->skipRender(); // agar tidak render ulang seluruh table
-    }
-
-    public function actions(JamKerja $row): array
+    public function actions(Barang $row): array
     {
         return [
-            Button::add('updateJamKerja')  
+            Button::add('editBarang')
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
-                    'onclick' => 'my_modal_1.showModal()',
+                    'onclick' => 'editBarang.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('jamkerja.update', 'getupdate', ['rowId' => $row->id]),
+                ->dispatchTo('barang.update-barang', 'editBarang', ['rowId' => $row->id]),
 
             Button::add('delete')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('delete', ['rowId' => $row->id]),
+                ->dispatch('deleteBarangModal', ['rowId' => $row->id]),
         ];
     }
 
-    #[\Livewire\Attributes\On('delete')]
-    public function confirmDelete($rowId): void
+    #[\Livewire\Attributes\On('deleteBarangModal')]
+    public function deleteBarangModal($rowId): void
     {
         $this->js(<<<JS
             Swal.fire({
@@ -121,16 +119,16 @@ final class JamKerjaTable extends PowerGridComponent
                 confirmButtonText: 'Ya, hapus!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('deleteConfirmed', { rowId: $rowId });
+                    Livewire.dispatch('deleteBarangKonfirmasi', { rowId: $rowId });
                 }
             });
         JS);
     }
 
-    #[\Livewire\Attributes\On('deleteConfirmed')]
-    public function deleteConfirmed($rowId): void
+    #[\Livewire\Attributes\On('deleteBarangKonfirmasi')]
+    public function deleteBarangKonfirmasi($rowId): void
     {
-        JamKerja::findOrFail($rowId)->delete();
+        Barang::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
 
@@ -139,16 +137,4 @@ final class JamKerjaTable extends PowerGridComponent
             'message' => 'Data berhasil dihapus.',
         ]);
     }
-
-    /*
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }
