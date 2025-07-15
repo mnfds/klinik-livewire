@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire\Jamkerja;
+namespace App\Livewire\JamKerja;
 
-use Livewire\Component;
 use App\Models\JamKerja;
+use Livewire\Component;
 
-class Store extends Component
+class StoreJamKerja extends Component
 {
     public $nama_shift;
     public $tipe_shift;
@@ -15,7 +15,7 @@ class Store extends Component
 
     public function render()
     {
-        return view('livewire.jamkerja.store');
+        return view('livewire.jam-kerja.store-jam-kerja');
     }
 
     public function store()

@@ -77,18 +77,13 @@ final class RoleTable extends PowerGridComponent
     public function actions(Role $row): array
     {
         return [
-            // Button::add('edit')
-            //     ->slot('Edit: '.$row->id)
-            //     ->id()
-            //     ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-            //     ->dispatch('edit', ['rowId' => $row->id])
-            Button::add('editrole')  
+            Button::add('updateakses')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Akses Role')
                 ->attributes([
                     'onclick' => 'modaleditrole.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('role.update-aksesrole', 'editaksesrole', ['rowId' => $row->id]),
+                ->dispatchTo('role.updateakses', 'getupdaterole', ['rowId' => $row->id]),
             
             Button::add('deleterole')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')

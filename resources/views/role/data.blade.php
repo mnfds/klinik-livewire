@@ -1,5 +1,5 @@
 <x-app-layout>
-    <livewire:Role.DataRole />
-    <livewire:Role.Store-role />
-    <livewire:Role.Update-aksesrole />
+    <livewire:role.data />
+    <livewire:role.store />
+    <livewire:role.updateakses />
 </x-app-layout>

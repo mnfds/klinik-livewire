@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-    const savedTheme = localStorage.getItem('theme') || 'pastel';
+    const savedTheme = localStorage.getItem('theme') || 'acid';
     document.documentElement.setAttribute('data-theme', savedTheme);
 </script>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data
       x-init="
-        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'pastel');
+        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'acid');
         document.documentElement.setAttribute('data-theme', theme);
       "
 >

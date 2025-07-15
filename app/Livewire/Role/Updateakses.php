@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Livewire\Role;
 
-use App\Models\Akses;
 use App\Models\Role;
-use App\Models\RoleAkses;
+use App\Models\Akses;
 use Livewire\Component;
+use App\Models\RoleAkses;
 use Illuminate\Support\Facades\Log;
 
-class UpdateAksesRole extends Component
+class Updateakses extends Component
 {
     public $roleAksesId;
     public $nama_role;
@@ -20,8 +21,8 @@ class UpdateAksesRole extends Component
         $this->allAkses = collect();
     }
 
-    #[\Livewire\Attributes\On('editaksesrole')]
-    public function editaksesrole($rowId): void
+    #[\Livewire\Attributes\On('getupdaterole')]
+    public function getupdaterole($rowId): void
     {
         $this->roleAksesId = $rowId;
 
@@ -97,6 +98,6 @@ class UpdateAksesRole extends Component
 
     public function render()
     {
-        return view('livewire.role.update-akses-role');
+        return view('livewire.role.updateakses');
     }
 }

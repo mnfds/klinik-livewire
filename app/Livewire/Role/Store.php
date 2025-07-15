@@ -8,7 +8,8 @@ use App\Models\RoleAkses;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
-class StoreRole extends Component
+
+class Store extends Component
 {
     public $nama_role;
     public $selectedAkses = [];
@@ -75,6 +76,6 @@ class StoreRole extends Component
 
     public function render()
     {
-        return view('livewire.role.store-role');
+        return view('livewire.role.store');
     }
 }

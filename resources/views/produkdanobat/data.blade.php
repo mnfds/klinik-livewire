@@ -1,5 +1,5 @@
 <x-app-layout>
-    <livewire:Produkdanobat.DataProdukdanobat />
-    <livewire:Produkdanobat.update-produkdanobat />
-    <livewire:Produkdanobat.store-produkdanobat />
+    <livewire:produkdanobat.data />
+    <livewire:produkdanobat.store />
+    <livewire:produkdanobat.update />
 </x-app-layout>

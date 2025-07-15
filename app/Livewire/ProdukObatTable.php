@@ -112,13 +112,13 @@ final class ProdukObatTable extends PowerGridComponent
     public function actions(ProdukDanObat $row): array
     {
         return [
-            Button::add('editprodukdanobat')  
+            Button::add('updateprodukobat')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modaleditprodukdanobat.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('produkdanobat.update-produkdanobat', 'editProdukDanObat', ['rowId' => $row->id]),
+                ->dispatchTo('produkdanobat.update', 'getupdateprodukobat', ['rowId' => $row->id]),
             
             Button::add('deleteprodukdanobat')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
