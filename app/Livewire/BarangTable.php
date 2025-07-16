@@ -14,7 +14,7 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class BarangTable extends PowerGridComponent
 {
-    public string $tableName = 'barang-table';
+    public string $tableName = 'barang-table-hbu5km-table';
 
     public function setUp(): array
     {
@@ -31,82 +31,85 @@ final class BarangTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Barang::with('mutasi');
+        return Barang::query();
     }
 
     public function relationSearch(): array
     {
-        return [
-            'mutasi' => [
-                'tipe',
-                'jumlah',
-                'lokasi',
-                'diajukan_oleh',
-                'disetujui_oleh',
-                'status',
-                'catatan',
-            ]
-        ];
+        return [];
     }
 
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
+            ->add('#')
             ->add('nama')
             ->add('kode')
-            ->add('stok')
-            ->add('mutasi.jumlah')
-            // ->add('sisa_stok', fn(Barang $barang) => $barang->stok - $barang->mutasi()->sum('jumlah'))
             ->add('satuan')
+            ->add('stok_masuk', function (Barang $barang) {
+                $stok_masuk = $barang->mutasi()
+                    ->where('tipe', 'masuk')
+                    ->sum('jumlah');
+
+                return $stok_masuk;
+            })
+            ->add('stok_keluar', function (Barang $barang) {
+                return $barang->mutasi()
+                    ->where('tipe', 'keluar')
+                    ->sum('jumlah');
+
+            })
+            ->add('sisa_stok', function (Barang $barang) {
+                $masuk = $barang->mutasi()->where('tipe', 'masuk')->sum('jumlah');
+                $keluar = $barang->mutasi()->where('tipe', 'keluar')->sum('jumlah');
+                return $masuk - $keluar;
+            })
             ->add('lokasi')
-            ->add('keterangan')
-            ->add('tanggal', fn($row) => Carbon::parse($row->created_at)->format('d/m/Y'));
+            ->add('keterangan');
     }
 
     public function columns(): array
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Nama Barang', 'nama')->searchable()->sortable(),
-            Column::make('Kode', 'kode')->searchable()->sortable(),
-            Column::make('Stok Tersisa', 'stok')->sortable(),
-            Column::make('Jumlah Keluar', 'mutasi.jumlah')->sortable(),
-            Column::make('Satuan', 'satuan')->searchable(),
-            Column::make('Lokasi Disimpan', 'lokasi'),
-            Column::make('Ket', 'keterangan'),
-            Column::make('Dibuat', 'tanggal')->sortable(),
-            Column::action('Action'),
+            Column::make('Barang', 'nama')->searchable(),
+            Column::make('Kode Barang', 'kode')->searchable(),
+            Column::make('satuan ', 'satuan')->searchable(),
+            Column::make('Stok Masuk ', 'stok_masuk')->sortable(),
+            Column::make('Stok Keluar ', 'stok_keluar')->sortable(),
+            Column::make('Stok Tersisa ', 'sisa_stok')->sortable(),
+            Column::make('Lokasi Disimpan ', 'lokasi')->searchable(),
+            Column::make('Keterangan ', 'keterangan'),
+            Column::action('Action')
         ];
     }
 
     public function filters(): array
     {
         return [
-            // contoh: Filter lokasi
-            // Filter::inputText('lokasi')->operators(['contains']),
         ];
     }
 
     public function actions(Barang $row): array
     {
         return [
-            Button::add('editBarang')
+            Button::add('updatebarang')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
-                    'onclick' => 'editBarang.showModal()',
+                    'onclick' => 'modaleditbarang.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('barang.update-barang', 'editBarang', ['rowId' => $row->id]),
-
-            Button::add('delete')
+                ->dispatchTo('barang.update', 'getupdatebarang', ['rowId' => $row->id]),
+            
+            Button::add('deletebarang')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('deleteBarangModal', ['rowId' => $row->id]),
+                ->dispatch('modaldeletebarang', ['rowId' => $row->id]),
         ];
     }
 
-    #[\Livewire\Attributes\On('deleteBarangModal')]
-    public function deleteBarangModal($rowId): void
+    #[\Livewire\Attributes\On('modaldeletebarang')]
+    public function modaldeletebarang($rowId): void
     {
         $this->js(<<<JS
             Swal.fire({
@@ -119,14 +122,14 @@ final class BarangTable extends PowerGridComponent
                 confirmButtonText: 'Ya, hapus!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('deleteBarangKonfirmasi', { rowId: $rowId });
+                    Livewire.dispatch('konfirmasideletebarang', { rowId: $rowId });
                 }
             });
         JS);
     }
 
-    #[\Livewire\Attributes\On('deleteBarangKonfirmasi')]
-    public function deleteBarangKonfirmasi($rowId): void
+    #[\Livewire\Attributes\On('konfirmasideletebarang')]
+    public function konfirmasideletebarang($rowId): void
     {
         Barang::findOrFail($rowId)->delete();
 
@@ -137,4 +140,16 @@ final class BarangTable extends PowerGridComponent
             'message' => 'Data berhasil dihapus.',
         ]);
     }
+
+    /*
+    public function actionRules($row): array
+    {
+       return [
+            // Hide button edit for ID 1
+            Rule::button('edit')
+                ->when(fn($row) => $row->id === 1)
+                ->hide(),
+        ];
+    }
+    */
 }

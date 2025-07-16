@@ -1,3 +1,7 @@
 <x-app-layout>
-    <livewire:Barang.data-barang />
+    <livewire:barang.data />
+    <livewire:barang.store />
+    <livewire:barang.take />
+    <livewire:barang.restok />
+    <livewire:barang.update />
 </x-app-layout>

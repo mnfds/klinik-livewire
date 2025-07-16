@@ -83,7 +83,7 @@
                     </x-side-link>
                 </li>
                 <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                    <x-side-link href="{{ route('barang.data') }}" :active="request()->routeIs('barang.data')" wire:navigate>
                         <i class="fa-solid fa-boxes-stacked"></i>
                         <span class="ml-3">Persediaan</span>
                     </x-side-link>

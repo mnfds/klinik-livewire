@@ -17,7 +17,6 @@ return new class extends Migration
             $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('jumlah');
             $table->string('diajukan_oleh')->nullable(); // pegawai yang memasukkan atau megeluarkan barang
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('catatan')->nullable();
             $table->timestamps();
         });

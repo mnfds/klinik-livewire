@@ -21,17 +21,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
-                            Persediaan
-                        </a>
-                    </li>
-                    <li>
-                        <a class="inline-flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-current" fill="none"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                            </svg>
-                            Barang
+                            Persediaan Barang
                         </a>
                     </li>
                 </ul>
@@ -41,7 +31,7 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
                 <i class="fa-solid fa-layer-group"></i>
-                Persedian Barang - Barang
+                Persediaan Barang
             </h1>
         </div>
 
@@ -51,7 +41,25 @@
                 
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
-                        <button onclick="document.getElementById('storeModalBundling').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Barang</button>
+                        <!-- KIRI: Stok Masuk dan Stok Keluar -->
+                        <div class="flex items-center">
+                            <button onclick="document.getElementById('storeModalBarang').showModal()" class="btn btn-success me-2">
+                                <i class="fa-solid fa-box-open"></i> Tambah Barang
+                            </button>
+                            <button class="btn btn-warning">
+                                <i class="fa-solid fa-clipboard"></i> Riwayat
+                            </button>
+                        </div>
+
+                        <!-- KANAN: Tambah Barang dan Riwayat -->
+                        <div class="flex items-center">
+                            <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary me-2">
+                                <i class="fa-solid fa-circle-minus"></i> Stok Keluar
+                            </button>
+                            <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary">
+                                <i class="fa-solid fa-circle-plus"></i> Stok Masuk
+                            </button>
+                        </div>
                     </div>
                     <livewire:barang-table />
                     <script>
