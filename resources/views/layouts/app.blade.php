@@ -57,22 +57,37 @@
                 </div>
             </main>
         </div>
+        @livewireScripts
 
         <script>
             function sidebar() {
                 return {
                     sidebarOpen: false,
+                    isMobile: window.innerWidth < 640,
+
                     init() {
-                        // Jika kamu ingin sidebar terbuka secara default di mobile, bisa pakai window.innerWidth
-                        this.sidebarOpen = false
+                        this.isMobile = window.innerWidth < 640;
+                        this.sidebarOpen = localStorage.getItem('sidebarOpen') === 'true';
+
+                        // Optional: Update isMobile on resize
+                        window.addEventListener('resize', () => {
+                            this.isMobile = window.innerWidth < 640;
+                        });
+                    },
+
+                    toggleSidebar() {
+                        this.sidebarOpen = !this.sidebarOpen;
+                        localStorage.setItem('sidebarOpen', this.sidebarOpen);
+                    },
+
+                    closeSidebar() {
+                        this.sidebarOpen = false;
+                        localStorage.setItem('sidebarOpen', 'false');
                     }
                 }
             }
         </script>
-
-
-        @livewireScripts
-
+        
         <script>
             Livewire.on('toast', (data) => {
                 const toast = Array.isArray(data) ? data[0] : data;

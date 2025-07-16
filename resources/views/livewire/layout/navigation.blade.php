@@ -20,7 +20,7 @@ new class extends Component
     <div class="flex justify-between items-center h-[60px] max-w-7xl mx-auto">
         <!-- Sidebar Toggle (Mobile & Desktop) -->
         <div class="flex items-center">
-            <button @click="sidebarOpen = !sidebarOpen" type="button"
+            <button @click="toggleSidebar()" type="button"
                 class="inline-flex items-center p-2 text-base-content rounded-lg hover:bg-base-200 focus:outline-none">
                 <span class="sr-only">Toggle sidebar</span>
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">

@@ -1,28 +1,27 @@
 <!-- Sidebar Component - Refactored for Clarity and Structure -->
 <aside>
-    <div
-        class="fixed top-0 left-0 z-50 h-screen w-64 shadow-md transition-transform transform duration-300"
+    <div class="fixed top-0 left-0 z-50 h-screen w-64 shadow-md transition-transform transform duration-300"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-    >
+        >
         <div class="absolute top-0 left-0 h-full w-full px-3 pb-4 pt-1 overflow-y-auto bg-base-100">
             <ul class="space-y-2 font-medium">
-            <!-- Brand -->
-            <li class="h-[50px] flex items-center justify-between px-3">
-                <a href="#" class="flex items-center gap-2 text-base-content">
-                    <!-- Kotak Logo -->
-                    <div class="w-10 h-10 bg-base-300 rounded-md flex items-center justify-center">
-                        <img src="{{ asset('assets/aset/logo-no-text.png') }}" alt="Logo" class="w-10 h-10 object-contain" />
-                    </div>
+                <!-- Brand -->
+                <li class="h-[50px] flex items-center justify-between px-3">
+                    <a href="#" class="flex items-center gap-2 text-base-content">
+                        <!-- Kotak Logo -->
+                        <div class="w-10 h-10 bg-base-300 rounded-md flex items-center justify-center">
+                            <img src="{{ asset('assets/aset/logo-no-text.png') }}" alt="Logo" class="w-10 h-10 object-contain" />
+                        </div>
 
-                    <!-- Tulisan -->
-                    <span class="text-sm font-bold tracking-wide text-red-700">
-                        Dokter L
-                    </span>
-                </a>
+                        <!-- Tulisan -->
+                        <span class="text-sm font-bold tracking-wide text-red-700">
+                            Dokter L
+                        </span>
+                    </a>
 
-                <!-- Versi -->
-                <span class="text-[10px] text-base-content/60">v2.0.1</span>
-            </li>
+                    <!-- Versi -->
+                    <span class="text-[10px] text-base-content/60">v2.0.1</span>
+                </li>
                 <hr class="border-base-300">
 
                 <!-- Dashboard -->
@@ -176,6 +175,21 @@
         </div>
     </div>
 
+    <!-- ✅ Tombol close sidebar di sebelah kanan sidebar (desktop) -->
+    <button 
+        x-show="sidebarOpen && !isMobile"
+        class="fixed top-2 left-[260px] z-50 text-base-content hover:text-error transition sm:block m-2"
+        @click="closeSidebar()"
+        >
+        <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+
+
     <!-- Overlay -->
-    <div x-show="sidebarOpen" class="fixed top-0 left-0 w-screen h-screen bg-black opacity-30 z-40" @click="sidebarOpen = false"></div>
+    <div
+        x-show="sidebarOpen && isMobile"
+        x-transition
+        class="fixed top-2 left-[260px] z-50 text-base-content hover:text-error transition sm:block"
+        @click="closeSidebar()">
+    </div>
 </aside>
