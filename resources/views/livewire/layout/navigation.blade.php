@@ -17,12 +17,12 @@ new class extends Component
 }; ?>
 
 <nav class="bg-base-100 border-b border-base-200 px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16 max-w-7xl mx-auto">
-        <!-- Sidebar Toggle (Mobile Only) -->
+    <div class="flex justify-between items-center h-[60px] max-w-7xl mx-auto">
+        <!-- Sidebar Toggle (Mobile & Desktop) -->
         <div class="flex items-center">
-            <button @click="sidebarOpen = true" type="button"
-                class="sm:hidden inline-flex items-center p-2 text-base-content rounded-lg hover:bg-base-200 focus:outline-none">
-                <span class="sr-only">Open sidebar</span>
+            <button @click="sidebarOpen = !sidebarOpen" type="button"
+                class="inline-flex items-center p-2 text-base-content rounded-lg hover:bg-base-200 focus:outline-none">
+                <span class="sr-only">Toggle sidebar</span>
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M3 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"
@@ -79,4 +79,3 @@ new class extends Component
         </div>
     </div>
 </nav>
-

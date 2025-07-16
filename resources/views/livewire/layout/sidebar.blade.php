@@ -1,32 +1,28 @@
 <!-- Sidebar Component - Refactored for Clarity and Structure -->
 <aside>
     <div
-        class="fixed top-0 left-0 z-50 h-screen w-64 shadow-md transition-transform sm:translate-x-0"
-        :class="sidebarOpen ? '' : '-translate-x-full'">
-
-        <div class="absolute top-0 left-0 h-full w-full px-3 py-4 overflow-y-auto bg-base-100">
+        class="fixed top-0 left-0 z-50 h-screen w-64 shadow-md transition-transform transform duration-300"
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    >
+        <div class="absolute top-0 left-0 h-full w-full px-3 pb-4 pt-1 overflow-y-auto bg-base-100">
             <ul class="space-y-2 font-medium">
-                <!-- Brand -->
-                <li class="flex items-end">
-                    <a href="#" class="flex items-center p-2 font-semibold text-base-content space-x-3">
-                        <!-- Kotak Logo -->
-                        <div class="w-12 h-12 bg-base-300 rounded-md flex items-center justify-center">
-                            <img src="{{ asset('assets/aset/logo-no-text.png') }}" alt="Logo" class="w-8 h-8 object-contain" />
-                        </div>
+            <!-- Brand -->
+            <li class="h-[50px] flex items-center justify-between px-3">
+                <a href="#" class="flex items-center gap-2 text-base-content">
+                    <!-- Kotak Logo -->
+                    <div class="w-10 h-10 bg-base-300 rounded-md flex items-center justify-center">
+                        <img src="{{ asset('assets/aset/logo-no-text.png') }}" alt="Logo" class="w-10 h-10 object-contain" />
+                    </div>
 
-                        <!-- Tulisan -->
-                        <span class="text-2xl font-bold tracking-wide font-kapakana text-red-700">
-                            Dokter L
-                        </span>
-                    </a>
-                    <span class="text-xs text-base-content/60 pl-2 block">
-                        v2.0.1
-                        {{-- v(Major).(Minor).(patch)
-                        Major = Ada perubahan besar, tidak kompatibel, Hapus fungsi lama
-                        Minor = Tambah fitur, tetap kompatibel
-                        patch = Perbaikan bug/typo --}}
+                    <!-- Tulisan -->
+                    <span class="text-sm font-bold tracking-wide text-red-700">
+                        Dokter L
                     </span>
-                </li>
+                </a>
+
+                <!-- Versi -->
+                <span class="text-[10px] text-base-content/60">v2.0.1</span>
+            </li>
                 <hr class="border-base-300">
 
                 <!-- Dashboard -->
@@ -87,6 +83,12 @@
                         <span class="ml-3">Laporan</span>
                     </x-side-link>
                 </li>
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span class="ml-3">Persediaan</span>
+                    </x-side-link>
+                </li>
 
                 <!-- Dropdown Example (reuseable later for antrian/rawat jalan/etc) -->
                 <li x-data="{ open: false }">
@@ -100,47 +102,6 @@
                         <li><x-side-link href="#" wire:navigate>Lembur</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Daftar Ajuan Izin Keluar</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Izin Keluar</x-side-link></li>
-                    </ul>
-                </li>
-
-                <li x-data="{ open: false }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span class="flex-1 ml-3 text-left">Persediaan</span>
-                        <i class="fa-solid fa-chevron-right ml-auto transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
-                    </x-side-link>
-
-                    <ul x-show="open" x-collapse x-cloak class="pl-4 space-y-1 py-2">
-
-                        {{-- Submenu Barang --}}
-                        <li x-data="{ openSub: false }">
-                            <x-side-link @click.prevent="openSub = !openSub" class="cursor-pointer">
-                                <i class="fa-solid fa-box"></i>
-                                <span class="flex-1 ml-3 text-left">Barang</span>
-                                <i class="fa-solid fa-chevron-right ml-auto transition-transform duration-200" :class="openSub ? 'rotate-90' : ''"></i>
-                            </x-side-link>
-
-                            <ul x-show="openSub" x-collapse x-cloak class="pl-6 space-y-1 py-1">
-                                <li>
-                                    <x-side-link href="{{ route('barang.data') }}" :active="request()->routeIs('barang.data')" wire:navigate>
-                                        Daftar Barang
-                                    </x-side-link>
-                                </li>
-                                <li>
-                                    <x-side-link href="#" :active="request()->routeIs('mutasi.data')" wire:navigate>
-                                        Mutasi Barang
-                                    </x-side-link>
-                                </li>
-                            </ul>
-                        </li>
-
-                        {{-- Submenu Produk & Obat --}}
-                        <li>
-                            <x-side-link href="#" :active="request()->routeIs('produk.data')" wire:navigate>
-                                <i class="fa-solid fa-capsules"></i>
-                                <span class="ml-3">Produk & Obat</span>
-                            </x-side-link>
-                        </li>
                     </ul>
                 </li>
 

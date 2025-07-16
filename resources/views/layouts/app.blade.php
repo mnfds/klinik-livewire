@@ -46,15 +46,30 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-base-300 text-base-content">
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen">
+        <div x-data="sidebar()" x-init="init()" class="min-h-screen">
             <livewire:layout.navigation />
             <livewire:layout.sidebar />
 
             <!-- Page Content -->
-            <main class="sm:ml-64 p-2">
-                {{ $slot }}
+            <main :class="sidebarOpen ? 'sm:ml-48' : 'sm:ml-0'" class="transition-all duration-300 p-4">
+                <div class="max-w-screen-xl mx-auto">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
+
+        <script>
+            function sidebar() {
+                return {
+                    sidebarOpen: false,
+                    init() {
+                        // Jika kamu ingin sidebar terbuka secara default di mobile, bisa pakai window.innerWidth
+                        this.sidebarOpen = false
+                    }
+                }
+            }
+        </script>
+
 
         @livewireScripts
 
