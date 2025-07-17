@@ -45,9 +45,12 @@ class Take extends Component
             'message' => 'Data Barang berhasil Diperbarui.'
         ]);
 
-        $this->dispatch('closestoreModalPoli');
-
+        
         $this->reset();
+
+        $this->dispatch('pg:eventRefresh-DishTable');
+
+        $this->dispatch('closetakeModalBarang');
 
         return redirect()->route('barang.data');
     }

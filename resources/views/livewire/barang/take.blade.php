@@ -11,7 +11,7 @@
             <div>
                 <label class="label font-medium">Nama Barang</label>
                 <select class="select select-bordered w-full" wire:model.lazy="barang_id">
-                    <option value="">Pilih Satuan</option>
+                    <option value="">Pilih Barang</option>
                     @foreach ($barang as $b)
                         <option value="{{ $b->id }}">{{ $b->nama }}</option>
                     @endforeach

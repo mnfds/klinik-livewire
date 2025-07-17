@@ -45,9 +45,11 @@ class Restok extends Component
             'message' => 'Data Barang berhasil Diperbarui.'
         ]);
 
-        $this->dispatch('closerestockModalBarang');
-
         $this->reset();
+
+        $this->dispatch('pg:eventRefresh-DishTable');
+
+        $this->dispatch('closerestockModalBarang');
 
         return redirect()->route('barang.data');
     }

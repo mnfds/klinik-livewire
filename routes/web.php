@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Livewire\Barang\Riwayat;
 use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
@@ -58,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== INVENTORY BARANG ====== //
     Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
+    Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
+
     // ====== INVENTORY BARANG ====== //
 
 });
