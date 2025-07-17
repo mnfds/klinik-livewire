@@ -40,24 +40,24 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 
                 <div class="p-6 text-base-content space-y-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <!-- KIRI: Stok Masuk dan Stok Keluar -->
-                        <div class="flex items-center">
-                            <button onclick="document.getElementById('storeModalBarang').showModal()" class="btn btn-success me-2">
-                                <i class="fa-solid fa-box-open"></i> Tambah Barang
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
+                        <!-- KIRI: Tambah Barang & Riwayat -->
+                        <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
+                            <button onclick="document.getElementById('storeModalBarang').showModal()" class="btn btn-success w-full">
+                                <i class="fa-solid fa-box-open"></i> Tambah
                             </button>
-                            <button class="btn btn-warning">
+                            <button class="btn btn-warning w-full">
                                 <i class="fa-solid fa-clipboard"></i> Riwayat
                             </button>
                         </div>
 
-                        <!-- KANAN: Tambah Barang dan Riwayat -->
-                        <div class="flex items-center">
-                            <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary me-2">
-                                <i class="fa-solid fa-circle-minus"></i> Stok Keluar
+                        <!-- KANAN: Stok Keluar & Masuk -->
+                        <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
+                            <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary w-full">
+                                <i class="fa-solid fa-circle-minus"></i> Keluar
                             </button>
-                            <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary">
-                                <i class="fa-solid fa-circle-plus"></i> Stok Masuk
+                            <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary w-full">
+                                <i class="fa-solid fa-circle-plus"></i> Masuk
                             </button>
                         </div>
                     </div>

@@ -177,8 +177,8 @@
 
     <!-- ✅ Tombol close sidebar di sebelah kanan sidebar (desktop) -->
     <button 
-        x-show="sidebarOpen && !isMobile"
-        class="fixed top-2 left-[260px] z-50 text-base-content hover:text-error transition sm:block m-2"
+        x-show="sidebarOpen"
+        class="fixed top-2 left-[260px] z-50 text-base-content hover:text-error transition"
         @click="closeSidebar()"
         >
         <i class="fa-solid fa-xmark text-xl"></i>
