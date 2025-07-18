@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PoliKlinik extends Model
+class NomorAntrian extends Model
 {
     use HasFactory;
 
-    protected $table = 'poli_kliniks';
+    protected $table = 'nomor_antrians';
     protected $guarded = ['id'];
 
-    public function antrians()
+    public function poli()
     {
-        return $this->hasMany(NomorAntrian::class, 'poli_id');
+        return $this->belongsTo(PoliKlinik::class, 'poli_id');
     }
+
 }

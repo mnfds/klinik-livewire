@@ -60,8 +60,13 @@ Route::middleware(['auth'])->group(function () {
     // ====== INVENTORY BARANG ====== //
     Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
     Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
-
     // ====== INVENTORY BARANG ====== //
+
+    // ====== ANTRIAN PASIEN ====== //
+    Route::view('/antrian', 'antrian.data')->name('antrian.data');
+    Route::view('/antrian/ambil-nomor', 'antrian.display')->name('antrian.display');
+    Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
+    // ====== ANTRIAN PASIEN ====== //
 
 });
 

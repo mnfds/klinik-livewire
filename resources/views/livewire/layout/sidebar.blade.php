@@ -114,17 +114,54 @@
                         <span class="ml-3">Pasien</span>
                     </x-side-link>
                 </li>
-                <li x-data="{ open: false }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*')">
+
+                <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">
                         <i class="fa-solid fa-users"></i>
                         <span class="flex-1 ml-3 text-left">Antrian</span>
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
+
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="#" wire:navigate>Antrian Registrasi</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Antrian Poli</x-side-link></li>
+                        <li>
+                            <x-side-link href="{{ route('antrian.display') }}" :active="request()->routeIs('antrian.display')" wire:navigate>
+                                Ambil Nomor Antrian
+                            </x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="{{ route('antrian.data') }}" :active="request()->routeIs('antrian.data')" wire:navigate>
+                                Kelola Antrian
+                            </x-side-link>
+                        </li>
+
+                        <!-- Nested TV Antrian -->
+                        <li x-data="{ open: {{ request()->routeIs('tv.*') ? 'true' : 'false' }} }">
+                            <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('tv.*')">
+                                <span class="flex-1 ml-3 text-left">TV Antrian</span>
+                                <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                            </x-side-link>
+
+                            <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                                <li>
+                                    <x-side-link :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
+                                        TV Pendaftaran
+                                    </x-side-link>
+                                </li>
+                                <li>
+                                    <x-side-link :active="request()->routeIs('tv.poli')" wire:navigate>
+                                        TV Poliklinik
+                                    </x-side-link>
+                                </li>
+                                <li>
+                                    <x-side-link :active="request()->routeIs('tv.apotek')" wire:navigate>
+                                        TV Apotek
+                                    </x-side-link>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
+
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*')">
                         <i class="fa-solid fa-notes-medical"></i>
