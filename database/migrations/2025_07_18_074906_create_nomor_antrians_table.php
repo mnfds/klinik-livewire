@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('poli_id');
             $table->string('kode');
             $table->integer('nomor_antrian');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

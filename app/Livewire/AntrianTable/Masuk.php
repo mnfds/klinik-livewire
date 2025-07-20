@@ -7,11 +7,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
-use PowerComponents\LivewirePowerGrid\PowerGridFields;
-use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\Responsive;
+use PowerComponents\LivewirePowerGrid\Facades\Filter;
+use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
+use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class Masuk extends PowerGridComponent
 {
@@ -34,7 +34,7 @@ final class Masuk extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return NomorAntrian::query();
+        return NomorAntrian::query()->where('status',false);
     }
 
     public function relationSearch(): array
@@ -108,7 +108,7 @@ final class Masuk extends PowerGridComponent
     #[\Livewire\Attributes\On('KonfirmasiPindahAntrian')]
     public function KonfirmasiPindahAntrian($rowId): void
     {
-        NomorAntrian::findOrFail($rowId)->delete();
+        NomorAntrian::findOrFail($rowId)->update(['status' => true]);
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
 

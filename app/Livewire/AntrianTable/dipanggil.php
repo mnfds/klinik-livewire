@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\antriantable;
+namespace App\Livewire\AntrianTable;
 
 use App\Models\NomorAntrian;
 use Illuminate\Support\Carbon;
@@ -12,7 +12,7 @@ use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
-final class dipanggil extends PowerGridComponent
+final class Dipanggil extends PowerGridComponent
 {
     public string $tableName = 'dipanggil-awnvxx-table';
 
@@ -33,7 +33,7 @@ final class dipanggil extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return NomorAntrian::query();
+        return NomorAntrian::query()->where('status', true);
     }
 
     public function relationSearch(): array
