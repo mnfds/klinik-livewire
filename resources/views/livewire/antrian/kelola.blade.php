@@ -40,27 +40,34 @@
                 <div class="p-6 text-base-content space-y-4">
                     <!-- name of each tab group should be unique -->
                     <div class="tabs tabs-lift">
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pendaftaran" checked="checked" />
+
                         {{-- Tabel Antrian Masuk Dan Dipanggil --}}
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pendaftaran" checked="checked" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex flex-col md:flex-row gap-4">
                                 <!-- Tabel Antrian Masuk -->
-                                <div class="w-full md:w-1/2">
-                                    <h1 class="text-lg font-bold text-base-content mb-4">
-                                        Antrian Masuk
-                                    </h1>
+                                <div class="w-full md:w-1/2" wire:poll.visible.15s="refreshTableMasuk">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h1 class="text-lg font-bold text-base-content">Antrian Masuk</h1>
+                                    </div>
                                     <livewire:antriantable.masuk />
                                 </div>
 
                                 <!-- Tabel Antrian Dipanggil -->
                                 <div class="w-full md:w-1/2">
-                                    <h1 class="text-lg font-bold text-base-content mb-4">
-                                        Antrian Dipanggil
-                                    </h1>
+                                    <div class="flex items-center justify-between mb-4" wire:poll.visible.15s="refreshTableDipanggil">
+                                        <h1 class="text-lg font-bold text-base-content">
+                                            Antrian Dipanggil
+                                        </h1>
+                                        <button onclick="document.getElementById('storeModalPasienTerdaftar').showModal()" class="btn btn-success">
+                                            <i class="fa-solid fa-plus"></i> Pasien
+                                        </button>
+                                    </div>
                                     <livewire:antriantable.dipanggil />
                                 </div>
                             </div>
                         </div>
+                        
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pasien Terdaftar" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             {{-- Isi Tab Konten Antrian Pasien Yang Sudah Terdaftar --}}

@@ -15,7 +15,7 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class Masuk extends PowerGridComponent
 {
-    public string $tableName = 'masuk-njx3xm-table';
+    public string $tableName = 'AntrianMasuk';
 
     public function setUp(): array
     {

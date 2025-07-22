@@ -14,7 +14,7 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class Dipanggil extends PowerGridComponent
 {
-    public string $tableName = 'dipanggil-awnvxx-table';
+    public string $tableName = 'AntrianDipanggil';
 
     public function setUp(): array
     {
