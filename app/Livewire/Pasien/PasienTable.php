@@ -59,10 +59,10 @@ final class PasienTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
+            Column::make('Nama', 'nama')->searchable()->hidden(),
+            Column::make('No Register', 'no_register')->searchable()->hidden(),
             Column::make('Pasien', 'nama_dan_register')
-                ->bodyAttribute('whitespace-nowrap')
-                ->sortable()
-                ->searchable(['nama', 'no_register']), // agar tetap bisa dicari dari dua kolom
+                ->bodyAttribute('whitespace-nowrap'),
             Column::make('Tanggal Lahir', 'tanggal_lahir')->searchable(),
             Column::make('NIK', 'nik')->searchable(),
             Column::make('No IHS', 'no_ihs')->searchable(),
