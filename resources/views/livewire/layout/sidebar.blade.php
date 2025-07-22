@@ -109,7 +109,7 @@
                     <span class="text-sm text-base-content">Pelayanan Klinik</span>
                 </li>
                 <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                    <x-side-link href="{{ route('pasien.data') }}" :active="request()->routeIs('pasien.*')" wire:navigate>
                         <i class="fa-solid fa-hospital-user"></i>
                         <span class="ml-3">Pasien</span>
                     </x-side-link>

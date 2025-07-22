@@ -1,12 +1,14 @@
 <?php
 
 use App\Models\User;
+use App\Livewire\Pasien\Detail;
 use App\Livewire\Barang\Riwayat;
 use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\JamKerja\DataJamKerja;
+use App\Models\Pasien;
 
 // Route::view('/', 'welcome');
 
@@ -67,6 +69,15 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/antrian/ambil-nomor', 'antrian.display')->name('antrian.display');
     Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
     // ====== ANTRIAN PASIEN ====== //
+
+    // ====== PASIEN ====== //
+    Route::view('/pasien', 'pasien.data')->name('pasien.data');
+    Route::view('/pasien/create', 'pasien.create')->name('pasien.create');
+    Route::view('/pasien/update', 'pasien.update')->name('pasien.update');
+    Route::get('/pasien/{id}/detail', function ($id) {
+        return view('pasien.detail', ['id' => $id]);
+    })->name('pasien.detail');
+    // ====== PASIEN ====== //
 
 });
 

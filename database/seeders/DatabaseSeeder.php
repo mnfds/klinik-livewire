@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ProdukdanobatbundlingSeeder::class,
             BarangSeeder::class,
             MutasibarangSeeder::class,
+            PasienSeeder::class,
         ]);
     }
 }
