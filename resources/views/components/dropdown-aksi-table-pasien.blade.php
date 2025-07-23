@@ -19,7 +19,7 @@
             </li>
 
             <li>
-                <a wire:navigate href="{{ route('pasien.update', $row->id) }}">
+                <a wire:navigate href="{{ route('pasien.update', ['id' => $row->id]) }}">
                     <i class="fa-solid fa-pen-clip"></i>
                     Edit Pasien
                 </a>

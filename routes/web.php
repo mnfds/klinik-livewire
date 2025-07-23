@@ -73,7 +73,9 @@ Route::middleware(['auth'])->group(function () {
     // ====== PASIEN ====== //
     Route::view('/pasien', 'pasien.data')->name('pasien.data');
     Route::view('/pasien/create', 'pasien.create')->name('pasien.create');
-    Route::view('/pasien/update', 'pasien.update')->name('pasien.update');
+    Route::get('/pasien/{id}/update', function ($id) { 
+        return view('pasien.update', ['id' => $id]);
+    })->name('pasien.update');
     Route::get('/pasien/{id}/detail', function ($id) {
         return view('pasien.detail', ['id' => $id]);
     })->name('pasien.detail');
