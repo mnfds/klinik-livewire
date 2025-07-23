@@ -115,9 +115,9 @@
                             <button class="btn btn-info w-full">
                                 <i class="fa-solid fa-clipboard-list mr-2"></i>Riwayat Rekam Medis Pasien
                             </button>
-                            <button class="btn btn-primary w-full">
-                                <i class="fa-solid fa-laptop-medical mr-2"></i>Registrasi Pasien
-                            </button>
+                            <a wire:navigate href="{{ route('pendaftaran.create', ['id' => $pasien->id]) }}" class="btn btn-primary w-full">
+                                <i class="fa-solid fa-laptop-medical"></i>Registrasi Pasien
+                            </a>
                         </div>
                     </div>
                 </div>

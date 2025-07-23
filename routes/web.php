@@ -81,6 +81,11 @@ Route::middleware(['auth'])->group(function () {
     })->name('pasien.detail');
     // ====== PASIEN ====== //
 
+    // ====== PENDAFTARAN ====== //
+    Route::view('/pendaftaran', 'pendaftaran.data')->name('pendaftaran.data');
+    Route::view('/pendaftaran/create', 'pendaftaran.create')->name('pendaftaran.create');
+    // ====== PENDAFTARAN ====== //
+
 });
 
 

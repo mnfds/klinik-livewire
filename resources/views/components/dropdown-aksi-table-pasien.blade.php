@@ -1,5 +1,7 @@
 <div>
-    <button class="btn btn-primary"><i class="fa-solid fa-laptop-medical"></i>Registrasi</button>
+    <a wire:navigate href="{{ route('pendaftaran.create', ['id' => $row->id]) }}" class="btn btn-primary">
+        <i class="fa-solid fa-laptop-medical"></i>Registrasi
+    </a>
     <div class="dropdown dropdown-left">
         <div tabindex="0" role="button" class="btn m-1 btn-secondary">
             <i class="fa-solid fa-ellipsis"></i>

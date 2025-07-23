@@ -169,7 +169,7 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="#" wire:navigate>Pasien Terdaftar</x-side-link></li>
+                        <li><x-side-link href="{{ Route('pendaftaran.data') }}" wire:navigate>Pasien Terdaftar</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Pasien Berjanji Temu</x-side-link></li>
                     </ul>
