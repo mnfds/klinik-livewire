@@ -161,26 +161,29 @@
                         {{-- Upload Foto --}}
                         <div class="form-control">
                             <label class="label"><span class="label-text">Unggah Foto Pasien</span></label>
-                            <input type="file" wire:model="foto_pasien" class="file-input file-input-bordered w-full" />
-                            <div class="mt-2 text-sm text-gray-500 flex items-center gap-2"
-                                wire:loading wire:target="foto_pasien">
+                            <input type="file" wire:model="new_foto_pasien" class="file-input file-input-bordered w-full" />
+
+                            <!-- Loading indicator -->
+                            <div class="mt-2 text-sm text-gray-500 flex items-center gap-2" wire:loading wire:target="new_foto_pasien">
                                 <span class="loading loading-spinner loading-sm text-info"></span>
                                 <span>Mengunggah foto...</span>
                             </div>
-                            <x-input-error :messages="$errors->get('foto_pasien')" class="text-error text-sm mt-1" />
                         </div>
 
                         {{-- Preview Foto --}}
-                        {{-- <div class="form-control col-span-full">
+                        <div class="form-control col-span-full">
                             <label class="label"><span class="label-text">Preview Foto</span></label>
-                            @if ($foto_pasien)
-                                <img src="{{ $foto_pasien->temporaryUrl() }}" alt="Preview Foto"
+
+                            {{-- Tampilkan preview jika upload baru --}}
+                            @if ($new_foto_pasien)
+                                <img src="{{ $new_foto_pasien->temporaryUrl() }}" alt="Preview Foto"
                                     class="w-32 h-32 mt-2 rounded border object-cover" />
+                            {{-- Kalau tidak, tampilkan dari storage lama --}}
                             @elseif ($foto_pasien_preview)
                                 <img src="{{ asset('storage/' . $foto_pasien_preview) }}" alt="Foto Pasien Lama"
                                     class="w-32 h-32 mt-2 rounded border object-cover" />
                             @endif
-                        </div> --}}
+                        </div>
 
                         {{-- Deskripsi --}}
                         <div class="form-control col-span-full">

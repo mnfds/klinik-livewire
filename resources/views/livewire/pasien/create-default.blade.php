@@ -128,7 +128,7 @@
             </div>
 
             {{-- Preview Foto --}}
-            {{-- <div class="form-control col-span-full">
+            <div class="form-control col-span-full">
                 <label class="label"><span class="label-text">Preview Foto</span></label>
                 @if ($foto_pasien)
                 <img src="{{ $foto_pasien->temporaryUrl() }}" alt="Preview Foto"
@@ -137,7 +137,7 @@
                 <img src="{{ asset('storage/' . $foto_pasien_preview) }}" alt="Foto Pasien Lama"
                     class="w-32 h-32 mt-2 rounded border object-cover" />
                 @endif
-            </div> --}}
+            </div>
 
             {{-- Deskripsi --}}
             <div class="form-control col-span-full">
