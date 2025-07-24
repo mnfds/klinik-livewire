@@ -16,7 +16,11 @@
 
             <div class="p-6 bg-base-100 rounded-box shadow">
                 <div class="max-w-full">
-                    <livewire:biodata.manage-biodata />
+                    @if (auth()->check() && auth()->user()->role->nama_role === 'dokter')
+                        <livewire:biodata.dokter />
+                    @else
+                        <livewire:biodata.manage-biodata />
+                    @endif
                 </div>
             </div>
 
