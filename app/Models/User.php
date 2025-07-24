@@ -32,6 +32,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Biodata::class);
     }
 
+    public function dokter()
+    {
+        return $this->hasOne(Dokter::class);
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class);

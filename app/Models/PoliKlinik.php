@@ -12,6 +12,10 @@ class PoliKlinik extends Model
     protected $table = 'poli_kliniks';
     protected $guarded = ['id'];
 
+    public function dokterpoli(){
+        return $this->hasMany(DokterPoli::class);
+    }
+
     public function antrians()
     {
         return $this->hasMany(NomorAntrian::class, 'poli_id');

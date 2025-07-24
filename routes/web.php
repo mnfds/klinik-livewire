@@ -35,6 +35,17 @@ Route::middleware(['auth'])->group(function () {
         return view('pengguna.store');
     })->name('users.create');
 
+    // ====== DOKTER ====== //
+    Route::view('/dokter', 'dokter.data')->name('dokter.data');
+    Route::view('/dokter/create', 'dokter.create')->name('dokter.create');
+    Route::get('/dokter/{id}/update', function ($id) { 
+        return view('dokter.update', ['id' => $id]);
+    })->name('dokter.update');
+    Route::get('/dokter/{id}/detail', function ($id) {
+        return view('dokter.detail', ['id' => $id]);
+    })->name('dokter.detail');
+    // ====== DOKTER ====== //
+
     // ====== JAM KERJA ====== //
     Route::view('/jam-kerja', 'jamkerja.data')->name('jamkerja.data');
     // ====== JAM KERJA ====== //
