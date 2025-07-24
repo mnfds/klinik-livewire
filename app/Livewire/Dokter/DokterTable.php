@@ -90,7 +90,7 @@ final class DokterTable extends PowerGridComponent
     public function actions(Dokter $row): array
     {
         return [
-            Button::add('detail')
+            Button::add('detailDokter')
                 ->slot('<i class="fas fa-eye"></i> Detail')
                 ->tag('button')
                 ->attributes([
@@ -99,7 +99,7 @@ final class DokterTable extends PowerGridComponent
                     'class' => 'btn btn-primary',
                 ]),
 
-            Button::add('Edit')
+            Button::add('EditDokter')
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->tag('button')
                 ->attributes([
@@ -108,10 +108,44 @@ final class DokterTable extends PowerGridComponent
                     'class' => 'btn btn-secondary',
                 ]),
 
-            Button::add('delete')
+            Button::add('deleteDokter')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('delete', ['rowId' => $row->id]),
+                ->dispatch('deleteModalDokter', ['rowId' => $row->id]),
         ];
+    }
+
+    #[\Livewire\Attributes\On('deleteModalDokter')]
+    public function deleteModalDokter($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasihapusdokter', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasihapusdokter')]
+    public function konfirmasihapusdokter($rowId): void
+    {
+        Dokter::findOrFail($rowId)->delete();
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
+        
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
     }
 }
