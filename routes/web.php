@@ -95,7 +95,6 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== PENDAFTARAN ====== //
     Route::view('/pendaftaran', 'pendaftaran.data')->name('pendaftaran.data');
-    Route::view('/pendaftaran/create', 'pendaftaran.create')->name('pendaftaran.create');
     Route::view('/pendaftaran/search', 'pendaftaran.search')->name('pendaftaran.search');
     Route::get('/api/pasien/search', function (Request $request) {
         $search = $request->q;
@@ -115,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
 
         return response()->json($results);
     })->name('api.pasien.search');
+    Route::view('/pendaftaran/create', 'pendaftaran.create')->name('pendaftaran.create');
     // ====== PENDAFTARAN ====== //
 
 });

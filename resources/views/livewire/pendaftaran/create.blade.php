@@ -69,142 +69,90 @@
                         {{-- SECTION: DATA PASIEN --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <h2 class="text-lg font-semibold mb-4 border-b pb-2">Data Pasien</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <input type="hidden" name="id_user" wire:model.defer="id">
                                 {{-- Nama --}}
                                 <div class="form-control">
-                                    <label class="label"><span class="label-text">Nama Lengkap <span class="text-error">*</span></span></label>
-                                    <input type="text" wire:model.defer="nama" class="input input-bordered" />
-                                    @error('nama') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <label class="label"><span class="label-text">Nama Lengkap</span></label>
+                                    <p class="p-2 border rounded bg-gray-100">{{ $nama }}</p>
                                 </div>
 
                                 {{-- No Register --}}
                                 <div class="form-control">
-                                    <label class="label"><span class="label-text">No. Register <span class="text-error">*</span></span></label>
-                                    <input type="text" wire:model.defer="no_register" class="input input-bordered" readonly />
-                                    @error('no_register') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <label class="label"><span class="label-text">No. Register</span></label>
+                                    <p class="p-2 border rounded bg-gray-100">{{ $no_register }}</p>
                                 </div>
 
                                 {{-- NIK --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">NIK</span></label>
-                                    <input type="text" wire:model.defer="nik" class="input input-bordered" />
-                                    @error('nik') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $nik }}</p>
                                 </div>
 
                                 {{-- No IHS --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">No. IHS</span></label>
-                                    <input type="text" wire:model.defer="no_ihs" class="input input-bordered" />
-                                    @error('no_ihs') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $no_ihs }}</p>
                                 </div>
 
                                 {{-- Alamat --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Alamat</span></label>
-                                    <input type="text" wire:model.defer="alamat" class="input input-bordered" />
-                                    @error('alamat') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $alamat }}</p>
                                 </div>
 
                                 {{-- Telepon --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">No. Telepon</span></label>
-                                    <input wire:model.defer="no_telp" type="number" class="input input-bordered" />
-                                    @error('no_telp') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $no_telp }}</p>
                                 </div>
 
                                 {{-- Jenis Kelamin --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Jenis Kelamin</span></label>
-                                    <select wire:model.defer="jenis_kelamin" class="select select-bordered">
-                                        <option value="">Pilih</option>
-                                        <option value="Laki-laki">Laki-laki</option>
-                                        <option value="Wanita">Wanita</option>
-                                    </select>
-                                    @error('jenis_kelamin') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $jenis_kelamin }}</p>
                                 </div>
 
                                 {{-- Agama --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Agama</span></label>
-                                    <select wire:model.defer="agama" class="select select-bordered">
-                                        <option value="">Pilih Agama</option>
-                                        <option value="Islam">Islam</option>
-                                        <option value="Kristen">Kristen</option>
-                                        <option value="Katolik">Katolik</option>
-                                        <option value="Hindu">Hindu</option>
-                                        <option value="Buddha">Buddha</option>
-                                        <option value="Konghucu">Konghucu</option>
-                                        <option value="Lainnya">Lainnya</option>
-                                    </select>
-                                    @error('agama') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $agama }}</p>
                                 </div>
 
                                 {{-- Profesi --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Profesi</span></label>
-                                    <select wire:model.defer="profesi" class="select select-bordered">
-                                        <option value="">Pilih Profesi</option>
-                                        <option value="Pelajar">Pelajar</option>
-                                        <option value="Mahasiswa">Mahasiswa</option>
-                                        <option value="PNS">PNS</option>
-                                        <option value="Karyawan Swasta">Karyawan Swasta</option>
-                                        <option value="Wiraswasta">Wiraswasta</option>
-                                        <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
-                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
-                                        <option value="Lainnya">Lainnya</option>
-                                    </select>
-                                    @error('profesi') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $profesi }}</p>
                                 </div>
 
                                 {{-- Tanggal Lahir --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Tanggal Lahir</span></label>
-                                    <input type="date" wire:model.defer="tanggal_lahir" class="input input-bordered" />
-                                    @error('tanggal_lahir') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ \Carbon\Carbon::parse($tanggal_lahir)->format('d-m-Y') }}</p>
                                 </div>
 
                                 {{-- Status --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Status</span></label>
-                                    <select wire:model.defer="status" class="select select-bordered">
-                                        <option value="">Pilih Status</option>
-                                        <option value="Belum Menikah">Belum Menikah</option>
-                                        <option value="Menikah">Menikah</option>
-                                        <option value="Lainnya">Lainnya</option>
-                                    </select>
-                                    @error('status') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    <p class="p-2 border rounded bg-gray-100">{{ $status }}</p>
                                 </div>
 
                                 {{-- Foto Pasien --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Foto Pasien</span></label>
-                                    <input type="file" wire:model="foto_pasien" class="file-input file-input-bordered" />
-                                    <div class="mt-2 text-sm text-gray-500 flex items-center gap-2" wire:loading wire:target="foto_pasien">
-                                        <span class="loading loading-spinner loading-sm text-info"></span>
-                                        <span>Mengunggah foto...</span>
-                                    </div>
-                                    @error('foto_pasien') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @if ($foto_pasien instanceof \Livewire\TemporaryUploadedFile)
+                                        <img src="{{ $foto_pasien->temporaryUrl() }}" alt="Foto Pasien" class="w-32 h-32 mt-2 rounded border object-cover" />
+                                    @elseif ($foto_pasien_preview)
+                                        <img src="{{ asset('storage/' . $foto_pasien_preview) }}" alt="Foto Pasien" class="w-32 h-32 mt-2 rounded border object-cover" />
+                                    @else
+                                        <p class="p-2 border rounded bg-gray-100 text-gray-500">Tidak ada foto</p>
+                                    @endif
                                 </div>
 
                                 {{-- Deskripsi --}}
                                 <div class="form-control md:col-span-2">
                                     <label class="label"><span class="label-text">Deskripsi Tambahan</span></label>
-                                    <textarea wire:model.defer="deskripsi" class="textarea textarea-bordered w-full"></textarea>
-                                    @error('deskripsi') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-                                </div>
-
-                                {{-- Preview Foto --}}
-                                <div class="form-control md:col-span-2">
-                                    <label class="label"><span class="label-text">Preview Foto</span></label>
-
-                                    @if ($foto_pasien instanceof \Livewire\TemporaryUploadedFile)
-                                        {{-- Preview foto baru yang diupload --}}
-                                        <img src="{{ $foto_pasien->temporaryUrl() }}" alt="Preview Foto" class="w-32 h-32 mt-2 rounded border object-cover" />
-                                    @elseif ($foto_pasien_preview)
-                                        {{-- Tampilkan foto lama dari storage --}}
-                                        <img src="{{ asset('storage/' . $foto_pasien_preview) }}" alt="Foto Pasien Lama" class="w-32 h-32 mt-2 rounded border object-cover" />
-                                    @endif
+                                    <div class="p-2 border rounded bg-gray-100 min-h-[4rem]">{{ $deskripsi }}</div>
                                 </div>
                             </div>
                         </div>

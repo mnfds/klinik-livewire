@@ -4,6 +4,7 @@ namespace App\Livewire\Pendaftaran;
 
 use App\Models\Dokter;
 use App\Models\Pasien;
+use App\Models\PasienTerdaftar;
 use App\Models\PoliKlinik;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -56,28 +57,26 @@ class Create extends Component
 
     public function submit()
     {
-        dd([
+        $validatedData = $this->validate([
+            'id'                => 'required',
+            'poli_id'           => 'required',
+            'tanggal_kunjungan' => 'required|date',
+            'jenis_kunjungan'   => 'required|in:sehat,sakit',
+        ]);
+
+        PasienTerdaftar::create([
+            'pasien_id'         => $this->id,
             'poli_id'           => $this->poli_id,
-            'dokter_id'         => $this->dokter_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
-
-            // Data Pasien
-            'no_register'       => $this->no_register,
-            'nik'               => $this->nik,
-            'no_ihs'            => $this->no_ihs,
-            'nama'              => $this->nama,
-            'alamat'            => $this->alamat,
-            'no_telp'           => $this->no_telp,
-            'jenis_kelamin'     => $this->jenis_kelamin,
-            'agama'             => $this->agama,
-            'profesi'           => $this->profesi,
-            'tanggal_lahir'     => $this->tanggal_lahir,
-            'status'            => $this->status,
-            'foto_pasien'       => $this->foto_pasien,
-            'foto_pasien_preview'=> $this->foto_pasien_preview,
-            'deskripsi'         => $this->deskripsi,
         ]);
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Pasien berhasil terdaftar.'
+        ]);
+
+        return redirect()->route('pendaftaran.data'); // atau ke route tujuanmu
     }
 
     public function render()
