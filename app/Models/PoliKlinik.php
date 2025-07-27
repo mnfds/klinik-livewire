@@ -20,4 +20,9 @@ class PoliKlinik extends Model
     {
         return $this->hasMany(NomorAntrian::class, 'poli_id');
     }
+
+    public function pasienTerdaftars()
+    {
+        return $this->hasMany(PasienTerdaftar::class, 'poli_id');
+    }
 }

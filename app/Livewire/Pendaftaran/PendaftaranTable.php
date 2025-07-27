@@ -18,7 +18,7 @@ final class PendaftaranTable extends PowerGridComponent
 
     public function setUp(): array
     {
-        $this->showCheckBox();
+        // $this->showCheckBox();
 
         return [
             PowerGrid::header()
@@ -31,7 +31,7 @@ final class PendaftaranTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::query();
+        return PasienTerdaftar::with(['pasien', 'poliklinik']);
     }
 
     public function relationSearch(): array
@@ -41,13 +41,37 @@ final class PendaftaranTable extends PowerGridComponent
 
     public function fields(): PowerGridFields
     {
-        return PowerGrid::fields();
+        return PowerGrid::fields()
+            ->add('#') // untuk nomor urut
+            ->add('pasien.nama', fn ($row) => $row->pasien->nama ?? '-') // Nama Pasien
+            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No Register
+            ->add('poliklinik.nama_poli', fn ($row) => $row->poliklinik->nama_poli ?? '-') // Nama Poli
+            ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
+            ->add('jenis_kunjungan');  // Jika ingin menampilkan jenis kunjungan juga
     }
 
     public function columns(): array
     {
         return [
-            Column::action('Action')
+            Column::make('#', '')->index(),
+
+            Column::make('Nama Pasien', 'pasien.nama')
+                ->searchable()
+                ->sortable(),
+
+            Column::make('No. Register', 'pasien.no_register')
+                ->searchable()
+                ->sortable(),
+
+            Column::make('Poli Tujuan', 'poliklinik.nama_poli')
+                ->sortable(),
+
+            Column::make('Tanggal Kunjungan', 'tanggal_kunjungan')
+                ->sortable(),
+
+            Column::make('Jenis Kunjungan', 'jenis_kunjungan'),
+
+            Column::action('Action') // untuk tombol edit/delete
         ];
     }
 

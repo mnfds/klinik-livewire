@@ -11,4 +11,9 @@ class Pasien extends Model
 
     protected $table = 'pasiens';
     protected $guarded = ['id'];
+
+    public function kunjungan()
+    {
+        return $this->hasMany(PasienTerdaftar::class);
+    }
 }

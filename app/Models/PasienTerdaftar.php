@@ -11,4 +11,14 @@ class PasienTerdaftar extends Model
 
     protected $table = 'pasien_terdaftars';
     protected $guarded = ['id'];
+
+    public function pasien()
+    {
+        return $this->belongsTo(Pasien::class);
+    }
+
+    public function poliklinik()
+    {
+        return $this->belongsTo(PoliKlinik::class, 'poli_id');
+    }
 }
