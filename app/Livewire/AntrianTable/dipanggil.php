@@ -72,11 +72,22 @@ final class Dipanggil extends PowerGridComponent
     public function actions(NomorAntrian $row): array
     {
         return [
+            Button::add('registasiButton')
+                ->slot('<i class="fa-solid fa-laptop-medical"></i> Registasi')
+                ->tag('button')
+                ->attributes([
+                    'title' => 'Registasi Pasien',
+                    'onclick' => "Livewire.navigate('" . route('pendaftaran.create', $row->id) . "')",
+                    'class' => 'btn btn-primary',
+                ]),
             Button::add('dipanggilButton')
                 ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
-                ->class('btn btn-secondary')
-                ->dispatch('dipanggilModalButton', ['rowId' => $row->id]),
-
+                ->tag('button')
+                ->attributes([
+                    'title' => 'Panggil Antrian',
+                    'onclick' => "Livewire.navigate('" . route('dokter.detail', $row->id) . "')",
+                    'class' => 'btn btn-secondary',
+                ]),
             Button::add('deleteButton')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')

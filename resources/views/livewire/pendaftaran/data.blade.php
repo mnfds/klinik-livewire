@@ -33,12 +33,11 @@
                 
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
-                        <a wire:navigate href="{{ route('pendaftaran.create') }}" class="btn btn-primary">
+                        <a wire:navigate href="{{ route('pendaftaran.search') }}" class="btn btn-primary">
                             <i class="fa-solid fa-laptop-medical"></i>Registrasi
                         </a>
                     </div>
-                    pendaftaran table
-                    {{-- <livewire:pasien.pasien-table /> --}}
+                    <livewire:pendaftaran.pendaftaran-table />
                 </div>
             </div>
         </div>

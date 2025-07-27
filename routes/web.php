@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Models\Pasien;
+use Illuminate\Http\Request;
 use App\Livewire\Pasien\Detail;
 use App\Livewire\Barang\Riwayat;
 use App\Livewire\Users\DataUsers;
@@ -8,7 +10,6 @@ use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\JamKerja\DataJamKerja;
-use App\Models\Pasien;
 
 // Route::view('/', 'welcome');
 
@@ -95,6 +96,25 @@ Route::middleware(['auth'])->group(function () {
     // ====== PENDAFTARAN ====== //
     Route::view('/pendaftaran', 'pendaftaran.data')->name('pendaftaran.data');
     Route::view('/pendaftaran/create', 'pendaftaran.create')->name('pendaftaran.create');
+    Route::view('/pendaftaran/search', 'pendaftaran.search')->name('pendaftaran.search');
+    Route::get('/api/pasien/search', function (Request $request) {
+        $search = $request->q;
+
+        $results = Pasien::query()
+            ->where('nama', 'like', '%' . $search . '%')
+            ->orWhere('no_register', 'like', '%' . $search . '%')
+            ->limit(10)
+            ->get()
+            ->map(function ($pasien) {
+                return [
+                    'id' => $pasien->id,
+                    'text' => $pasien->nama,
+                    'no_register' => $pasien->no_register,
+                ];
+            });
+
+        return response()->json($results);
+    })->name('api.pasien.search');
     // ====== PENDAFTARAN ====== //
 
 });
