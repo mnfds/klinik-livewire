@@ -59,9 +59,6 @@
                                         <h1 class="text-lg font-bold text-base-content">
                                             Antrian Dipanggil
                                         </h1>
-                                        <button wire:navigate href="{{ route('pasien.create') }}" onclick="document.getElementById('storeModalPasienTerdaftar').showModal()" class="btn btn-success">
-                                            <i class="fa-solid fa-plus"></i> Pasien
-                                        </button>
                                     </div>
                                     <livewire:antriantable.dipanggil />
                                 </div>
@@ -74,9 +71,6 @@
                             <h1 class="text-lg font-bold text-base-content">
                                 Antrian Terdaftar
                             </h1>
-                            <div class="flex justify-between items-center mb-4">
-                                <button onclick="document.getElementById('storeModalBundling').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Bundling</button>
-                            </div>
                             <livewire:pendaftaran.pendaftaran-table />
                         </div>
 

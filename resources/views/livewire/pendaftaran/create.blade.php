@@ -68,9 +68,17 @@
 
                         {{-- SECTION: DATA PASIEN --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
+                            @if ($antrian)
+                                <div class="mb-4 p-4 bg-gray-100 rounded">
+                                    <h3 class="font-semibold text-lg">Data Antrian</h3>
+                                    <p><strong>Kode:</strong> {{ $antrian->kode }}</p>
+                                    <p><strong>Nomor Antrian:</strong> {{ $antrian->nomor_antrian }}</p>
+                                    <p><strong>Poli:</strong> {{ $antrian->poli->nama_poli ?? '-' }}</p>
+                                </div>
+                            @endif
                             <h2 class="text-lg font-semibold mb-4 border-b pb-2">Data Pasien</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <input type="hidden" name="id_user" wire:model.defer="id">
+                                <input type="hidden" name="id_user" wire:model.defer="pasien_id">
                                 {{-- Nama --}}
                                 <div class="form-control">
                                     <label class="label"><span class="label-text">Nama Lengkap</span></label>

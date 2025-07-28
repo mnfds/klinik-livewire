@@ -77,7 +77,7 @@ final class Dipanggil extends PowerGridComponent
                 ->tag('button')
                 ->attributes([
                     'title' => 'Registasi Pasien',
-                    'onclick' => "Livewire.navigate('" . route('pendaftaran.create', $row->id) . "')",
+                    'onclick' => "Livewire.navigate('" . route('pendaftaran.search', ['id' => $row->id]) . "')",
                     'class' => 'btn btn-primary',
                 ]),
             Button::add('dipanggilButton')

@@ -1,5 +1,5 @@
 <div>
-    <a wire:navigate href="{{ route('pendaftaran.create', ['id' => $row->id]) }}" class="btn btn-primary">
+    <a wire:navigate href="{{ route('pendaftaran.create', ['pasien_id' => $row->id]) }}" class="btn btn-primary">
         <i class="fa-solid fa-laptop-medical"></i>Registrasi
     </a>
     <div class="dropdown dropdown-left">

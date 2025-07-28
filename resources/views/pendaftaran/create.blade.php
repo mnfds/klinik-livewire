@@ -1,3 +1,3 @@
 <x-app-layout>
-    <livewire:pendaftaran.create :id="request('id')" />
+    <livewire:pendaftaran.create :pasien_id="request('pasien_id')" />
 </x-app-layout>

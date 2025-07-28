@@ -13,8 +13,10 @@ class Create extends Component
 {
     use WithFileUploads;
 
-    public ?int $id = null;
+    public ?int $pasien_id = null;
     public ?Pasien $pasien = null;
+    public ?int $antrian_id = null;
+    public $antrian;
     public $poli;
     public $dokter;
 
@@ -27,15 +29,16 @@ class Create extends Component
     public $poli_id, $dokter_id;
     public $foto_pasien_preview; //show
 
-    public function mount($id = null)
+    public function mount($pasien_id = null, $antrian_id = null)
     {
-        $this->id = $id;
+        $this->pasien_id = $pasien_id;
+        $this->antrian_id = $antrian_id;
 
         $this->poli = PoliKlinik::where('status', true)->get();
         $this->dokter = Dokter::all();
-        if ($this->id) {
+        if ($this->pasien_id) {
             
-            $this->pasien = Pasien::find($this->id);
+            $this->pasien = Pasien::find($this->pasien_id);
 
             if ($this->pasien) {
                 $this->no_register     = $this->pasien->no_register;
@@ -53,6 +56,9 @@ class Create extends Component
                 $this->deskripsi       = $this->pasien->deskripsi;
             }
         }
+        if ($this->antrian_id) {
+            $this->antrian = \App\Models\NomorAntrian::with('poli')->find($this->antrian_id);
+        }
     }
 
     public function submit()
@@ -65,7 +71,7 @@ class Create extends Component
         ]);
 
         PasienTerdaftar::create([
-            'pasien_id'         => $this->id,
+            'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,

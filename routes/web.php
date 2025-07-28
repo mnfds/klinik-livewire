@@ -10,6 +10,7 @@ use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\JamKerja\DataJamKerja;
+use App\Models\NomorAntrian;
 
 // Route::view('/', 'welcome');
 
@@ -95,7 +96,13 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== PENDAFTARAN ====== //
     Route::view('/pendaftaran', 'pendaftaran.data')->name('pendaftaran.data');
-    Route::view('/pendaftaran/search', 'pendaftaran.search')->name('pendaftaran.search');
+    // Route::view('/pendaftaran/search', 'pendaftaran.search')->name('pendaftaran.search');
+    Route::get('/pendaftaran/search', function (\Illuminate\Http\Request $request) {
+        $antrianId = $request->query('id');
+        $antrian = NomorAntrian::find($antrianId);
+
+        return view('pendaftaran.search', compact('antrian'));
+    })->name('pendaftaran.search');
     Route::get('/api/pasien/search', function (Request $request) {
         $search = $request->q;
 
