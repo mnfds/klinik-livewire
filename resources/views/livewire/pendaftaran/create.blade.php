@@ -43,6 +43,20 @@
                         {{-- SECTION: PENDAFTARAN --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <h2 class="text-lg font-semibold mb-4 border-b pb-2">Pendaftaran</h2>
+                            {{-- Data Antrian --}}
+                            @if ($antrian)
+                                <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
+                                    <h3 class="text-md font-semibold mb-2">Informasi Antrian</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+                                        <div>
+                                            <span class="font-medium">Nomor Antrian:</span> {{ $antrian->kode }}-{{ $antrian->nomor_antrian }}
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium">Poliklinik:</span> {{ $antrian->poli->nama_poli ?? '-' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="form-control">
                                     <label class="label">
@@ -66,16 +80,40 @@
                             </div>
                         </div>
 
+                        {{-- SECTION: NAKES & POLI --}}
+                        <div class="bg-base-100 shadow rounded-box p-6">
+                            <h2 class="text-lg font-semibold mb-4 border-b pb-2">Tenaga Kesehatan & Poli</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                
+                                {{-- Poli --}}
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text">Pilih Poli</span></label>
+                                    <select wire:model.defer="poli_id" class="select select-bordered" @if($antrian_id) disabled @endif>
+                                        <option value="">Pilih Poli</option>
+                                        @foreach ($poli as $p)
+                                            <option value="{{ $p->id }}">{{ $p->nama_poli }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('poli_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+
+                                {{-- Dokter --}}
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text">Pilih Dokter</span></label>
+                                    <select wire:model.defer="dokter_id" class="select select-bordered">
+                                        <option value="">Pilih Dokter</option>
+                                        @foreach ($dokter as $d)
+                                            <option value="{{ $d->id }}">{{ $d->nama_dokter }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('dokter_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+
+                            </div>
+                        </div>
+
                         {{-- SECTION: DATA PASIEN --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
-                            @if ($antrian)
-                                <div class="mb-4 p-4 bg-gray-100 rounded">
-                                    <h3 class="font-semibold text-lg">Data Antrian</h3>
-                                    <p><strong>Kode:</strong> {{ $antrian->kode }}</p>
-                                    <p><strong>Nomor Antrian:</strong> {{ $antrian->nomor_antrian }}</p>
-                                    <p><strong>Poli:</strong> {{ $antrian->poli->nama_poli ?? '-' }}</p>
-                                </div>
-                            @endif
                             <h2 class="text-lg font-semibold mb-4 border-b pb-2">Data Pasien</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <input type="hidden" name="id_user" wire:model.defer="pasien_id">
@@ -164,42 +202,9 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- SECTION: NAKES & POLI --}}
-                        <div class="bg-base-100 shadow rounded-box p-6">
-                            <h2 class="text-lg font-semibold mb-4 border-b pb-2">Tenaga Kesehatan & Poli</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                
-                                {{-- Poli --}}
-                                <div class="form-control">
-                                    <label class="label"><span class="label-text">Pilih Poli</span></label>
-                                    <select wire:model.defer="poli_id" class="select select-bordered">
-                                        <option value="">Pilih Poli</option>
-                                        @foreach ($poli as $p)
-                                            <option value="{{ $p->id }}">{{ $p->nama_poli }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('poli_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-                                </div>
-
-                                {{-- Dokter --}}
-                                <div class="form-control">
-                                    <label class="label"><span class="label-text">Pilih Dokter</span></label>
-                                    <select wire:model.defer="dokter_id" class="select select-bordered">
-                                        <option value="">Pilih Dokter</option>
-                                        @foreach ($dokter as $d)
-                                            <option value="{{ $d->id }}">{{ $d->nama_dokter }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('dokter_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-                                </div>
-
-                            </div>
-                        </div>
                     </form>
-
                 </div>
-
+                
                 {{-- Kolom Kanan: Tombol Simpan Sticky --}}
                 <div class="lg:col-span-1">
                     <div class="sticky top-20">

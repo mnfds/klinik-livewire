@@ -3,6 +3,7 @@
 namespace App\Livewire\Pendaftaran;
 
 use App\Models\Dokter;
+use App\Models\NomorAntrian;
 use App\Models\Pasien;
 use App\Models\PasienTerdaftar;
 use App\Models\PoliKlinik;
@@ -58,24 +59,33 @@ class Create extends Component
         }
         if ($this->antrian_id) {
             $this->antrian = \App\Models\NomorAntrian::with('poli')->find($this->antrian_id);
+
+            if ($this->antrian) {
+                $this->poli_id = $this->antrian->poli_id;
+                $this->tanggal_kunjungan = $this->antrian->created_at->toDateString(); // atau pakai now()->toDateString()
+            }
         }
     }
 
     public function submit()
     {
         $validatedData = $this->validate([
-            'id'                => 'required',
+            'pasien_id'         => 'required',
             'poli_id'           => 'required',
             'tanggal_kunjungan' => 'required|date',
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
 
-        PasienTerdaftar::create([
+        $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
         ]);
+
+        if ($success && $this->antrian) {
+            NomorAntrian::findOrFail($this->antrian->id)->delete();
+        }
 
         $this->dispatch('toast', [
             'type' => 'success',
