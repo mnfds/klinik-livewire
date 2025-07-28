@@ -16,6 +16,7 @@ return new class extends Migration
             
             $table->foreignId('pasien_id')->constrained('pasiens')->onDelete('cascade');
             $table->foreignId('poli_id')->constrained('poli_kliniks')->onDelete('cascade');
+            $table->foreignId('dokter_id')->constrained('dokters')->onDelete('cascade');
 
             $table->string('jenis_kunjungan');
             $table->date('tanggal_kunjungan');

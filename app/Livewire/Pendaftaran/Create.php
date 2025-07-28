@@ -72,6 +72,7 @@ class Create extends Component
         $validatedData = $this->validate([
             'pasien_id'         => 'required',
             'poli_id'           => 'required',
+            'dokter_id'           => 'required',
             'tanggal_kunjungan' => 'required|date',
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
@@ -79,6 +80,7 @@ class Create extends Component
         $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,
+            'dokter_id'           => $this->dokter_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
             'status_terdaftar'   => 'terdaftar',

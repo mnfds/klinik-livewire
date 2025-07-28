@@ -21,4 +21,9 @@ class Dokter extends Model
     {
         return $this->hasMany(DokterPoli::class);
     }
+
+    public function pasienTerdaftars()
+    {
+        return $this->hasMany(PasienTerdaftar::class, 'dokter_id');
+    }
 }

@@ -32,7 +32,7 @@ final class PendaftaranTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return PasienTerdaftar::where('status_terdaftar', 'terdaftar')
-            ->with(['pasien', 'poliklinik']);
+            ->with(['pasien', 'poliklinik', 'dokter']);
     }
 
     public function relationSearch(): array
@@ -45,10 +45,20 @@ final class PendaftaranTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('#') // untuk nomor urut
             ->add('pasien.nama', fn ($row) => $row->pasien->nama ?? '-') // Nama Pasien
-            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No Register
+            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No 
+            ->add('nama_dan_register', function($row){
+                return strtoupper($row->pasien->nama) . '<br><span class="text-sm text-gray-500">' . $row->pasien->no_register . '</span>';
+            })
             ->add('poliklinik.nama_poli', fn ($row) => $row->poliklinik->nama_poli ?? '-') // Nama Poli
+            ->add('dokter.nama_dokter', fn ($row) => $row->dokter->nama_dokter ?? '-') // Dokter yang menangani
+            ->add('dokter_dan_poli', function($row){
+                return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
+            })
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
-            ->add('jenis_kunjungan');  // Jika ingin menampilkan jenis kunjungan juga
+            ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga
+            ->add('kunjungan', function($row){
+                return strtoupper($row->jenis_kunjungan) . '<br><span class="text-sm text-gray-500">' . $row->tanggal_kunjungan . '</span>';
+            });
     }
 
     public function columns(): array
@@ -58,19 +68,35 @@ final class PendaftaranTable extends PowerGridComponent
 
             Column::make('Nama Pasien', 'pasien.nama')
                 ->searchable()
-                ->sortable(),
+                ->hidden(),
 
             Column::make('No. Register', 'pasien.no_register')
                 ->searchable()
-                ->sortable(),
+                ->hidden(),
+
+            Column::make('Pasien', 'nama_dan_register')
+                ->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Poli Tujuan', 'poliklinik.nama_poli')
-                ->sortable(),
+                ->searchable()
+                ->hidden(),
+
+            Column::make('Dokter', 'dokter.nama_dokter')
+                ->searchable()
+                ->hidden(),
+
+            Column::make('Poli dan Dokter', 'dokter_dan_poli')
+                ->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Tanggal Kunjungan', 'tanggal_kunjungan')
+                ->hidden()
                 ->sortable(),
 
-            Column::make('Jenis Kunjungan', 'jenis_kunjungan'),
+            Column::make('Jenis Kunjungan', 'jenis_kunjungan')
+                ->hidden(),
+
+            Column::make('Kunjungan', 'kunjungan')
+                ->bodyAttribute('whitespace-nowrap'),
 
             Column::action('Action') // untuk tombol edit/delete
         ];

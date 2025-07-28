@@ -21,4 +21,8 @@ class PasienTerdaftar extends Model
     {
         return $this->belongsTo(PoliKlinik::class, 'poli_id');
     }
+    public function dokter()
+    {
+        return $this->belongsTo(Dokter::class, 'dokter_id');
+    }
 }
