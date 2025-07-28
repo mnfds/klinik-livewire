@@ -33,7 +33,7 @@ final class Dipanggil extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return NomorAntrian::query()->where('status', true);
+        return NomorAntrian::query()->where('status', 'dipanggil');
     }
 
     public function relationSearch(): array

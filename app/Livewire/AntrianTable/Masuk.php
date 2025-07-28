@@ -34,7 +34,7 @@ final class Masuk extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return NomorAntrian::query()->where('status',false);
+        return NomorAntrian::query()->where('status','masuk');
     }
 
     public function relationSearch(): array
@@ -108,7 +108,7 @@ final class Masuk extends PowerGridComponent
     #[\Livewire\Attributes\On('KonfirmasiPindahAntrian')]
     public function KonfirmasiPindahAntrian($rowId): void
     {
-        NomorAntrian::findOrFail($rowId)->update(['status' => true]);
+        NomorAntrian::findOrFail($rowId)->update(['status' => 'dipanggil']);
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
 

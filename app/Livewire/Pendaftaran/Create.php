@@ -26,7 +26,7 @@ class Create extends Component
     public $jenis_kelamin, $agama, $profesi, $tanggal_lahir;
     public $status, $foto_pasien, $deskripsi;
 
-    public $jenis_kunjungan, $tanggal_kunjungan;
+    public $jenis_kunjungan, $tanggal_kunjungan, $status_terdaftar;
     public $poli_id, $dokter_id;
     public $foto_pasien_preview; //show
 
@@ -81,10 +81,11 @@ class Create extends Component
             'poli_id'           => $this->poli_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
+            'status_terdaftar'   => 'terdaftar',
         ]);
 
         if ($success && $this->antrian) {
-            NomorAntrian::findOrFail($this->antrian->id)->delete();
+            NomorAntrian::findOrFail($this->antrian->id)->update(['status' => 'nonaktif']);
         }
 
         $this->dispatch('toast', [

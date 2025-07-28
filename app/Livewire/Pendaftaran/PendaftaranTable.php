@@ -31,7 +31,8 @@ final class PendaftaranTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::with(['pasien', 'poliklinik']);
+        return PasienTerdaftar::where('status_terdaftar', 'terdaftar')
+            ->with(['pasien', 'poliklinik']);
     }
 
     public function relationSearch(): array

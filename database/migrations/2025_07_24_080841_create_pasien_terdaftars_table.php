@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->string('jenis_kunjungan');
             $table->date('tanggal_kunjungan');
+            $table->enum('status_terdaftar', ['terdaftar', 'terkaji','diperiksa']);
 
             $table->timestamps();
         });
