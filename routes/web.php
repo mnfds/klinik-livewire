@@ -124,6 +124,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/pendaftaran/create', 'pendaftaran.create')->name('pendaftaran.create');
     // ====== PENDAFTARAN ====== //
 
+    // ====== KAJIAN AWAL ====== //
+    Route::view('/kajian-awal/create', 'kajian.create')->name('kajian.create');
+    // ====== KAJIAN AWAL ====== //
+
 });
 
 

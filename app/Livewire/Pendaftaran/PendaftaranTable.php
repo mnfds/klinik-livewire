@@ -111,13 +111,14 @@ final class PendaftaranTable extends PowerGridComponent
     public function actions(PasienTerdaftar $row): array
     {
         return [
-            Button::add('updatebarang')  
+            Button::add('kajianbutton')
                 ->slot('<i class="fa-solid fa-clipboard-list"></i> Kajian Awal')
+                ->tag('button')
                 ->attributes([
-                    'onclick' => 'modaleditbarang.showModal()',
-                    'class' => 'btn btn-info'
-                ])
-                ->dispatchTo('barang.update', 'getupdatebarang', ['rowId' => $row->id]),
+                    'title' => 'Isi Kajian Pasien',
+                    'onclick' => "Livewire.navigate('" . route('kajian.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                    'class' => 'btn btn-info',
+                ]),
             
             Button::add('deletepasienterdaftar')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
