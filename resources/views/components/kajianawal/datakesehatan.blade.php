@@ -24,33 +24,46 @@
                 <span class="label-text font-semibold text-sm text-gray-700">Riwayat Penyakit</span>
             </label>
 
-            <!-- Input Trigger -->
+            <!-- Input Area -->
             <div class="relative">
-                <div class="input input-bordered w-full text-sm min-h-[2.5rem] flex flex-wrap items-center gap-1 p-2 cursor-pointer" @click="open = !open">
+                <div
+                    class="w-full border border-none rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition" :class="{ 'ring-2 ring-black': open }" @click="open = true">
+                    <!-- Selected tags -->
                     <template x-for="(tag, index) in selected" :key="index">
-                        <div class="badge badge-info badge-outline flex items-center gap-1">
+                        <span class="bg-primary text-base-content text-sm rounded-full px-3 py-1 flex items-center gap-1">
                             <span x-text="tag"></span>
-                            <button type="button" class="text-white ml-1" @click.stop="remove(tag)">×</button>
-                        </div>
+                            <button type="button" class="text-red-500 font-bold text-xs" @click.stop="remove(tag)">×</button>
+                        </span>
                     </template>
-                    <input type="text" class="bg-transparent flex-1 outline-none" readonly placeholder="Klik untuk pilih..." />
+
+                    <!-- Input for search -->
+                    <input type="text" class="flex-grow min-w-[8ch] text-sm border-black rounded-xl placeholder-gray-400" placeholder="Ketik untuk cari..." x-model="search" @focus="open = true" @input="open = true" />
                 </div>
 
                 <!-- Dropdown Menu -->
-                <div x-show="open" @click.outside="open = false"
-                    class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-40 overflow-y-auto">
-                    <template x-for="(item, index) in options" :key="index">
-                        <div @click="toggle(item)"
-                            class="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
-                            :class="selected.includes(item) ? 'bg-blue-100 font-semibold' : ''">
-                            <span x-text="item"></span>
-                        </div>
+                <div x-show="open" @click.outside="open = false" class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                    <!-- Jika ada hasil -->
+                    <template x-if="filteredOptions.length > 0">
+                        <template x-for="(item, index) in filteredOptions" :key="index">
+                            <div
+                                @click="toggle(item)"
+                                class="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                                :class="selected.includes(item) ? 'bg-blue-100 font-semibold' : ''"
+                            >
+                                <span x-text="item"></span>
+                            </div>
+                        </template>
                     </template>
+
+                    <!-- Jika tidak ada hasil -->
+                    <div x-show="filteredOptions.length === 0" class="px-3 py-2 text-sm text-gray-400">
+                        Tidak ada hasil.
+                    </div>
                 </div>
             </div>
 
-            <!-- Hidden Livewire binding -->
-            <input type="hidden" id="riwayatPenyakitInput" x-model="selected" x-ref="hidden">
+            <!-- Hidden binding untuk Livewire -->
+            <input type="hidden" wire:model="riwayat_penyakit" x-model="selected">
 
             <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
         </div>
@@ -64,6 +77,14 @@
             open: false,
             selected: @entangle('riwayat_penyakit'),
             options: @js($listPenyakit),
+            search: '',
+
+            get filteredOptions() {
+                if (this.search === '') return this.options;
+                return this.options.filter(item =>
+                    item.toLowerCase().includes(this.search.toLowerCase())
+                );
+            },
 
             init() {
                 if (!Array.isArray(this.selected)) {
@@ -78,6 +99,7 @@
                 } else {
                     this.selected.splice(index, 1);
                 }
+                this.search = ''; // reset setelah pilih
             },
 
             remove(item) {
@@ -85,7 +107,7 @@
                 if (index !== -1) {
                     this.selected.splice(index, 1);
                 }
-            },
+            }
         }
     }
 </script>
