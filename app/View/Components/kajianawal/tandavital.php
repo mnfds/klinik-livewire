@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\kajianawal;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class kajianawal.tanda-vital extends Component
+class tandavital extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class kajianawal.tanda-vital extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.kajianawal.tanda-vital');
+        return view('components.kajianawal.tandavital');
     }
 }

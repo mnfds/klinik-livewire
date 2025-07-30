@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\kajianawal;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class kajianawal.pemeriksaan-fisik extends Component
+class datakesehatan extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class kajianawal.pemeriksaan-fisik extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.kajianawal.pemeriksaan-fisik');
+        return view('components.kajianawal.datakesehatan');
     }
 }
