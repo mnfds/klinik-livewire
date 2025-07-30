@@ -78,15 +78,15 @@
                                         <option value="data-kesehatan">Data Kesehatan</option>
                                     </select>
                                 </div>
-                                <!-- Form 1 -->
+                                <!-- TANDA VITAL -->
                                 <div x-show="selectedForms.includes('tanda-vital')" style="display: none">
                                     <x-kajianawal.tanda-vital model="tanda_vital" />
                                 </div>
-                                <!-- Form 2 -->
+                                <!-- PEMERIKSAAN FISIK -->
                                 <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">
                                     <x-kajianawal.pemeriksaan-fisik model="pemeriksaan_fisik" />
                                 </div>
-                                <!-- Form 2 -->
+                                <!-- DATA KESEHATAN -->
                                 <div x-show="selectedForms.includes('data-kesehatan')" style="display: none">
                                     <x-kajianawal.data-kesehatan model="data_kesehatan" />
                                 </div>
@@ -164,3 +164,4 @@
         }
     }
 </script>
+

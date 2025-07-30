@@ -34,7 +34,8 @@ class Create extends Component
     // --- PEMERIKSAAN FISIK -- //
     public $tinggi_badan, $berat_badan, $imt; //imt = berat_badan dibagi tinggi_badan pangkat 2
     // --- DATA KESEHATAN --- //
-    public $keluhan_utama, $status_perokok, $riwayat_penyakit, $riwayat_alergi_obat, $alergi_lainnya, $obat_sedang_dikonsumsi;
+    public $keluhan_utama, $status_perokok;
+    public array $riwayat_penyakit = [];
     
     //***DINASMIS FORM VARIABEL***/
 
@@ -57,6 +58,9 @@ class Create extends Component
             $this->tinggi_badan,
             $this->berat_badan,
             $this->imt,
+            $this->keluhan_utama,
+            $this->status_perokok,
+            $this->riwayat_penyakit,
         ]);
     }
 
