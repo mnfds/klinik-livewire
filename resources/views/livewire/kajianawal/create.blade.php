@@ -44,8 +44,10 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {{-- Kolom Kiri: Form --}}
                 <div class="lg:col-span-3 space-y-6">
-                    <form wire:submit.prevent="submit" class="space-y-6">
+                    <form wire:submit.prevent="create" class="space-y-6">
                         {{-- SECTION: INFORMASI --}}
+    {{ $pasienTerdaftar }}
+
                         <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                             <h2 class="text-lg font-semibold border-b pb-2">Informasi Terkait</h2>
 
@@ -70,37 +72,25 @@
                                 <!-- Select Multiple with Choices.js -->
                                 <div>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
-                                    <select id="formSelect" multiple class="w-full hidden" x-ref="formSelect">
-                                        <option value="form1">Form 1 - Tanda Vital</option>
-                                        <option value="form2">Form 2 - Pemeriksaan Fisik</option>
+                                    <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                        <option value="tanda-vital">Tanda Vital</option>
+                                        <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
+                                        <option value="data-kesehatan">Data Kesehatan</option>
                                     </select>
                                 </div>
-
                                 <!-- Form 1 -->
-                                <div
-                                    x-show="selectedForms.includes('form1')"
-                                    style="display: none"
-                                    class="bg-gray-50 p-4 rounded border border-gray-200"
-                                >
-                                    <div class="divider">Tanda - Tanda Vital</div>
-                                    <livewire:kajianawal.tandavital />
+                                <div x-show="selectedForms.includes('tanda-vital')" style="display: none">
+                                    <x-kajianawal.tanda-vital model="tanda_vital" />
                                 </div>
-
                                 <!-- Form 2 -->
-                                <div
-                                    x-show="selectedForms.includes('form2')"
-                                    style="display: none"
-                                    class="bg-gray-50 p-4 rounded border border-gray-200"
-                                >
-                                    <div class="divider">Pemeriksaan Fisik</div>
-                                    <livewire:kajianawal.pemeriksaanfisik wire:key="form_pemeriksaanfisik"/>
+                                <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">
+                                    <x-kajianawal.pemeriksaan-fisik model="pemeriksaan_fisik" />
+                                </div>
+                                <!-- Form 2 -->
+                                <div x-show="selectedForms.includes('data-kesehatan')" style="display: none">
+                                    <x-kajianawal.data-kesehatan model="data_kesehatan" />
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="sticky bottom-0 bg-white p-4 shadow">
-                            <button class="btn btn-primary">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -111,7 +101,7 @@
                         {{-- Tombol Aksi --}}
                         <div class="bg-base-100 shadow rounded-box p-4 pb-7">
                             <h3 class="font-semibold mb-4">Aksi</h3>
-                            <button wire:click="submit" class="btn btn-success w-full" wire:loading.attr="disabled">
+                            <button wire:click="create" class="btn btn-success w-full" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>

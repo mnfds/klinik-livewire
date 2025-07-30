@@ -3,54 +3,66 @@
 namespace App\Livewire\Kajianawal;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Log;
 
 class Create extends Component
 {
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
+    public $pemeriksaan_fisik;
+    public $tanda_vital;
+    public $data_kesehatan;
 
-    public $pengkaji_id;
-    public ?string $tanda_vital = null;
-    public ?string $pemeriksaan_fisik = null;
+    // PASIEN TERDAFTAR //
+    public $pasien_id, $poli_id, $dokter_id, $jenis_kunjungan, $tanggal_kunjungan;
+    public $status_terdaftar;
 
-    protected $listeners = [
-        'tandaVitalUpdated' => 'updateTandaVital',
-        'pemeriksaanFisikUpdated' => 'updatePemeriksaanFisik',
-    ];
+    // INFORMASI PASIEN //
+    public $nomor_ihs, $nik, $no_register, $nama_pasien, $tanggal_lahir, $jenis_kelamin;
+
+    // POLIKLINIK //
+    public $nama_poli, $kode, $status;
+
+    // DOKTER //
+    public $nama_dokter, $ttd_digital;
+
+    //***DINAMIS FORM VARIABEL***//
+    
+    // --- TANDA VITAL -- //
+    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan;
+    // --- PEMERIKSAAN FISIK -- //
+    public $tinggi_badan, $berat_badan, $imt; //imt = berat_badan dibagi tinggi_badan pangkat 2
+    // --- DATA KESEHATAN --- //
+    public $keluhan_utama, $status_perokok, $riwayat_penyakit, $riwayat_alergi_obat, $alergi_lainnya, $obat_sedang_dikonsumsi;
+    
+    //***DINASMIS FORM VARIABEL***/
 
     public function mount($pasien_terdaftar_id = null)
     {
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
 
         if ($this->pasien_terdaftar_id) {
-            $this->pasienTerdaftar = PasienTerdaftar::findOrFail($pasien_terdaftar_id);
+            $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
         }
     }
 
-    public function updateTandaVital($tanda_vital)
-    {
-        logger('Tanda Vital diterima di parent: ' . $tanda_vital);
-        $this->tanda_vital = $tanda_vital;
-    }
-
-    public function updatePemeriksaanFisik($pemeriksaan_fisik)
-    {
-        logger('Pemeriksaan fisik diterima di parent: ' . $pemeriksaan_fisik);
-        $this->pemeriksaan_fisik = $pemeriksaan_fisik;
-    }
-
-    public function submit()
-    {
+    public function create(){
         dd([
-            'tanda_vital' => $this->tanda_vital,
-            'pemeriksaan_fisik' => $this->pemeriksaan_fisik,
+            $this->suhu_tubuh,
+            $this->nadi,
+            $this->sistole,
+            $this->diastole,
+            $this->frekuensi_pernapasan,
+            $this->tinggi_badan,
+            $this->berat_badan,
+            $this->imt,
         ]);
     }
 
     public function render()
     {
+
         return view('livewire.kajianawal.create');
     }
 }
