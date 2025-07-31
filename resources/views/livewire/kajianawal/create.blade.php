@@ -76,7 +76,7 @@
                         {{-- SECTION: FORM PILIHAN --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <h2 class="text-lg font-semibold mb-4 border-b pb-2">Isi Anamnesa</h2>
-                            <div x-data="formChoices()" x-init="initChoices()" class="space-y-6">
+                            <div x-data="formChoices()" x-init="initChoices()" x-effect="$wire.selected_forms = selectedForms" class="space-y-6">
                                 <!-- Select Multiple with Choices.js -->
                                 <div>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>

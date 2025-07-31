@@ -23,6 +23,9 @@ class Create extends Component
     public $perawat;
     public $dokter;
 
+    // PARAMETER SECTION //
+    public array $selected_forms = [];
+
     //***DINAMIS FORM VARIABEL***//
     
     // --- TANDA VITAL -- //
@@ -57,22 +60,34 @@ class Create extends Component
     }
 
     public function create(){
-        dd([
-            $this->suhu_tubuh,
-            $this->nadi,
-            $this->sistole,
-            $this->diastole,
-            $this->frekuensi_pernapasan,
-            $this->tinggi_badan,
-            $this->berat_badan,
-            $this->imt,
-            $this->keluhan_utama,
-            $this->status_perokok,
-            $this->riwayat_penyakit,
-            $this->riwayat_alergi_obat,
-            $this->riwayat_alergi_lainnya,
-            $this->obat_sedang_dikonsumsi,
-        ]);
+        if (in_array('tanda-vital', $this->selected_forms)) {
+            Log::info('Data Tanda Vital:', [
+                'suhu_tubuh' => $this->suhu_tubuh,
+                'nadi' => $this->nadi,
+                'sistole' => $this->sistole,
+                'diastole' => $this->diastole,
+                'frekuensi_pernapasan' => $this->frekuensi_pernapasan,
+            ]);
+        }
+
+        if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
+            Log::info('Data Pemeriksaan Fisik:', [
+                'tinggi_badan' => $this->tinggi_badan,
+                'berat_badan' => $this->berat_badan,
+                'imt' => $this->imt,
+            ]);
+        }
+
+        if (in_array('data-kesehatan', $this->selected_forms)) {
+            Log::info('Data Kesehatan:', [
+                'keluhan_utama' => $this->keluhan_utama,
+                'status_perokok' => $this->status_perokok,
+                'riwayat_penyakit' => $this->riwayat_penyakit,
+                'riwayat_alergi_obat' => $this->riwayat_alergi_obat,
+                'riwayat_alergi_lainnya' => $this->riwayat_alergi_lainnya,
+                'obat_sedang_dikonsumsi' => $this->obat_sedang_dikonsumsi,
+            ]);
+        }
     }
 
     public function render()
