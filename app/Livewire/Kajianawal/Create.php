@@ -36,6 +36,9 @@ class Create extends Component
     // --- DATA KESEHATAN --- //
     public $keluhan_utama, $status_perokok;
     public array $riwayat_penyakit = [];
+    public array $riwayat_alergi_obat = [];
+    public array $obat_sedang_dikonsumsi = [];
+    public array $riwayat_alergi_lainnya = [];
     
     //***DINASMIS FORM VARIABEL***/
 
@@ -61,6 +64,9 @@ class Create extends Component
             $this->keluhan_utama,
             $this->status_perokok,
             $this->riwayat_penyakit,
+            $this->riwayat_alergi_obat,
+            $this->riwayat_alergi_lainnya,
+            $this->obat_sedang_dikonsumsi,
         ]);
     }
 

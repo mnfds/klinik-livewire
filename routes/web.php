@@ -126,6 +126,17 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== KAJIAN AWAL ====== //
     Route::view('/kajian-awal/create', 'kajian.create')->name('kajian.create');
+    Route::get('/ajax/obat-kfa', function (Request $request) {
+        $query = $request->get('q', '');
+        return \App\Models\KfaObat::where('nama_obat_aktual', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($obat) => [
+                'id' => $obat->id,
+                'text' => $obat->nama_obat_aktual . ' (' . $obat->bentuk_sediaan . ')',
+            ]);
+    });
+
     // ====== KAJIAN AWAL ====== //
 
 });

@@ -73,10 +73,14 @@
                                 <div>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                        <option value="data-kesehatan">Data Kesehatan</option>
                                         <option value="tanda-vital">Tanda Vital</option>
                                         <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
-                                        <option value="data-kesehatan">Data Kesehatan</option>
                                     </select>
+                                </div>
+                                <!-- DATA KESEHATAN -->
+                                <div x-show="selectedForms.includes('data-kesehatan')" style="display: none">
+                                    <x-kajianawal.data-kesehatan model="data_kesehatan" />
                                 </div>
                                 <!-- TANDA VITAL -->
                                 <div x-show="selectedForms.includes('tanda-vital')" style="display: none">
@@ -85,10 +89,6 @@
                                 <!-- PEMERIKSAAN FISIK -->
                                 <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">
                                     <x-kajianawal.pemeriksaan-fisik model="pemeriksaan_fisik" />
-                                </div>
-                                <!-- DATA KESEHATAN -->
-                                <div x-show="selectedForms.includes('data-kesehatan')" style="display: none">
-                                    <x-kajianawal.data-kesehatan model="data_kesehatan" />
                                 </div>
                             </div>
                         </div>
