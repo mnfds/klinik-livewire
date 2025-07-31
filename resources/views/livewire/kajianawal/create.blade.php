@@ -19,13 +19,19 @@
                     <li>
                         <a href="{{ route('pasien.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder"></i>
-                            Rekam Medis Pasien
+                            Riwayat Kunjungan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('pasien.data') }}" class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-folder"></i>
+                            Rekam Medis
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('pendaftaran.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Isi Kajian Awal Pasien
+                            Isi Kajian Awal
                         </a>
                     </li>
                 </ul>
@@ -46,18 +52,20 @@
                 <div class="lg:col-span-3 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
                         {{-- SECTION: INFORMASI --}}
-    {{ $pasienTerdaftar }}
-
                         <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                             <h2 class="text-lg font-semibold border-b pb-2">Informasi Terkait</h2>
-
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text font-medium">Tenaga Kesehatan Pengkaji</span>
                                 </label>
                                 <select wire:model.defer="pengkaji_id" class="select select-bordered w-full">
                                     <option value="">Pilih Nakes</option>
-                                    {{-- <option value="1">Nakes A</option> --}}
+                                    @foreach ($perawat as $p)
+                                        <option value="{{ $p->id }}">{{ $p->biodata->nama_lengkap }}</option>
+                                    @endforeach
+                                    @foreach ($dokter as $d)
+                                        <option value="{{ $d->id }}">{{ $d->dokter->nama_dokter }}</option>
+                                    @endforeach
                                 </select>
                                 @error('pengkaji_id') 
                                     <span class="text-sm text-red-500">{{ $message }}</span> 
@@ -119,18 +127,18 @@
                                 {{-- Data Klinik --}}
                                 <div class="space-y-1">
                                     <h4 class="font-semibold mb-1">Catatan Kunjungan</h4>
-                                    <div><span class="font-bold">Poliklinik:</span> Poli Umum</div>
-                                    <div><span class="font-bold">No. Register:</span> REG-20250728-001</div>
-                                    <div><span class="font-bold">No. IHS:</span> IHS31943</div>
-                                    <div><span class="font-bold">Tanggal Kunjungan:</span> 2025-07-28</div>
+                                    <div><span class="font-bold">Poliklinik:</span> {{ $pasienTerdaftar->poliklinik->nama_poli ?? '-' }}</div>
+                                    <div><span class="font-bold">No. Register:</span> {{ $pasienTerdaftar->pasien->no_register ?? '-' }}</div>
+                                    <div><span class="font-bold">No. IHS:</span> {{ $pasienTerdaftar->pasien->no_ihs ?? '-' }}</div>
+                                    <div><span class="font-bold">Tanggal Kunjungan:</span> {{ $pasienTerdaftar->tanggal_kunjungan ?? '-' }}</div>
                                 </div>
 
                                 {{-- Data Pribadi --}}
                                 <div class="space-y-1">
                                     <h4 class="font-semibold mb-1">Biodata Pasien</h4>
-                                    <div><span class="font-bold">Nama Pasien:</span> John Doe</div>
-                                    <div><span class="font-bold">NIK:</span> 619343079023409</div>
-                                    <div><span class="font-bold">Tanggal Lahir:</span> 1990-02-20</div>
+                                    <div><span class="font-bold">Nama Pasien:</span> {{ $pasienTerdaftar->pasien->nama ?? '-' }}</div>
+                                    <div><span class="font-bold">NIK:</span> {{ $pasienTerdaftar->pasien->nik ?? '-' }}</div>
+                                    <div><span class="font-bold">Tanggal Lahir:</span> {{ $pasienTerdaftar->pasien->tanggal_lahir ?? '-' }}</div>
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Kajianawal;
 
+use App\Models\User;
 use Livewire\Component;
 use App\Models\PasienTerdaftar;
 use Illuminate\Support\Facades\Log;
@@ -18,14 +19,9 @@ class Create extends Component
     public $pasien_id, $poli_id, $dokter_id, $jenis_kunjungan, $tanggal_kunjungan;
     public $status_terdaftar;
 
-    // INFORMASI PASIEN //
-    public $nomor_ihs, $nik, $no_register, $nama_pasien, $tanggal_lahir, $jenis_kelamin;
-
-    // POLIKLINIK //
-    public $nama_poli, $kode, $status;
-
-    // DOKTER //
-    public $nama_dokter, $ttd_digital;
+    // NAKES //
+    public $perawat;
+    public $dokter;
 
     //***DINAMIS FORM VARIABEL***//
     
@@ -44,11 +40,20 @@ class Create extends Component
 
     public function mount($pasien_terdaftar_id = null)
     {
+        $this->perawat = User::whereHas('role', function ($query) {
+            $query->where('nama_role', 'perawat');
+        })->with('biodata')->get();
+        
+        $this->dokter = User::whereHas('role', function ($query) {
+            $query->where('nama_role', 'dokter');
+        })->with('dokter')->get();
+
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
 
         if ($this->pasien_terdaftar_id) {
             $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
         }
+
     }
 
     public function create(){
