@@ -25,4 +25,9 @@ class PasienTerdaftar extends Model
     {
         return $this->belongsTo(Dokter::class, 'dokter_id');
     }
+
+    public function kajianAwal()
+    {
+        return $this->hasOne(KajianAwal::class);
+    }
 }

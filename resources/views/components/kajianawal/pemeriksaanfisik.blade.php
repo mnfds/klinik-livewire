@@ -13,8 +13,8 @@
         </label>
     </div>
     <div class="mt-4">
-        <label class="input input-bordered flex items-center gap-2 bg-gray-100">
-            <input type="text" id="imt_result" readonly class="grow bg-gray-100 text-gray-600" placeholder="IMT akan muncul di sini" />
+        <label class="input input-bordered flex items-center gap-2">
+            <input type="text" id="imt_result" readonly class="grow" placeholder="IMT akan muncul di sini" />
             <span class="label">kg/m²</span>
         </label>
         <input type="hidden" wire:model="imt" id="imt" />

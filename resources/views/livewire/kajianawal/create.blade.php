@@ -52,22 +52,23 @@
                 <div class="lg:col-span-3 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
                         {{-- SECTION: INFORMASI --}}
+                        <input type="hidden" wire:model.defer='id_pasien_terdaftar' value="{{  $pasienTerdaftar->id }}" name="id_pasien_terdaftar">
                         <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                             <h2 class="text-lg font-semibold border-b pb-2">Informasi Terkait</h2>
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text font-medium">Tenaga Kesehatan Pengkaji</span>
                                 </label>
-                                <select wire:model.defer="pengkaji_id" class="select select-bordered w-full">
+                                <select wire:model.defer="nama_pengkaji" class="select select-bordered w-full">
                                     <option value="">Pilih Nakes</option>
                                     @foreach ($perawat as $p)
-                                        <option value="{{ $p->id }}">{{ $p->biodata->nama_lengkap }}</option>
+                                        <option value="{{ $p->biodata->nama_lengkap }}">{{ $p->biodata->nama_lengkap }}</option>
                                     @endforeach
                                     @foreach ($dokter as $d)
-                                        <option value="{{ $d->id }}">{{ $d->dokter->nama_dokter }}</option>
+                                        <option value="{{ $d->dokter->nama_dokter }}">{{ $d->dokter->nama_dokter }}</option>
                                     @endforeach
                                 </select>
-                                @error('pengkaji_id') 
+                                @error('nama_pengkaji') 
                                     <span class="text-sm text-red-500">{{ $message }}</span> 
                                 @enderror
                             </div>
@@ -81,6 +82,7 @@
                                 <div>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                        <option value="data-estetika">Data Estetika</option>
                                         <option value="data-kesehatan">Data Kesehatan</option>
                                         <option value="tanda-vital">Tanda Vital</option>
                                         <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
@@ -98,6 +100,10 @@
                                 <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">
                                     <x-kajianawal.pemeriksaan-fisik model="pemeriksaan_fisik" />
                                 </div>
+                                <!-- PEMERIKSAAN FISIK -->
+                                <div x-show="selectedForms.includes('data-estetika')" style="display: none">
+                                    <x-kajianawal.data-estetika model="data_estetika" />
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -109,7 +115,7 @@
                         {{-- Tombol Aksi --}}
                         <div class="bg-base-100 shadow rounded-box p-4 pb-7">
                             <h3 class="font-semibold mb-4">Aksi</h3>
-                            <button wire:click="create" class="btn btn-success w-full" wire:loading.attr="disabled">
+                            <button wire:click.prevent="create" class="btn btn-success w-full" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
