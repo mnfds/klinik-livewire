@@ -136,8 +136,10 @@ Route::middleware(['auth'])->group(function () {
                 'text' => $obat->nama_obat_aktual . ' (' . $obat->bentuk_sediaan . ')',
             ]);
     });
+    // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
+    Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
 
-    // ====== KAJIAN AWAL ====== //
+    // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
 });
 

@@ -14,7 +14,7 @@
             </li>
 
             <li>
-                <a wire:click="('openRekamMedis', {{ $row->id }})">
+                <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id'=> $row->id ]) }}">
                     <i class="fa-solid fa-clipboard-list"></i>
                     Rekam Medis Pasien
                 </a>

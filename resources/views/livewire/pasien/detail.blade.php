@@ -112,9 +112,9 @@
                             <a wire:navigate href="{{ route('pasien.update', ['id' => $pasien->id]) }}" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-pen-clip mr-2"></i>Edit Data Pasien
                             </a>
-                            <button class="btn btn-info w-full">
+                            <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasien->id]) }}" class="btn btn-info w-full">
                                 <i class="fa-solid fa-clipboard-list mr-2"></i>Riwayat Rekam Medis Pasien
-                            </button>
+                            </a>
                             <a wire:navigate href="{{ route('pendaftaran.create', ['pasien_id' => $pasien->id]) }}" class="btn btn-primary w-full">
                                 <i class="fa-solid fa-laptop-medical"></i>Registrasi Pasien
                             </a>
