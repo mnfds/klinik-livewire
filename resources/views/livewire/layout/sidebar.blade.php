@@ -163,16 +163,22 @@
                     </ul>
                 </li>
 
-                <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') ? 'true' : 'false' }} }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pendaftaran.*')">
+                <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*')">
                         <i class="fa-solid fa-notes-medical"></i>
-                        <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
+                            <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="{{ Route('pendaftaran.data') }}" :active="request()->routeIs('pendaftaran.*')" wire:navigate>Pasien Terdaftar</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Pasien Berjanji Temu</x-side-link></li>
+                        <li>
+                            <x-side-link href="{{ route('pendaftaran.data') }}" :active="request()->routeIs('pendaftaran.*')"  wire:navigate>Pasien Terdaftar</x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="#" wire:navigate>Pasien Berjanji Temu</x-side-link>
+                        </li>
                     </ul>
                 </li>
                 <li x-data="{ open: false }">

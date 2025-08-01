@@ -94,7 +94,7 @@ class Create extends Component
             ]);
 
             PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                ->update(['status_terdaftar' => 'diperiksa']);
+                ->update(['status_terdaftar' => 'terkaji']);
 
             // Simpan data tanda vital
             if (in_array('tanda-vital', $this->selected_forms)) {
@@ -131,6 +131,7 @@ class Create extends Component
                 ]);
             }
 
+            // Simpan data estetika
             if (in_array('data-estetika', $this->selected_forms)) {
                 DataEstetika::create([
                     'kajian_awal_id' => $kajianawal->id,

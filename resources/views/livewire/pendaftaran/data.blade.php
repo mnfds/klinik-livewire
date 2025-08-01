@@ -32,12 +32,25 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 
                 <div class="p-6 text-base-content space-y-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <a wire:navigate href="{{ route('pendaftaran.search') }}" class="btn btn-primary">
-                            <i class="fa-solid fa-laptop-medical"></i>Registrasi
-                        </a>
+                    <div class="tabs tabs-lift">
+                        {{-- Tabel Antrian Masuk Dan Dipanggil --}}
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pendaftaran" checked="checked" />
+                        <div class="tab-content bg-base-100 border-base-300 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <a wire:navigate href="{{ route('pendaftaran.search') }}" class="btn btn-primary">
+                                    <i class="fa-solid fa-laptop-medical"></i>Registrasi
+                                </a>
+                            </div>
+                            <livewire:pendaftaran.pendaftaran-table />
+                        </div>
+                        
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pasien Terdaftar" />
+                        <div class="tab-content bg-base-100 border-base-300 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                            </div>
+                            <livewire:pendaftaran.pasiendiperiksa-table />
+                        </div>
                     </div>
-                    <livewire:pendaftaran.pendaftaran-table />
                 </div>
             </div>
         </div>
