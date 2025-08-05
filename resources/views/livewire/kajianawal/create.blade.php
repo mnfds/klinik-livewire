@@ -127,24 +127,38 @@
 
                         {{-- Informasi Biodata & Kunjungan --}}
                         <div class="bg-base-100 shadow rounded-box p-4 text-sm">
-                            <h3 class="text-md font-semibold mb-3">Biodata & Catatan Kunjungan</h3>
-
+                            <h3 class="text-md font-semibold">Biodata & Catatan Kunjungan</h3>
+                            <h3 class="text-md font-semibold mb-3">{{ $pasienTerdaftar->tanggal_kunjungan ? \Carbon\Carbon::parse($pasienTerdaftar->tanggal_kunjungan)->translatedFormat('d F Y') : '-' }}</h3>
                             <div class="space-y-4">
                                 {{-- Data Klinik --}}
                                 <div class="space-y-1">
-                                    <h4 class="font-semibold mb-1">Catatan Kunjungan</h4>
-                                    <div><span class="font-bold">Poliklinik:</span> {{ $pasienTerdaftar->poliklinik->nama_poli ?? '-' }}</div>
-                                    <div><span class="font-bold">No. Register:</span> {{ $pasienTerdaftar->pasien->no_register ?? '-' }}</div>
-                                    <div><span class="font-bold">No. IHS:</span> {{ $pasienTerdaftar->pasien->no_ihs ?? '-' }}</div>
-                                    <div><span class="font-bold">Tanggal Kunjungan:</span> {{ $pasienTerdaftar->tanggal_kunjungan ?? '-' }}</div>
+                                    <h4 class="font-semibold">Catatan Kunjungan</h4>
+                                    <div class="grid grid-cols-2">
+                                        <div class="font-bold w-32">Poliklinik</div>
+                                        <div>: {{ $pasienTerdaftar->poliklinik->nama_poli ?? '-' }}</div>
+
+                                        <div class="font-bold w-32">No. Register</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->no_register ?? '-' }}</div>
+
+                                        <div class="font-bold w-32">No. IHS</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->no_ihs ?? '-' }}</div>
+
+                                    </div>
                                 </div>
 
                                 {{-- Data Pribadi --}}
                                 <div class="space-y-1">
                                     <h4 class="font-semibold mb-1">Biodata Pasien</h4>
-                                    <div><span class="font-bold">Nama Pasien:</span> {{ $pasienTerdaftar->pasien->nama ?? '-' }}</div>
-                                    <div><span class="font-bold">NIK:</span> {{ $pasienTerdaftar->pasien->nik ?? '-' }}</div>
-                                    <div><span class="font-bold">Tanggal Lahir:</span> {{ $pasienTerdaftar->pasien->tanggal_lahir ?? '-' }}</div>
+                                    <div class="grid grid-cols-2">
+                                        <div class="font-bold w-32">Nama Pasien</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->nama ?? '-' }}</div>
+
+                                        <div class="font-bold w-32">NIK</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->nik ?? '-' }}</div>
+
+                                        <div class="font-bold w-32">Tanggal Lahir</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->tanggal_lahir ?? '-' }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
