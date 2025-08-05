@@ -50,7 +50,7 @@
                                     <div class="flex items-center justify-between mb-4">
                                         <h1 class="text-lg font-bold text-base-content">Antrian Masuk</h1>
                                     </div>
-                                    <livewire:antriantable.masuk />
+                                    <livewire:AntrianTable.Masuk />
                                 </div>
 
                                 <!-- Tabel Antrian Dipanggil -->

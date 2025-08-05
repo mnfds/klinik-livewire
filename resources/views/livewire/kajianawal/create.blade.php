@@ -90,19 +90,19 @@
                                 </div>
                                 <!-- DATA KESEHATAN -->
                                 <div x-show="selectedForms.includes('data-kesehatan')" style="display: none">
-                                    <x-kajianawal.data-kesehatan model="data_kesehatan" />
+                                    <x-kajianawal.datakesehatan model="data_kesehatan" />
                                 </div>
                                 <!-- TANDA VITAL -->
                                 <div x-show="selectedForms.includes('tanda-vital')" style="display: none">
-                                    <x-kajianawal.tanda-vital model="tanda_vital" />
+                                    <x-kajianawal.tandavital model="tanda_vital" />
                                 </div>
                                 <!-- PEMERIKSAAN FISIK -->
                                 <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">
-                                    <x-kajianawal.pemeriksaan-fisik model="pemeriksaan_fisik" />
+                                    <x-kajianawal.pemeriksaanfisik model="pemeriksaan_fisik" />
                                 </div>
                                 <!-- PEMERIKSAAN FISIK -->
                                 <div x-show="selectedForms.includes('data-estetika')" style="display: none">
-                                    <x-kajianawal.data-estetika model="data_estetika" />
+                                    <x-kajianawal.dataestetika model="data_estetika" />
                                 </div>
                             </div>
                         </div>
