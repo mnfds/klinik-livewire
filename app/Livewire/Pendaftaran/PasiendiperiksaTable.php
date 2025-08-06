@@ -116,7 +116,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 ->tag('button')
                 ->attributes([
                     'title' => 'Isi Rekam Medis Pasien',
-                    'onclick' => "Livewire.navigate('" . route('kajian.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                    'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
                     'class' => 'btn btn-secondary',
                 ]),
         ];

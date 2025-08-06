@@ -77,8 +77,9 @@
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Pasien Sedang Diperiksa" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <h1 class="text-lg font-bold text-base-content">
-                                <livewire:pendaftaran.pasiendiperiksa-table />
+                                Pasien Menunggu Konsultasi
                             </h1>
+                            <livewire:pendaftaran.pasiendiperiksa-table />
                         </div>
                     </div>
                 </div>
