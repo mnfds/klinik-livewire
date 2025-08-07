@@ -97,7 +97,99 @@
                     <!-- C: Form -->
                     <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                         <h2 class="text-lg font-semibold border-b pb-2">Form Rekam Medis</h2>
-                        {{-- form mu disini --}}
+                        <form wire:submit.prevent="create" class="space-y-6">
+                            <input type="hidden" wire:model.defer='id_pasien_terdaftar' value="{{  $pasienTerdaftar->id }}" name="id_pasien_terdaftar">
+
+                            {{-- SUBJECTIVE --}}
+                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">SUBJECTIVE</h2>
+                                <div x-data="formChoicesSubjective()" x-init="initChoicesSubjective()" x-effect="$wire.selected_forms_subjective = selectedFormsSubjective" class="space-y-6">
+                                    <!-- Select Multiple with Choices.js -->
+                                    <div>
+                                        <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                        <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                            <option value="subjective-1">Sub1</option>
+                                            <option value="subjective-2">Sub2</option>
+                                        </select>
+                                    </div>
+                                    <!-- SUB-1 -->
+                                    <div x-show="selectedFormsSubjective.includes('subjective-1')" style="display: none">
+                                        subjective 1
+                                    </div>
+                                    <!-- SUB-2 -->
+                                    <div x-show="selectedFormsSubjective.includes('subjective-2')" style="display: none">
+                                        subjective 2
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- OBJECTIVE --}}
+                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">OBJECTIVE</h2>
+                                <div x-data="formChoicesObjective()" x-init="initChoicesObjective()" x-effect="$wire.selected_forms_objective = selectedFormsObjective" class="space-y-6">
+                                    <!-- Select Multiple with Choices.js -->
+                                    <div>
+                                        <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                        <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                            <option value="objective-1">Obj1</option>
+                                            <option value="objective-2">Obj2</option>
+                                        </select>
+                                    </div>
+                                    <!-- OBJ-1 -->
+                                    <div x-show="selectedFormsObjective.includes('objective-1')" style="display: none">
+                                        objective 1
+                                    </div>
+                                    <!-- OBJ-2 -->
+                                    <div x-show="selectedFormsObjective.includes('objective-2')" style="display: none">
+                                        objective 2
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- ASSESSMENT --}}
+                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">ASSESSMENT</h2>
+                                <div x-data="formChoicesAssessment()" x-init="initChoicesAssessment()" x-effect="$wire.selected_forms_assessment = selectedFormsAssessment" class="space-y-6">
+                                    <!-- Select Multiple with Choices.js -->
+                                    <div>
+                                        <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                        <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                            <option value="assessment-1">Ass1</option>
+                                            <option value="assessment-2">Ass2</option>
+                                        </select>
+                                    </div>
+                                    <!-- ASS-1 -->
+                                    <div x-show="selectedFormsAssessment.includes('assessment-1')" style="display: none">
+                                        assessment 1
+                                    </div>
+                                    <!-- ASS-2 -->
+                                    <div x-show="selectedFormsAssessment.includes('assessment-2')" style="display: none">
+                                        assessment 2
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- PLAN --}}
+                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">PLAN</h2>
+                                <div x-data="formChoicesPlan()" x-init="initChoicesPlan()" x-effect="$wire.selected_forms_plan = selectedFormsPlan" class="space-y-6">
+                                    <!-- Select Multiple with Choices.js -->
+                                    <div>
+                                        <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                        <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                            <option value="plan-1">Plan1</option>
+                                            <option value="plan-2">Plan2</option>
+                                        </select>
+                                    </div>
+                                    <!-- PLAN-1 -->
+                                    <div x-show="selectedFormsPlan.includes('plan-1')" style="display: none">
+                                        plan 1
+                                    </div>
+                                    <!-- PLAN-2 -->
+                                    <div x-show="selectedFormsPlan.includes('plan-2')" style="display: none">
+                                        plan 2
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
                     </div>
                 </div>
 
@@ -113,11 +205,12 @@
                             <button class="btn btn-primary mb-1 w-full">
                                 <i class="fa-solid fa-hand-holding-heart"></i>
                                     Layanan Tersisa
-                                <div class="badge badge-sm badge-base-200 text-base-content">+99</div>
+                                <div class="badge badge-sm badge-base-200 text-base-content">99</div>
                             </button>
-                            <button class="btn btn-info mb-1 w-full">
+                            <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasienTerdaftar->pasien->id]) }}"
+                                class="btn btn-info mb-1 w-full" >
                                 <i class="fa-solid fa-book-medical"></i> Riwayat Rekam Medis
-                            </button>
+                            </a>
                         </div>
 
                         <!-- D: Kajian Awal / Biodata -->
@@ -296,3 +389,88 @@
 
     </div>
 </div>
+<script>
+    function formChoicesSubjective() {
+        return {
+            selectedFormsSubjective: [],
+            choicesSubjective: null,
+
+            initChoicesSubjective() {
+                this.choicesSubjective = new Choices(this.$refs.formSelect, {
+                    removeItemButton: true,
+                    placeholderValue: 'Pilih form...',
+                    shouldSort: false,
+                });
+
+                this.selectedFormsSubjective = Array.from(this.$refs.formSelect.selectedOptions).map(opt => opt.value);
+
+                this.$refs.formSelect.addEventListener('change', (event) => {
+                    this.selectedFormsSubjective = Array.from(event.target.selectedOptions).map(opt => opt.value);
+                });
+            }
+        }
+    }
+
+    function formChoicesObjective() {
+        return {
+            selectedFormsObjective: [],
+            choicesObjective: null,
+
+            initChoicesObjective() {
+                this.choicesObjective = new Choices(this.$refs.formSelect, {
+                    removeItemButton: true,
+                    placeholderValue: 'Pilih form...',
+                    shouldSort: false,
+                });
+
+                this.selectedFormsObjective = Array.from(this.$refs.formSelect.selectedOptions).map(opt => opt.value);
+
+                this.$refs.formSelect.addEventListener('change', (event) => {
+                    this.selectedFormsObjective = Array.from(event.target.selectedOptions).map(opt => opt.value);
+                });
+            }
+        }
+    }
+
+    function formChoicesAssessment() {
+        return {
+            selectedFormsAssessment: [],
+            choicesAssessment: null,
+
+            initChoicesAssessment() {
+                this.choicesAssessment = new Choices(this.$refs.formSelect, {
+                    removeItemButton: true,
+                    placeholderValue: 'Pilih form...',
+                    shouldSort: false,
+                });
+
+                this.selectedFormsAssessment = Array.from(this.$refs.formSelect.selectedOptions).map(opt => opt.value);
+
+                this.$refs.formSelect.addEventListener('change', (event) => {
+                    this.selectedFormsAssessment = Array.from(event.target.selectedOptions).map(opt => opt.value);
+                });
+            }
+        }
+    }
+
+    function formChoicesPlan() {
+        return {
+            selectedFormsPlan: [],
+            choicesPlan: null,
+
+            initChoicesPlan() {
+                this.choicesPlan = new Choices(this.$refs.formSelect, {
+                    removeItemButton: true,
+                    placeholderValue: 'Pilih form...',
+                    shouldSort: false,
+                });
+
+                this.selectedFormsPlan = Array.from(this.$refs.formSelect.selectedOptions).map(opt => opt.value);
+
+                this.$refs.formSelect.addEventListener('change', (event) => {
+                    this.selectedFormsPlan = Array.from(event.target.selectedOptions).map(opt => opt.value);
+                });
+            }
+        }
+    }
+</script>
