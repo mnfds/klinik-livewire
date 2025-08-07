@@ -101,7 +101,7 @@
                             <input type="hidden" wire:model.defer='id_pasien_terdaftar' value="{{  $pasienTerdaftar->id }}" name="id_pasien_terdaftar">
 
                             {{-- SUBJECTIVE --}}
-                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                            <div class="bg-base-200 shadow rounded-lg py-6 px-3">
                                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">SUBJECTIVE</h2>
                                 <div x-data="formChoicesSubjective()" x-init="initChoicesSubjective()" x-effect="$wire.selected_forms_subjective = selectedFormsSubjective" class="space-y-6">
                                     <!-- Select Multiple with Choices.js -->
@@ -123,51 +123,64 @@
                                 </div>
                             </div>
                             {{-- OBJECTIVE --}}
-                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                            <div class="bg-base-200 shadow rounded-lg py-6 px-3">
                                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">OBJECTIVE</h2>
                                 <div x-data="formChoicesObjective()" x-init="initChoicesObjective()" x-effect="$wire.selected_forms_objective = selectedFormsObjective" class="space-y-6">
                                     <!-- Select Multiple with Choices.js -->
                                     <div>
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                            <option value="objective-1">Obj1</option>
-                                            <option value="objective-2">Obj2</option>
+                                            <option value="tanda-vital">Tanda Vital Pasien</option>
+                                            <option value="pemeriksaan-fisik">Hasil Pemeriksaan Fisik</option>
                                         </select>
                                     </div>
-                                    <!-- OBJ-1 -->
-                                    <div x-show="selectedFormsObjective.includes('objective-1')" style="display: none">
-                                        objective 1
+                                    <!-- Tingkat Kesadaran -->
+                                    <div class="form-control">
+                                        <label class="label">Tingkat Kesadaran</label>
+                                        <select wire:model="tingkat_kesadaran" class="select select-bordered w-full">
+                                            <option value="">Pilih Tingkatan</option>
+                                            <option value="Sadar Baik/Alert">Sadar Baik/Alert</option>
+                                            <option value="Berespon dengan kata-kata">Berespon dengan kata-kata</option>
+                                            <option value="Hanya berespons jika dirangsang nyeri"> Hanya berespons jika dirangsang nyeri</option>
+                                            <option value="Pasien tidak sadar">Pasien tidak sadar</option>
+                                            <option value="Gelisah atau bingung">Gelisah atau bingung</option>
+                                            <option value="Acute Confusional States ">Acute Confusional States </option>
+                                        </select>
                                     </div>
-                                    <!-- OBJ-2 -->
-                                    <div x-show="selectedFormsObjective.includes('objective-2')" style="display: none">
-                                        objective 2
+                                    <!-- Tanda Vital -->
+                                    <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
+                                        <x-rekammedis.tandavital :tanda-vital="$tanda_vital" wire:model="tanda_vital" />
+                                    </div>
+                                    <!-- Data Fisik -->
+                                    <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">
+                                        <x-rekammedis.pemeriksaanfisik :pemeriksaan-fisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
                                     </div>
                                 </div>
                             </div>
                             {{-- ASSESSMENT --}}
-                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                            <div class="bg-base-200 shadow rounded-lg py-6 px-3">
                                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">ASSESSMENT</h2>
                                 <div x-data="formChoicesAssessment()" x-init="initChoicesAssessment()" x-effect="$wire.selected_forms_assessment = selectedFormsAssessment" class="space-y-6">
                                     <!-- Select Multiple with Choices.js -->
                                     <div>
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                            <option value="assessment-1">Ass1</option>
-                                            <option value="assessment-2">Ass2</option>
+                                            <option value="diagnosa">Disgnosa</option>
+                                            <option value="icd_10">ICD 10</option>
                                         </select>
                                     </div>
                                     <!-- ASS-1 -->
-                                    <div x-show="selectedFormsAssessment.includes('assessment-1')" style="display: none">
+                                    <div x-show="selectedFormsAssessment.includes('diagnosa')" style="display: none">
                                         assessment 1
                                     </div>
                                     <!-- ASS-2 -->
-                                    <div x-show="selectedFormsAssessment.includes('assessment-2')" style="display: none">
+                                    <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none">
                                         assessment 2
                                     </div>
                                 </div>
                             </div>
                             {{-- PLAN --}}
-                            <div class="bg-base-100 shadow rounded-box py-6 px-2">
+                            <div class="bg-base-200 shadow rounded-lg py-6 px-3">
                                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">PLAN</h2>
                                 <div x-data="formChoicesPlan()" x-init="initChoicesPlan()" x-effect="$wire.selected_forms_plan = selectedFormsPlan" class="space-y-6">
                                     <!-- Select Multiple with Choices.js -->
@@ -195,12 +208,13 @@
 
                 <!-- Kolom Kanan (B + D) -->
                 <div class="lg:col-span-1">
-                    <div class="sticky top-20 space-y-6">
+                    <div class="sticky top-10 space-y-6">
                         <!-- B: Button -->
                         <div class="bg-base-100 shadow rounded-box p-4 pb-7">
                             <h3 class="font-semibold mb-4">Aksi</h3>
-                            <button class="btn btn-success mb-1 w-full">
-                                <i class="fa-solid fa-plus"></i> Simpan
+                            <button wire:click.prevent="create" class="btn btn-success w-full mb-1" wire:loading.attr="disabled">
+                                <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
+                                <span wire:loading.inline>Loading...</span>
                             </button>
                             <button class="btn btn-primary mb-1 w-full">
                                 <i class="fa-solid fa-hand-holding-heart"></i>

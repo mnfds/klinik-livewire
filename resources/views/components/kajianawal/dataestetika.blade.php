@@ -1,5 +1,5 @@
-<div class="mt-6">
-    <h2 class="text-lg font-semibold border-b pb-2 mb-4">Data Estetika</h2>
+<div class="bg-base-200 p-4 rounded border border-base-200">
+    <div class="divider">Data Estetika</div>
     <div class="space-y-4">
 
         {{-- Problem yang Dihadapi --}}
