@@ -53,7 +53,7 @@
                     <div class="bg-base-100 text-base-content shadow rounded-box p-6 space-y-4">
                         <div class="tabs tabs-lift">
                             <!-- A: Biodata Pasien -->
-                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 1" style="background-image: none;" checked="checked" />
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Biodata" style="background-image: none;" checked="checked" />
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
                                 <h2 class="text-lg font-semibold border-b pb-2">Biodata Pasien</h2>
                                 <div class="space-y-2 text-sm">
@@ -97,12 +97,175 @@
                                 </div>
                             </div>
 
-                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 2" style="background-image: none;" />
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Hasil Kajian" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
-                                Anamnesa
+                                <h2 class="text-lg font-semibold border-b pb-2">Hasil Kajian Awal (Anamnesa)</h2>
+                                <div class="space-y-2 text-sm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+
+                                        {{-- Pemeriksaan Fisik --}}
+                                        @if ($kajian->pemeriksaanFisik)
+                                            <div>
+                                                <div class="font-semibold mb-1">Pemeriksaan Fisik</div>
+                                                <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+                                                    <div>Tinggi Badan</div><div>: {{ $kajian->pemeriksaanFisik->tinggi_badan }} cm</div>
+                                                    <div>Berat Badan</div><div>: {{ $kajian->pemeriksaanFisik->berat_badan }} kg</div>
+                                                    <div>IMT</div><div>: {{ $kajian->pemeriksaanFisik->imt }}</div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Tanda Vital --}}
+                                        @if ($kajian->tandaVital)
+                                            <div>
+                                                <div class="font-semibold mb-1">Tanda Vital</div>
+                                                <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+                                                    <div>Suhu Tubuh</div><div>: {{ $kajian->tandaVital->suhu_tubuh }} °C</div>
+                                                    <div>Nadi</div><div>: {{ $kajian->tandaVital->nadi }} bpm</div>
+                                                    <div>Tekanan Darah</div><div>: {{ $kajian->tandaVital->sistole }}/{{ $kajian->tandaVital->diastole }} mmHg</div>
+                                                    <div>Frekuensi Napas</div><div>: {{ $kajian->tandaVital->frekuensi_pernapasan }} /menit</div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Data Kesehatan --}}
+                                        @if ($kajian->dataKesehatan)
+                                            @php
+                                                $riwayat_penyakit = json_decode($kajian->dataKesehatan->riwayat_penyakit ?? '[]', true);
+                                                $riwayat_alergi_obat = json_decode($kajian->dataKesehatan->riwayat_alergi_obat ?? '[]', true);
+                                                $obat = json_decode($kajian->dataKesehatan->obat_sedang_dikonsumsi ?? '[]', true);
+                                                $alergi_lain = json_decode($kajian->dataKesehatan->riwayat_alergi_lainnya ?? '[]', true);
+                                            @endphp
+
+                                            <div class="md:col-span-2">
+                                                <div class="font-semibold mb-1">Data Kesehatan</div>
+                                                <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+                                                    <div>Keluhan Utama</div><div>: {{ $kajian->dataKesehatan->keluhan_utama ?? '-' }}</div>
+                                                    <div>Status Perokok</div><div>: {{ $kajian->dataKesehatan->status_perokok ?? '-' }}</div>
+
+                                                    <div>Riwayat Penyakit</div>
+                                                    <div>:
+                                                        @if(empty($riwayat_penyakit))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($riwayat_penyakit as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Riwayat Alergi Obat</div>
+                                                    <div>:
+                                                        @if(empty($riwayat_alergi_obat))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($riwayat_alergi_obat as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Obat Dikonsumsi</div>
+                                                    <div>:
+                                                        @if(empty($obat))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($obat as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Alergi Lainnya</div>
+                                                    <div>:
+                                                        @if(empty($alergi_lain))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($alergi_lain as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Data Estetika --}}
+                                        @if ($kajian->dataEstetika)
+                                            @php
+                                                $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
+                                                $problem = $decode($kajian->dataEstetika->problem_dihadapi);
+                                                $tindakan = $decode($kajian->dataEstetika->tindakan_sebelumnya);
+                                                $metode_kb = $decode($kajian->dataEstetika->metode_kb);
+                                            @endphp
+
+                                            <div class="md:col-span-2">
+                                                <div class="font-semibold mb-1">Data Estetika</div>
+                                                <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+                                                    <div>Problem Dihadapi</div>
+                                                    <div>:
+                                                        @if(empty($problem))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($problem as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Lama Problem</div><div>: {{ $kajian->dataEstetika->lama_problem ?? '-' }}</div>
+
+                                                    <div>Tindakan Sebelumnya</div>
+                                                    <div>:
+                                                        @if(empty($tindakan))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($tindakan as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Penyakit Dialami</div><div>: {{ $kajian->dataEstetika->penyakit_dialami ?? '-' }}</div>
+                                                    <div>Alergi Kosmetik</div><div>: {{ $kajian->dataEstetika->alergi_kosmetik ?? '-' }}</div>
+                                                    <div>Sedang Hamil</div><div>: {{ ucfirst($kajian->dataEstetika->sedang_hamil) ?? '-' }}</div>
+                                                    <div>Usia Kehamilan</div><div>: {{ $kajian->dataEstetika->usia_kehamilan ? $kajian->dataEstetika->usia_kehamilan . ' bln' : '-' }}</div>
+
+                                                    <div>Metode KB</div>
+                                                    <div>:
+                                                        @if(empty($metode_kb))
+                                                            -
+                                                        @else
+                                                            <ul class="ml-4 list-disc">
+                                                                @foreach ($metode_kb as $r)
+                                                                    <li>{{ $r }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    </div>
+
+                                                    <div>Pengobatan Saat Ini</div><div>: {{ $kajian->dataEstetika->pengobatan_saat_ini ?? '-' }}</div>
+                                                    <div>Produk Kosmetik</div><div>: {{ $kajian->dataEstetika->produk_kosmetik ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
 
-                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 3" style="background-image: none;" />
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Layanan" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
                                 Layanan/Tindakan Tersisa
                             </div>
@@ -123,7 +286,7 @@
                                     <div>
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                            <option value="data-kesehatan">Sub1</option>
+                                            <option value="data-kesehatan">Data Kesehatan</option>
                                             <option value="subjective-2">Sub2</option>
                                         </select>
                                     </div>
@@ -242,174 +405,6 @@
                             </a>
                         </div>
 
-                        <!-- D: Kajian Awal / Biodata -->
-                        <div class="bg-base-100 shadow rounded-box p-4 space-y-3 text-sm h-80 overflow-y-auto">
-                            <h3 class="font-semibold">Informasi Kajian Awal</h3>
-                                    @if ($kajian)
-
-                                        {{-- Pemeriksaan Fisik --}}
-                                        @if ($kajian->pemeriksaanFisik)
-                                            <div>
-                                                <div class="font-semibold mb-1">Pemeriksaan Fisik</div>
-                                                <div class="space-y-1">
-                                                    <div>Tinggi Badan : {{ $kajian->pemeriksaanFisik->tinggi_badan }} cm</div>
-                                                    <div>Berat Badan : {{ $kajian->pemeriksaanFisik->berat_badan }} kg</div>
-                                                    <div>IMT : {{ $kajian->pemeriksaanFisik->imt }}</div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        {{-- Tanda Vital --}}
-                                        @if ($kajian->tandaVital)
-                                            <div>
-                                                <div class="font-semibold mb-1">Tanda Vital</div>
-                                                <div class="space-y-1">
-                                                    <div>Suhu Tubuh : {{ $kajian->tandaVital->suhu_tubuh }} °C</div>
-                                                    <div>Nadi : {{ $kajian->tandaVital->nadi }} bpm</div>
-                                                    <div>Tekanan Darah : {{ $kajian->tandaVital->sistole }}/{{ $kajian->tandaVital->diastole }} mmHg</div>
-                                                    <div>Frekuensi Napas : {{ $kajian->tandaVital->frekuensi_pernapasan }} /menit</div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        {{-- Data Kesehatan --}}
-                                        @if ($kajian->dataKesehatan)
-                                            <div>
-                                                <div class="font-semibold mb-1">Data Kesehatan</div>
-                                                <div class="space-y-1">
-                                                    <div>Keluhan Utama : {{ $kajian->dataKesehatan->keluhan_utama ?? '-' }}</div>
-                                                    <div>Status Perokok : {{ $kajian->dataKesehatan->status_perokok ?? '-' }}</div>
-
-                                                    @php
-                                                        $riwayat_penyakit = $kajian->dataKesehatan->riwayat_penyakit ? json_decode($kajian->dataKesehatan->riwayat_penyakit,true) : [];
-                                                        $riwayat_alergi_obat = $kajian->dataKesehatan->riwayat_alergi_obat ? json_decode($kajian->dataKesehatan->riwayat_alergi_obat,true) : [];
-                                                        $obat = $kajian->dataKesehatan->obat_sedang_dikonsumsi ? json_decode($kajian->dataKesehatan->obat_sedang_dikonsumsi,true) : [];
-                                                        $alergi_lain = $kajian->dataKesehatan->riwayat_alergi_lainnya ? json_decode($kajian->dataKesehatan->riwayat_alergi_lainnya,true) : [];
-                                                    @endphp
-
-                                                    <div>
-                                                        Riwayat Penyakit :
-                                                        @if(empty($riwayat_penyakit))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($riwayat_penyakit as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>
-                                                        Riwayat Alergi Obat :
-                                                        @if(empty($riwayat_alergi_obat))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($riwayat_alergi_obat as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>
-                                                        Obat Dikonsumsi :
-                                                        @if(empty($obat))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($obat as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>
-                                                        Alergi Lainnya :
-                                                        @if(empty($alergi_lain))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($alergi_lain as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        {{-- Data Estetika --}}
-                                        @if ($kajian->dataEstetika)
-                                            <div>
-                                                <div class="font-semibold mb-1">Data Estetika</div>
-                                                @php
-                                                    $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
-                                                    $problem = $decode($kajian->dataEstetika->problem_dihadapi);
-                                                    $tindakan = $decode($kajian->dataEstetika->tindakan_sebelumnya);
-                                                    $metode_kb = $decode($kajian->dataEstetika->metode_kb);
-                                                @endphp
-                                                <div class="space-y-1">
-                                                    <div>
-                                                        Problem Dihadapi :
-                                                        @if(empty($problem))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($problem as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>Lama Problem : {{ $kajian->dataEstetika->lama_problem ?? '-' }}</div>
-
-                                                    <div>
-                                                        Tindakan Sebelumnya :
-                                                        @if(empty($tindakan))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($tindakan as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>Penyakit Dialami : {{ $kajian->dataEstetika->penyakit_dialami ?? '-' }}</div>
-                                                    <div>Alergi Kosmetik : {{ $kajian->dataEstetika->alergi_kosmetik ?? '-' }}</div>
-
-                                                    <div>Sedang Hamil : {{ ucfirst($kajian->dataEstetika->sedang_hamil) ?? '-' }}</div>
-                                                    <div>Usia Kehamilan : {{ $kajian->dataEstetika->usia_kehamilan ? $kajian->dataEstetika->usia_kehamilan.' bln' : '-' }}</div>
-
-                                                    <div>
-                                                        Metode KB :
-                                                        @if(empty($metode_kb))
-                                                            -
-                                                        @else
-                                                            <ul class="ml-4 list-disc">
-                                                                @foreach ($metode_kb as $r)
-                                                                    <li>{{ $r }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    </div>
-
-                                                    <div>Pengobatan Saat Ini : {{ $kajian->dataEstetika->pengobatan_saat_ini ?? '-' }}</div>
-                                                    <div>Produk Kosmetik : {{ $kajian->dataEstetika->produk_kosmetik ?? '-' }}</div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                    @else
-                                        <p class="italic text-gray-500">Belum ada kajian awal.</p>
-                                    @endif
-                        </div>
                     </div>
                 </div>
                 
