@@ -27,6 +27,15 @@ class Create extends Component
         'frekuensi_pernapasan' => null,
     ];
 
+    public $data_kesehatan = [
+        'keluhan_utama' => null,
+        'status_perokok' => null,
+        'riwayat_penyakit' => null,
+        'riwayat_alergi_obat' => null,
+        'obat_sedang_dikonsumsi' => null,
+        'riwayat_alergi_lainnya' => null,
+    ];
+
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -54,6 +63,17 @@ class Create extends Component
                     'frekuensi_pernapasan' => $this->kajian->tandaVital->frekuensi_pernapasan,
                 ];
             }
+            if ($this->kajian && $this->kajian->dataKesehatan) {
+                $this->data_kesehatan = [
+                    'keluhan_utama' => $this->kajian->dataKesehatan->keluhan_utama,
+                    'status_perokok' => $this->kajian->dataKesehatan->status_perokok,
+                    'riwayat_penyakit' => json_decode($this->kajian->dataKesehatan->riwayat_penyakit ?? '[]', true),
+                    'riwayat_alergi_obat' => json_decode($this->kajian->dataKesehatan->riwayat_alergi_obat ?? '[]', true),
+                    'obat_sedang_dikonsumsi' => json_decode($this->kajian->dataKesehatan->obat_sedang_dikonsumsi ?? '[]', true),
+                    'riwayat_alergi_lainnya' => json_decode($this->kajian->dataKesehatan->riwayat_alergi_lainnya ?? '[]', true),
+                ];
+                // dd($this->data_kesehatan);
+            }
         }
     }
 
@@ -62,6 +82,7 @@ class Create extends Component
         dd([
             $this->pemeriksaan_fisik,
             $this->tanda_vital,
+            $this->data_kesehatan,
         ]);
     }
 

@@ -53,7 +53,7 @@
                     <div class="bg-base-100 text-base-content shadow rounded-box p-6 space-y-4">
                         <div class="tabs tabs-lift">
                             <!-- A: Biodata Pasien -->
-                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 1" style="background-image: none;" />
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 1" style="background-image: none;" checked="checked" />
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
                                 <h2 class="text-lg font-semibold border-b pb-2">Biodata Pasien</h2>
                                 <div class="space-y-2 text-sm">
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
 
-                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 2" checked="checked" style="background-image: none;" />
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Tab 2" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
                                 Anamnesa
                             </div>
@@ -123,13 +123,13 @@
                                     <div>
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                            <option value="subjective-1">Sub1</option>
+                                            <option value="data-kesehatan">Sub1</option>
                                             <option value="subjective-2">Sub2</option>
                                         </select>
                                     </div>
                                     <!-- SUB-1 -->
-                                    <div x-show="selectedFormsSubjective.includes('subjective-1')" style="display: none">
-                                        subjective 1
+                                    <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
+                                        <x-rekammedis.datakesehatan :data-kesehatan="$data_kesehatan" wire:model="data_kesehatan" />
                                     </div>
                                     <!-- SUB-2 -->
                                     <div x-show="selectedFormsSubjective.includes('subjective-2')" style="display: none">
