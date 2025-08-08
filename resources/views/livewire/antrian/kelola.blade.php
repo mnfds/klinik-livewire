@@ -42,7 +42,7 @@
                     <div class="tabs tabs-lift">
 
                         {{-- Tabel Antrian Masuk Dan Dipanggil --}}
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pendaftaran" checked="checked" />
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pendaftaran" checked="checked" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex flex-col md:flex-row gap-4">
                                 <!-- Tabel Antrian Masuk -->
@@ -65,7 +65,7 @@
                             </div>
                         </div>
                         
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Antrian Pasien Terdaftar" />
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pasien Terdaftar" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             {{-- Isi Tab Konten Antrian Pasien Yang Sudah Terdaftar --}}
                             <h1 class="text-lg font-bold text-base-content">
@@ -74,7 +74,7 @@
                             <livewire:pendaftaran.pendaftaran-table />
                         </div>
 
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Pasien Sedang Diperiksa" />
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Sedang Diperiksa" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <h1 class="text-lg font-bold text-base-content">
                                 Pasien Menunggu Konsultasi
