@@ -14,6 +14,8 @@ class Create extends Component
     public $kajian;
 
     // OBJECTIVE
+    public $tingkat_kesadaran;
+
     public $pemeriksaan_fisik = [
         'tinggi_badan' => null,
         'berat_badan' => null,
@@ -36,6 +38,19 @@ class Create extends Component
         'riwayat_alergi_obat' => null,
         'obat_sedang_dikonsumsi' => null,
         'riwayat_alergi_lainnya' => null,
+    ];
+
+    public $data_estetika = [
+        'problem_dihadapi' => null,
+        'lama_problem' => null,
+        'tindakan_sebelumnya' => null,
+        'penyakit_dialami' => null,
+        'alergi_kosmetik' => null,
+        'sedang_hamil' => null,
+        'usia_kehamilan' => null,
+        'metode_kb' => null,
+        'pengobatan_saat_ini' => null,
+        'produk_kosmetik' => null,
     ];
 
     //ASSESSMENT
@@ -77,7 +92,20 @@ class Create extends Component
                     'obat_sedang_dikonsumsi' => json_decode($this->kajian->dataKesehatan->obat_sedang_dikonsumsi ?? '[]', true),
                     'riwayat_alergi_lainnya' => json_decode($this->kajian->dataKesehatan->riwayat_alergi_lainnya ?? '[]', true),
                 ];
-                // dd($this->data_kesehatan);
+            }
+            if ($this->kajian && $this->kajian->dataEstetika) {
+                $this->data_estetika = [
+                    'problem_dihadapi' => json_decode($this->kajian->dataEstetika->problem_dihadapi ?? '[]', true),
+                    'lama_problem' => $this->kajian->dataEstetika->lama_problem,
+                    'tindakan_sebelumnya' => json_decode($this->kajian->dataEstetika->tindakan_sebelumnya ?? '[]', true),
+                    'penyakit_dialami' => $this->kajian->dataEstetika->penyakit_dialami,
+                    'alergi_kosmetik' => $this->kajian->dataEstetika->alergi_kosmetik,
+                    'sedang_hamil' => $this->kajian->dataEstetika->sedang_hamil,
+                    'usia_kehamilan' => $this->kajian->dataEstetika->usia_kehamilan,
+                    'metode_kb' => json_decode($this->kajian->dataEstetika->metode_kb ?? '[]', true),
+                    'pengobatan_saat_ini' => $this->kajian->dataEstetika->pengobatan_saat_ini,
+                    'produk_kosmetik' => $this->kajian->dataEstetika->produk_kosmetik,
+                ];
             }
         }
     }
@@ -88,8 +116,10 @@ class Create extends Component
             $this->pemeriksaan_fisik,
             $this->tanda_vital,
             $this->data_kesehatan,
+            $this->tingkat_kesadaran,
             $this->diagnosa,
             $this->icd10,
+            $this->data_estetika,
         ]);
     }
 

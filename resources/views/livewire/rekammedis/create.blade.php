@@ -303,16 +303,16 @@
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
                                             <option value="data-kesehatan">Data Kesehatan</option>
-                                            <option value="subjective-2">Sub2</option>
+                                            <option value="data-estetika">Data Estetika</option>
                                         </select>
                                     </div>
-                                    <!-- SUB-1 -->
+                                    <!-- DATA KESEHATAN -->
                                     <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
                                         <x-rekammedis.datakesehatan :data-kesehatan="$data_kesehatan" wire:model="data_kesehatan" />
                                     </div>
-                                    <!-- SUB-2 -->
-                                    <div x-show="selectedFormsSubjective.includes('subjective-2')" style="display: none">
-                                        subjective 2
+                                    <!-- DATA ESTETIKA -->
+                                    <div x-show="selectedFormsSubjective.includes('data-estetika')" style="display: none">
+                                        <x-rekammedis.dataestetika :data-estetika="$data_estetika" wire:model="data_estetika" />
                                     </div>
                                 </div>
                             </div>
