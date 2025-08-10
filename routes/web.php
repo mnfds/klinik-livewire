@@ -139,6 +139,17 @@ Route::middleware(['auth'])->group(function () {
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
+    Route::get('/ajax/icd_10', function (Request $request) {
+        $query = $request->get('q', '');
+        return \App\Models\Icd::where('code', 'like', "%{$query}%")
+            ->orWhere('name_id', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($icd) => [
+                'code' => $icd->code,
+                'label' => "{$icd->code} - {$icd->name_id}",
+            ]);
+    });
 
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 

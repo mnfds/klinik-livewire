@@ -13,6 +13,7 @@ class Create extends Component
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
 
+    // OBJECTIVE
     public $pemeriksaan_fisik = [
         'tinggi_badan' => null,
         'berat_badan' => null,
@@ -27,6 +28,7 @@ class Create extends Component
         'frekuensi_pernapasan' => null,
     ];
 
+    //SUBJECTIVE
     public $data_kesehatan = [
         'keluhan_utama' => null,
         'status_perokok' => null,
@@ -36,6 +38,9 @@ class Create extends Component
         'riwayat_alergi_lainnya' => null,
     ];
 
+    //ASSESSMENT
+    public $diagnosa;
+    public $icd10 = [];
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -83,6 +88,8 @@ class Create extends Component
             $this->pemeriksaan_fisik,
             $this->tanda_vital,
             $this->data_kesehatan,
+            $this->diagnosa,
+            $this->icd10,
         ]);
     }
 
