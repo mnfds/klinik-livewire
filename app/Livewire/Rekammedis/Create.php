@@ -21,6 +21,16 @@ class Create extends Component
         'berat_badan' => null,
         'imt' => null,
     ];
+    public $pemeriksaan_estetika = [
+        'warna_kulit' => 'kuning',
+        'ketebalan_kulit' => null,
+        'kadar_minyak' => null,
+        'kerapuhan_kulit' => null,
+        'kekencangan_kulit' => null,
+        'melasma' => null,
+        'acne' => [],
+        'lesions' => [],
+    ];
 
     public $tanda_vital = [
         'suhu_tubuh' => null,
@@ -41,9 +51,9 @@ class Create extends Component
     ];
 
     public $data_estetika = [
-        'problem_dihadapi' => null,
+        'problem_dihadapi' => [],
         'lama_problem' => null,
-        'tindakan_sebelumnya' => null,
+        'tindakan_sebelumnya' => [],
         'penyakit_dialami' => null,
         'alergi_kosmetik' => null,
         'sedang_hamil' => null,
@@ -120,6 +130,7 @@ class Create extends Component
             $this->diagnosa,
             $this->icd10,
             $this->data_estetika,
+            $this->pemeriksaan_estetika,
         ]);
     }
 

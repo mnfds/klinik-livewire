@@ -48,7 +48,7 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-                <!-- Kolom Kiri (A + C) -->
+                <!-- Kolom Kiri -->
                 <div class="lg:col-span-3 space-y-6">
                     <div class="bg-base-100 text-base-content shadow rounded-box p-6 space-y-4">
                         <div class="tabs tabs-lift">
@@ -325,7 +325,8 @@
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
                                             <option value="tanda-vital">Tanda Vital Pasien</option>
-                                            <option value="pemeriksaan-fisik">Hasil Pemeriksaan Fisik</option>
+                                            <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
+                                            <option value="pemeriksaan-estetika">Pemeriksaan Kulit & Estetika</option>
                                         </select>
                                     </div>
                                     <!-- Tingkat Kesadaran -->
@@ -348,6 +349,10 @@
                                     <!-- Data Fisik -->
                                     <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">
                                         <x-rekammedis.pemeriksaanfisik :pemeriksaan-fisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
+                                    </div>
+                                    <!-- Data Kulit Dan Estetika -->
+                                    <div x-show="selectedFormsObjective.includes('pemeriksaan-estetika')" style="display: none">
+                                        <x-rekammedis.pemeriksaanestetika :pemeriksaan-estetika="$pemeriksaan_estetika" wire:model="pemeriksaan_estetika" />
                                     </div>
                                 </div>
                             </div>
@@ -456,7 +461,7 @@
                     </div>
                 </div>
 
-                <!-- Kolom Kanan (B + D) -->
+                <!-- Kolom Kanan -->
                 <div class="lg:col-span-1">
                     <div class="sticky top-10 space-y-6">
                         <!-- B: Button -->
@@ -465,11 +470,6 @@
                             <button wire:click.prevent="create" class="btn btn-success w-full mb-1" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
-                            </button>
-                            <button class="btn btn-primary mb-1 w-full">
-                                <i class="fa-solid fa-hand-holding-heart"></i>
-                                    Layanan Tersisa
-                                <div class="badge badge-sm badge-base-200 text-base-content">99</div>
                             </button>
                             <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasienTerdaftar->pasien->id]) }}"
                                 class="btn btn-info mb-1 w-full" >
