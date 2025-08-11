@@ -308,11 +308,11 @@
                                     </div>
                                     <!-- DATA KESEHATAN -->
                                     <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
-                                        <x-rekammedis.datakesehatan :data-kesehatan="$data_kesehatan" wire:model="data_kesehatan" />
+                                        <x-rekammedis.datakesehatan :dataKesehatan="$data_kesehatan" wire:model="data_kesehatan" />
                                     </div>
                                     <!-- DATA ESTETIKA -->
                                     <div x-show="selectedFormsSubjective.includes('data-estetika')" style="display: none">
-                                        <x-rekammedis.dataestetika :data-estetika="$data_estetika" wire:model="data_estetika" />
+                                        <x-rekammedis.dataestetika :dataEstetika="$data_estetika" wire:model="data_estetika" />
                                     </div>
                                 </div>
                             </div>
@@ -344,15 +344,15 @@
                                     </div>
                                     <!-- Tanda Vital -->
                                     <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
-                                        <x-rekammedis.tandavital :tanda-vital="$tanda_vital" wire:model="tanda_vital" />
+                                        <x-rekammedis.tandavital :tandaVital="$tanda_vital" wire:model="tanda_vital" />
                                     </div>
                                     <!-- Data Fisik -->
                                     <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">
-                                        <x-rekammedis.pemeriksaanfisik :pemeriksaan-fisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
+                                        <x-rekammedis.pemeriksaanfisik :pemeriksaanFisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
                                     </div>
                                     <!-- Data Kulit Dan Estetika -->
                                     <div x-show="selectedFormsObjective.includes('pemeriksaan-estetika')" style="display: none">
-                                        <x-rekammedis.pemeriksaanestetika :pemeriksaan-estetika="$pemeriksaan_estetika" wire:model="pemeriksaan_estetika" />
+                                        <x-rekammedis.pemeriksaanestetika :pemeriksaanEstetika="$pemeriksaan_estetika" wire:model="pemeriksaan_estetika" />
                                     </div>
                                 </div>
                             </div>
@@ -442,17 +442,17 @@
                                     <div>
                                         <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                         <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                            <option value="plan-1">Plan1</option>
-                                            <option value="plan-2">Plan2</option>
+                                            <option value="rencana-layanan">Rencana Layanan Atau Tindakan</option>
+                                            <option value="rencana-pengobatan">Rencana Pengobatan</option>
                                         </select>
                                     </div>
-                                    <!-- PLAN-1 -->
-                                    <div x-show="selectedFormsPlan.includes('plan-1')" style="display: none">
-                                        plan 1
+                                    <!-- Rencana Layanan/Tindakan -->
+                                    <div x-show="selectedFormsPlan.includes('rencana-layanan')" style="display: none">
+                                        <x-rekammedis.rencanalayanan :layanandanbundling="$layanandanbundling" :rencanaLayanan="$rencana_layanan" wire:model="rencana_layanan" />
                                     </div>
-                                    <!-- PLAN-2 -->
-                                    <div x-show="selectedFormsPlan.includes('plan-2')" style="display: none">
-                                        plan 2
+                                    <!-- Rencana Pengobatan -->
+                                    <div x-show="selectedFormsPlan.includes('rencana-pengobatan')" style="display: none">
+                                        <x-rekammedis.rencanapengobatan :rencanaPengobatan="$rencana_pengobatan" wire:model="rencana_pengobatan" />
                                     </div>
                                 </div>
                             </div>

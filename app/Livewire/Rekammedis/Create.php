@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Rekammedis;
 
+use App\Models\Bundling;
 use App\Models\PasienTerdaftar;
 use App\Models\KajianAwal;
+use App\Models\Pelayanan;
+use App\View\Components\rekammedis\rencanalayanan;
 use Livewire\Component;
 use Livewire\Volt\Compilers\Mount;
 
@@ -12,6 +15,10 @@ class Create extends Component
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
+
+    // berisikan data yang akan dimunculkan pada select layanan/tindakan
+    public $layanan;
+    public $bundling;
 
     // OBJECTIVE
     public $tingkat_kesadaran;
@@ -67,9 +74,33 @@ class Create extends Component
     public $diagnosa;
     public $icd10 = [];
 
+    //PLAN
+    public $rencana_layanan = [
+        'pelayanan_id' => [],
+        'jumlah_pelayanan' => [],
+        'bundling_id' => [],
+        'jumlah_bundling' => [],
+    ];
+
+    public $layanandanbundling = [
+        'layanan' => [],
+        'bundling' => [],
+    ];
+
+    public $rencana_pengobatan = [
+        'pelayanan_id' => [],
+        'jumlah'=> [],
+    ];
+    
+
     public function mount($pasien_terdaftar_id = null)
     {
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
+        $this->layanan = Pelayanan::all();
+        $this->bundling = Bundling::all();
+
+        $this->layanandanbundling['layanan'] = $this->layanan;
+        $this->layanandanbundling['bundling'] = $this->bundling;
 
         if ($this->pasien_terdaftar_id) {
             $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
@@ -131,6 +162,7 @@ class Create extends Component
             $this->icd10,
             $this->data_estetika,
             $this->pemeriksaan_estetika,
+            $this->rencana_layanan,
         ]);
     }
 
