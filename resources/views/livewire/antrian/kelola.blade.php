@@ -41,8 +41,14 @@
                     <!-- name of each tab group should be unique -->
                     <div class="tabs tabs-lift">
 
-                        {{-- Tabel Antrian Masuk Dan Dipanggil --}}
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pendaftaran" checked="checked" style="background-image: none;" />
+                        {{-- TAB ANTRIAN MASUK DAN DIPANGGIL --}}
+                        <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pendaftaran" checked="checked" style="background-image: none;" />
+                            <span class="flex items-center gap-2">
+                                Antrian Pendaftaran
+                                <div class="badge badge-sm badge-primary text-base-primary" wire:poll.visible.5s='updateJumlahPasien'>{{ $jumlahPasien }}</div>
+                            </span>
+                        </label>
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex flex-col md:flex-row gap-4">
                                 <!-- Tabel Antrian Masuk -->
@@ -64,17 +70,30 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pasien Terdaftar" style="background-image: none;" />
+
+                        {{-- TAB PASIEN TERDAFTAR --}}
+                        <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pasien Terdaftar" style="background-image: none;" />
+                            <span class="flex items-center gap-2">
+                                Antrian Pendaftaran
+                                <div class="badge badge-sm badge-primary text-base-primary" wire:poll.visible.5s='updateJumlahPasienTerdaftar'>{{ $jumlahPasienTerdaftar }}</div>
+                            </span>
+                        </label>
                         <div class="tab-content bg-base-100 border-base-300 p-6">
-                            {{-- Isi Tab Konten Antrian Pasien Yang Sudah Terdaftar --}}
                             <h1 class="text-lg font-bold text-base-content">
                                 Antrian Terdaftar
                             </h1>
                             <livewire:pendaftaran.pendaftaran-table />
                         </div>
 
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Sedang Diperiksa" style="background-image: none;" />
+                        {{-- TABS PASIEN DIPERIKSA --}}
+                        <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Sedang Diperiksa" style="background-image: none;" />
+                            <span class="flex items-center gap-2">
+                                Pasien Sedang Diperiksa
+                                <div class="badge badge-sm badge-primary text-base-primary" wire:poll.visible.5s='updateJumlahPasienDiperiksa'>{{ $jumlahPasienDiperiksa }}</div>
+                            </span>
+                        </label>
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <h1 class="text-lg font-bold text-base-content">
                                 Pasien Menunggu Konsultasi

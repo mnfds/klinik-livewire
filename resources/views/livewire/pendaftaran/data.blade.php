@@ -34,7 +34,13 @@
                 <div class="p-6 text-base-content space-y-4">
                     <div class="tabs tabs-lift">
                         {{-- Tabel Antrian Masuk Dan Dipanggil --}}
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Terdaftar" checked="checked" style="background-image: none;" />
+                        <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Terdaftar" checked="checked" style="background-image: none;" />
+                            <span class="flex items-center gap-2">
+                                Pasien Terdaftar
+                                <div class="badge badge-sm badge-primary text-base-primary">{{ $jumlahPasienTerdaftar }}</div>
+                            </span>
+                        </label>
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex justify-between items-center mb-4">
                                 <a wire:navigate href="{{ route('pendaftaran.search') }}" class="btn btn-primary">
@@ -44,7 +50,13 @@
                             <livewire:pendaftaran.pendaftaran-table />
                         </div>
                         
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Menunggu Diperiksa" style="background-image: none;" />
+                        <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
+                            <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pasien Menunggu Diperiksa" style="background-image: none;" />
+                            <span class="flex items-center gap-2">
+                                Pasien Menunggu Diperiksa
+                                <div class="badge badge-sm badge-primary text-base-primary">{{ $jumlahPasienDiperiksa }}</div>
+                            </span>
+                        </label>
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex justify-between items-center mb-4">
                             </div>
