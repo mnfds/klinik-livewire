@@ -32,6 +32,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return PasienTerdaftar::where('status_terdaftar', 'terkaji')
+            ->whereDate('created_at', today())
             ->with(['pasien', 'poliklinik', 'dokter']);
     }
 

@@ -34,7 +34,9 @@ final class Masuk extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return NomorAntrian::query()->where('status','masuk');
+        return NomorAntrian::query()
+            ->whereDate('created_at', today())
+            ->where('status','masuk');
     }
 
     public function relationSearch(): array
