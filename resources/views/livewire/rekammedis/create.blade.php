@@ -60,7 +60,7 @@
                             </label>
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
                                 <h2 class="text-lg font-semibold border-b pb-2">Biodata Pasien</h2>
-                                <div class="space-y-2 text-sm">
+                                <div class="space-y-2 text-sm mt-2">
 
                                     <!-- Baris 1 -->
                                     <div class="grid grid-cols-2 gap-x-6">
@@ -112,7 +112,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
 
                                         {{-- Pemeriksaan Fisik --}}
-                                        @if ($kajian->pemeriksaanFisik)
+                                        @if ($kajian?->pemeriksaanFisik)
                                             <div>
                                                 <div class="font-semibold mb-1">Pemeriksaan Fisik</div>
                                                 <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
@@ -124,7 +124,7 @@
                                         @endif
 
                                         {{-- Tanda Vital --}}
-                                        @if ($kajian->tandaVital)
+                                        @if ($kajian?->tandaVital)
                                             <div>
                                                 <div class="font-semibold mb-1">Tanda Vital</div>
                                                 <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
@@ -137,7 +137,7 @@
                                         @endif
 
                                         {{-- Data Kesehatan --}}
-                                        @if ($kajian->dataKesehatan)
+                                        @if ($kajian?->dataKesehatan)
                                             @php
                                                 $riwayat_penyakit = json_decode($kajian->dataKesehatan->riwayat_penyakit ?? '[]', true);
                                                 $riwayat_alergi_obat = json_decode($kajian->dataKesehatan->riwayat_alergi_obat ?? '[]', true);
@@ -207,7 +207,7 @@
                                         @endif
 
                                         {{-- Data Estetika --}}
-                                        @if ($kajian->dataEstetika)
+                                        @if ($kajian?->dataEstetika)
                                             @php
                                                 $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
                                                 $problem = $decode($kajian->dataEstetika->problem_dihadapi);
@@ -268,6 +268,10 @@
                                                     <div>Produk Kosmetik</div><div>: {{ $kajian->dataEstetika->produk_kosmetik ?? '-' }}</div>
                                                 </div>
                                             </div>
+                                        @endif
+
+                                        @if (!$kajian)
+                                            <p class="mt-2">Tidak tersedia data kajian awal.</p>
                                         @endif
                                     </div>
                                 </div>

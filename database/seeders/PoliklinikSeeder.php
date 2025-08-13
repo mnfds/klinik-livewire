@@ -28,6 +28,13 @@ class PoliklinikSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'nama_poli' => 'Poli Kecantikan',
+                'kode' => 'KCT',
+                'status' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

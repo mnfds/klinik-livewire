@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Pendaftaran;
 
-use App\Models\PasienTerdaftar;
 use Illuminate\Support\Carbon;
+use App\Models\PasienTerdaftar;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class PendaftaranTable extends PowerGridComponent
@@ -32,7 +33,7 @@ final class PendaftaranTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return PasienTerdaftar::where('status_terdaftar', 'terdaftar')
-            ->whereDate('created_at', today())
+            // ->whereDate('created_at', today())
             ->with(['pasien', 'poliklinik', 'dokter']);
     }
 
@@ -120,7 +121,14 @@ final class PendaftaranTable extends PowerGridComponent
                     'onclick' => "Livewire.navigate('" . route('kajian.create', ['pasien_terdaftar_id' => $row->id]) . "')",
                     'class' => 'btn btn-info',
                 ]),
-            
+            Button::add('rekammedisbutton')
+                ->slot('<i class="fa-solid fa-book-medical"></i> Rekam Medis')
+                ->tag('button')
+                ->attributes([
+                    'title' => 'Isi Rekam Medis Pasien',
+                    'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                    'class' => 'btn btn-secondary',
+                ]),
             Button::add('deletepasienterdaftar')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
@@ -160,15 +168,20 @@ final class PendaftaranTable extends PowerGridComponent
             'message' => 'Data berhasil dihapus.',
         ]);
     }
-    /*
+
+
     public function actionRules($row): array
     {
        return [
             // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
+            Rule::button('kajianbutton')
+                ->when(fn($row) => $row->poliklinik->nama_poli === 'Poli Kecantikan')
+                ->hide(),
+
+            Rule::button('rekammedisbutton')
+                ->when(fn($row) => $row->poliklinik->nama_poli != 'Poli Kecantikan')
                 ->hide(),
         ];
     }
-    */
+
 }
