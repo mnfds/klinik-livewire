@@ -16,7 +16,20 @@ class Display extends Component
 
     public function mount()
     {
-        $this->poli = PoliKlinik::where('status', true)->get();
+        $this->updateNomor();
+    }
+
+    public function updateNomor()
+    {
+        $this->poli = PoliKlinik::where('status', true)
+            ->get()
+            ->map(function ($poli) {
+                $poli->nomor_terakhir = NomorAntrian::where('poli_id', $poli->id)
+                    ->whereDate('created_at', now())
+                    ->latest('nomor_antrian')
+                    ->first()?->nomor_antrian ?? 0;
+                return $poli;
+            });
     }
 
     public function render()
@@ -29,7 +42,10 @@ class Display extends Component
         $poli = PoliKlinik::findOrFail($poliId);
 
         // Ambil nomor antrian terakhir dari poli ini
-        $last = NomorAntrian::where('poli_id', $poliId)->orderBy('nomor_antrian', 'desc')->first();
+        $last = NomorAntrian::where('poli_id', $poliId)
+            ->orderBy('nomor_antrian', 'desc')
+            ->whereDate('created_at', now())
+            ->first();
         $nextNumber = $last ? $last->nomor_antrian + 1 : 1;
 
         // Simpan nomor antrian

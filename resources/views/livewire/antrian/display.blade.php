@@ -8,16 +8,20 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" wire:poll.visible.5s='updateNomor'>
         @foreach ($poli as $p)
             <div class="card bg-base-100 text-base-content shadow-md hover:shadow-lg transition duration-300">
                 <div class="card-body">
-                    <h1 class="card-title">{{ $p->nama_poli }}</h1>
+                    <h1 class="card-title text-lg font-bold tracking-wide">{{ Str::title($p->nama_poli) }}</h1>
+                    <p class="text-sm font-semibold uppercase text-gray-700">
+                        Nomor Antrian Terakhir : {{ $p->nomor_terakhir }}
+                    </p>
                     <p class="text-sm text-base-content/70">
                         Silakan klik tombol di bawah untuk mengambil nomor antrian.
                     </p>
                     <div class="card-actions justify-end mt-4">
-                        <button wire:click="addNomorAntrian({{ $p->id }})" class="btn btn-primary btn-sm gap-2 w-full">
+                        <button wire:click="addNomorAntrian({{ $p->id }})"
+                            class="btn btn-primary btn-sm gap-2 w-full">
                             <i class="fa-solid fa-ticket"></i>
                             Ambil Nomor
                         </button>

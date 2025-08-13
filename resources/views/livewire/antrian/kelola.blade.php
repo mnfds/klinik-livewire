@@ -106,3 +106,6 @@
         </div>
     </div>
 </div>
+@push('scripts')
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+@endpush
