@@ -294,8 +294,16 @@
                         <form wire:submit.prevent="create" class="space-y-6">
                             <input type="hidden" wire:model.defer='id_pasien_terdaftar' value="{{  $pasienTerdaftar->id }}" name="id_pasien_terdaftar">
 
+                            {{-- NAVIGATION --}}
+                            <div class="bg-base-100 text-base-content shadow rounded-box py-4 px-8 flex gap-6 justify-between sticky top-0 z-50">
+                                <a href="#subjective" class="font-semibold hover:text-primary">SUBJECTIVE</a>
+                                <a href="#objective" class="font-semibold hover:text-primary">OBJECTIVE</a>
+                                <a href="#assessment" class="font-semibold hover:text-primary">ASSESSMENT</a>
+                                <a href="#plan" class="font-semibold hover:text-primary">PLAN</a>
+                            </div>
+
                             {{-- SUBJECTIVE --}}
-                            <div class="bg-base-200 shadow rounded-lg py-6 px-3"
+                            <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
                                 x-data="formChoicesSubjective()" 
                                 x-init="initChoicesSubjective()" 
                                 x-effect="$wire.selected_forms_subjective = selectedFormsSubjective">
@@ -319,7 +327,7 @@
                                 </div>
                             </div>
                             {{-- OBJECTIVE --}}
-                            <div class="bg-base-200 shadow rounded-lg py-6 px-3"
+                            <div id="objective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
                                 x-data="formChoicesObjective()"
                                 x-init="initChoicesObjective()"
                                 x-effect="$wire.selected_forms_objective = selectedFormsObjective">
@@ -361,7 +369,7 @@
                                 </div>
                             </div>
                             {{-- ASSESSMENT --}}
-                            <div class="bg-base-200 shadow rounded-lg py-6 px-3"
+                            <div id="assessment" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
                                 x-data="formChoicesAssessment()"
                                 x-init="initChoicesAssessment()"
                                 x-effect="$wire.selected_forms_assessment = selectedFormsAssessment">
@@ -441,7 +449,7 @@
                                 </div>
                             </div>
                             {{-- PLAN --}}
-                            <div class="bg-base-200 shadow rounded-lg py-6 px-3"
+                            <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
                                 x-data="formChoicesPlan()"
                                 x-init="initChoicesPlan()"
                                 x-effect="$wire.selected_forms_plan = selectedFormsPlan">
