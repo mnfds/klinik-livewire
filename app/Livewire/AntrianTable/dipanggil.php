@@ -87,7 +87,7 @@ final class Dipanggil extends PowerGridComponent
                 ->tag('button')
                 ->attributes([
                     'title' => 'Panggil Antrian',
-                    'onclick' => "responsiveVoice.speak('Panggilan Untuk Nomor antrian, {$row->kode}{$row->nomor_antrian}, silakan menuju loket', 'Indonesian Female')",
+                    'onclick' => "responsiveVoice.speak('Nomor Antrian, {$row->kode}{$row->nomor_antrian}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
                     'class' => 'btn btn-secondary',
                 ]),
             Button::add('deleteButton')
