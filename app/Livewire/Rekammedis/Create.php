@@ -90,6 +90,8 @@ class Create extends Component
     public $rencana_pengobatan = [
         'produkdanobat_id' => [],
         'jumlah_produkdanobat'=> [],
+        'satuan_produkdanobat'=> [],
+        'aturan_pakai_produkdanobat'=> [],
     ];
     
 
