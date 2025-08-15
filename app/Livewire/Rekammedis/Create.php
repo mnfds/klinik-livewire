@@ -88,8 +88,8 @@ class Create extends Component
     ];
 
     public $rencana_pengobatan = [
-        'pelayanan_id' => [],
-        'jumlah'=> [],
+        'produkdanobat_id' => [],
+        'jumlah_produkdanobat'=> [],
     ];
     
 
@@ -163,6 +163,7 @@ class Create extends Component
             $this->data_estetika,
             $this->pemeriksaan_estetika,
             $this->rencana_layanan,
+            $this->rencana_pengobatan,
         ]);
     }
 

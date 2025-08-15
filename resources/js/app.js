@@ -6,7 +6,7 @@ import './bootstrap';
 import './../../vendor/power-components/livewire-powergrid/dist/powergrid'
 
 function initThemeToggle() {
-    const savedTheme = localStorage.getItem('theme') || 'acid';
+    const savedTheme = localStorage.getItem('theme') || 'emerald';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     const themeToggles = document.querySelectorAll('input.theme-controller');
@@ -20,7 +20,7 @@ function initThemeToggle() {
         toggle.dataset.themeBound = 'true';
 
         toggle.addEventListener('change', function () {
-            const newTheme = this.checked ? 'night' : 'acid';
+            const newTheme = this.checked ? 'night' : 'emerald';
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
 

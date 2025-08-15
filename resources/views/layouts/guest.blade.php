@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <script>
-    const savedTheme = localStorage.getItem('theme') || 'acid';
+    const savedTheme = localStorage.getItem('theme') || 'emerald';
     document.documentElement.setAttribute('data-theme', savedTheme);
 </script>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data x-init="const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'acid'); document.documentElement.setAttribute('data-theme', theme);">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data x-init="const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'emerald'); document.documentElement.setAttribute('data-theme', theme);">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

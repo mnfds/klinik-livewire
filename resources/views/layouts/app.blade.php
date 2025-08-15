@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-    const savedTheme = localStorage.getItem('theme') || 'acid';
+    const savedTheme = localStorage.getItem('theme') || 'emerald';
     document.documentElement.setAttribute('data-theme', savedTheme);
 </script>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data
       x-init="
-        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'acid');
+        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'emerald');
         document.documentElement.setAttribute('data-theme', theme);
       "
 >
@@ -49,7 +49,7 @@
 
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-base-300 text-base-content">
+    <body class="font-sans antialiased bg-base-200 text-base-content">
         <div x-data="sidebar()" x-init="init()" class="min-h-screen">
             <livewire:layout.navigation />
             <livewire:layout.sidebar />

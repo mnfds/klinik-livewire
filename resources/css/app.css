@@ -5,6 +5,41 @@
   /* themes: light --default, dark --prefersdark, cupcake, aqua, coffee; */
   themes: all;
 }
+/* @plugin "daisyui"; */
+@plugin "daisyui/theme" {
+  name: "emerald";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98% 0.001 106.423);
+  --color-base-200: oklch(96% 0.018 272.314);
+  --color-base-300: oklch(85% 0.138 181.071);
+  --color-base-content: oklch(12% 0.042 264.695);
+  --color-primary: oklch(70% 0.14 182.503);
+  --color-primary-content: oklch(98% 0.003 247.858);
+  --color-secondary: oklch(61.302% 0.202 261.294);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(86% 0.127 207.078);
+  --color-accent-content: oklch(0% 0 0);
+  --color-neutral: oklch(86% 0.022 252.894);
+  --color-neutral-content: oklch(13% 0.028 261.692);
+  --color-info: oklch(72.06% 0.191 231.6);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(59% 0.145 163.225);
+  --color-success-content: oklch(98% 0.002 247.839);
+  --color-warning: oklch(83% 0.128 66.29);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(57% 0.245 27.325);
+  --color-error-content: oklch(98% 0.003 247.858);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.21875rem;
+  --size-field: 0.21875rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
