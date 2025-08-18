@@ -464,30 +464,22 @@
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
                                         <option value="rencana-layanan">Rencana Layanan Atau Tindakan</option>
-                                        <option value="rencana-pengobatan">Rencana Pengobatan</option>
+                                        <option value="obat-non-racikan">Obat Non Racikan</option>
+                                        <option value="obat-racikan">Obat Racikan</option>
                                     </select>
                                 </div>
 
                                 <!-- Rencana Layanan/Tindakan -->
-                                <div 
-                                    x-show="selectedFormsPlan.includes('rencana-layanan')" 
-                                    style="display: none"
-                                    wire:ignore
-                                >
+                                <div x-show="selectedFormsPlan.includes('rencana-layanan')" style="display: none" wire:ignore >
                                     <x-rekammedis.rencanalayanan 
                                         :layanandanbundling="$layanandanbundling" 
                                         :rencanaLayanan="$rencana_layanan"
                                     />
                                 </div>
 
-                                <!-- Rencana Pengobatan -->
-                                <div 
-                                    x-show="selectedFormsPlan.includes('rencana-pengobatan')" 
-                                    style="display: none"
-                                    wire:ignore
-                                >
-                                    <x-rekammedis.rencanapengobatan 
-                                        :rencanaPengobatan="$rencana_pengobatan"
+                                <div x-show="selectedFormsPlan.includes('obat-non-racikan')" style="display: none" wire:ignore >
+                                    <x-rekammedis.obatnonracikan 
+                                        :obatNonRacikan="$obat_non_racikan"
                                     />
                                 </div>
                             </div>

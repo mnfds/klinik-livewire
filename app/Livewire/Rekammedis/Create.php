@@ -87,11 +87,11 @@ class Create extends Component
         'bundling' => [],
     ];
 
-    public $rencana_pengobatan = [
-        'produkdanobat_id' => [],
-        'jumlah_produkdanobat'=> [],
-        'satuan_produkdanobat'=> [],
-        'aturan_pakai_produkdanobat'=> [],
+    public $obat_non_racikan = [
+        'nama_obat_non_racikan' => [],
+        'jumlah_obat_non_racikan'=> [],
+        'satuan_obat_non_racikan'=> [],
+        'aturan_pakai_obat_non_racikan'=> [],
     ];
     
 
@@ -165,7 +165,7 @@ class Create extends Component
             $this->data_estetika,
             $this->pemeriksaan_estetika,
             $this->rencana_layanan,
-            $this->rencana_pengobatan,
+            $this->obat_non_racikan,
         ]);
     }
 

@@ -10,7 +10,9 @@ use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\JamKerja\DataJamKerja;
+use App\Models\KfaObat;
 use App\Models\NomorAntrian;
+use App\Models\ProdukDanObat;
 
 // Route::view('/', 'welcome');
 
@@ -150,7 +152,36 @@ Route::middleware(['auth'])->group(function () {
                 'label' => "{$icd->code} - {$icd->name_id}",
             ]);
     });
+    // ajax get data KFA OBAT dan ProdukDanObat (internal)
+    Route::get('/ajax/obat-kfa', function (Request $request) {
+        $query = $request->get('q', '');
 
+        // Ambil data dari KfaObat
+        $kfaObat = KfaObat::where('nama_obat_aktual', 'like', "%{$query}%")
+            ->limit(10)
+            ->get()
+            ->map(fn ($obat) => [
+                'id' => 'kfa_' . $obat->id, // prefix biar unik
+                'text' => $obat->nama_obat_aktual . ' - ' . $obat->bentuk_sediaan . ' - KFA',
+                'source' => 'KFA'
+            ]);
+
+        // Ambil data dari ProdukDanObat (internal)
+        $produkObat = ProdukDanObat::where('nama_dagang', 'like', "%{$query}%")
+            ->orWhere('kode', 'like', "%{$query}%")
+            ->limit(10)
+            ->get()
+            ->map(fn ($produk) => [
+                'id' => 'produk_' . $produk->id, // prefix biar unik
+                'text' => $produk->nama_dagang . ' - ' . $produk->sediaan . ' - APOTEK',
+                'source' => 'INTERNAL'
+            ]);
+
+        // Gabungkan hasil
+        $merged = $kfaObat->concat($produkObat);
+
+        return response()->json($merged->values());
+    });
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
 });

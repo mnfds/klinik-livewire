@@ -2,18 +2,18 @@
     x-data="{
         obatItems: [{
             id: Date.now() + Math.random(),
-            produkdanobat_id: [],
-            jumlah_produkdanobat: '',
-            satuan_produkdanobat: '',
-            aturan_pakai_produkdanobat: ''
+            nama_obat_non_racikan: '',
+            jumlah_obat_non_racikan: '',
+            satuan_obat_non_racikan: '',
+            aturan_pakai_obat_non_racikan: ''
         }],
         addObat() {
             this.obatItems.push({
                 id: Date.now() + Math.random(),
-                produkdanobat_id: [],
-                jumlah_produkdanobat: '',
-                satuan_produkdanobat: '',
-                aturan_pakai_produkdanobat: ''
+                nama_obat_non_racikan: '',
+                jumlah_obat_non_racikan: '',
+                satuan_obat_non_racikan: '',
+                aturan_pakai_obat_non_racikan: ''
             });
             this.syncObatToLivewire();
         },
@@ -25,10 +25,10 @@
             this.syncObatToLivewire();
         },
         syncObatToLivewire() {
-            $wire.set('rencana_pengobatan.produkdanobat_id', this.obatItems.map(item => item.produkdanobat_id));
-            $wire.set('rencana_pengobatan.jumlah_produkdanobat', this.obatItems.map(item => item.jumlah_produkdanobat));
-            $wire.set('rencana_pengobatan.satuan_produkdanobat', this.obatItems.map(item => item.satuan_produkdanobat));
-            $wire.set('rencana_pengobatan.aturan_pakai_produkdanobat', this.obatItems.map(item => item.aturan_pakai_produkdanobat));
+            $wire.set('obat_non_racikan.nama_obat_non_racikan', this.obatItems.map(item => item.nama_obat_non_racikan));
+            $wire.set('obat_non_racikan.jumlah_obat_non_racikan', this.obatItems.map(item => item.jumlah_obat_non_racikan));
+            $wire.set('obat_non_racikan.satuan_obat_non_racikan', this.obatItems.map(item => item.satuan_obat_non_racikan));
+            $wire.set('obat_non_racikan.aturan_pakai_obat_non_racikan', this.obatItems.map(item => item.aturan_pakai_obat_non_racikan));
         }
     }"
 >
@@ -41,15 +41,15 @@
                 <!-- Baris 1: Nama Obat -->
                 <div class="flex items-center gap-2">
                     <div class="flex-1"
-                        x-data="multiSelectObat(() => item.produkdanobat_id, (val) => { item.produkdanobat_id = val; syncItemObat(index); })"
+                        x-data="singleSelectObat(() => item.nama_obat_non_racikan, (val) => { item.nama_obat_non_racikan = val; syncItemObat(index); })"
                         x-init="init()"
                     >
                         <div class="relative" @click="setTimeout(() => open = true, 10)">
                             <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem]">
-                                <template x-for="(tag, idx) in selected" :key="idx">
+                                <template x-if="selected">
                                     <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
-                                        <span x-text="tag"></span>
-                                        <button type="button" @click.stop="remove(tag)">×</button>
+                                        <span x-text="selected"></span>
+                                        <button type="button" @click.stop="remove()">×</button>
                                     </span>
                                 </template>
                                 <input type="text"
@@ -64,9 +64,9 @@
                                 class="absolute z-10 mt-1 w-full bg-base-200 border border-gray-500 rounded-lg shadow-lg max-h-40 overflow-y-auto">
                                 <template x-if="filteredOptions.length > 0">
                                     <template x-for="(opt, idx) in filteredOptions" :key="idx">
-                                        <div @click="toggle(opt)"
+                                        <div @click="choose(opt)"
                                             class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer text-sm m-1"
-                                            :class="selected.includes(opt) ? 'bg-primary font-semibold' : ''">
+                                            :class="selected === opt ? 'bg-primary font-semibold' : ''">
                                             <span x-text="opt"></span>
                                         </div>
                                     </template>
@@ -92,7 +92,7 @@
                         </label>
                         <input type="number" min="1" placeholder="Jumlah"
                             class="input input-bordered w-full"
-                            x-model="item.jumlah_produkdanobat"
+                            x-model="item.jumlah_obat_non_racikan"
                             @input="syncItemObat(index)" />
                     </div>
 
@@ -102,7 +102,7 @@
                         </label>
                         <input type="text" placeholder="Satuan"
                             class="input input-bordered w-full"
-                            x-model="item.satuan_produkdanobat"
+                            x-model="item.satuan_obat_non_racikan"
                             @input="syncItemObat(index)" />
                     </div>
 
@@ -112,7 +112,7 @@
                         </label>
                         <input type="text" placeholder="Aturan Pakai"
                             class="input input-bordered w-full"
-                            x-model="item.aturan_pakai_produkdanobat"
+                            x-model="item.aturan_pakai_obat_non_racikan"
                             @input="syncItemObat(index)" />
                     </div>
                 </div>
@@ -120,25 +120,19 @@
         </template>
         
         <!-- Tombol tambah -->
-
         <button type="button" class="btn btn-primary btn-sm mt-2" @click="addObat">+ Tambah Obat</button>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    function multiSelectObat(getModel, setModel) {
+    function singleSelectObat(getModel, setModel) {
         return {
             open: false,
-            selected: getModel(),
+            selected: getModel() || '', // simpan 1 value
             search: '',
             filteredOptions: [],
 
-            init() {
-                if (!Array.isArray(this.selected)) {
-                    this.selected = [];
-                }
-            },
             fetchOptions() {
                 if (this.search.trim() === '') {
                     this.filteredOptions = [];
@@ -150,18 +144,15 @@
                         this.filteredOptions = data.map(obat => obat.text);
                     });
             },
-            toggle(item) {
-                if (!this.selected.includes(item)) {
-                    this.selected.push(item);
-                } else {
-                    this.selected = this.selected.filter(i => i !== item);
-                }
+            choose(item) {
+                this.selected = item;
                 setModel(this.selected);
                 this.search = '';
                 this.filteredOptions = [];
+                this.open = false;
             },
-            remove(item) {
-                this.selected = this.selected.filter(i => i !== item);
+            remove() {
+                this.selected = '';
                 setModel(this.selected);
             }
         }
