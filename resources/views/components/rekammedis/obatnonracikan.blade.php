@@ -32,7 +32,7 @@
         }
     }"
 >
-    <div class="divider">Rencana Pengobatan</div>
+    <div class="divider">Pemberian Obat Non Racikan</div>
     <div class="mb-4 p-4 border-base-300 rounded-lg bg-base-100">
         <p class="font-bold text-base mb-3">Obat Non Racikan</p>
 

@@ -93,6 +93,19 @@ class Create extends Component
         'satuan_obat_non_racikan'=> [],
         'aturan_pakai_obat_non_racikan'=> [],
     ];
+    public $obat_racikan = [
+        'nama_racikan' => [],
+        'jumlah_racikan' => [],
+        'satuan_racikan' => [],
+        'aturan_pakai_racikan' => [],
+        'metode_racikan' => [],
+    ];
+
+    public $bahan_racikan = [
+        'nama_obat_racikan' => [],
+        'jumlah_obat_racikan' => [],
+        'satuan_obat_racikan' => [],
+    ];
     
 
     public function mount($pasien_terdaftar_id = null)
@@ -166,6 +179,8 @@ class Create extends Component
             $this->pemeriksaan_estetika,
             $this->rencana_layanan,
             $this->obat_non_racikan,
+            $this->obat_racikan,
+            $this->bahan_racikan,
         ]);
     }
 
