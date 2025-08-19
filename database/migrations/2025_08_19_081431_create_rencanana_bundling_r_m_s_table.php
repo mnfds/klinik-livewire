@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rencana_layanan_r_m_s', function (Blueprint $table) {
+        Schema::create('rencanana_bundling_r_m_s', function (Blueprint $table) {
             $table->id();
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
 
-            $table->foreignId('pelayanan_id')->constrained('produk_dan_obats')->onDelete('cascade');
-            $table->integer('jumlah_pelayanan');
+            $table->foreignId('bundling_id')->constrained('bundlings')->onDelete('cascade');
+            $table->integer('jumlah_bundling');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rencana_layanan_r_m_s');
+        Schema::dropIfExists('rencanana_bundling_r_m_s');
     }
 };

@@ -296,8 +296,8 @@
                     <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                         <h2 class="text-lg font-semibold border-b pb-2">Form Rekam Medis</h2>
                         <form wire:submit.prevent="create" class="space-y-6">
-                            <input type="hidden" wire:model.defer='id_pasien_terdaftar' value="{{  $pasienTerdaftar->id }}" name="id_pasien_terdaftar">
-
+                            <input type="hidden" wire:model.defer='nama_dokter'>
+                            <input type="hidden" wire:model.defer='pasien_terdaftar_id'>
                             {{-- NAVIGATION --}}
                             <div class="bg-base-100 text-base-content shadow rounded-box py-4 px-8 flex gap-6 justify-between sticky top-0 z-50">
                                 <a href="#subjective" class="font-semibold hover:text-primary">SUBJECTIVE</a>
@@ -464,12 +464,13 @@
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
                                         <option value="rencana-layanan">Rencana Layanan Atau Tindakan</option>
+                                        <option value="rencana-bundling">Paket bundling</option>
                                         <option value="obat-non-racikan">Obat Non Racikan</option>
                                         <option value="obat-racikan">Obat Racikan</option>
                                     </select>
                                 </div>
 
-                                <!-- Rencana Layanan/Tindakan -->
+                                <!-- RENCANA LAYANAN/TINDAKAN -->
                                 <div x-show="selectedFormsPlan.includes('rencana-layanan')" style="display: none" wire:ignore >
                                     <x-rekammedis.rencanalayanan 
                                         :layanandanbundling="$layanandanbundling" 
@@ -477,12 +478,22 @@
                                     />
                                 </div>
 
+                                <!-- RENCANA BUNDLING -->
+                                <div x-show="selectedFormsPlan.includes('rencana-bundling')" style="display: none" wire:ignore >
+                                    <x-rekammedis.rencanabundling 
+                                        :layanandanbundling="$layanandanbundling" 
+                                        :rencanaBundling="$rencana_bundling"
+                                    />
+                                </div>
+
+                                <!-- OBAT NON RACIK -->
                                 <div x-show="selectedFormsPlan.includes('obat-non-racikan')" style="display: none" wire:ignore >
                                     <x-rekammedis.obatnonracikan 
                                         :obatNonRacikan="$obat_non_racikan"
                                     />
                                 </div>
 
+                                <!-- OBAT RACIKAN -->
                                 <div x-show="selectedFormsPlan.includes('obat-racikan')" style="display: none" wire:ignore >
                                     <x-rekammedis.obatracikan 
                                         :obatRacikan="$obat_racikan"

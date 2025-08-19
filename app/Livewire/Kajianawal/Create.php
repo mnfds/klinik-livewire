@@ -150,16 +150,16 @@ class Create extends Component
 
             DB::commit();
             
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Pelayanan berhasil ditambahkan.'
-        ]);
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Pelayanan berhasil ditambahkan.'
+            ]);
 
-        $this->dispatch('closeStoreModal');
+            $this->dispatch('closeStoreModal');
 
-        $this->reset();
+            $this->reset();
 
-        return redirect()->route('pendaftaran.data');
+            return redirect()->route('pendaftaran.data');
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('toast', [
