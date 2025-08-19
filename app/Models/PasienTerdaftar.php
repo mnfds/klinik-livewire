@@ -30,4 +30,9 @@ class PasienTerdaftar extends Model
     {
         return $this->hasOne(KajianAwal::class);
     }
+
+    public function rekamMedis()
+    {
+        return $this->hasOne(RekamMedis::class);
+    }
 }

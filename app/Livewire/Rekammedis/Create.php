@@ -20,6 +20,12 @@ class Create extends Component
     public $layanan;
     public $bundling;
 
+    // FORM DATA YANG PILIH //
+    public array $selected_forms_subjective = [];
+    public array $selected_forms_objective = [];
+    public array $selected_forms_assessment = [];
+    public array $selected_forms_plan = [];
+
     // OBJECTIVE
     public $tingkat_kesadaran;
 
@@ -169,18 +175,22 @@ class Create extends Component
     public function create()
     {
         dd([
-            $this->pemeriksaan_fisik,
-            $this->tanda_vital,
-            $this->data_kesehatan,
-            $this->tingkat_kesadaran,
-            $this->diagnosa,
-            $this->icd10,
-            $this->data_estetika,
-            $this->pemeriksaan_estetika,
-            $this->rencana_layanan,
-            $this->obat_non_racikan,
-            $this->obat_racikan,
-            $this->bahan_racikan,
+            $this->selected_forms_subjective,
+            $this->selected_forms_objective,
+            $this->selected_forms_assessment,
+            $this->selected_forms_plan,
+            // $this->pemeriksaan_fisik,
+            // $this->tanda_vital,
+            // $this->data_kesehatan,
+            // $this->tingkat_kesadaran,
+            // $this->diagnosa,
+            // $this->icd10,
+            // $this->data_estetika,
+            // $this->pemeriksaan_estetika,
+            // $this->rencana_layanan,
+            // $this->obat_non_racikan,
+            // $this->obat_racikan,
+            // $this->bahan_racikan,
         ]);
     }
 
