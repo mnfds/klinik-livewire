@@ -122,20 +122,37 @@ class Create extends Component
         'aturan_pakai_obat_non_racikan'=> [],
     ];
 
-    public $obat_racikan = [
-        'nama_racikan' => [],
-        'jumlah_racikan' => [],
-        'satuan_racikan' => [],
-        'aturan_pakai_racikan' => [],
-        'metode_racikan' => [],
+    // public $obat_racikan = [
+    //     'nama_racikan' => [],
+    //     'jumlah_racikan' => [],
+    //     'satuan_racikan' => [],
+    //     'aturan_pakai_racikan' => [],
+    //     'metode_racikan' => [],
+    // ];
+
+    // public $bahan_racikan = [
+    //     'nama_obat_racikan' => [],
+    //     'jumlah_obat_racikan' => [],
+    //     'satuan_obat_racikan' => [],
+    // ];
+
+    public $racikanItems = [
+        [
+            'nama_racikan' => '',
+            'jumlah_racikan' => '',
+            'satuan_racikan' => '',
+            'aturan_pakai_racikan' => '',
+            'metode_racikan' => '',
+            'bahan' => [
+                [
+                    'nama_obat_racikan' => '',
+                    'jumlah_obat_racikan' => '',
+                    'satuan_obat_racikan' => '',
+                ]
+            ],
+        ],
     ];
 
-    public $bahan_racikan = [
-        'nama_obat_racikan' => [],
-        'jumlah_obat_racikan' => [],
-        'satuan_obat_racikan' => [],
-    ];
-    
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -355,28 +372,25 @@ class Create extends Component
                 
                 // SIMPAN DATA OBAT RACIKAN
                 if (in_array('obat-racikan', $this->selected_forms_plan)) {
-                    dd([
-                        $this->obat_racikan,
-                        $this->bahan_racikan,
-                    ]);
-                    foreach ($this->obat_racikan['nama_racikan'] as $index => $namaRacikan) {
-                        // 1. Buat racikan
+                    foreach ($this->racikanItems as $racikan) {
+                        // 1. Buat racikan utama
                         $obatRacikan = ObatRacikanRM::create([
-                            'rekam_medis_id' => $rekammedis->id,
-                            'nama_racikan' => $namaRacikan,
-                            'jumlah_racikan' => $this->obat_racikan['jumlah_racikan'][$index] ?? 1,
-                            'satuan_racikan' => $this->obat_racikan['satuan_racikan'][$index] ?? null,
-                            'aturan_pakai_racikan' => $this->obat_racikan['aturan_pakai_racikan'][$index] ?? null,
-                            'metode_racikan' => $this->obat_racikan['metode_racikan'][$index] ?? null,
+                            'rekam_medis_id'      => $rekammedis->id,
+                            'nama_racikan'        => $racikan['nama_racikan'] ?? null,
+                            'jumlah_racikan'      => $racikan['jumlah_racikan'] ?? 1,
+                            'satuan_racikan'      => $racikan['satuan_racikan'] ?? null,
+                            'aturan_pakai_racikan'=> $racikan['aturan_pakai_racikan'] ?? null,
+                            'metode_racikan'      => $racikan['metode_racikan'] ?? null,
                         ]);
 
-                        // 2. Buat bahan untuk racikan ini
-                        if (!empty($this->bahan_racikan['nama_obat_racikan'][$index])) {
-                            foreach ($this->bahan_racikan['nama_obat_racikan'][$index] as $bahanIndex => $namaBahan) {
+                        // 2. Simpan bahan racikan (jika ada)
+                        if (!empty($racikan['bahan']) && is_array($racikan['bahan'])) {
+                            foreach ($racikan['bahan'] as $bahan) {
                                 $obatRacikan->bahanRacikan()->create([
-                                    'nama_obat_racikan' => $namaBahan,
-                                    'jumlah_obat_racikan' => $this->bahan_racikan['jumlah_obat_racikan'][$index][$bahanIndex] ?? 1,
-                                    'satuan_obat_racikan' => $this->bahan_racikan['satuan_obat_racikan'][$index][$bahanIndex] ?? null,
+                                    'obat_racikan_id' => $obatRacikan->id,
+                                    'nama_obat_racikan' => $bahan['nama_obat_racikan'] ?? null,
+                                    'jumlah_obat_racikan' => $bahan['jumlah_obat_racikan'] ?? 1,
+                                    'satuan_obat_racikan' => $bahan['satuan_obat_racikan'] ?? null,
                                 ]);
                             }
                         }

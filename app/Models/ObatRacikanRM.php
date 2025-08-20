@@ -16,6 +16,6 @@ class ObatRacikanRM extends Model
 
     public function bahanRacikan()
     {
-        return $this->hasMany(BahanRacikanRM::class);
+        return $this->hasMany(BahanRacikanRM::class, 'obat_racikan_id');
     }
 }

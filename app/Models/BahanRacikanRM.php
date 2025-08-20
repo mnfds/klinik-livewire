@@ -11,6 +11,6 @@ class BahanRacikanRM extends Model
 
     public function obatRacikan()
     {
-        return $this->belongsTo(ObatRacikanRM::class);
+        return $this->belongsTo(ObatRacikanRM::class, 'obat_racikan_id');
     }
 }

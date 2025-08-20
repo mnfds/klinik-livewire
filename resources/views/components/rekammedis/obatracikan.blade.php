@@ -1,82 +1,16 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
-    x-data="{
-        racikanItems: [{
-            id: Date.now() + Math.random(),
-            nama_racikan: '',
-            jumlah_racikan: '',
-            satuan_racikan: '',
-            aturan_pakai_racikan: '',
-            metode_racikan: '',
-            bahan: [{
-                id: Date.now() + Math.random(),
-                nama_obat_racikan: '',
-                jumlah_obat_racikan: '',
-                satuan_obat_racikan: ''
-            }]
-        }],
-        addRacikan() {
-            this.racikanItems.push({
-                id: Date.now() + Math.random(),
-                nama_racikan: '',
-                jumlah_racikan: '',
-                satuan_racikan: '',
-                aturan_pakai_racikan: '',
-                metode_racikan: '',
-                bahan: [{
-                    id: Date.now() + Math.random(),
-                    nama_obat_racikan: '',
-                    jumlah_obat_racikan: '',
-                    satuan_obat_racikan: ''
-                }]
-            });
-            this.syncToLivewire();
-        },
-        removeRacikan(i) {
-            this.racikanItems.splice(i, 1);
-            this.syncToLivewire();
-        },
-        addBahan(i) {
-            this.racikanItems[i].bahan.push({
-                id: Date.now() + Math.random(),
-                nama_obat_racikan: '',
-                jumlah_obat_racikan: '',
-                satuan_obat_racikan: ''
-            });
-            this.syncToLivewire();
-        },
-        removeBahan(i, j) {
-            this.racikanItems[i].bahan.splice(j, 1);
-            this.syncToLivewire();
-        },
-        syncItem() {
-            this.syncToLivewire();
-        },
-        syncToLivewire() {
-            // mapping untuk Livewire
-            $wire.set('obat_racikan.nama_racikan', this.racikanItems.map(r => r.nama_racikan));
-            $wire.set('obat_racikan.jumlah_racikan', this.racikanItems.map(r => r.jumlah_racikan));
-            $wire.set('obat_racikan.satuan_racikan', this.racikanItems.map(r => r.satuan_racikan));
-            $wire.set('obat_racikan.aturan_pakai_racikan', this.racikanItems.map(r => r.aturan_pakai_racikan));
-            $wire.set('obat_racikan.metode_racikan', this.racikanItems.map(r => r.metode_racikan));
+    x-data="racikanForm(@entangle('racikanItems'))">
 
-            // flatten bahan racikan
-            $wire.set('bahan_racikan.nama_obat_racikan', this.racikanItems.flatMap(r => r.bahan.map(b => b.nama_obat_racikan)));
-            $wire.set('bahan_racikan.jumlah_obat_racikan', this.racikanItems.flatMap(r => r.bahan.map(b => b.jumlah_obat_racikan)));
-            $wire.set('bahan_racikan.satuan_obat_racikan', this.racikanItems.flatMap(r => r.bahan.map(b => b.satuan_obat_racikan)));
-        }
-    }"
->
     <div class="divider">Pemberian Obat Racikan</div>
 
     <template x-for="(racikan, i) in racikanItems" :key="racikan.id">
         <div class="mb-6 p-4 border border-base-300 rounded-lg bg-base-100">
-            
+
             <!-- Data Racikan Utama -->
             <div class="flex items-center gap-2 mb-2">
                 <input type="text" placeholder="Nama Racikan"
                     class="input input-bordered flex-1"
-                    x-model="racikan.nama_racikan"
-                    @input="syncItem()" />
+                    x-model="racikan.nama_racikan" />
 
                 <button type="button" class="btn btn-error btn-sm"
                     @click="removeRacikan(i)"
@@ -85,20 +19,19 @@
 
             <div class="flex gap-2 mb-2">
                 <input type="number" placeholder="Jumlah" class="input input-bordered w-24"
-                    x-model="racikan.jumlah_racikan" @input="syncItem()" />
+                    x-model="racikan.jumlah_racikan" />
 
                 <input type="text" placeholder="Satuan" class="input input-bordered w-24"
-                    x-model="racikan.satuan_racikan" @input="syncItem()" />
+                    x-model="racikan.satuan_racikan" />
 
                 <input type="text" placeholder="Aturan Pakai" class="input input-bordered flex-1"
-                    x-model="racikan.aturan_pakai_racikan" @input="syncItem()" />
+                    x-model="racikan.aturan_pakai_racikan" />
             </div>
 
             <div class="form-control mb-3">
                 <input type="text" placeholder="Metode Racikan"
                     class="input input-bordered"
-                    x-model="racikan.metode_racikan"
-                    @input="syncItem()" />
+                    x-model="racikan.metode_racikan" />
             </div>
 
             <!-- Bahan Racikan -->
@@ -107,9 +40,9 @@
                 <div class="flex gap-2 mb-2 items-center"
                     x-data="singleSelectObatRacikan(
                         () => bahan.nama_obat_racikan, 
-                        (val) => { bahan.nama_obat_racikan = val; syncItem(); }
+                        (val) => { bahan.nama_obat_racikan = val }
                     )">
-                    
+
                     <!-- Input search / pilih obat -->
                     <div class="relative flex-1">
                         <template x-if="!selected">
@@ -118,8 +51,7 @@
                                 placeholder="Cari obat..."
                                 x-model="search"
                                 @input.debounce.300ms="fetchOptions(); open = true"
-                                @focus="open = true"
-                            />
+                                @focus="open = true" />
                         </template>
 
                         <!-- Tampilan jika sudah dipilih -->
@@ -153,14 +85,12 @@
                     <!-- Input Jumlah -->
                     <input type="number" placeholder="Jumlah"
                         class="input input-bordered w-24"
-                        x-model="bahan.jumlah_obat_racikan"
-                        @input="syncItem()" />
+                        x-model="bahan.jumlah_obat_racikan" />
 
                     <!-- Input Satuan -->
                     <input type="text" placeholder="Satuan"
                         class="input input-bordered w-24"
-                        x-model="bahan.satuan_obat_racikan"
-                        @input="syncItem()" />
+                        x-model="bahan.satuan_obat_racikan" />
 
                     <!-- Tombol Hapus -->
                     <button type="button" class="btn btn-error btn-sm"
@@ -179,36 +109,72 @@
 
 @push('scripts')
 <script>
-    function singleSelectObatRacikan(getModel, setModel) {
-        return {
-            open: false,
-            selected: getModel() || '', // simpan 1 value
-            search: '',
-            filteredOptions: [],
-
-            fetchOptions() {
-                if (this.search.trim() === '') {
-                    this.filteredOptions = [];
-                    return;
-                }
-                fetch(`/ajax/obat-kfa?q=${encodeURIComponent(this.search)}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        this.filteredOptions = data.map(obat => obat.text);
-                    });
-            },
-            choose(item) {
-                this.selected = item;
-                setModel(this.selected);
-                this.search = '';
-                this.filteredOptions = [];
-                this.open = false;
-            },
-            remove() {
-                this.selected = '';
-                setModel(this.selected);
-            }
+function racikanForm(livewireBinding) {
+    return {
+        racikanItems: livewireBinding,
+        addRacikan() {
+            this.racikanItems.push({
+                id: Date.now() + Math.random(),
+                nama_racikan: '',
+                jumlah_racikan: '',
+                satuan_racikan: '',
+                aturan_pakai_racikan: '',
+                metode_racikan: '',
+                bahan: [{
+                    id: Date.now() + Math.random(),
+                    nama_obat_racikan: '',
+                    jumlah_obat_racikan: '',
+                    satuan_obat_racikan: ''
+                }]
+            });
+        },
+        removeRacikan(i) {
+            this.racikanItems.splice(i, 1);
+        },
+        addBahan(i) {
+            this.racikanItems[i].bahan.push({
+                id: Date.now() + Math.random(),
+                nama_obat_racikan: '',
+                jumlah_obat_racikan: '',
+                satuan_obat_racikan: ''
+            });
+        },
+        removeBahan(i, j) {
+            this.racikanItems[i].bahan.splice(j, 1);
         }
     }
+}
+
+function singleSelectObatRacikan(getModel, setModel) {
+    return {
+        open: false,
+        selected: getModel() || '',
+        search: '',
+        filteredOptions: [],
+
+        fetchOptions() {
+            if (this.search.trim() === '') {
+                this.filteredOptions = [];
+                return;
+            }
+            fetch(`/ajax/obat-kfa?q=${encodeURIComponent(this.search)}`)
+                .then(r => r.json())
+                .then(data => {
+                    this.filteredOptions = data.map(obat => obat.text);
+                });
+        },
+        choose(item) {
+            this.selected = item;
+            setModel(this.selected);
+            this.search = '';
+            this.filteredOptions = [];
+            this.open = false;
+        },
+        remove() {
+            this.selected = '';
+            setModel('');
+        }
+    }
+}
 </script>
 @endpush

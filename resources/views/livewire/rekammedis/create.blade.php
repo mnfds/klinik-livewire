@@ -503,8 +503,7 @@
                                 <!-- OBAT RACIKAN -->
                                 <div x-show="selectedFormsPlan.includes('obat-racikan')" style="display: none" wire:ignore >
                                     <x-rekammedis.obatracikan 
-                                        :obatRacikan="$obat_racikan"
-                                        :bahanRacikan="$bahan_racikan"
+                                        :racikanItems="$racikanItems"
                                     />
                                 </div>
                             </div>
