@@ -25,14 +25,17 @@ use Illuminate\Support\Facades\Auth;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
-{
+{    
+    // DATA YANG AKAN DI STORE PADA RekamMedis::model //
+    public $rekammedis;
+    public $nama_dokter;
+    public $keluhan_utama;
+    public $tingkat_kesadaran;
+
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
-    public $rekammedis;
-
-    public $nama_dokter;
-
+    
     // berisikan data yang akan dimunculkan pada select layanan/tindakan
     public $layanan;
     public $bundling;
@@ -42,9 +45,9 @@ class Create extends Component
     public array $selected_forms_objective = [];
     public array $selected_forms_assessment = [];
     public array $selected_forms_plan = [];
+    
 
     // OBJECTIVE
-    public $tingkat_kesadaran;
 
     public $pemeriksaan_fisik = [
         'tinggi_badan' => null,
@@ -72,7 +75,6 @@ class Create extends Component
 
     //SUBJECTIVE
     public $data_kesehatan = [
-        'keluhan_utama' => null,
         'status_perokok' => null,
         'riwayat_penyakit' => null,
         'riwayat_alergi_obat' => null,
@@ -119,6 +121,7 @@ class Create extends Component
         'satuan_obat_non_racikan'=> [],
         'aturan_pakai_obat_non_racikan'=> [],
     ];
+
     public $obat_racikan = [
         'nama_racikan' => [],
         'jumlah_racikan' => [],
@@ -205,56 +208,57 @@ class Create extends Component
                 $rekammedis = RekamMedis::create([
                     'nama_dokter' => $this->nama_dokter,
                     'pasien_terdaftar_id' => $this->pasien_terdaftar_id,
+                    'keluhan_utama' => $this->keluhan_utama,
+                    'tingkat_kesadaran' => $this->tingkat_kesadaran,
                 ]);
 
                 PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
                     ->update(['status_terdaftar' => 'diperiksa']);
 
-                // ----- SUBJECTIVE ----- //
+            // ----- SUBJECTIVE ----- //
 
                 // SIMPAN DATA KESEHATAN REKAM MEDIS
                 if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
                     DataKesehatanRM::create([
                         'rekam_medis_id' => $rekammedis->id,
-                        'keluhan_utama' => $this->keluhan_utama,
-                        'status_perokok' => $this->status_perokok,
-                        'riwayat_penyakit' => json_encode($this->riwayat_penyakit),
-                        'riwayat_alergi_obat' => json_encode($this->riwayat_alergi_obat),
-                        'riwayat_alergi_lainnya' => json_encode($this->riwayat_alergi_lainnya),
-                        'obat_sedang_dikonsumsi' => json_encode($this->obat_sedang_dikonsumsi),
+                        'status_perokok' => $this->data_kesehatan['status_perokok'],
+                        'riwayat_penyakit' => json_encode($this->data_kesehatan['riwayat_penyakit']),
+                        'riwayat_alergi_obat' => json_encode($this->data_kesehatan['riwayat_alergi_obat']),
+                        'riwayat_alergi_lainnya' => json_encode($this->data_kesehatan['riwayat_alergi_lainnya']),
+                        'obat_sedang_dikonsumsi' => json_encode($this->data_kesehatan['obat_sedang_dikonsumsi']),
                     ]);
                 }
                 // SIMPAN DATA ESTETIKA REKAM MEDIS
                 if (in_array('data-estetika', $this->selected_forms_subjective)) {
                     DataEstetikaRM::create([
                         'rekam_medis_id' => $rekammedis->id,
-                        'problem_dihadapi' => json_encode($this->problem_dihadapi),
-                        'lama_problem' => $this->lama_problem,
-                        'tindakan_sebelumnya' => json_encode($this->tindakan_sebelumnya),
-                        'penyakit_dialami' => $this->penyakit_dialami,
-                        'alergi_kosmetik' => $this->alergi_kosmetik,
-                        'sedang_hamil' => $this->sedang_hamil,
-                        'usia_kehamilan' => $this->usia_kehamilan,
-                        'metode_kb' => json_encode($this->metode_kb),
-                        'pengobatan_saat_ini' => $this->pengobatan_saat_ini,
-                        'produk_kosmetik' => $this->produk_kosmetik,
+                        'problem_dihadapi' => json_encode($this->data_estetika['problem_dihadapi']),
+                        'lama_problem' => $this->data_estetika['lama_problem'],
+                        'tindakan_sebelumnya' => json_encode($this->data_estetika['tindakan_sebelumnya']),
+                        'penyakit_dialami' => $this->data_estetika['penyakit_dialami'],
+                        'alergi_kosmetik' => $this->data_estetika['alergi_kosmetik'],
+                        'sedang_hamil' => $this->data_estetika['sedang_hamil'],
+                        'usia_kehamilan' => $this->data_estetika['usia_kehamilan'],
+                        'metode_kb' => json_encode($this->data_estetika['metode_kb']),
+                        'pengobatan_saat_ini' => $this->data_estetika['pengobatan_saat_ini'],
+                        'produk_kosmetik' => $this->data_estetika['produk_kosmetik'],
                     ]);
                 }
 
-                // ----- SUBJECTIVE ----- //
+            // ----- SUBJECTIVE ----- //
 
 
-                // ----- OBJECTIVE ----- //
+            // ----- OBJECTIVE ----- //
 
                 // SIMPAN DATA TANDA VITAL REKAM MEDIS
                 if (in_array('tanda-vital', $this->selected_forms_objective)) {
                     TandaVitalRM::create([
                         'rekam_medis_id' => $rekammedis->id,
-                        'suhu_tubuh' => $this->suhu_tubuh,
-                        'nadi' => $this->nadi,
-                        'sistole' => $this->sistole,
-                        'diastole' => $this->diastole,
-                        'frekuensi_pernapasan' => $this->frekuensi_pernapasan,
+                        'suhu_tubuh' => $this->tanda_vital['suhu_tubuh'],
+                        'nadi' => $this->tanda_vital['nadi'],
+                        'sistole' => $this->tanda_vital['sistole'],
+                        'diastole' => $this->tanda_vital['diastole'],
+                        'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
                     ]);
                 }
 
@@ -262,9 +266,9 @@ class Create extends Component
                 if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
                     PemeriksaanFisikRM::create([
                         'rekam_medis_id' => $rekammedis->id,
-                        'tinggi_badan' => $this->tinggi_badan,
-                        'berat_badan' => $this->berat_badan,
-                        'imt' => $this->imt,
+                        'tinggi_badan' => $this->pemeriksaan_fisik['tinggi_badan'],
+                        'berat_badan' => $this->pemeriksaan_fisik['berat_badan'],
+                        'imt' => $this->pemeriksaan_fisik['imt'],
                     ]);
                 }
 
@@ -272,20 +276,20 @@ class Create extends Component
                 if (in_array('pemeriksaan-estetika', $this->selected_forms_objective)) {
                     PemeriksaanKulitRM::create([
                         'rekam_medis_id' => $rekammedis->id,
-                        'warna_kulit' => $this->warna_kulit,
-                        'ketebalan_kulit' => $this->ketebalan_kulit,
-                        'kadar_minyak' => $this->kadar_minyak,
-                        'kerapuhan_kulit' => $this->kerapuhan_kulit,
-                        'kekencangan_kulit' => $this->kekencangan_kulit,
-                        'melasma' => $this->melasma,
-                        'acne' => json_encode($this->acne),
-                        'lesions' => json_encode($this->lesions),
+                        'warna_kulit' => $this->pemeriksaan_estetika['warna_kulit'],
+                        'ketebalan_kulit' => $this->pemeriksaan_estetika['ketebalan_kulit'],
+                        'kadar_minyak' => $this->pemeriksaan_estetika['kadar_minyak'],
+                        'kerapuhan_kulit' => $this->pemeriksaan_estetika['kerapuhan_kulit'],
+                        'kekencangan_kulit' => $this->pemeriksaan_estetika['kekencangan_kulit'],
+                        'melasma' => $this->pemeriksaan_estetika['melasma'],
+                        'acne' => json_encode($this->pemeriksaan_estetika['acne']),
+                        'lesions' => json_encode($this->pemeriksaan_estetika['lesions']),
                     ]);
                 }
                 
-                // ----- OBJECTIVE ----- //
+            // ----- OBJECTIVE ----- //
 
-                // ----- ASSESSMENT ----- //
+            // ----- ASSESSMENT ----- //
 
                 // SIMPAN DATA DIAGNOSA REKAM MEDIS
                 if (in_array('diagnosa', $this->selected_forms_assessment)) {
@@ -297,34 +301,41 @@ class Create extends Component
 
                 // SIMPAN DATA ICD 10 REKAM MEDIS
                 if (in_array('icd_10', $this->selected_forms_assessment)) {
-                    IcdRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'icd10' => json_encode($this->icd10),
-                    ]);
+                    foreach ($this->icd10 as $item) {
+                        if (!empty($item['code'])) {
+                            IcdRM::create([
+                                'rekam_medis_id' => $rekammedis->id,
+                                'code'           => $item['code'],
+                                'name_id'        => $item['name_id'],
+                                'name_en'        => $item['name_en'],
+                            ]);
+                        }
+                    }
                 }
 
-                // ----- ASSESSMENT ----- //
+            // ----- ASSESSMENT ----- //
                 
-                // ----- PLAN ----- //
+            // ----- PLAN ----- //
 
                 // SIMPAN DATA RENCANA LAYANAN REKAM MEDIS
                 if (in_array('rencana-layanan', $this->selected_forms_plan)) {
-                    foreach ($this->pelayanan_id as $index => $pelayananId) {
+
+                    foreach ($this->rencana_layanan['pelayanan_id'] as $index => $pelayananId) {
                         RencanaLayananRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'pelayanan_id'     => $pelayananId,
-                            'jumlah_pelayanan' => $this->jumlah_pelayanan[$index],
+                            'jumlah_pelayanan' => $this->rencana_layanan['jumlah_pelayanan'][$index],
                         ]);
                     }
                 }
 
                 // SIMPAN DATA PAKET BUNDLING REKAM MEDIS
                 if (in_array('rencana-bundling', $this->selected_forms_plan)) {
-                    foreach ($this->bundling_id as $index => $bundlingId) {
+                    foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
                         RencananaBundlingRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'bundling_id'      => $bundlingId,
-                            'jumlah_bundling'  => $this->jumlah_bundling[$index] ?? 1,
+                            'jumlah_bundling'  => $this->rencana_bundling['jumlah_bundling'][$index],
                         ]);
                     }
                 }
@@ -344,6 +355,10 @@ class Create extends Component
                 
                 // SIMPAN DATA OBAT RACIKAN
                 if (in_array('obat-racikan', $this->selected_forms_plan)) {
+                    dd([
+                        $this->obat_racikan,
+                        $this->bahan_racikan,
+                    ]);
                     foreach ($this->obat_racikan['nama_racikan'] as $index => $namaRacikan) {
                         // 1. Buat racikan
                         $obatRacikan = ObatRacikanRM::create([
@@ -368,9 +383,7 @@ class Create extends Component
                     }
                 }
 
-                // ----- PLAN ----- //
-
-
+            // ----- PLAN ----- //
 
                 DB::commit();
                 

@@ -321,6 +321,11 @@
                                         <option value="data-estetika">Data Estetika</option>
                                     </select>
                                 </div>
+                                <!-- Keluhan Utama -->
+                                <div class="form-control md:col-span-2">
+                                    <label class="label">Keluhan Pasien</label>
+                                    <input type="text" value="{{ $kajian->dataKesehatan->keluhan_utama ?? null }}" wire:model="keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
+                                </div>
                                 <!-- DATA KESEHATAN -->
                                 <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
                                     <x-rekammedis.datakesehatan :dataKesehatan="$data_kesehatan" wire:model="data_kesehatan" />
@@ -395,18 +400,20 @@
 
                                         <!-- Input Area -->
                                         <div class="relative" @click="setTimeout(() => open = true, 10)">
-                                            <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition" :class="{ 'ring-2 ring-black': open }">
+                                            <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition"
+                                                :class="{ 'ring-2 ring-black': open }">
 
                                                 <!-- Selected tags -->
                                                 <template x-for="(tag, index) in selected" :key="tag.code">
                                                     <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
-                                                        <span x-text="tag.label"></span>
+                                                        <span x-text="`${tag.code} - ${tag.name_id}`"></span>
                                                         <button type="button" @click.stop="remove(tag.code)">×</button>
                                                     </span>
                                                 </template>
 
                                                 <!-- Input search -->
-                                                <input type="text" class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100"
+                                                <input type="text"
+                                                    class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100"
                                                     placeholder="Ketik disini untuk cari Diagnosa ICD 10..."
                                                     x-model="search"
                                                     @focus="open = true"
@@ -421,7 +428,7 @@
                                                         <div @click="toggle(item)"
                                                             class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer text-sm m-1"
                                                             :class="selected.some(s => s.code === item.code) ? 'bg-primary rounded-2xl font-semibold' : ''">
-                                                            <span x-text="item.label"></span>
+                                                            <span x-text="`${item.code} - ${item.name_id}`"></span>
                                                         </div>
                                                     </template>
                                                 </template>
@@ -433,8 +440,8 @@
                                             </div>
                                         </div>
 
-                                        <!-- Binding ke Livewire: kirim array code saja -->
-                                        <input type="hidden" wire:model="icd10" :value="JSON.stringify(selected.map(s => s.code))">
+                                        <!-- Binding ke Livewire: kirim array full object -->
+                                        <input type="hidden" wire:model="icd10" :value="JSON.stringify(selected)">
 
                                         <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
                                     </div>
@@ -619,12 +626,12 @@
     }
 </script>
 
-{{-- GET ICD --}}
+{{-- Script ICD --}}
 <script>
     function multiSelectIcd10() {
         return {
             open: false,
-            selected: @entangle('icd10'), // pastikan property Livewire sesuai
+            selected: @entangle('icd10'),
             search: '',
             filteredOptions: [],
 
@@ -643,14 +650,18 @@
                 fetch(`/ajax/icd_10?q=${encodeURIComponent(this.search)}`)
                     .then(res => res.json())
                     .then(data => {
-                        this.filteredOptions = data; // sudah {code, label}
+                        this.filteredOptions = data; // sudah {code, name_id, name_en}
                     });
             },
 
             toggle(item) {
                 const exists = this.selected.some(s => s.code === item.code);
                 if (!exists) {
-                    this.selected.push(item);
+                    this.selected.push({
+                        code: item.code,
+                        name_id: item.name_id,
+                        name_en: item.name_en,
+                    });
                 } else {
                     this.selected = this.selected.filter(s => s.code !== item.code);
                 }

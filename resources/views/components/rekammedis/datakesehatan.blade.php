@@ -1,7 +1,6 @@
 <div class="bg-base-200 p-4 rounded border border-base-200">
 @props([
     'dataKesehatan' => [
-        'keluhan_utama' => null,
         'status_perokok' => null,
         'riwayat_penyakit' => null,
         'riwayat_alergi_obat' => null,
@@ -12,11 +11,6 @@
 
     <div class="divider">Data Kesehatan</div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Keluhan Utama -->
-        <div class="form-control md:col-span-2">
-            <label class="label">Keluhan Pasien</label>
-            <input type="text" value="{{ $dataKesehatan['keluhan_utama'] }}" wire:model="data_kesehatan.keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
-        </div>
 
         <!-- Status Perokok -->
         <div class="form-control">

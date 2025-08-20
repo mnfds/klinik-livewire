@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rencanana_bundling_r_m_s', function (Blueprint $table) {
+        Schema::create('rencana_bundling_r_m_s', function (Blueprint $table) {
             $table->id();
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');

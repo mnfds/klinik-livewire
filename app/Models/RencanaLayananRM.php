@@ -13,4 +13,9 @@ class RencanaLayananRM extends Model
     {
         return $this->belongsTo(RekamMedis::class);
     }
+
+    public function pelayanan()
+    {
+        return $this->belongsTo(Pelayanan::class);
+    }
 }

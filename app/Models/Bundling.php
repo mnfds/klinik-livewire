@@ -21,4 +21,9 @@ class Bundling extends Model
     {
         return $this->hasMany(ProdukObatBundling::class, 'bundling_id');
     }
+
+    public function rencanaBundling()
+    {
+        return $this->hasMany(RencananaBundlingRM::class);
+    }
 }

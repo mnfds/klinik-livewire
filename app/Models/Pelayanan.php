@@ -11,4 +11,9 @@ class Pelayanan extends Model
 
     protected $table = 'pelayanans';
     protected $guarded = ['id'];
+
+    public function rencanaLayanan()
+    {
+        return $this->hasMany(RencanaLayananRM::class);
+    }
 }

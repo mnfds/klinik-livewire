@@ -13,4 +13,9 @@ class RencananaBundlingRM extends Model
     {
         return $this->belongsTo(RekamMedis::class);
     }
+
+    public function bundling()
+    {
+        return $this->belongsTo(Bundling::class);
+    }
 }

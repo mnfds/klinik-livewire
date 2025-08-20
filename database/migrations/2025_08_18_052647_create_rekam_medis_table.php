@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nama_dokter');
             $table->foreignId('pasien_terdaftar_id')->constrained('pasien_terdaftars')->onDelete('cascade');
+            $table->string('keluhan_utama');
+            $table->string('tingkat_kesadaran');
             $table->timestamps();
         });
     }

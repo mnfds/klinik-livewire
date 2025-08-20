@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
 
             // Kolom data kesehatan
-            $table->text('keluhan_utama')->nullable();
             $table->string('status_perokok')->nullable(); // Atau enum('ya', 'tidak') jika fixed
 
             $table->json('riwayat_penyakit')->nullable();
