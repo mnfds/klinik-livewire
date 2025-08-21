@@ -119,6 +119,8 @@ class Create extends Component
         'nama_obat_non_racikan' => [],
         'jumlah_obat_non_racikan'=> [],
         'satuan_obat_non_racikan'=> [],
+        'dosis_obat_non_racikan'=> [],
+        'hari_obat_non_racikan'=> [],
         'aturan_pakai_obat_non_racikan'=> [],
     ];
 
@@ -141,6 +143,8 @@ class Create extends Component
             'nama_racikan' => '',
             'jumlah_racikan' => '',
             'satuan_racikan' => '',
+            'dosis_obat_racikan' => '',
+            'hari_obat_racikan' => '',
             'aturan_pakai_racikan' => '',
             'metode_racikan' => '',
             'bahan' => [
@@ -365,6 +369,8 @@ class Create extends Component
                             'nama_obat_non_racikan' => $namaObat,
                             'jumlah_obat_non_racikan' => $this->obat_non_racikan['jumlah_obat_non_racikan'][$index] ?? 1,
                             'satuan_obat_non_racikan' => $this->obat_non_racikan['satuan_obat_non_racikan'][$index] ?? null,
+                            'dosis_obat_non_racikan' => $this->obat_non_racikan['dosis_obat_non_racikan'][$index] ?? null,
+                            'hari_obat_non_racikan' => $this->obat_non_racikan['hari_obat_non_racikan'][$index] ?? null,
                             'aturan_pakai_obat_non_racikan' => $this->obat_non_racikan['aturan_pakai_obat_non_racikan'][$index] ?? null,
                         ]);
                     }
@@ -379,6 +385,8 @@ class Create extends Component
                             'nama_racikan'        => $racikan['nama_racikan'] ?? null,
                             'jumlah_racikan'      => $racikan['jumlah_racikan'] ?? 1,
                             'satuan_racikan'      => $racikan['satuan_racikan'] ?? null,
+                            'dosis_obat_racikan'  => $racikan['dosis_obat_racikan'] ?? null,
+                            'hari_obat_racikan'   => $racikan['hari_obat_racikan'] ?? null,
                             'aturan_pakai_racikan'=> $racikan['aturan_pakai_racikan'] ?? null,
                             'metode_racikan'      => $racikan['metode_racikan'] ?? null,
                         ]);

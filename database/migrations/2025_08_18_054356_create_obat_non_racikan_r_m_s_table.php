@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('nama_obat_non_racikan');
             $table->integer('jumlah_obat_non_racikan');
             $table->text('satuan_obat_non_racikan');
+            $table->text('dosis_obat_non_racikan');
+            $table->text('hari_obat_non_racikan');
             $table->text('aturan_pakai_obat_non_racikan');
             $table->timestamps();
         });

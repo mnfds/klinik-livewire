@@ -5,6 +5,8 @@
             nama_obat_non_racikan: '',
             jumlah_obat_non_racikan: '',
             satuan_obat_non_racikan: '',
+            dosis_obat_non_racikan: '',
+            hari_obat_non_racikan: '',
             aturan_pakai_obat_non_racikan: ''
         }],
         addObat() {
@@ -13,6 +15,8 @@
                 nama_obat_non_racikan: '',
                 jumlah_obat_non_racikan: '',
                 satuan_obat_non_racikan: '',
+                dosis_obat_non_racikan: '',
+                hari_obat_non_racikan: '',
                 aturan_pakai_obat_non_racikan: ''
             });
             this.syncObatToLivewire();
@@ -28,6 +32,8 @@
             $wire.set('obat_non_racikan.nama_obat_non_racikan', this.obatItems.map(item => item.nama_obat_non_racikan));
             $wire.set('obat_non_racikan.jumlah_obat_non_racikan', this.obatItems.map(item => item.jumlah_obat_non_racikan));
             $wire.set('obat_non_racikan.satuan_obat_non_racikan', this.obatItems.map(item => item.satuan_obat_non_racikan));
+            $wire.set('obat_non_racikan.dosis_obat_non_racikan', this.obatItems.map(item => item.dosis_obat_non_racikan));
+            $wire.set('obat_non_racikan.hari_obat_non_racikan', this.obatItems.map(item => item.hari_obat_non_racikan));
             $wire.set('obat_non_racikan.aturan_pakai_obat_non_racikan', this.obatItems.map(item => item.aturan_pakai_obat_non_racikan));
         }
     }"
@@ -44,8 +50,11 @@
                         x-data="singleSelectObat(() => item.nama_obat_non_racikan, (val) => { item.nama_obat_non_racikan = val; syncItemObat(index); })"
                         x-init="init()"
                     >
+                        <label class="label">
+                            <span class="label-text">Nama Obat</span>
+                        </label>
                         <div class="relative" @click="setTimeout(() => open = true, 10)">
-                            <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem]">
+                            <div class="w-full border border-gray-300 bg-base-100 rounded-xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem]">
                                 <template x-if="selected">
                                     <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
                                         <span x-text="selected"></span>
@@ -90,27 +99,93 @@
                         <label class="label">
                             <span class="label-text">Jumlah</span>
                         </label>
-                        <input type="number" min="1" placeholder="Jumlah"
+                        <input type="number" min="1" placeholder="10"
                             class="input input-bordered w-full"
                             x-model="item.jumlah_obat_non_racikan"
                             @input="syncItemObat(index)" />
                     </div>
 
-                    <div class="form-control w-24">
+                    <div class="form-control w-full">
                         <label class="label">
-                            <span class="label-text">Satuan</span>
+                            <span class="label-text">Bentuk Obat</span>
                         </label>
-                        <input type="text" placeholder="Satuan"
-                            class="input input-bordered w-full"
-                            x-model="item.satuan_obat_non_racikan"
-                            @input="syncItemObat(index)" />
+                        <select class="select select-bordered w-full" x-model="item.satuan_obat_non_racikan" @change="syncItemObat(index)">
+                            <option value="">Pilih Bentuk Obat</option>
+
+                            <optgroup label="Oral">
+                                <option value="Tablet">Tablet</option>
+                                <option value="Kaplet">Kaplet</option>
+                                <option value="Kapsul">Kapsul</option>
+                                <option value="Tablet Kunyah">Tablet Kunyah</option>
+                                <option value="Tablet Effervescent">Tablet Effervescent</option>
+                                <option value="Sirup">Sirup</option>
+                                <option value="Suspensi">Suspensi</option>
+                                <option value="Granula">Granula</option>
+                            </optgroup>
+
+                            <optgroup label="Injeksi & Parenteral">
+                                <option value="Larutan Injeksi">Larutan Injeksi</option>
+                                <option value="Infus">Infus</option>
+                                <option value="Suspensi Injeksi">Suspensi Injeksi</option>
+                                <option value="Serbuk Injeksi">Serbuk Injeksi</option>
+                            </optgroup>
+
+                            <optgroup label="Tetes & Semprot">
+                                <option value="Tetes Mata">Tetes Mata</option>
+                                <option value="Tetes Telinga">Tetes Telinga</option>
+                                <option value="Tetes Hidung">Tetes Hidung</option>
+                                <option value="Larutan Inhalasi">Larutan Inhalasi</option>
+                                <option value="Suspensi Inhalasi">Suspensi Inhalasi</option>
+                                <option value="Semprot Hidung">Semprot Hidung</option>
+                            </optgroup>
+
+                            <optgroup label="Topikal">
+                                <option value="Krim">Krim</option>
+                                <option value="Salep">Salep</option>
+                                <option value="Gel">Gel</option>
+                                <option value="Topical Spray">Topical Spray</option>
+                            </optgroup>
+
+                            <optgroup label="Lainnya">
+                                <option value="Suppositoria">Suppositoria</option>
+                                <option value="Enema">Enema</option>
+                                <option value="Obat Kumur">Obat Kumur</option>
+                            </optgroup>
+                        </select>
                     </div>
 
+                    
+                </div>
+                <div class="flex gap-2 mt-2">
+                    <div class="form-control w-20">
+                        <label class="label">
+                            <span class="label-text">Dosis</span>
+                        </label>
+                        <input type="number" min="1" placeholder="3"
+                            class="input input-bordered w-full"
+                            x-model="item.dosis_obat_non_racikan"
+                            @input="syncItemObat(index)" />
+                    </div>
+                    <div class="form-control w-10">
+                        <label class="label">
+                            <span class="label-text"></span>
+                        </label>
+                        <input type="text" placeholder="X" class="input input-ghost" />
+                    </div>
+                    <div class="form-control w-20">
+                        <label class="label">
+                            <span class="label-text">Hari</span>
+                        </label>
+                        <input type="number" min="1" placeholder="1"
+                            class="input input-bordered w-full"
+                            x-model="item.hari_obat_non_racikan"
+                            @input="syncItemObat(index)" />
+                    </div>
                     <div class="form-control flex-1">
                         <label class="label">
-                            <span class="label-text">Aturan Pakai</span>
+                            <span class="label-text">Intruksi Pemakaian</span>
                         </label>
-                        <input type="text" placeholder="Aturan Pakai"
+                        <input type="text" placeholder="Sesudah Makan"
                             class="input input-bordered w-full"
                             x-model="item.aturan_pakai_obat_non_racikan"
                             @input="syncItemObat(index)" />

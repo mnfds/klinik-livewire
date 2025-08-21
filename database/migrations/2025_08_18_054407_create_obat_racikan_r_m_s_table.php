@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('nama_racikan');
             $table->integer('jumlah_racikan');
             $table->text('satuan_racikan');
+            $table->text('dosis_obat_racikan');
+            $table->text('hari_obat_racikan');
             $table->text('aturan_pakai_racikan');
             $table->text('metode_racikan');
             $table->timestamps();
