@@ -198,6 +198,12 @@
                         <li><x-side-link href="#" wire:navigate>Apotik</x-side-link></li>
                     </ul>
                 </li>
+                <li>
+                    <x-side-link href="{{ route('resep.data') }}" :active="request()->routeIs('resep.*')" wire:navigate>
+                        <i class="fa-solid fa-prescription"></i>
+                        <span class="ml-3">Resep Obat</span>
+                    </x-side-link>
+                </li>
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>
                 </li>

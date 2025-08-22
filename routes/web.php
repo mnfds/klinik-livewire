@@ -190,6 +190,11 @@ Route::middleware(['auth'])->group(function () {
     });
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
+    // ====== RESEP OBAT ====== //
+    Route::view('/resep', 'resep.data')->name('resep.data');
+    Route::view('/resep-pasien', 'resep.detail')->name('resep.detail');
+    // ====== RESEP OBAT ====== //
+
 });
 
 
