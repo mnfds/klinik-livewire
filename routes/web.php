@@ -142,34 +142,22 @@ Route::middleware(['auth'])->group(function () {
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
-    // Route::get('/ajax/icd_10', function (Request $request) {
-    //     $query = $request->get('q', '');
-    //     return \App\Models\Icd::where('code', 'like', "%{$query}%")
-    //         ->orWhere('name_id', 'like', "%{$query}%")
-    //         ->limit(20)
-    //         ->get()
-    //         ->map(fn ($icd) => [
-    //             'code' => $icd->code,
-    //             'label' => "{$icd->code} - {$icd->name_id}",
-    //             'name_id' => "{$icd->name_id}",
-    //             'name_en' => "{$icd->name_en}",
-    //         ]);
-    // });
+    Route::view('/rekam-medis-pasien/detail', 'rekammedis.detail')->name('rekam-medis-pasien.detail');
 
-Route::get('/ajax/icd_10', function (Request $request) {
-    $query = $request->get('q', '');
+    Route::get('/ajax/icd_10', function (Request $request) {
+        $query = $request->get('q', '');
 
-    return Icd::where('code', 'like', "%{$query}%")
-        ->orWhere('name_id', 'like', "%{$query}%")
-        ->orWhere('name_en', 'like', "%{$query}%")
-        ->limit(20)
-        ->get()
-        ->map(fn ($icd) => [
-            'code'    => $icd->code,
-            'name_id' => $icd->name_id,
-            'name_en' => $icd->name_en,
-        ]);
-});
+        return Icd::where('code', 'like', "%{$query}%")
+            ->orWhere('name_id', 'like', "%{$query}%")
+            ->orWhere('name_en', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($icd) => [
+                'code'    => $icd->code,
+                'name_id' => $icd->name_id,
+                'name_en' => $icd->name_en,
+            ]);
+    });
     // ajax get data KFA OBAT dan ProdukDanObat (internal)
     Route::get('/ajax/obat-kfa', function (Request $request) {
         $query = $request->get('q', '');

@@ -51,7 +51,7 @@ final class MutasiTable extends PowerGridComponent
             ->add('jumlah')
             ->add('diajukan_oleh')
             ->add('catatan');
-;    }
+    }
 
     public function columns(): array
     {
