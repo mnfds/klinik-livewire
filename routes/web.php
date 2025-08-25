@@ -168,7 +168,7 @@ Route::middleware(['auth'])->group(function () {
             ->get()
             ->map(fn ($obat) => [
                 'id' => 'kfa_' . $obat->id, // prefix biar unik
-                'text' => $obat->nama_obat_aktual . ' - ' . $obat->bentuk_sediaan . ' - KFA',
+                'text' => $obat->nama_obat_aktual . ' - ' . $obat->bentuk_sediaan ,
                 'source' => 'KFA'
             ]);
 
@@ -179,7 +179,7 @@ Route::middleware(['auth'])->group(function () {
             ->get()
             ->map(fn ($produk) => [
                 'id' => 'produk_' . $produk->id, // prefix biar unik
-                'text' => $produk->nama_dagang . ' - ' . $produk->sediaan . ' - APOTEK',
+                'text' => $produk->nama_dagang . ' - ' . $produk->sediaan ,
                 'source' => 'INTERNAL'
             ]);
 
