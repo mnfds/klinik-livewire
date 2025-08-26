@@ -44,7 +44,7 @@
 
                             <!-- Tab Informasi Pasien -->
                             <input type="radio" name="info" class="tab bg-transparent text-base-content"
-                                aria-label="Informasi Pasien" />
+                                aria-label="Informasi Pasien" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6">
                                 <h3 class="font-semibold mb-2">Informasi Pasien</h3>
                                 <div class="space-y-2 text-sm mt-2">
@@ -127,7 +127,7 @@
 
                             <!-- Tab Informasi Medis -->
                             <input type="radio" name="info" class="tab bg-transparent text-base-content"
-                                aria-label="Informasi Medis" checked="checked" />
+                                aria-label="Informasi Medis" checked="checked" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6">
                                 <h3 class="font-semibold mb-2">Informasi Medis</h3>
                                 <div class="space-y-4 text-sm mt-2">
@@ -213,7 +213,7 @@
 
                             <!-- Tab Tanda Vital -->
                             <input type="radio" name="info" class="tab bg-transparent text-base-content"
-                                aria-label="Informasi Tanda Vital" />
+                                aria-label="Informasi Tanda Vital" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6">
                                 <h3 class="font-semibold mb-2">Tanda Vital</h3>
                                 <div class="space-y-2 text-sm mt-2">
@@ -252,7 +252,7 @@
 
                             <!-- Tab Pemeriksaan Fisik -->
                             <input type="radio" name="info" class="tab bg-transparent text-base-content"
-                                aria-label="Informasi Pemeriksaan Fisik" />
+                                aria-label="Informasi Pemeriksaan Fisik" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6">
                                 <h3 class="font-semibold mb-2">Pemeriksaan Fisik</h3>
                                 <div class="space-y-2 text-sm mt-2">
@@ -290,187 +290,231 @@
                 <div class="lg:col-span-4">
                     <div class="bg-base-100 shadow rounded-box">
                         <div class="p-6 text-base-content space-y-6">
+                            <form action="">
+                                {{-- Data Resep --}}
+                                <div class="tabs tabs-lift" x-data="totalKeseluruhan()">
 
-                            {{-- Data Resep --}}
-                            <div class="tabs tabs-lift" x-data="totalKeseluruhan()">
+                                    <!-- Tab Non Racikan -->
+                                    <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
+                                        aria-label="Obat Non Racik" checked="checked" style="background-image: none;" />
+                                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                                        <h3 class="font-semibold mb-4">Obat Non Racikan</h3>
 
-                                <!-- Tab Non Racikan -->
-                                <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
-                                    aria-label="Obat Non Racik" checked="checked" />
-                                <div class="tab-content bg-base-100 border-base-300 p-6">
-                                    <h3 class="font-semibold mb-4">Obat Non Racikan</h3>
-
-                                    <!-- Resep Dokter -->
-                                    <details class="collapse collapse-arrow border rounded-lg mb-4">
-                                        <summary class="collapse-title font-semibold">Resep Dokter</summary>
-                                        <div class="collapse-content text-sm space-y-3">
-                                            @forelse($obatNonRacikanItems as $obat)
+                                        <!-- Resep Dokter -->
+                                        <details class="collapse collapse-arrow border rounded-lg mb-4">
+                                            <summary class="collapse-title font-semibold">Resep Dokter</summary>
+                                            <div class="collapse-content text-sm space-y-3">
+                                                @forelse($obatNonRacikanItems as $obat)
                                                 <div class="p-3 border rounded-lg bg-base-200">
                                                     <strong>{{ $obat['nama_obat_non_racikan'] }}</strong><br>
-                                                    Jumlah: {{ $obat['jumlah_obat_non_racikan'] }} {{ $obat['satuan_obat_non_racikan'] }} <br>
-                                                    Dosis: {{ $obat['dosis_obat_non_racikan'] }} × {{ $obat['hari_obat_non_racikan'] }} hari <br>
+                                                    Jumlah: {{ $obat['jumlah_obat_non_racikan'] }} {{
+                                                    $obat['satuan_obat_non_racikan'] }} <br>
+                                                    Dosis: {{ $obat['dosis_obat_non_racikan'] }} × {{
+                                                    $obat['hari_obat_non_racikan'] }} hari <br>
                                                     Aturan Pakai: {{ $obat['aturan_pakai_obat_non_racikan'] }}
                                                 </div>
-                                            @empty
+                                                @empty
                                                 <p class="text-sm text-gray-500">Tidak ada obat non racikan.</p>
-                                            @endforelse
-                                        </div>
-                                    </details>
-
-                                    <!-- Input Apoteker Non Racikan -->
-                                    <div x-data="obatManager('nonracik')" x-init="init()" class="space-y-4">
-
-                                        <template x-for="(item, i) in inputs" :key="i">
-                                            <div class="p-3 border rounded-lg bg-base-100 space-y-2">
-                                                <div class="flex gap-2 items-start">
-                                                    <!-- Nama Obat -->
-                                                    <div class="relative flex-1" x-data="searchObat(i, inputs)">
-                                                        <input type="text" x-model="query" 
-                                                            @input="search()" @focus="open = true" @click.away="open = false"
-                                                            class="input input-bordered w-full" placeholder="Cari nama obat..." />
-
-                                                        <div x-show="open && results.length > 0"
-                                                            class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
-                                                            <template x-for="result in results" :key="result.id">
-                                                                <div @click="select(result)" 
-                                                                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
-                                                                    <span x-text="result.text"></span>
-                                                                </div>
-                                                            </template>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Jumlah -->
-                                                    <input type="number" x-model="item.jumlah"
-                                                        @input="$dispatch('hitung-total',{index:i})"
-                                                        class="input input-bordered w-20" placeholder="Jumlah" />
-
-                                                    <!-- Satuan -->
-                                                    <input type="text" x-model="item.satuan" readonly
-                                                        class="input input-bordered w-20 bg-base-200" placeholder="Satuan" />
-
-                                                    <!-- Harga Satuan -->
-                                                    <input type="text" x-model="item.harga_satuan_display" readonly
-                                                        class="input input-bordered w-28 bg-base-200 text-right" placeholder="Harga" />
-
-                                                    <!-- Total -->
-                                                    <input type="text" x-model="item.total_display" readonly
-                                                        class="input input-bordered w-28 bg-base-200 text-right" placeholder="Total" />
-
-                                                    <button type="button" class="btn btn-error btn-sm"
-                                                            @click="inputs.splice(i,1); updateGrandTotal()">✕</button>
-                                                </div>
+                                                @endforelse
                                             </div>
-                                        </template>
+                                        </details>
 
-                                        <!-- Tombol Tambah -->
-                                        <button type="button" class="btn btn-primary btn-sm" @click="addInput()">+ Tambah Obat</button>
+                                        <!-- Input Apoteker Non Racikan -->
+                                        <div x-data="obatManager('nonracik')" x-init="init()"
+                                            class="border rounded-lg bg-base-100 p-2">
+
+                                            <template x-for="(item, i) in inputs" :key="i">
+                                                <div class="mx-1 my-2">
+                                                    <div class="flex gap-2 items-start">
+                                                        <!-- Nama Obat -->
+                                                        <div class="relative flex-1" x-data="searchObat(i, inputs)">
+                                                            <input type="text" x-model="query" @input="search()"
+                                                                @focus="open = true" @click.away="open = false"
+                                                                class="input input-bordered w-full"
+                                                                placeholder="Cari nama obat..." />
+
+                                                            <div x-show="open && results.length > 0"
+                                                                class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
+                                                                <template x-for="result in results" :key="result.id">
+                                                                    <div @click="select(result)"
+                                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
+                                                                        <span x-text="result.text"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Jumlah -->
+                                                        <input type="number" x-model="item.jumlah"
+                                                            @input="$dispatch('hitung-total',{index:i})"
+                                                            class="input input-bordered w-20" placeholder="Jumlah" />
+
+                                                        <!-- Satuan -->
+                                                        <input type="text" x-model="item.satuan" readonly
+                                                            class="input input-bordered w-20 bg-base-200"
+                                                            placeholder="Satuan" />
+
+                                                        <!-- Harga Satuan -->
+                                                        <input type="text" x-model="item.harga_satuan_display" readonly
+                                                            class="input input-bordered w-28 bg-base-200 text-right"
+                                                            placeholder="Harga" />
+
+                                                        <!-- Total -->
+                                                        <input type="text" x-model="item.total_display" readonly
+                                                            class="input input-bordered w-28 bg-base-200 text-right"
+                                                            placeholder="Total" />
+
+                                                        <button type="button" class="btn btn-error btn-sm"
+                                                            @click="inputs.splice(i,1); updateGrandTotal()">✕</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <!-- Tombol Tambah -->
+                                            <button type="button" class="btn btn-primary btn-sm" @click="addInput()">+
+                                                Tambah Obat</button>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- Tab Racikan -->
-                                <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
-                                    aria-label="Obat Racikan" />
-                                <div class="tab-content bg-base-100 border-base-300 p-6">
-                                    <h3 class="font-semibold mb-4">Obat Racikan</h3>
+                                    <!-- Tab Racikan -->
+                                    <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
+                                        aria-label="Obat Racikan" style="background-image: none;" />
+                                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                                        <h3 class="font-semibold mb-4">Obat Racikan</h3>
 
-                                    <!-- Resep Dokter -->
-                                    <details class="collapse collapse-arrow border rounded-lg mb-4">
-                                        <summary class="collapse-title font-semibold">Resep Dokter</summary>
-                                        <div class="collapse-content text-sm space-y-3">
-                                            @forelse($obatRacikanItems as $racik)
+                                        <!-- Resep Dokter -->
+                                        <details class="collapse collapse-arrow border rounded-lg mb-4">
+                                            <summary class="collapse-title font-semibold">Resep Dokter</summary>
+                                            <div class="collapse-content text-sm space-y-3">
+                                                @forelse($obatRacikanItems as $racik)
                                                 <div class="p-3 border rounded-lg bg-base-200">
                                                     <strong>{{ $racik['nama_racikan'] }}</strong><br>
-                                                    Jumlah: {{ $racik['jumlah_racikan'] }} {{ $racik['satuan_racikan'] }} <br>
-                                                    Dosis: {{ $racik['dosis_obat_racikan'] }} × {{ $racik['hari_obat_racikan'] }} hari <br>
+                                                    Jumlah: {{ $racik['jumlah_racikan'] }} {{ $racik['satuan_racikan']
+                                                    }}
+                                                    <br>
+                                                    Dosis: {{ $racik['dosis_obat_racikan'] }} × {{
+                                                    $racik['hari_obat_racikan'] }} hari <br>
                                                     Aturan Pakai: {{ $racik['aturan_pakai_racikan'] }} <br>
                                                     <div class="mt-2 p-2 border rounded bg-base-100">
                                                         <h4 class="font-semibold mb-1">Bahan Racikan:</h4>
                                                         @forelse($racik['bahan'] as $bahan)
-                                                            <div class="text-sm">
-                                                                - {{ $bahan['nama_obat_racikan'] }} : {{ $bahan['jumlah_obat_racikan'] }} {{ $bahan['satuan_obat_racikan'] }}
-                                                            </div>
+                                                        <div class="text-sm">
+                                                            - {{ $bahan['nama_obat_racikan'] }} : {{
+                                                            $bahan['jumlah_obat_racikan'] }} {{
+                                                            $bahan['satuan_obat_racikan'] }}
+                                                        </div>
                                                         @empty
-                                                            <p class="text-sm text-gray-500">Tidak ada bahan racikan.</p>
+                                                        <p class="text-sm text-gray-500">Tidak ada bahan racikan.</p>
                                                         @endforelse
                                                     </div>
                                                 </div>
-                                            @empty
+                                                @empty
                                                 <p class="text-sm text-gray-500">Tidak ada obat racikan.</p>
-                                            @endforelse
-                                        </div>
-                                    </details>
-
-                                    <!-- Input Apoteker Racikan -->
-                                    <div x-data="obatManager('racikan')" x-init="init()" class="space-y-4">
-
-                                        <template x-for="(item, i) in inputs" :key="i">
-                                            <div class="p-3 border rounded-lg bg-base-100 space-y-2">
-                                                <div class="flex gap-2 items-start">
-                                                    <!-- Nama Obat -->
-                                                    <div class="relative flex-1" x-data="searchObat(i, inputs)">
-                                                        <input type="text" x-model="query" 
-                                                            @input="search()" @focus="open = true" @click.away="open = false"
-                                                            class="input input-bordered w-full" placeholder="Cari bahan racikan..." />
-
-                                                        <div x-show="open && results.length > 0"
-                                                            class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
-                                                            <template x-for="result in results" :key="result.id">
-                                                                <div @click="select(result)" 
-                                                                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
-                                                                    <span x-text="result.text"></span>
-                                                                </div>
-                                                            </template>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Jumlah -->
-                                                    <input type="number" x-model="item.jumlah"
-                                                        @input="$dispatch('hitung-total',{index:i})"
-                                                        class="input input-bordered w-20" placeholder="Jumlah" />
-
-                                                    <!-- Satuan -->
-                                                    <input type="text" x-model="item.satuan" readonly
-                                                        class="input input-bordered w-20 bg-base-200" placeholder="Satuan" />
-
-                                                    <!-- Harga Satuan -->
-                                                    <input type="text" x-model="item.harga_satuan_display" readonly
-                                                        class="input input-bordered w-28 bg-base-200 text-right" placeholder="Harga" />
-
-                                                    <!-- Total -->
-                                                    <input type="text" x-model="item.total_display" readonly
-                                                        class="input input-bordered w-28 bg-base-200 text-right" placeholder="Total" />
-
-                                                    <button type="button" class="btn btn-error btn-sm"
-                                                            @click="inputs.splice(i,1); updateGrandTotal()">✕</button>
-                                                </div>
+                                                @endforelse
                                             </div>
-                                        </template>
+                                        </details>
 
-                                        <!-- Tombol Tambah -->
-                                        <button type="button" class="btn btn-primary btn-sm" @click="addInput()">+ Tambah Bahan</button>
+                                        <!-- Input Apoteker Racikan -->
+                                        <div x-data="obatManager('racikan')" x-init="init()"
+                                            class="border rounded-lg bg-base-100 p-2">
+
+                                            <template x-for="(item, i) in inputs" :key="i">
+                                                <div class="mx-1 my-2">
+                                                    <div class="flex gap-2 items-start">
+                                                        <!-- Nama Obat -->
+                                                        <div class="relative flex-1" x-data="searchObat(i, inputs)">
+                                                            <input type="text" x-model="query" @input="search()"
+                                                                @focus="open = true" @click.away="open = false"
+                                                                class="input input-bordered w-full"
+                                                                placeholder="Cari bahan racikan..." />
+
+                                                            <div x-show="open && results.length > 0"
+                                                                class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
+                                                                <template x-for="result in results" :key="result.id">
+                                                                    <div @click="select(result)"
+                                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
+                                                                        <span x-text="result.text"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Jumlah -->
+                                                        <input type="number" x-model="item.jumlah"
+                                                            @input="$dispatch('hitung-total',{index:i})"
+                                                            class="input input-bordered w-20" placeholder="Jumlah" />
+
+                                                        <!-- Satuan -->
+                                                        <input type="text" x-model="item.satuan" readonly
+                                                            class="input input-bordered w-20 bg-base-200"
+                                                            placeholder="Satuan" />
+
+                                                        <!-- Harga Satuan -->
+                                                        <input type="text" x-model="item.harga_satuan_display" readonly
+                                                            class="input input-bordered w-28 bg-base-200 text-right"
+                                                            placeholder="Harga" />
+
+                                                        <!-- Total -->
+                                                        <input type="text" x-model="item.total_display" readonly
+                                                            class="input input-bordered w-28 bg-base-200 text-right"
+                                                            placeholder="Total" />
+
+                                                        <button type="button" class="btn btn-error btn-sm"
+                                                            @click="inputs.splice(i,1); updateGrandTotal()">✕</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <!-- Tombol Tambah -->
+                                            <button type="button" class="btn btn-primary btn-sm" @click="addInput()">+
+                                                Tambah Bahan</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="mt-6 p-6 bg-base-200 rounded-lg flex items-center gap-6" 
+                                    x-data="biayaTambahan()" x-init="init()">
+                                    
+                                    <!-- Tuslah -->
+                                    <div class="flex items-center gap-2 text-sm font-semibold">
+                                        <label class="w-20">Tuslah :</label>
+                                        <input type="text" x-model="tuslahDisplay"
+                                            @input="updateFromDisplay('tuslah')"
+                                            class="input input-sm w-32 text-right" placeholder="Rp 0" />
+                                    </div>
+
+                                    <!-- Embalase -->
+                                    <div class="flex items-center gap-2 text-sm font-semibold">
+                                        <label class="w-20">Embalase :</label>
+                                        <input type="text" x-model="embalaseDisplay"
+                                            @input="updateFromDisplay('embalase')"
+                                            class="input input-sm w-32 text-right" placeholder="Rp 0" />
                                     </div>
                                 </div>
 
-                            </div>
+                                <!-- TOTAL KESELURUHAN (di luar tab) -->
+                                <div class="mt-6 p-6 bg-base-200 rounded-lg space-y-2 text-left"
+                                    x-data="totalKeseluruhan()" x-init="init()">
+                                    <div class="text-sm font-semibold">
+                                        Total Obat Non Racik :
+                                        <span class="font-bold" x-text="formatCurrency(totalNonracik)"></span>
+                                    </div>
+                                    <div class="text-sm font-semibold">
+                                        Total Obat Racikan :
+                                        <span class="font-bold" x-text="formatCurrency(totalRacikan)"></span>
+                                    </div>
+                                    <hr class="my-2 border-gray-300">
+                                    <div class="text-sm font-bold">
+                                        Total Keseluruhan :
+                                        <span x-text="formatCurrency(totalKeseluruhan())"></span>
+                                    </div>
+                                </div>
 
-                            <!-- TOTAL KESELURUHAN (di luar tab) -->
-                            <div class="mt-6 p-6 bg-base-200 rounded-lg space-y-2 text-left" x-data="totalKeseluruhan()" x-init="init()">
-                                <div class="text-sm font-semibold">
-                                    Total Obat Non Racik :
-                                    <span class="font-bold" x-text="formatCurrency(totalNonracik)"></span>
+                                <div class="p-2">
+                                    <button class="btn btn-success w-full">Update</button>
                                 </div>
-                                <div class="text-sm font-semibold">
-                                    Total Obat Racikan :
-                                    <span class="font-bold" x-text="formatCurrency(totalRacikan)"></span>
-                                </div>
-                                <hr class="my-2 border-gray-300">
-                                <div class="text-sm font-bold">
-                                    Total Keseluruhan :
-                                    <span x-text="formatCurrency(totalKeseluruhan())"></span>
-                                </div>
-                            </div>
-
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -480,8 +524,8 @@
     </div>
 </div>
 @push('scripts')
-    <script>
-        const currency = new Intl.NumberFormat('id-ID', { 
+<script>
+    const currency = new Intl.NumberFormat('id-ID', { 
             style: 'currency', 
             currency: 'IDR', 
             minimumFractionDigits: 0 
@@ -561,25 +605,58 @@
             }
         }
 
+        function biayaTambahan() {
+            return {
+                tuslah: 0,
+                embalase: 0,
+                tuslahDisplay: 'Rp 0',
+                embalaseDisplay: 'Rp 0',
+
+                init() {
+                    this.tuslahDisplay   = formatCurrency(this.tuslah);
+                    this.embalaseDisplay = formatCurrency(this.embalase);
+
+                    // kirim initial value juga
+                    this.$dispatch('update-biaya', { tuslah: this.tuslah, embalase: this.embalase });
+                },
+
+                updateFromDisplay(field) {
+                    let raw = this[`${field}Display`].replace(/[^\d]/g, ''); // ambil angka saja
+                    this[field] = parseInt(raw) || 0;
+                    this[`${field}Display`] = formatCurrency(this[field]);
+                    this.$dispatch('update-biaya', { tuslah: this.tuslah, embalase: this.embalase });
+                }
+            }
+        }
+
         // Komponen ringkasan total (mendengar event dari window)
         function totalKeseluruhan() {
             return {
                 totalNonracik: 0,
                 totalRacikan:  0,
+                tuslah: 0,
+                embalase: 0,
                 totalKeseluruhan() {
-                    return (parseFloat(this.totalNonracik) || 0) + (parseFloat(this.totalRacikan) || 0);
+                    return (parseFloat(this.totalNonracik) || 0) +
+                        (parseFloat(this.totalRacikan) || 0) +
+                        (parseFloat(this.tuslah) || 0) +
+                        (parseFloat(this.embalase) || 0);
                 },
                 formatCurrency,
                 init() {
-                    // Dengarkan event dari manapun (bubble sampai window)
                     window.addEventListener('update-total', (e) => {
                         if (!e.detail) return;
                         if (e.detail.type === 'nonracik') this.totalNonracik = e.detail.total || 0;
                         if (e.detail.type === 'racikan')  this.totalRacikan  = e.detail.total || 0;
                     }, false);
+
+                    window.addEventListener('update-biaya', (e) => {
+                        if (!e.detail) return;
+                        this.tuslah   = e.detail.tuslah   ?? this.tuslah;
+                        this.embalase = e.detail.embalase ?? this.embalase;
+                    }, false);
                 }
             }
         }
-    </script>
+</script>
 @endpush
-
