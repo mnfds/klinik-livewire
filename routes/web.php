@@ -193,6 +193,28 @@ Route::middleware(['auth'])->group(function () {
     // ====== RESEP OBAT ====== //
     Route::view('/resep', 'resep.data')->name('resep.data');
     Route::view('/resep-pasien', 'resep.detail')->name('resep.detail');
+    Route::get('/search-produk-obat', function (\Illuminate\Http\Request $request) {
+        $search = $request->q;
+
+        $obat = \App\Models\ProdukDanObat::query()
+            ->when($search, function ($query, $search) {
+                $query->where('nama_dagang', 'like', "%{$search}%")
+                    ->orWhere('kode', 'like', "%{$search}%");
+            })
+            ->select('id', 'nama_dagang', 'sediaan', 'harga_bersih', 'stok')
+            ->limit(20)
+            ->get();
+
+        return response()->json($obat->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => "{$item->nama_dagang} {$item->sediaan} - Rp " . number_format($item->harga_bersih) . " sisa: ({$item->stok})",
+                'satuan' => $item->sediaan,
+                'harga' => $item->harga_bersih,
+            ];
+        }));
+    })->name('search.ProdukObat');
+
     // ====== RESEP OBAT ====== //
 
 });
