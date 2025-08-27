@@ -55,7 +55,7 @@ class Create extends Component
         'imt' => null,
     ];
     public $pemeriksaan_estetika = [
-        'warna_kulit' => 'kuning',
+        'warna_kulit' => null,
         'ketebalan_kulit' => null,
         'kadar_minyak' => null,
         'kerapuhan_kulit' => null,
@@ -234,7 +234,7 @@ class Create extends Component
                 ]);
 
                 PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                    ->update(['status_terdaftar' => 'diperiksa']);
+                    ->update(['status_terdaftar' => 'peresepan']);
 
             // ----- SUBJECTIVE ----- //
 

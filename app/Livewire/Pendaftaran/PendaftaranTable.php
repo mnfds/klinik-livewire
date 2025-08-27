@@ -56,6 +56,11 @@ final class PendaftaranTable extends PowerGridComponent
             ->add('dokter_dan_poli', function($row){
                 return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
             })
+            ->add('status', fn ($row) =>
+                $row->status_terdaftar === 'terdaftar'
+                    ? '<span class="badge badge-primary">Registrasi</span>'
+                    : ($row->status_terdaftar ?? '-')
+            )
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
             ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga
             ->add('kunjungan', function($row){
@@ -99,6 +104,8 @@ final class PendaftaranTable extends PowerGridComponent
 
             Column::make('Kunjungan', 'kunjungan')
                 ->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('status', 'status'),
 
             Column::action('Action') // untuk tombol edit/delete
         ];

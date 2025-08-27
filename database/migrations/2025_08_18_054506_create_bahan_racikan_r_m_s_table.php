@@ -16,9 +16,9 @@ return new class extends Migration
             // Relasi ke obat racikan
             $table->foreignId('obat_racikan_id')->constrained('obat_racikan_r_m_s')->onDelete('cascade');
 
-            $table->text('nama_obat_racikan');
-            $table->integer('jumlah_obat_racikan');
-            $table->text('satuan_obat_racikan');
+            $table->text('nama_obat_racikan')->nullable();
+            $table->integer('jumlah_obat_racikan')->nullable();
+            $table->text('satuan_obat_racikan')->nullable();
             $table->timestamps();
         });
     }

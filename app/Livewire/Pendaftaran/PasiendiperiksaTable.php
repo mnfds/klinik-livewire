@@ -31,7 +31,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::where('status_terdaftar', 'terkaji')
+        return PasienTerdaftar::where('status_terdaftar', 'konsultasi')
             ->whereDate('created_at', today())
             ->with(['pasien', 'poliklinik', 'dokter']);
     }
@@ -55,6 +55,11 @@ final class PasiendiperiksaTable extends PowerGridComponent
             ->add('dokter_dan_poli', function($row){
                 return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
             })
+            ->add('status', fn ($row) =>
+                $row->status_terdaftar === 'konsultasi'
+                    ? '<span class="badge badge-primary">Menunggu Konsultasi</span>'
+                    : ($row->status_terdaftar ?? '-')
+            )
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
             ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga
             ->add('kunjungan', function($row){

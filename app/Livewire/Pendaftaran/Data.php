@@ -26,7 +26,7 @@ class Data extends Component
     public function updateJumlahPasienDiperiksa()
     {
         $this->jumlahPasienDiperiksa = PasienTerdaftar::whereDate('created_at', today())
-            ->where('status_terdaftar', 'terkaji')
+            ->where('status_terdaftar', 'konsultasi')
             ->count();
     }
     public function render()

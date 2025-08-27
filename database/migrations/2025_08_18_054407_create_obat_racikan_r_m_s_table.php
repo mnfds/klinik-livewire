@@ -16,13 +16,13 @@ return new class extends Migration
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
 
-            $table->text('nama_racikan');
-            $table->integer('jumlah_racikan');
-            $table->text('satuan_racikan');
-            $table->text('dosis_obat_racikan');
-            $table->text('hari_obat_racikan');
-            $table->text('aturan_pakai_racikan');
-            $table->text('metode_racikan');
+            $table->text('nama_racikan')->nullable();
+            $table->integer('jumlah_racikan')->nullable();
+            $table->text('satuan_racikan')->nullable();
+            $table->text('dosis_obat_racikan')->nullable();
+            $table->text('hari_obat_racikan')->nullable();
+            $table->text('aturan_pakai_racikan')->nullable();
+            $table->text('metode_racikan')->nullable();
             $table->timestamps();
         });
     }

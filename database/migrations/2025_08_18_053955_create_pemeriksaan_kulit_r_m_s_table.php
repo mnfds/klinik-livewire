@@ -15,6 +15,16 @@ return new class extends Migration
             $table->id();
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
+            
+            $table->string('warna_kulit')->nullable();
+            $table->string('ketebalan_kulit')->nullable();
+            $table->string('kadar_minyak')->nullable();
+            $table->string('kerapuhan_kulit')->nullable();
+            $table->string('kekencangan_kulit')->nullable();
+            $table->string('melasma')->nullable();
+
+            $table->json('acne')->nullable();
+            $table->json('lesions')->nullable();
 
             $table->timestamps();
         });

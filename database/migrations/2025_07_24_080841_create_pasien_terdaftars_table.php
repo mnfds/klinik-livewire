@@ -20,7 +20,15 @@ return new class extends Migration
 
             $table->string('jenis_kunjungan');
             $table->date('tanggal_kunjungan');
-            $table->enum('status_terdaftar', ['terdaftar', 'terkaji','diperiksa','selesai']);
+            $table->enum('status_terdaftar', 
+            [
+                'terdaftar',    // muncul untuk perawat mengisi KAJIAN AWAL
+                'konsultasi',   // muncul untuk dokter mengisi SOAP
+                'peresepan',    //muncul untuk apoteker mengisi obat dari inventory berdasarkan resep dokter 
+                'pembayaran',   //muncul di kasir untuk pembayaran dan konfirmasi obat yang ingin ditebus
+                'lunas',      // muncul di apoteker kalau sudah melakukan pembayaran sudah lunas dan obat sudah dikonfimasi
+                'selesai',      // menandakan obat sudah diserahkan dan kunjungan pasien selesai
+            ]);
 
             $table->timestamps();
         });
