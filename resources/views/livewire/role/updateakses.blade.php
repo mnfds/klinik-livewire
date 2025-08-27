@@ -39,6 +39,7 @@
             {{-- Tombol Simpan --}}
             <div class="modal-action">
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('modaleditrole').close()">Batal</button>
             </div>
 
         </form>

@@ -90,7 +90,7 @@
             {{-- Tombol Aksi --}}
             <div class="modal-action flex justify-end gap-2">
                 <button type="submit" class="btn btn-primary">Update</button>
-                <button type="button" class="btn" onclick="modalEditBundling?.close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="modalEditBundling?.close()">Batal</button>
             </div>
         </form>
     </div>

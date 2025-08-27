@@ -83,11 +83,27 @@
                         <span class="ml-3">Laporan</span>
                     </x-side-link>
                 </li>
-                <li>
-                    <x-side-link href="{{ route('barang.data') }}" :active="request()->routeIs('barang.data') || request()->routeIs('barang.riwayat')" wire:navigate>
+
+                <li x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahan.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" 
+                        class="cursor-pointer" 
+                        :active="request()->routeIs('barang.*', 'bahan.*',)">
                         <i class="fa-solid fa-boxes-stacked"></i>
-                        <span class="ml-3">Persediaan</span>
+                        <span class="flex-1 ml-3 text-left">Persediaan</span>
+                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
+                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        <li>
+                            <x-side-link href="{{ route('barang.data') }}" 
+                                :active="request()->routeIs('barang.*')"  
+                                wire:navigate>
+                                Barang
+                            </x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="#" wire:navigate>Bahan Baku</x-side-link>
+                        </li>
+                    </ul>
                 </li>
 
                 <!-- Dropdown Example (reuseable later for antrian/rawat jalan/etc) -->

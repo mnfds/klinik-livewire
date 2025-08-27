@@ -99,6 +99,7 @@
             {{-- Tombol --}}
             <div class="col-span-1 sm:col-span-2 flex justify-end gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('modaleditprodukdanobat').close()">Batal</button>
             </div>
         </form>
     </div>

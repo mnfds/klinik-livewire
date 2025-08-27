@@ -86,7 +86,7 @@
             {{-- Tombol Aksi --}}
             <div class="modal-action flex justify-end gap-2">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn" onclick="document.getElementById('storeModalBundling')?.close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalBundling')?.close()">Batal</button>
             </div>
         </form>
     </div>

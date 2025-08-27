@@ -43,6 +43,7 @@
             {{-- Tombol --}}
             <div class="modal-action flex justify-end gap-2 pt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('modaleditpelayanan').close()">Batal</button>
             </div>
         </form>
     </div>

@@ -46,7 +46,7 @@
 
             <div class="modal-action justify-end mt-6">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn btn-error" onclick="document.getElementById('storeModal').close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModal').close()">Batal</button>
             </div>
         </form>
     </div>

@@ -63,9 +63,11 @@ final class PoliklinikTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Status', 'status_label'),
+            Column::make('Status', 'status_label')
+                ->hidden(),
             
-            Column::make('Status Aktif?', 'status')->toggleable(),
+            Column::make('Status Aktif', 'status')
+                ->toggleable(),
 
             Column::action('Action')
         ];

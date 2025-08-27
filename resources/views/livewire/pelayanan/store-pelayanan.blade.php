@@ -44,7 +44,7 @@
             {{-- Tombol --}}
             <div class="modal-action flex justify-end gap-2 pt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn" onclick="document.getElementById('storeModalPelayanan').close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalPelayanan').close()">Batal</button>
             </div>
         </form>
     </div>

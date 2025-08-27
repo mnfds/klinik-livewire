@@ -98,7 +98,7 @@
             {{-- Tombol Submit --}}
             <div class="col-span-1 sm:col-span-2 flex justify-end gap-2 mt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn btn-error" onclick="document.getElementById('storeModalProdukDanObat').close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalProdukDanObat').close()">Batal</button>
             </div>
         </form>
     </div>
