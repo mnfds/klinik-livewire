@@ -58,6 +58,11 @@ class RekamMedis extends Model
         return $this->hasMany(RencanaLayananRM::class);
     }
 
+    public function rencanaTreatmentRM()
+    {
+        return $this->hasMany(RencanaTreatmentRM::class);
+    }
+
     public function rencanaBundlingRM()
     {
         return $this->hasMany(RencananaBundlingRM::class);

@@ -71,13 +71,16 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/pelayanan', 'pelayanan.data')->name('pelayanan.data');
     // ====== PELAYANAN ====== //
 
-    // ====== PELAYANAN ====== //
+    // ====== BUNDLING ====== //
     Route::view('/bundling', 'bundling.data')->name('bundling.data');
-    // ====== PELAYANAN ====== //
+    // ====== BUNDLING ====== //
 
     // ====== INVENTORY BARANG ====== //
     Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
     Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
+
+    Route::view('/peyimpanan-bahan-baku', 'bahanbaku.data')->name('bahanbaku.data');
+    Route::get('/penyimpanan-bahan-baku/riwayat', Riwayat::class)->name('bahan.riwayat');
     // ====== INVENTORY BARANG ====== //
 
     // ====== ANTRIAN PASIEN ====== //
