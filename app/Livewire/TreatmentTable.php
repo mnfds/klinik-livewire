@@ -31,7 +31,7 @@ final class TreatmentTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Treatment::query();
+        return Treatment::query()->with('treatmentbahan.bahanbaku');
     }
 
     public function relationSearch(): array
@@ -46,7 +46,12 @@ final class TreatmentTable extends PowerGridComponent
             ->add('harga_treatment', fn ($treatment) => number_format($treatment->harga_treatment, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih', fn ($treatment) => number_format($treatment->harga_bersih, 0, ',', '.'))
-            ->add('deskripsi');
+            ->add('deskripsi')
+            ->add('nama_bahan', function ($row) {
+                return $row->treatmentbahan
+                    ->map(fn($item) => $item->bahanbaku->nama ?? '-')
+                    ->implode(', ');
+            });
     }
 
     public function columns(): array
@@ -68,6 +73,10 @@ final class TreatmentTable extends PowerGridComponent
 
             Column::make('Deskripsi', 'deskripsi'),
 
+            Column::make('Bahan Baku Terkait', 'nama_bahan')
+                            ->sortable()
+                            ->searchable(),
+
             Column::action('Action')
         ];
     }
@@ -81,6 +90,14 @@ final class TreatmentTable extends PowerGridComponent
     public function actions(Treatment $row): array
     {
         return [
+            Button::add('updatebahan')  
+                ->slot('<i class="fa-solid fa-pump-medical"></i> Bahan')
+                ->attributes([
+                    'onclick' => 'modaleditbahan.showModal()',
+                    'class' => 'btn btn-secondary'
+                ])
+                ->dispatchTo('pelayanan.updatebahan', 'getupdatebahan', ['rowId' => $row->id]),
+            
             Button::add('editTreatment')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([

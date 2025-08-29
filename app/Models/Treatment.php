@@ -19,6 +19,6 @@ class Treatment extends Model
 
     public function treatmentbahan()
     {
-        return $this->hasMany(TreatmentBahan::class);
+        return $this->hasMany(TreatmentBahan::class,'treatments_id');
     }
 }

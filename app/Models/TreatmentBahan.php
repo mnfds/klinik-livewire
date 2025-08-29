@@ -15,11 +15,11 @@ class TreatmentBahan extends Model
 
     public function treatment()
     {
-        return $this->belongsTo(Treatment::class);
+        return $this->belongsTo(Treatment::class, 'treatments_id');
     }
 
     public function bahanbaku()
     {
-        return $this->belongsTo(BahanBaku::class);
+        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
     }
 }

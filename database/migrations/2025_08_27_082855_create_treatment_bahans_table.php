@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('treatment_bahans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('treatments_id')->constrained('treatments')->onDelete('cascade');
-            $table->foreignId('bahan_bakus_id')->constrained('bahan_bakus')->onDelete('cascade');
+            $table->foreignId('bahan_baku_id')->constrained('bahan_bakus')->onDelete('cascade');
             $table->timestamps();
         });
     }
