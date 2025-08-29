@@ -1,7 +1,7 @@
 <x-app-layout>
     <livewire:Bahan.Data />
-    {{-- <livewire:barang.store /> --}}
-    {{-- <livewire:barang.take /> --}}
-    {{-- <livewire:barang.restok /> --}}
-    {{-- <livewire:barang.update /> --}}
+    <livewire:Bahan.Store />
+    <livewire:Bahan.Take />
+    <livewire:Bahan.Restok />
+    <livewire:Bahan.Update />
 </x-app-layout>

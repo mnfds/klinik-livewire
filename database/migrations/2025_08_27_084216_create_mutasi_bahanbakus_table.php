@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mutasi_bahanbakus', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bahan_bakus_id')->constrained('bahan_bakus')->onDelete('cascade');
+            $table->foreignId('bahan_baku_id')->constrained('bahan_bakus')->onDelete('cascade');
             $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('jumlah');
             $table->string('diajukan_oleh')->nullable(); // pegawai yang memasukkan atau megeluarkan barang

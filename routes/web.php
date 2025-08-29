@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Bahan\Riwayat as BahanRiwayat;
 use App\Models\Icd;
 use App\Models\User;
 use App\Models\Pasien;
@@ -8,7 +9,7 @@ use App\Models\NomorAntrian;
 use Illuminate\Http\Request;
 use App\Models\ProdukDanObat;
 use App\Livewire\Pasien\Detail;
-use App\Livewire\Barang\Riwayat;
+use App\Livewire\Barang\Riwayat as BarangRiwayat;
 use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
@@ -77,16 +78,15 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== INVENTORY BARANG ====== //
     Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
-    Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
+    Route::get('/penyimpanan-barang/riwayat', BarangRiwayat::class)->name('barang.riwayat');
 
     Route::view('/peyimpanan-bahan-baku', 'bahanbaku.data')->name('bahanbaku.data');
-    Route::get('/penyimpanan-bahan-baku/riwayat', Riwayat::class)->name('bahan.riwayat');
+    Route::get('/penyimpanan-bahan-baku/riwayat', BahanRiwayat::class)->name('bahanbaku.riwayat');
     // ====== INVENTORY BARANG ====== //
 
     // ====== ANTRIAN PASIEN ====== //
     Route::view('/antrian', 'antrian.data')->name('antrian.data');
     Route::view('/antrian/ambil-nomor', 'antrian.display')->name('antrian.display');
-    Route::get('/penyimpanan-barang/riwayat', Riwayat::class)->name('barang.riwayat');
     // ====== ANTRIAN PASIEN ====== //
 
     // ====== PASIEN ====== //
