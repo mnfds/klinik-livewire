@@ -61,7 +61,7 @@ class UpdatePelayanan extends Component
 
         $this->dispatch('toast', [
             'type' => 'success',
-            'message' => 'Data pelayanan berhasil diperbarui.'
+            'message' => 'Data pelayanan medis berhasil diperbarui.'
         ]);
 
         $this->dispatch('closeModal');

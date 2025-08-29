@@ -1,17 +1,17 @@
-<dialog id="storeModalPelayanan" class="modal" wire:ignore.self x-data x-init="
-    Livewire.on('closeStoreModalPelayanan', () => {
-        document.getElementById('storeModalPelayanan')?.close()
+<dialog id="storeModalPelayananEstetika" class="modal" wire:ignore.self x-data x-init="
+    Livewire.on('closeStoreModalPelayananEstetika', () => {
+        document.getElementById('storeModalPelayananEstetika')?.close()
     })
 ">
     <div class="modal-box w-full max-w-2xl">
-        <h3 class="text-xl font-semibold mb-4">Tambah Pelayanan Medis</h3>
+        <h3 class="text-xl font-semibold mb-4">Tambah Pelayanan Estetika</h3>
 
         <form wire:submit.prevent="store" class="space-y-4">
 
             {{-- Nama Pelayanan --}}
             <div class="form-control">
                 <label class="label font-semibold">Nama Pelayanan</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_pelayanan">
+                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_treatment">
             </div>
 
             {{-- Harga & Diskon --}}
@@ -19,7 +19,7 @@
                 <div class="form-control">
                     <label class="label font-semibold">Harga Dasar</label>
                     <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
-                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_pelayanan">
+                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_treatment">
                 </div>
 
                 <div class="form-control">
@@ -44,17 +44,17 @@
             {{-- Tombol --}}
             <div class="modal-action flex justify-end gap-2 pt-4">
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalPelayanan').close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalPelayananEstetika').close()">Batal</button>
             </div>
         </form>
     </div>
 
     {{-- Script sesuai bundling --}}
     <script>
-        function hitungHargaBersih() {
-            const root = document.querySelector('#storeModalPelayanan');
+        function hitungHargaBersihEstetika() {
+            const root = document.querySelector('#storeModalPelayananEstetika');
 
-            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_pelayanan"]')?.previousElementSibling;
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_treatment"]')?.previousElementSibling;
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
             const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
             const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
@@ -76,34 +76,34 @@
             hargaBersihInput.dispatchEvent(new Event('input'));
         }
 
-        function reinitHargaBersihListeners() {
-            const root = document.querySelector('#storeModalPelayanan');
+        function reinitHargaBersihListenersEstetika() {
+            const root = document.querySelector('#storeModalPelayananEstetika');
 
-            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_pelayanan"]')?.previousElementSibling;
+            const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_treatment"]')?.previousElementSibling;
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
 
             if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersih);
-                hargaInput.addEventListener('input', hitungHargaBersih);
+                hargaInput.removeEventListener('input', hitungHargaBersihEstetika);
+                hargaInput.addEventListener('input', hitungHargaBersihEstetika);
             }
 
             if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersih);
-                diskonInput.addEventListener('input', hitungHargaBersih);
+                diskonInput.removeEventListener('input', hitungHargaBersihEstetika);
+                diskonInput.addEventListener('input', hitungHargaBersihEstetika);
             }
 
-            hitungHargaBersih();
+            hitungHargaBersihEstetika();
         }
 
-        function reinitPelayananModalHelpers() {
+        function reinitPelayananModalHelpersEstetika() {
             initCleaveRupiah(); // kamu sudah punya global
-            reinitHargaBersihListeners();
+            reinitHargaBersihListenersEstetika();
         }
 
-        document.addEventListener('DOMContentLoaded', reinitPelayananModalHelpers);
+        document.addEventListener('DOMContentLoaded', reinitPelayananModalHelpersEstetika);
         document.addEventListener('livewire:load', () => {
-            Livewire.hook('message.processed', reinitPelayananModalHelpers);
+            Livewire.hook('message.processed', reinitPelayananModalHelpersEstetika);
         });
-        document.addEventListener('livewire:navigated', reinitPelayananModalHelpers);
+        document.addEventListener('livewire:navigated', reinitPelayananModalHelpersEstetika);
     </script>
 </dialog>

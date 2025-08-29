@@ -2,41 +2,41 @@
 
 namespace App\Livewire\Pelayanan;
 
-use App\Models\Pelayanan;
+use App\Models\Treatment;
 use Livewire\Component;
 
-class StorePelayanan extends Component
+class StoreTreatment extends Component
 {
-    public $nama_pelayanan;
-    public $harga_pelayanan;
+    public $nama_treatment;
+    public $harga_treatment;
     public $deskripsi;
     public $diskon = 0;
     public $harga_bersih;
 
     public function render()
     {
-        return view('livewire.pelayanan.store-pelayanan');
+        return view('livewire.pelayanan.store-treatment');
     }
 
     public function store()
     {
         $this->validate([
-            'nama_pelayanan'  => 'required',
-            'harga_pelayanan' => 'required',
+            'nama_treatment'  => 'required',
+            'harga_treatment' => 'required',
             'diskon'          => 'nullable|min:0|max:100',
             'deskripsi'       => 'nullable',
         ]);
 
          // Hitung harga bersih
-        $harga = (float) $this->harga_pelayanan;
+        $harga = (float) $this->harga_treatment;
         $diskon = (float) $this->diskon;
 
         $diskonNominal = ($harga * $diskon) / 100;
-        $this->harga_bersih = $harga - $diskonNominal;
+        $this->harga_treatment = $harga - $diskonNominal;
 
-        Pelayanan::create([
-            'nama_pelayanan'   => $this->nama_pelayanan,
-            'harga_pelayanan'  => $this->harga_pelayanan,
+        Treatment::create([
+            'nama_treatment'   => $this->nama_treatment,
+            'harga_treatment'  => $this->harga_treatment,
             'diskon'           => $this->diskon,
             'harga_bersih'     => $this->harga_bersih,
             'deskripsi'        => $this->deskripsi,
@@ -44,10 +44,10 @@ class StorePelayanan extends Component
 
         $this->dispatch('toast', [
             'type' => 'success',
-            'message' => 'Pelayanan Medis berhasil ditambahkan.'
+            'message' => 'Pelayanan Estetika berhasil ditambahkan.'
         ]);
 
-        $this->dispatch('closeStoreModalPelayanan');
+        $this->dispatch('closeStoreModalPelayananEstetika');
 
         $this->reset();
 

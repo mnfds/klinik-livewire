@@ -2,4 +2,6 @@
     <livewire:Pelayanan.DataPelayanan />
     <livewire:Pelayanan.Store-pelayanan />
     <livewire:Pelayanan.Update-pelayanan />
+    <livewire:Pelayanan.Store-treatment />
+    <livewire:Pelayanan.Update-treatment />
 </x-app-layout>

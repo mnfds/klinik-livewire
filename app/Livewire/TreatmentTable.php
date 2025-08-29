@@ -18,7 +18,7 @@ final class TreatmentTable extends PowerGridComponent
 
     public function setUp(): array
     {
-        $this->showCheckBox();
+        // $this->showCheckBox();
 
         return [
             PowerGrid::header()
@@ -42,20 +42,31 @@ final class TreatmentTable extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            ->add('id')
-            ->add('created_at');
+            ->add('nama_treatment')
+            ->add('harga_treatment', fn ($treatment) => number_format($treatment->harga_treatment, 0, ',', '.'))
+            ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
+            ->add('harga_bersih', fn ($treatment) => number_format($treatment->harga_bersih, 0, ',', '.'))
+            ->add('deskripsi');
     }
 
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
+            Column::make('#', '')->index(),
 
-            Column::make('Created at', 'created_at')
+            Column::make('Nama Pelayanan', 'nama_treatment')
                 ->sortable()
                 ->searchable(),
+
+            Column::make('Harga Dasar', 'harga_treatment')
+                ->sortable()
+                ->searchable(),
+
+            Column::make('Diskon', 'diskon'),
+
+            Column::make('Harga Bersih', 'harga_bersih'),
+
+            Column::make('Deskripsi', 'deskripsi'),
 
             Column::action('Action')
         ];
@@ -67,21 +78,55 @@ final class TreatmentTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
-    }
-
     public function actions(Treatment $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Edit: '.$row->id)
-                ->id()
-                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id])
+            Button::add('editTreatment')  
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+                ->attributes([
+                    'onclick' => 'modaleditpelayananEstetika.showModal()',
+                    'class' => 'btn btn-primary'
+                ])
+                ->dispatchTo('pelayanan.update-treatment', 'editTreatment', ['rowId' => $row->id]),
+            
+            Button::add('deleteTreatment')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+                ->class('btn btn-error')
+                ->dispatch('modaldeletepelayananEstetika', ['rowId' => $row->id]),
         ];
+    }
+
+    #[\Livewire\Attributes\On('modaldeletepelayananEstetika')]
+    public function modaldeletepelayananEstetika($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasideletepelayananestetika', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasideletepelayananestetika')]
+    public function konfirmasideletepelayananestetika($rowId): void
+    {
+        Treatment::findOrFail($rowId)->delete();
+
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
     }
 
     /*
