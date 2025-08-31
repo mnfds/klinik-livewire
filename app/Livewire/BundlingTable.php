@@ -48,6 +48,11 @@ final class BundlingTable extends PowerGridComponent
             ->add('harga_bersih_formatted', fn ($row) => 'Rp'.number_format($row->harga_bersih, 0, ',', '.'))
             ->add('aktif')
             ->add('isi_paket', function (Bundling $bundling) {
+                $estetika = $bundling->treatmentBundlings()
+                    ->with('treatment')
+                    ->get()
+                    ->map(fn($item) => '• ' . e($item->treatment->nama_treatment) . ' x ' . $item->jumlah);
+                
                 $pelayanan = $bundling->pelayananBundlings()
                     ->with('pelayanan')
                     ->get()
@@ -61,8 +66,13 @@ final class BundlingTable extends PowerGridComponent
                 $html = '';
 
                 if ($pelayanan->isNotEmpty()) {
-                    $html .= '<strong>Layanan:</strong><br>';
+                    $html .= '<strong>Layanan Medis:</strong><br>';
                     $html .= $pelayanan->implode('<br>') . '<br>';
+                }
+
+                if ($estetika->isNotEmpty()) {
+                    $html .= '<strong>Layanan Estetika:</strong><br>';
+                    $html .= $estetika->implode('<br>') . '<br>';
                 }
 
                 if ($produk->isNotEmpty()) {

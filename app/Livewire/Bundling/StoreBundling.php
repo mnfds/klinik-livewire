@@ -6,10 +6,12 @@ use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\Pelayanan;
 use App\Models\ProdukDanObat;
+use App\Models\Treatment;
 
 class StoreBundling extends Component
 {
     // List untuk pilihan select
+    public $treatmentList = [];
     public $pelayananList = [];
     public $produkObatList = [];
 
@@ -21,11 +23,13 @@ class StoreBundling extends Component
     public $harga_bersih;
 
     // Form dinamis
+    public $treatmentInputs = [['treatments_id' => null, 'jumlah' => 1]];
     public $pelayananInputs = [['pelayanan_id' => null, 'jumlah' => 1]];
     public $produkInputs = [['produk_id' => null, 'jumlah' => 1]];
 
     public function mount()
     {
+        $this->treatmentList = Treatment::select('id', 'nama_treatment')->orderBy('nama_treatment')->get();
         $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')->orderBy('nama_pelayanan')->get();
         $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')->orderBy('nama_dagang')->get();
     }
@@ -33,6 +37,17 @@ class StoreBundling extends Component
     public function render()
     {
         return view('livewire.bundling.store-bundling');
+    }
+
+    public function addTreatmentRow()
+    {
+        $this->treatmentInputs[] = ['treatments_id' => null, 'jumlah' => 1];
+    }
+
+    public function removeTreatmentRow($index)
+    {
+        unset($this->treatmentInputs[$index]);
+        $this->treatmentInputs = array_values($this->treatmentInputs);
     }
 
     public function addPelayananRow()
@@ -66,6 +81,9 @@ class StoreBundling extends Component
             'diskon' => 'required|numeric|min:0|max:100',
             'harga_bersih' => 'required|numeric|min:0',
 
+            'treatmentInputs.*.treatments_id' => 'nullable|exists:treatments,id',
+            'treatmentInputs.*.jumlah' => 'nullable|numeric|min:1',
+            
             'pelayananInputs.*.pelayanan_id' => 'nullable|exists:pelayanans,id',
             'pelayananInputs.*.jumlah' => 'nullable|numeric|min:1',
 
@@ -80,6 +98,16 @@ class StoreBundling extends Component
             'diskon' => $this->diskon,
             'harga_bersih' => $this->harga_bersih,
         ]);
+
+        // Simpan treatment
+        foreach ($this->treatmentInputs as $item) {
+            if ($item['treatments_id']) {
+                $bundling->treatmentBundlings()->create([
+                    'treatments_id' => $item['treatments_id'],
+                    'jumlah' => $item['jumlah'] ?? 1,
+                ]);
+            }
+        }
 
         // Simpan pelayanan
         foreach ($this->pelayananInputs as $item) {

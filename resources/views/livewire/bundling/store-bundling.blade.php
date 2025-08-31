@@ -62,6 +62,27 @@
                 </div>
             </div>
 
+            {{-- treatment Dinamis --}}
+            <div class="form-control">
+                <label class="label font-semibold">Pelayanan Estetika</label>
+                <div class="space-y-2">
+                    @foreach ($treatmentInputs as $index => $row)
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <select class="select select-bordered w-full md:flex-1" wire:model.defer="treatmentInputs.{{ $index }}.treatments_id">
+                                <option value="">-- Pilih Pelayanan Estetika --</option>
+                                @foreach ($treatmentList as $item)
+                                    <option value="{{ $item->id }}">{{ $item->nama_treatment }}</option>
+                                @endforeach
+                            </select>
+                            <input type="number" min="1" class="input input-bordered w-full md:w-28" placeholder="Jumlah"
+                                wire:model.defer="treatmentInputs.{{ $index }}.jumlah">
+                            <button type="button" class="btn btn-error btn-sm" wire:click="removeTreatmentRow({{ $index }})">✕</button>
+                        </div>
+                    @endforeach
+                    <button type="button" class="btn btn-outline btn-sm mt-1" wire:click="addTreatmentRow">+ Tambah Pelayanan Estetika</button>
+                </div>
+            </div>
+
             {{-- Produk & Obat Dinamis --}}
             <div class="form-control">
                 <label class="label font-semibold">Produk & Obat</label>

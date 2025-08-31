@@ -16,4 +16,9 @@ class Pelayanan extends Model
     {
         return $this->hasMany(RencanaLayananRM::class);
     }
+
+    public function pelayananBundlings()
+    {
+        return $this->hasMany(PelayananBundling::class, 'pelayanan_id');
+    }
 }

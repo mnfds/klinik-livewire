@@ -21,4 +21,9 @@ class Treatment extends Model
     {
         return $this->hasMany(TreatmentBahan::class,'treatments_id');
     }
+
+    public function treatmentBundlings()
+    {
+        return $this->hasMany(TreatmentBundling::class, 'treatments_id');
+    }
 }

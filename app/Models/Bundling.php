@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\TreatmentBundling;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,6 +12,11 @@ class Bundling extends Model
 
     protected $table = 'bundlings';
     protected $guarded = ['id'];
+
+    public function treatmentBundlings()
+    {
+        return $this->hasMany(TreatmentBundling::class, 'bundling_id');
+    }
 
     public function pelayananBundlings()
     {
