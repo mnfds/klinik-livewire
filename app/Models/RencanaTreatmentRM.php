@@ -16,6 +16,6 @@ class RencanaTreatmentRM extends Model
 
     public function treatment()
     {
-        return $this->belongsTo(Treatment::class);
+        return $this->belongsTo(Treatment::class, 'treatments_id');
     }
 }

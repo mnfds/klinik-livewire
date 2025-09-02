@@ -18,7 +18,9 @@ use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
 use App\Models\RencanaLayananRM;
 use App\Models\RencananaBundlingRM;
+use App\Models\RencanaTreatmentRM;
 use App\Models\TandaVitalRM;
+use App\Models\Treatment;
 use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Compilers\Mount;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +41,7 @@ class Create extends Component
     // berisikan data yang akan dimunculkan pada select layanan/tindakan
     public $layanan;
     public $bundling;
+    public $treatment;
 
     // FORM DATA YANG PILIH //
     public array $selected_forms_subjective = [];
@@ -105,6 +108,11 @@ class Create extends Component
         'jumlah_pelayanan' => [],
     ];
 
+    public $rencana_estetika = [
+        'treatments_id' => [],
+        'jumlah_treatment' => [],
+    ];
+
     public $rencana_bundling = [
         'bundling_id' => [],
         'jumlah_bundling' => [],
@@ -112,6 +120,7 @@ class Create extends Component
 
     public $layanandanbundling = [
         'layanan' => [],
+        'treatment' => [],
         'bundling' => [],
     ];
 
@@ -123,20 +132,6 @@ class Create extends Component
         'hari_obat_non_racikan'=> [],
         'aturan_pakai_obat_non_racikan'=> [],
     ];
-
-    // public $obat_racikan = [
-    //     'nama_racikan' => [],
-    //     'jumlah_racikan' => [],
-    //     'satuan_racikan' => [],
-    //     'aturan_pakai_racikan' => [],
-    //     'metode_racikan' => [],
-    // ];
-
-    // public $bahan_racikan = [
-    //     'nama_obat_racikan' => [],
-    //     'jumlah_obat_racikan' => [],
-    //     'satuan_obat_racikan' => [],
-    // ];
 
     public $racikanItems = [
         [
@@ -164,9 +159,11 @@ class Create extends Component
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
         $this->layanan = Pelayanan::all();
         $this->bundling = Bundling::all();
+        $this->treatment = Treatment::all();
 
         $this->layanandanbundling['layanan'] = $this->layanan;
         $this->layanandanbundling['bundling'] = $this->bundling;
+        $this->layanandanbundling['treatment'] = $this->treatment;
 
         if ($this->pasien_terdaftar_id) {
             $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
@@ -339,6 +336,17 @@ class Create extends Component
             // ----- PLAN ----- //
 
                 // SIMPAN DATA RENCANA LAYANAN REKAM MEDIS
+                if (in_array('rencana-estetika', $this->selected_forms_plan)) {
+
+                    foreach ($this->rencana_estetika['treatments_id'] as $index => $treatmentId) {
+                        RencanaTreatmentRM::create([
+                            'rekam_medis_id'   => $rekammedis->id,
+                            'treatments_id'     => $treatmentId,
+                            'jumlah_treatment' => $this->rencana_layanan['jumlah_treatment'][$index],
+                        ]);
+                    }
+                }
+
                 if (in_array('rencana-layanan', $this->selected_forms_plan)) {
 
                     foreach ($this->rencana_layanan['pelayanan_id'] as $index => $pelayananId) {

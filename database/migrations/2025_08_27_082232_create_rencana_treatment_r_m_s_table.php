@@ -16,7 +16,7 @@ return new class extends Migration
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
 
-            $table->foreignId('treatment_id')->constrained('treatments')->onDelete('cascade');
+            $table->foreignId('treatments_id')->constrained('treatments')->onDelete('cascade');
             $table->integer('jumlah_treatment')->nullable();
             $table->timestamps();
         });

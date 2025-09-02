@@ -14,7 +14,7 @@ class Treatment extends Model
 
     public function rencanaTreatement()
     {
-        return $this->hasMany(RencanaTreatmentRM::class);
+        return $this->hasMany(RencanaTreatmentRM::class, 'treatments_id');
     }
 
     public function treatmentbahan()

@@ -43,7 +43,7 @@
         ]
     ])
 
-    <div class="divider">Rencana Layanan Atau Tindakan</div>
+    <div class="divider">Rencana Tindakan Medis</div>
 
     {{-- SECTION LAYANAN --}}
     <div class="mb-6">

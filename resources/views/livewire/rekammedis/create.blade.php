@@ -470,11 +470,20 @@
                                 <div wire:ignore>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                        <option value="rencana-layanan">Rencana Layanan Atau Tindakan</option>
+                                        <option value="rencana-estetika">Rencana Tindakan Estetika</option>
+                                        <option value="rencana-layanan">Rencana Tindakan Medis</option>
                                         <option value="rencana-bundling">Paket bundling</option>
                                         <option value="obat-non-racikan">Obat Non Racikan</option>
                                         <option value="obat-racikan">Obat Racikan</option>
                                     </select>
+                                </div>
+
+                                <!-- RENCANA TINDAKAN ESTETIKA -->
+                                <div x-show="selectedFormsPlan.includes('rencana-estetika')" style="display: none" wire:ignore >
+                                    <x-rekammedis.rencanaestetika 
+                                        :layanandanbundling="$layanandanbundling" 
+                                        :rencanaEstetika="$rencana_estetika"
+                                    />
                                 </div>
 
                                 <!-- RENCANA LAYANAN/TINDAKAN -->
