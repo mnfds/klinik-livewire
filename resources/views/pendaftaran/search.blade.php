@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-    const savedTheme = localStorage.getItem('theme') || 'acid';
+    const savedTheme = localStorage.getItem('theme') || 'emerald';
     document.documentElement.setAttribute('data-theme', savedTheme);
 </script>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data
       x-init="
-        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'acid');
+        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'emerald');
         document.documentElement.setAttribute('data-theme', theme);
       "
 >
@@ -33,6 +33,20 @@
         <!-- select 2 -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <style>
+                /* Default (emerald / light theme) */
+                html[data-theme='emerald'] body {
+                    background-color: #e2eefd;
+                    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h16v2h-6v6h6v8H8v-6H2v6H0V0zm4 4h2v2H4V4zm8 8h2v2h-2v-2zm-8 0h2v2H4v-2zm8-8h2v2h-2V4z' fill='%23d6dee7' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+                }
+
+                /* Dark mode (night theme) */
+                html[data-theme='night'] body {
+                    background-color: #2d2e30;
+                    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h16v2h-6v6h6v8H8v-6H2v6H0V0zm4 4h2v2H4V4zm8 8h2v2h-2v-2zm-8 0h2v2H4v-2zm8-8h2v2h-2V4z' fill='%2331363d' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+                }
+        </style>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -88,22 +102,27 @@
                                         </ul>
                                         @endif
                                         <!-- Form Group -->
-                                        <form id="pasien-form" method="GET" action="{{ route('pendaftaran.create') }}" class="form-control w-full max-w-4xl mx-auto space-y-4">
-                                            <!-- Label dan Select -->
+                                        <form id="pasien-form" method="GET" action="{{ route('pendaftaran.create') }}" 
+                                            class="form-control w-full max-w-4xl mx-auto space-y-4">
+
                                             @if ($antrian)
                                                 <input type="hidden" name="antrian_id" value="{{ $antrian->id }}">
                                             @endif
+
                                             <label for="pasien-select" class="label">
                                                 <span class="label-text text-base font-semibold">Cari Pasien</span>
                                             </label>
-                                            <select id="pasien-select" name="pasien_id" class="select select-bordered w-full" required>
+
+                                            <select id="pasien-select" name="pasien_id" required class="w-full">
                                                 <option value="">-- Pilih Pasien --</option>
                                             </select>
 
                                             <!-- Tombol Aksi -->
-                                            <div class="flex gap-4 pt-2">
-                                                <button type="submit" class="btn btn-primary">Daftarkan Pasien</button>
-                                                <a href="{{ route('pasien.create') }}" class="btn btn-success">
+                                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2">
+                                                <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                                                    Daftarkan Pasien
+                                                </button>
+                                                <a href="{{ route('pasien.create') }}" class="btn btn-success w-full sm:w-auto">
                                                     Tambah Pasien
                                                 </a>
                                             </div>
@@ -176,13 +195,15 @@
 
         <!-- Ajax Pasien -->
         <script>
+            window.$ = window.jQuery;
+
             function formatPasien(pasien) {
                 if (!pasien.id) return pasien.text;
 
                 let foto = pasien.foto || '{{ asset("default.png") }}';
                 let noReg = pasien.no_register || '-';
 
-                return $(`
+                return $(` 
                     <div class="flex items-center gap-2">
                         <div class="font-medium">${pasien.text}</div>
                         <div class="text-xs text-gray-500">No. Reg: ${noReg}</div>
@@ -190,8 +211,21 @@
                 `);
             }
 
-            $(document).ready(function () {
-                $('#pasien-select').select2({
+            function initSelect2() {
+                if (typeof $.fn === 'undefined' || typeof $.fn.select2 === 'undefined') {
+                    console.warn("jQuery/Select2 belum siap, skip init...");
+                    return;
+                }
+
+                let $select = $('#pasien-select');
+                if ($select.length === 0) return;
+
+                if ($select.hasClass("select2-hidden-accessible")) {
+                    $select.select2('destroy');
+                }
+
+                $select.select2({
+                    width: '100%',
                     placeholder: 'Cari berdasarkan nama / no register...',
                     allowClear: true,
                     ajax: {
@@ -207,10 +241,17 @@
                     escapeMarkup: m => m
                 });
 
-                $('#pasien-select').on('change', function () {
+                $select.on('change', function () {
                     Livewire.emit('setPasien', $(this).val());
                 });
-            });
+            }
+
+            // Init pertama kali
+            document.addEventListener("DOMContentLoaded", initSelect2);
+
+            // Re-init setelah Livewire update DOM
+            Livewire.hook('message.processed', initSelect2);
+
         </script>
 
     </body>
