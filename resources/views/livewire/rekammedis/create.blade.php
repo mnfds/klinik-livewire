@@ -298,232 +298,253 @@
                         <form wire:submit.prevent="create" class="space-y-6">
                             <input type="hidden" wire:model.defer='nama_dokter'>
                             <input type="hidden" wire:model.defer='pasien_terdaftar_id'>
-                            {{-- NAVIGATION --}}
+                            {{-- NAVIGATION
                             <div class="bg-base-100 text-base-content shadow rounded-box py-4 px-8 flex gap-6 justify-between sticky top-0 z-50">
                                 <a href="#subjective" class="font-semibold hover:text-primary">SUBJECTIVE</a>
                                 <a href="#objective" class="font-semibold hover:text-primary">OBJECTIVE</a>
                                 <a href="#assessment" class="font-semibold hover:text-primary">ASSESSMENT</a>
                                 <a href="#plan" class="font-semibold hover:text-primary">PLAN</a>
-                            </div>
+                            </div> --}}
 
-                            {{-- SUBJECTIVE --}}
-                            <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
-                                x-data="formChoicesSubjective()" 
-                                x-init="initChoicesSubjective()" 
-                                x-effect="$wire.selected_forms_subjective = selectedFormsSubjective">
+                            {{-- TABS SOAP --}}
+                            <div class="tabs tabs-lift">
 
-                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">SUBJECTIVE</h2>
-                                <!-- Select Multiple with Choices.js -->
-                                <div wire:ignore>
-                                    <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
-                                    <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectSubjective">
-                                        @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                            <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
-                                        @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                            <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
-                                        @endif
-                                    </select>
-                                </div>
-                                <!-- Keluhan Utama -->
-                                <div class="form-control md:col-span-2">
-                                    <label class="label">Keluhan Pasien</label>
-                                    <input type="text" value="{{ $kajian->dataKesehatan->keluhan_utama ?? null }}" wire:model="keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
-                                </div>
-                                <!-- DATA KESEHATAN -->
-                                <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
-                                    <x-rekammedis.datakesehatan :dataKesehatan="$data_kesehatan" wire:model="data_kesehatan" />
-                                </div>
-                                <!-- DATA ESTETIKA -->
-                                <div x-show="selectedFormsSubjective.includes('data-estetika')" style="display: none">
-                                    <x-rekammedis.dataestetika :dataEstetika="$data_estetika" wire:model="data_estetika" />
-                                </div>
-                            </div>
-                            {{-- OBJECTIVE --}}
-                            <div id="objective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
-                                x-data="formChoicesObjective()"
-                                x-init="initChoicesObjective()"
-                                x-effect="$wire.selected_forms_objective = selectedFormsObjective">
-                                    
-                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">OBJECTIVE</h2>
-                                <!-- Select Multiple with Choices.js -->
-                                <div wire:ignore>
-                                    <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
-                                    <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectObjective">
-                                    @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                        <option value="pemeriksaan-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
-                                    @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
-                                        <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
-                                        <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
-                                    @endif
-                                    </select>
-                                </div>
-                                <!-- Tingkat Kesadaran -->
-                                <div class="form-control">
-                                    <label class="label">Tingkat Kesadaran</label>
-                                    <select wire:model="tingkat_kesadaran" class="select select-bordered w-full">
-                                        <option value="">Pilih Tingkatan</option>
-                                        <option value="Sadar Baik/Alert">Sadar Baik/Alert</option>
-                                        <option value="Berespon dengan kata-kata">Berespon dengan kata-kata</option>
-                                        <option value="Hanya berespons jika dirangsang nyeri"> Hanya berespons jika dirangsang nyeri</option>
-                                        <option value="Pasien tidak sadar">Pasien tidak sadar</option>
-                                        <option value="Gelisah atau bingung">Gelisah atau bingung</option>
-                                        <option value="Acute Confusional States ">Acute Confusional States </option>
-                                    </select>
-                                </div>
-                                <!-- Tanda Vital -->
-                                <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
-                                    <x-rekammedis.tandavital :tandaVital="$tanda_vital" wire:model="tanda_vital" />
-                                </div>
-                                <!-- Data Fisik -->
-                                <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">
-                                    <x-rekammedis.pemeriksaanfisik :pemeriksaanFisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
-                                </div>
-                                <!-- Data Kulit Dan Estetika -->
-                                <div x-show="selectedFormsObjective.includes('pemeriksaan-estetika')" style="display: none">
-                                    <x-rekammedis.pemeriksaanestetika :pemeriksaanEstetika="$pemeriksaan_estetika" wire:model="pemeriksaan_estetika" />
-                                </div>
-                            </div>
-                            {{-- ASSESSMENT --}}
-                            <div id="assessment" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
-                                x-data="formChoicesAssessment()"
-                                x-init="initChoicesAssessment()"
-                                x-effect="$wire.selected_forms_assessment = selectedFormsAssessment">
-                                    
-                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">ASSESSMENT</h2>
-                                <!-- Select Multiple with Choices.js -->
-                                {{-- <div wire:ignore>
-                                    <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
-                                    <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectAssessment">
-                                        <option value="diagnosa">Diagnosa</option>
-                                        <option value="icd_10">ICD 10</option>
-                                    </select>
-                                </div> --}}
-                                    
-                                <!-- ICD 10 -->
-                                {{-- <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none"> --}}
-                                    <div class="form-control" x-data="multiSelectIcd10()" x-init="init()">
-                                        <label class="label">ICD 10</label>
+                                {{-- TABS SUBJECTIVE --}}
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="SUBJECTIVE" style="background-image: none;" checked/>
+                                <div class="tab-content bg-base-100 border-base-300 p-2">
+                                    {{-- SUBJECTIVE --}}
+                                    <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
+                                        x-data="formChoicesSubjective()" 
+                                        x-init="initChoicesSubjective()" 
+                                        x-effect="$wire.selected_forms_subjective = selectedFormsSubjective">
 
-                                        <!-- Input Area -->
-                                        <div class="relative" @click="setTimeout(() => open = true, 10)">
-                                            <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition"
-                                                :class="{ 'ring-2 ring-black': open }">
+                                        <h2 class="text-lg font-semibold mb-4 border-b pb-2">SUBJECTIVE</h2>
+                                        <!-- Select Multiple with Choices.js -->
+                                        <div wire:ignore>
+                                            <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                            <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectSubjective">
+                                                @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                                    <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
+                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                                    <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <!-- Keluhan Utama -->
+                                        <div class="form-control md:col-span-2">
+                                            <label class="label">Keluhan Pasien</label>
+                                            <input type="text" value="{{ $kajian->dataKesehatan->keluhan_utama ?? null }}" wire:model="keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
+                                        </div>
+                                        <!-- DATA KESEHATAN -->
+                                        <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
+                                            <x-rekammedis.datakesehatan :dataKesehatan="$data_kesehatan" wire:model="data_kesehatan" />
+                                        </div>
+                                        <!-- DATA ESTETIKA -->
+                                        <div x-show="selectedFormsSubjective.includes('data-estetika')" style="display: none">
+                                            <x-rekammedis.dataestetika :dataEstetika="$data_estetika" wire:model="data_estetika" />
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- TABS OBJECTIVE --}}
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="OBJECTIVE" style="background-image: none;"/>
+                                <div class="tab-content bg-base-100 border-base-300 p-2">
+                                    {{-- OBJECTIVE --}}
+                                    <div id="objective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
+                                        x-data="formChoicesObjective()"
+                                        x-init="initChoicesObjective()"
+                                        x-effect="$wire.selected_forms_objective = selectedFormsObjective">
+                                            
+                                        <h2 class="text-lg font-semibold mb-4 border-b pb-2">OBJECTIVE</h2>
+                                        <!-- Select Multiple with Choices.js -->
+                                        <div wire:ignore>
+                                            <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                            <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectObjective">
+                                            @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                                <option value="pemeriksaan-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
+                                            @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
+                                                <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
+                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
+                                            @endif
+                                            </select>
+                                        </div>
+                                        <!-- Tingkat Kesadaran -->
+                                        <div class="form-control">
+                                            <label class="label">Tingkat Kesadaran</label>
+                                            <select wire:model="tingkat_kesadaran" class="select select-bordered w-full">
+                                                <option value="">Pilih Tingkatan</option>
+                                                <option value="Sadar Baik/Alert">Sadar Baik/Alert</option>
+                                                <option value="Berespon dengan kata-kata">Berespon dengan kata-kata</option>
+                                                <option value="Hanya berespons jika dirangsang nyeri"> Hanya berespons jika dirangsang nyeri</option>
+                                                <option value="Pasien tidak sadar">Pasien tidak sadar</option>
+                                                <option value="Gelisah atau bingung">Gelisah atau bingung</option>
+                                                <option value="Acute Confusional States ">Acute Confusional States </option>
+                                            </select>
+                                        </div>
+                                        <!-- Tanda Vital -->
+                                        <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
+                                            <x-rekammedis.tandavital :tandaVital="$tanda_vital" wire:model="tanda_vital" />
+                                        </div>
+                                        <!-- Data Fisik -->
+                                        <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">
+                                            <x-rekammedis.pemeriksaanfisik :pemeriksaanFisik="$pemeriksaan_fisik" wire:model="pemeriksaan_fisik" />
+                                        </div>
+                                        <!-- Data Kulit Dan Estetika -->
+                                        <div x-show="selectedFormsObjective.includes('pemeriksaan-estetika')" style="display: none">
+                                            <x-rekammedis.pemeriksaanestetika :pemeriksaanEstetika="$pemeriksaan_estetika" wire:model="pemeriksaan_estetika" />
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- TABS ASSESSMENT --}}
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="ASSESSMENT" style="background-image: none;"/>
+                                <div class="tab-content bg-base-100 border-base-300 p-2">
+                                    {{-- ASSESSMENT --}}
+                                    <div id="assessment" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
+                                        x-data="formChoicesAssessment()"
+                                        x-init="initChoicesAssessment()"
+                                        x-effect="$wire.selected_forms_assessment = selectedFormsAssessment">
+                                            
+                                        <h2 class="text-lg font-semibold mb-4 border-b pb-2">ASSESSMENT</h2>
+                                        <!-- Select Multiple with Choices.js -->
+                                        {{-- <div wire:ignore>
+                                            <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                            <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectAssessment">
+                                                <option value="diagnosa">Diagnosa</option>
+                                                <option value="icd_10">ICD 10</option>
+                                            </select>
+                                        </div> --}}
+                                            
+                                        <!-- ICD 10 -->
+                                        {{-- <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none"> --}}
+                                            <div class="form-control" x-data="multiSelectIcd10()" x-init="init()">
+                                                <label class="label">ICD 10</label>
 
-                                                <!-- Selected tags -->
-                                                <template x-for="(tag, index) in selected" :key="tag.code">
-                                                    <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
-                                                        <span x-text="`${tag.code} - ${tag.name_id}`"></span>
-                                                        <button type="button" @click.stop="remove(tag.code)">×</button>
-                                                    </span>
-                                                </template>
+                                                <!-- Input Area -->
+                                                <div class="relative" @click="setTimeout(() => open = true, 10)">
+                                                    <div class="w-full border border-gray-300 bg-base-100 rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition"
+                                                        :class="{ 'ring-2 ring-black': open }">
 
-                                                <!-- Input search -->
-                                                <input type="text"
-                                                    class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100"
-                                                    placeholder="Ketik disini untuk cari Diagnosa ICD 10..."
-                                                    x-model="search"
-                                                    @focus="open = true"
-                                                    @input.debounce.300ms="fetchOptions(); open = true" />
-                                            </div>
+                                                        <!-- Selected tags -->
+                                                        <template x-for="(tag, index) in selected" :key="tag.code">
+                                                            <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
+                                                                <span x-text="`${tag.code} - ${tag.name_id}`"></span>
+                                                                <button type="button" @click.stop="remove(tag.code)">×</button>
+                                                            </span>
+                                                        </template>
 
-                                            <!-- Dropdown Menu -->
-                                            <div x-show="open" @click.outside="open = false"
-                                                class="absolute z-10 mt-1 w-full bg-base-200 border border-gray-500 rounded-lg shadow-lg max-h-40 overflow-y-auto">
-                                                <template x-if="filteredOptions.length > 0">
-                                                    <template x-for="item in filteredOptions" :key="item.code">
-                                                        <div @click="toggle(item)"
-                                                            class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer text-sm m-1"
-                                                            :class="selected.some(s => s.code === item.code) ? 'bg-primary rounded-2xl font-semibold' : ''">
-                                                            <span x-text="`${item.code} - ${item.name_id}`"></span>
+                                                        <!-- Input search -->
+                                                        <input type="text"
+                                                            class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100"
+                                                            placeholder="Ketik disini untuk cari Diagnosa ICD 10..."
+                                                            x-model="search"
+                                                            @focus="open = true"
+                                                            @input.debounce.300ms="fetchOptions(); open = true" />
+                                                    </div>
+
+                                                    <!-- Dropdown Menu -->
+                                                    <div x-show="open" @click.outside="open = false"
+                                                        class="absolute z-10 mt-1 w-full bg-base-200 border border-gray-500 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                                                        <template x-if="filteredOptions.length > 0">
+                                                            <template x-for="item in filteredOptions" :key="item.code">
+                                                                <div @click="toggle(item)"
+                                                                    class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer text-sm m-1"
+                                                                    :class="selected.some(s => s.code === item.code) ? 'bg-primary rounded-2xl font-semibold' : ''">
+                                                                    <span x-text="`${item.code} - ${item.name_id}`"></span>
+                                                                </div>
+                                                            </template>
+                                                        </template>
+
+                                                        <div x-show="filteredOptions.length === 0"
+                                                            class="px-3 py-2 text-sm text-base-content">
+                                                            Tidak ada hasil.
                                                         </div>
-                                                    </template>
-                                                </template>
-
-                                                <div x-show="filteredOptions.length === 0"
-                                                    class="px-3 py-2 text-sm text-base-content">
-                                                    Tidak ada hasil.
+                                                    </div>
                                                 </div>
+
+                                                <!-- Binding ke Livewire: kirim array full object -->
+                                                <input type="hidden" wire:model="icd10" :value="JSON.stringify(selected)">
+
+                                                <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
                                             </div>
+                                        {{-- </div> --}}
+
+                                        <!-- Diagnosa -->
+                                        {{-- <div x-show="selectedFormsAssessment.includes('diagnosa')" style="display: none"> --}}
+                                            <div class="form-control">
+                                                <label class="label block mb-1">
+                                                    <span class="label-text">Diagnosa</span>
+                                                </label>
+                                                <textarea wire:model="diagnosa" class="textarea textarea-bordered w-full"
+                                                    placeholder="Tuliskan diagnosis utama pasien, misal: Demam tifoid, hipertensi tahap 2">
+                                                </textarea>
+                                            </div>
+                                        {{-- </div> --}}
+                                    </div>  
+                                </div>
+                                {{-- TABS PLAN --}}
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="PLAN" style="background-image: none;" />
+                                <div class="tab-content bg-base-100 border-base-300 p-2">
+                                    {{-- PLAN --}}
+                                    <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
+                                        x-data="formChoicesPlan()"
+                                        x-init="initChoicesPlan()"
+                                        x-effect="$wire.selected_forms_plan = selectedFormsPlan">
+
+                                        <h2 class="text-lg font-semibold mb-4 border-b pb-2">PLAN</h2>
+                                        <!-- Select Multiple dengan Choices.js -->
+                                        <div wire:ignore>
+                                            <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
+                                            <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
+                                                @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                                    <option value="rencana-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
+                                                    <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
+                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
+                                                    <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
+                                                @endif
+                                                    <option value="obat-non-racikan">Obat Non Racikan</option>
+                                                    <option value="obat-racikan">Obat Racikan</option>
+                                            </select>
                                         </div>
 
-                                        <!-- Binding ke Livewire: kirim array full object -->
-                                        <input type="hidden" wire:model="icd10" :value="JSON.stringify(selected)">
+                                        <!-- RENCANA TINDAKAN ESTETIKA -->
+                                        <div x-show="selectedFormsPlan.includes('rencana-estetika')" style="display: none" wire:ignore >
+                                            <x-rekammedis.rencanaestetika 
+                                                :layanandanbundling="$layanandanbundling" 
+                                                :rencanaEstetika="$rencana_estetika"
+                                            />
+                                        </div>
 
-                                        <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
+                                        <!-- RENCANA LAYANAN/TINDAKAN -->
+                                        <div x-show="selectedFormsPlan.includes('rencana-layanan')" style="display: none" wire:ignore >
+                                            <x-rekammedis.rencanalayanan 
+                                                :layanandanbundling="$layanandanbundling" 
+                                                :rencanaLayanan="$rencana_layanan"
+                                            />
+                                        </div>
+
+                                        <!-- RENCANA BUNDLING -->
+                                        <div x-show="selectedFormsPlan.includes('rencana-bundling')" style="display: none" wire:ignore >
+                                            <x-rekammedis.rencanabundling 
+                                                :layanandanbundling="$layanandanbundling" 
+                                                :rencanaBundling="$rencana_bundling"
+                                            />
+                                        </div>
+
+                                        <!-- OBAT NON RACIK -->
+                                        <div x-show="selectedFormsPlan.includes('obat-non-racikan')" style="display: none" wire:ignore >
+                                            <x-rekammedis.obatnonracikan 
+                                                :obatNonRacikan="$obat_non_racikan"
+                                            />
+                                        </div>
+
+                                        <!-- OBAT RACIKAN -->
+                                        <div x-show="selectedFormsPlan.includes('obat-racikan')" style="display: none" wire:ignore >
+                                            <x-rekammedis.obatracikan 
+                                                :racikanItems="$racikanItems"
+                                            />
+                                        </div>
                                     </div>
-                                {{-- </div> --}}
-
-                                <!-- Diagnosa -->
-                                {{-- <div x-show="selectedFormsAssessment.includes('diagnosa')" style="display: none"> --}}
-                                    <div class="form-control">
-                                        <label class="label block mb-1">
-                                            <span class="label-text">Diagnosa</span>
-                                        </label>
-                                        <textarea wire:model="diagnosa" class="textarea textarea-bordered w-full"
-                                            placeholder="Tuliskan diagnosis utama pasien, misal: Demam tifoid, hipertensi tahap 2">
-                                        </textarea>
-                                    </div>
-                                {{-- </div> --}}
-                            </div>
-                            {{-- PLAN --}}
-                            <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
-                                x-data="formChoicesPlan()"
-                                x-init="initChoicesPlan()"
-                                x-effect="$wire.selected_forms_plan = selectedFormsPlan">
-
-                                <h2 class="text-lg font-semibold mb-4 border-b pb-2">PLAN</h2>
-                                <!-- Select Multiple dengan Choices.js -->
-                                <div wire:ignore>
-                                    <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
-                                    <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                        @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                            <option value="rencana-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
-                                            <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
-                                        @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
-                                            <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
-                                        @endif
-                                            <option value="obat-non-racikan">Obat Non Racikan</option>
-                                            <option value="obat-racikan">Obat Racikan</option>
-                                    </select>
                                 </div>
 
-                                <!-- RENCANA TINDAKAN ESTETIKA -->
-                                <div x-show="selectedFormsPlan.includes('rencana-estetika')" style="display: none" wire:ignore >
-                                    <x-rekammedis.rencanaestetika 
-                                        :layanandanbundling="$layanandanbundling" 
-                                        :rencanaEstetika="$rencana_estetika"
-                                    />
-                                </div>
-
-                                <!-- RENCANA LAYANAN/TINDAKAN -->
-                                <div x-show="selectedFormsPlan.includes('rencana-layanan')" style="display: none" wire:ignore >
-                                    <x-rekammedis.rencanalayanan 
-                                        :layanandanbundling="$layanandanbundling" 
-                                        :rencanaLayanan="$rencana_layanan"
-                                    />
-                                </div>
-
-                                <!-- RENCANA BUNDLING -->
-                                <div x-show="selectedFormsPlan.includes('rencana-bundling')" style="display: none" wire:ignore >
-                                    <x-rekammedis.rencanabundling 
-                                        :layanandanbundling="$layanandanbundling" 
-                                        :rencanaBundling="$rencana_bundling"
-                                    />
-                                </div>
-
-                                <!-- OBAT NON RACIK -->
-                                <div x-show="selectedFormsPlan.includes('obat-non-racikan')" style="display: none" wire:ignore >
-                                    <x-rekammedis.obatnonracikan 
-                                        :obatNonRacikan="$obat_non_racikan"
-                                    />
-                                </div>
-
-                                <!-- OBAT RACIKAN -->
-                                <div x-show="selectedFormsPlan.includes('obat-racikan')" style="display: none" wire:ignore >
-                                    <x-rekammedis.obatracikan 
-                                        :racikanItems="$racikanItems"
-                                    />
-                                </div>
                             </div>
 
                         </form>
