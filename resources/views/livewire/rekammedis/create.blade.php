@@ -325,7 +325,7 @@
                                             <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectSubjective">
                                                 @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
                                                     <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
-                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                     <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
                                                 @endif
                                             </select>
