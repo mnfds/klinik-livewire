@@ -108,17 +108,15 @@
                                     <div class="grid grid-cols-2 gap-x-6">
                                         <div class="flex">
                                             <div class="w-32 font-bold">Status Perokok</div>
-                                            <div>: {{ $pasienTerdaftar->rekamMedis->dataKesehatanRM->status_perokok }}
+                                            <div>: {{ $pasienTerdaftar->rekamMedis->dataKesehatanRM->status_perokok ?? '-' }}
                                             </div>
                                         </div>
                                         <div class="flex">
                                             <div class="w-32 font-bold">Status Kehamilan</div>
-                                            <div>: {{
-                                                $pasienTerdaftar->rekamMedis->dataEstetikaRM->usia_kehamilan
-                                                ? $pasienTerdaftar->rekamMedis->dataEstetikaRM->usia_kehamilan . '
-                                                bulan'
-                                                : '-'
-                                                }}
+                                            <div>
+                                                : {{ $pasienTerdaftar->rekamMedis->dataEstetikaRM?->usia_kehamilan 
+                                                    ? $pasienTerdaftar->rekamMedis->dataEstetikaRM->usia_kehamilan . ' bulan' 
+                                                    : '-' }}
                                             </div>
                                         </div>
                                     </div>
