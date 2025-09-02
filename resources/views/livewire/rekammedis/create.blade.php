@@ -317,8 +317,11 @@
                                 <div wire:ignore>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectSubjective">
-                                        <option value="data-kesehatan">Data Kesehatan</option>
-                                        <option value="data-estetika">Data Estetika</option>
+                                        @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                            <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
+                                        @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                            <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <!-- Keluhan Utama -->
@@ -346,9 +349,12 @@
                                 <div wire:ignore>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectObjective">
-                                        <option value="tanda-vital">Tanda Vital Pasien</option>
-                                        <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
-                                        <option value="pemeriksaan-estetika">Pemeriksaan Kulit & Estetika</option>
+                                    @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                        <option value="pemeriksaan-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
+                                    @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
+                                        <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
+                                        <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
+                                    @endif
                                     </select>
                                 </div>
                                 <!-- Tingkat Kesadaran -->
@@ -385,16 +391,16 @@
                                     
                                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">ASSESSMENT</h2>
                                 <!-- Select Multiple with Choices.js -->
-                                <div wire:ignore>
+                                {{-- <div wire:ignore>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectAssessment">
                                         <option value="diagnosa">Diagnosa</option>
                                         <option value="icd_10">ICD 10</option>
                                     </select>
-                                </div>
+                                </div> --}}
                                     
                                 <!-- ICD 10 -->
-                                <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none">
+                                {{-- <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none"> --}}
                                     <div class="form-control" x-data="multiSelectIcd10()" x-init="init()">
                                         <label class="label">ICD 10</label>
 
@@ -445,10 +451,10 @@
 
                                         <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
                                     </div>
-                                </div>
+                                {{-- </div> --}}
 
                                 <!-- Diagnosa -->
-                                <div x-show="selectedFormsAssessment.includes('diagnosa')" style="display: none">
+                                {{-- <div x-show="selectedFormsAssessment.includes('diagnosa')" style="display: none"> --}}
                                     <div class="form-control">
                                         <label class="label block mb-1">
                                             <span class="label-text">Diagnosa</span>
@@ -457,7 +463,7 @@
                                             placeholder="Tuliskan diagnosis utama pasien, misal: Demam tifoid, hipertensi tahap 2">
                                         </textarea>
                                     </div>
-                                </div>
+                                {{-- </div> --}}
                             </div>
                             {{-- PLAN --}}
                             <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
@@ -470,11 +476,14 @@
                                 <div wire:ignore>
                                     <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                     <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                        <option value="rencana-estetika">Rencana Tindakan Estetika</option>
-                                        <option value="rencana-layanan">Rencana Tindakan Medis</option>
-                                        <option value="rencana-bundling">Paket bundling</option>
-                                        <option value="obat-non-racikan">Obat Non Racikan</option>
-                                        <option value="obat-racikan">Obat Racikan</option>
+                                        @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                            <option value="rencana-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
+                                            <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
+                                        @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
+                                            <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
+                                        @endif
+                                            <option value="obat-non-racikan">Obat Non Racikan</option>
+                                            <option value="obat-racikan">Obat Racikan</option>
                                     </select>
                                 </div>
 

@@ -220,6 +220,11 @@ class Create extends Component
             'nama_dokter' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
         ]);
+            // dd([
+            //     $this->selected_forms_plan,
+            //     $this->rencana_estetika,
+            // ]);
+
         DB::beginTransaction();
 
             try {
@@ -342,7 +347,7 @@ class Create extends Component
                         RencanaTreatmentRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'treatments_id'     => $treatmentId,
-                            'jumlah_treatment' => $this->rencana_layanan['jumlah_treatment'][$index],
+                            'jumlah_treatment' => $this->rencana_estetika['jumlah_treatment'][$index],
                         ]);
                     }
                 }
@@ -435,24 +440,6 @@ class Create extends Component
                 ]);
             }
 
-        // dd([
-        //     $this->selected_forms_subjective,
-        //     $this->selected_forms_objective,
-        //     $this->selected_forms_assessment,
-        //     $this->selected_forms_plan,
-        //     // $this->pemeriksaan_fisik,
-        //     // $this->tanda_vital,
-        //     // $this->data_kesehatan,
-        //     // $this->tingkat_kesadaran,
-        //     // $this->diagnosa,
-        //     // $this->icd10,
-        //     // $this->data_estetika,
-        //     // $this->pemeriksaan_estetika,
-        //     // $this->rencana_layanan,
-        //     // $this->obat_non_racikan,
-        //     // $this->obat_racikan,
-        //     // $this->bahan_racikan,
-        // ]);
     }
 
     public function render()
