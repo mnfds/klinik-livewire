@@ -206,11 +206,12 @@ function treatmentForm() {
             let subtotal = this.calcSubtotal(item);
             item.subtotal = subtotal;
 
-            $wire.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
-            $wire.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
-            $wire.set(`rencana_estetika.potongan.${i}`, item.potongan);
-            $wire.set(`rencana_estetika.diskon.${i}`, item.diskon);
-            $wire.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
+            // Ganti $wire.set dengan @this.set
+            @this.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
+            @this.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
+            @this.set(`rencana_estetika.potongan.${i}`, item.potongan);
+            @this.set(`rencana_estetika.diskon.${i}`, item.diskon);
+            @this.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
         },
 
         syncTreatmentToLivewire() {
@@ -220,11 +221,11 @@ function treatmentForm() {
         cleanupTreatmentLivewire() {
             let length = this.treatmentItems.length;
             for (let i = length; i < 100; i++) {
-                $wire.set(`rencana_estetika.treatments_id.${i}`, null);
-                $wire.set(`rencana_estetika.jumlah_treatment.${i}`, null);
-                $wire.set(`rencana_estetika.potongan.${i}`, null);
-                $wire.set(`rencana_estetika.diskon.${i}`, null);
-                $wire.set(`rencana_estetika.subtotal.${i}`, null);
+                @this.set(`rencana_estetika.treatments_id.${i}`, null);
+                @this.set(`rencana_estetika.jumlah_treatment.${i}`, null);
+                @this.set(`rencana_estetika.potongan.${i}`, null);
+                @this.set(`rencana_estetika.diskon.${i}`, null);
+                @this.set(`rencana_estetika.subtotal.${i}`, null);
             }
         }
     }

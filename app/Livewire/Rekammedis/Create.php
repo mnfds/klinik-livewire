@@ -113,6 +113,7 @@ class Create extends Component
         'jumlah_treatment' => [],
         'potongan' => [],
         'diskon' => [],
+        'subtotal' => [],
     ];
 
     public $rencana_bundling = [
@@ -241,10 +242,6 @@ class Create extends Component
             // $this->bahan_racikan,
         // ]);
 
-        dd([
-            $this->rencana_estetika,
-        ]);
-
         DB::beginTransaction();
 
             try {
@@ -363,23 +360,14 @@ class Create extends Component
                 // SIMPAN DATA RENCANA LAYANAN REKAM MEDIS
                 if (in_array('rencana-estetika', $this->selected_forms_plan)) {
                     foreach ($this->rencana_estetika['treatments_id'] as $index => $treatmentId) {
-                        $jumlah   = $this->rencana_estetika['jumlah_treatment'][$index] ?? 1;
-                        $potongan = $this->rencana_estetika['potongan'][$index] ?? 0;
-                        $diskon   = $this->rencana_estetika['diskon'][$index] ?? 0;
 
-                        $treatment = Treatment::find($treatmentId);
-                        $hargaSatuan = $treatment?->harga_treatment ?? 0;
-
-                        $hargaAsli = $hargaSatuan * $jumlah;
-                        $subtotal  = max(0, $hargaAsli - $potongan - ($hargaAsli * $diskon / 100));
-                        
                         RencanaTreatmentRM::create([
                             'rekam_medis_id' => $rekammedis->id,
                             'treatments_id' => $treatmentId,
-                            'jumlah_treatment' => $jumlah,
-                            'potongan' => $potongan,
-                            'diskon' => $diskon,
-                            'subtotal' => $subtotal,
+                            'jumlah_treatment' => $this->rencana_estetika['jumlah_treatment'][$index] ?? 1,
+                            'potongan' => $this->rencana_estetika['potongan'][$index] ?? 0,
+                            'diskon' => $this->rencana_estetika['diskon'][$index] ?? 0,
+                            'subtotal' => $this->rencana_estetika['subtotal'][$index] ?? 0,
                         ]);
                     }
                 }
