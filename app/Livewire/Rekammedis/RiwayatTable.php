@@ -32,8 +32,7 @@ final class RiwayatTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::where('status_terdaftar', 'diperiksa')
-            ->with(['pasien', 'poliklinik', 'dokter'])
+        return PasienTerdaftar::with(['pasien', 'poliklinik', 'dokter'])
             ->when($this->pasien_id, fn ($q) => $q->where('pasien_id', $this->pasien_id));
     }
 
