@@ -11,34 +11,51 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0.001 106.423);
-  --color-base-200: oklch(96% 0.018 272.314);
-  --color-base-300: oklch(85% 0.138 181.071);
-  --color-base-content: oklch(12% 0.042 264.695);
-  --color-primary: oklch(70% 0.14 182.503);
-  --color-primary-content: oklch(98% 0.003 247.858);
-  --color-secondary: oklch(61.302% 0.202 261.294);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(86% 0.127 207.078);
-  --color-accent-content: oklch(0% 0 0);
-  --color-neutral: oklch(86% 0.022 252.894);
-  --color-neutral-content: oklch(13% 0.028 261.692);
-  --color-info: oklch(72.06% 0.191 231.6);
-  --color-info-content: oklch(0% 0 0);
-  --color-success: oklch(59% 0.145 163.225);
-  --color-success-content: oklch(98% 0.002 247.839);
-  --color-warning: oklch(83% 0.128 66.29);
-  --color-warning-content: oklch(0% 0 0);
-  --color-error: oklch(57% 0.245 27.325);
-  --color-error-content: oklch(98% 0.003 247.858);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
+
+  /* Background lebih bersih */
+  --color-base-100: oklch(99% 0 0);        /* putih */
+  --color-base-200: oklch(95% 0.02 250);   /* biru es terang */
+  --color-base-300: oklch(90% 0.04 250);   /* biru es medium */
+  --color-base-content: oklch(22% 0.05 265); /* teks abu gelap kebiruan */
+
+  /* Primary (ungu kebiruan vibrant) */
+  --color-primary: oklch(55% 0.25 280);     
+  --color-primary-content: oklch(98% 0.02 280);
+
+  /* Secondary (lavender cerah) */
+  --color-secondary: oklch(65% 0.22 300);  
+  --color-secondary-content: oklch(98% 0.02 300);
+
+  /* Accent (biru terang agak neon) */
+  --color-accent: oklch(70% 0.25 240);     
+  --color-accent-content: oklch(98% 0.02 240);
+
+  /* Neutral (navy gelap dingin) */
+  --color-neutral: oklch(30% 0.06 260);
+  --color-neutral-content: oklch(96% 0.02 260);
+
+  /* Feedback colors lebih kontras */
+  --color-info: oklch(65% 0.25 250);     
+  --color-info-content: oklch(98% 0.02 250);
+
+  --color-success: oklch(62% 0.25 150);  
+  --color-success-content: oklch(98% 0.02 150);
+
+  --color-warning: oklch(70% 0.25 80);   
+  --color-warning-content: oklch(22% 0.05 80);
+
+  --color-error: oklch(55% 0.28 25);     
+  --color-error-content: oklch(98% 0.02 25);
+
+  /* Radius & feel */
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
   --radius-box: 0.5rem;
-  --size-selector: 0.21875rem;
-  --size-field: 0.21875rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
-  --noise: 1;
+  --depth: 0.7;
+  --noise: 0;
 }
 @plugin "daisyui/theme" {
 /* night */
@@ -46,34 +63,44 @@
   default: false;
   prefersdark: false;
   color-scheme: "dark";
-  --color-base-100: oklch(14% 0 0);
-  --color-base-200: oklch(20% 0 0);
-  --color-base-300: oklch(26% 0 0);
-  --color-base-content: oklch(97% 0 0);
-  --color-primary: oklch(85% 0.138 181.071);
-  --color-primary-content: oklch(27% 0.046 192.524);
-  --color-secondary: oklch(80% 0.105 251.813);
-  --color-secondary-content: oklch(28% 0.091 267.935);
-  --color-accent: oklch(81% 0.111 293.571);
-  --color-accent-content: oklch(28% 0.141 291.089);
-  --color-neutral: oklch(37% 0 0);
-  --color-neutral-content: oklch(98% 0 0);
-  --color-info: oklch(68% 0.169 237.323);
-  --color-info-content: oklch(97% 0.013 236.62);
-  --color-success: oklch(70% 0.14 182.503);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(79% 0.184 86.047);
-  --color-warning-content: oklch(98% 0.026 102.212);
-  --color-error: oklch(64% 0.246 16.439);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 1rem;
-  --radius-field: 2rem;
+  --color-base-100: oklch(12% 0.04 265);   /* very dark slate */
+  --color-base-200: oklch(18% 0.04 265);
+  --color-base-300: oklch(25% 0.04 260);
+  --color-base-content: oklch(96% 0.01 250); /* off-white */
+
+  --color-primary: oklch(65% 0.27 292);   /* vibrant violet */
+  --color-primary-content: oklch(98% 0.01 293);
+
+  --color-secondary: oklch(60% 0.20 250); /* soft blue */
+  --color-secondary-content: oklch(96% 0.01 250);
+
+  --color-accent: oklch(70% 0.20 200);    /* teal accent */
+  --color-accent-content: oklch(15% 0.03 200);
+
+  --color-neutral: oklch(25% 0.04 260);
+  --color-neutral-content: oklch(92% 0.01 250);
+
+  --color-info: oklch(72% 0.18 250);      /* brighter blue */
+  --color-info-content: oklch(20% 0.05 250);
+
+  --color-success: oklch(75% 0.18 160);   /* fresh green */
+  --color-success-content: oklch(18% 0.04 160);
+
+  --color-warning: oklch(80% 0.20 90);    /* amber yellow */
+  --color-warning-content: oklch(22% 0.06 90);
+
+  --color-error: oklch(70% 0.22 25);      /* crimson red */
+  --color-error-content: oklch(95% 0.01 25);
+
+  --radius-selector: 0.75rem;  /* sedikit lebih rounded */
+  --radius-field: 1rem;
   --radius-box: 0.5rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 0;
-  --noise: 1;
+  --depth: 0.3;  /* ada sedikit kedalaman */
+  --noise: 0.3;  /* tekstur subtle */
+  /* refined night */
 /* night */
 }
 
