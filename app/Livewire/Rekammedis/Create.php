@@ -332,15 +332,15 @@ class Create extends Component
             // ----- ASSESSMENT ----- //
 
                 // SIMPAN DATA DIAGNOSA REKAM MEDIS
-                if (in_array('diagnosa', $this->selected_forms_assessment)) {
+                // if (in_array('diagnosa', $this->selected_forms_assessment)) {
                     DiagnosaRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'diagnosa' => $this->diagnosa,
                     ]);
-                }
+                // }
 
                 // SIMPAN DATA ICD 10 REKAM MEDIS
-                if (in_array('icd_10', $this->selected_forms_assessment)) {
+                // if (in_array('icd_10', $this->selected_forms_assessment)) {
                     foreach ($this->icd10 as $item) {
                         if (!empty($item['code'])) {
                             IcdRM::create([
@@ -351,7 +351,7 @@ class Create extends Component
                             ]);
                         }
                     }
-                }
+                // }
 
             // ----- ASSESSMENT ----- //
                 

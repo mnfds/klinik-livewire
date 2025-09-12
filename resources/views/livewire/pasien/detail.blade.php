@@ -107,6 +107,17 @@
 
                 <!-- Tombol Aksi (Bagian Kanan) -->
                 <div>
+                    <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg mb-2">
+                        <div class="p-6 text-base-content space-y-4">
+                            <div class="text-md font-semibold border-b pb-2">Layanan/Tindakan Tersisa</div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-semibold">Nama:</p>
+                                    <p>{{ $pasien->nama }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
                             <a wire:navigate href="{{ route('pasien.update', ['id' => $pasien->id]) }}" class="btn btn-secondary w-full">
