@@ -16,4 +16,20 @@ class Pasien extends Model
     {
         return $this->hasMany(PasienTerdaftar::class);
     }
+
+    public function pelayananBundlings()
+    {
+        return $this->hasMany(PelayananBundlingRM::class);
+    }
+
+    public function produkObatBundlings()
+    {
+        return $this->hasMany(ProdukObatBundlingRM::class);
+    }
+
+    public function treatmentBundlings()
+    {
+        return $this->hasMany(TreatmentBundlingRM::class);
+    }
+
 }

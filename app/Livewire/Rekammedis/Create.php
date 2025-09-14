@@ -161,7 +161,11 @@ class Create extends Component
         $this->nama_dokter = Auth::user()->dokter->nama_dokter ?? '-';
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
         $this->layanan = Pelayanan::all();
-        $this->bundling = Bundling::all();
+        $this->bundling = Bundling::with([
+            'treatmentBundlings.treatment',
+            'pelayananBundlings.pelayanan',
+            'produkObatBundlings.produk',
+        ])->get();
         $this->treatment = Treatment::all();
 
         $this->layanandanbundling['layanan'] = $this->layanan;

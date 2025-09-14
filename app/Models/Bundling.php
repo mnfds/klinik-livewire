@@ -32,4 +32,19 @@ class Bundling extends Model
     {
         return $this->hasMany(RencananaBundlingRM::class);
     }
+
+    public function treatmentBundlingRM()
+    {
+        return $this->hasMany(TreatmentBundlingRM::class, 'bundling_id');
+    }
+
+    public function pelayananBundlingRM()
+    {
+        return $this->hasMany(PelayananBundlingRM::class, 'bundling_id');
+    }
+
+    public function produkObatBundlingRM()
+    {
+        return $this->hasMany(ProdukObatBundlingRM::class, 'bundling_id');
+    }
 }

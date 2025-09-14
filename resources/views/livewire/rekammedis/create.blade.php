@@ -310,7 +310,7 @@
                             <div class="tabs tabs-lift">
 
                                 {{-- TABS SUBJECTIVE --}}
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="SUBJECTIVE" style="background-image: none;" checked/>
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="SUBJECTIVE" style="background-image: none;"/>
                                 <div class="tab-content bg-base-100 border-base-300 p-2">
                                     {{-- SUBJECTIVE --}}
                                     <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
@@ -481,7 +481,7 @@
                                     </div>  
                                 </div>
                                 {{-- TABS PLAN --}}
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="PLAN" style="background-image: none;" />
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="PLAN" style="background-image: none;" checked/>
                                 <div class="tab-content bg-base-100 border-base-300 p-2">
                                     {{-- PLAN --}}
                                     <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
