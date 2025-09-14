@@ -1,41 +1,13 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
-    x-data="{
-        bundlingItems: [{ bundling_id: '', jumlah_bundling: 1 }],
-
-        addBundling() {
-            this.bundlingItems.push({ bundling_id: '', jumlah_bundling: 1 });
-            this.syncBundlingToLivewire();
-        },
-        removeBundling(index) {
-            this.bundlingItems.splice(index, 1);
-            this.reindexBundling();
-            this.syncBundlingToLivewire();
-            this.cleanupBundlingLivewire();
-        },
-        reindexBundling() {
-            this.bundlingItems = this.bundlingItems.map(item => ({ ...item }));
-        },
-        syncItemBundling(i) {
-            let item = this.bundlingItems[i];
-            $wire.set(`rencana_bundling.bundling_id.${i}`, item.bundling_id);
-            $wire.set(`rencana_bundling.jumlah_bundling.${i}`, item.jumlah_bundling);
-        },
-        syncBundlingToLivewire() {
-            this.bundlingItems.forEach((item, i) => this.syncItemBundling(i));
-        },
-        cleanupBundlingLivewire() {
-            let length = this.bundlingItems.length;
-            for (let i = length; i < 100; i++) {
-                $wire.set(`rencana_bundling.bundling_id.${i}`, null);
-                $wire.set(`rencana_bundling.jumlah_bundling.${i}`, null);
-            }
-        },
-    }"
-    >
+    x-data="bundlingForm()"
+>
     @props([
         'rencanaBundling' => [
-           'bundling_id' => [],
-           'jumlah_bundling' => [],
+            'bundling_id' => [],
+            'jumlah_bundling' => [],
+            'potongan' => [],
+            'diskon' => [],
+            'subtotal' => [],
         ],
         'layanandanbundling' => [
             'treatment' => [],
@@ -45,131 +17,285 @@
 
     <div class="divider">Paket Bundling</div>
 
-    {{-- SECTION BUNDLING --}}
+    <!-- Tombol tambah -->
     <div class="mb-6">
-        <div class="flex items-center mb-2">
-            <button type="button" class="btn btn-primary btn-sm mx-1" @click="addBundling">
-                + Tambah Bundling
-            </button>
-        </div>
+        <button type="button"
+            class="btn btn-primary btn-sm"
+            @click="addBundling">
+            + Tambah Bundling
+        </button>
+    </div>
 
-        {{-- Section Bundling --}}
-        <div class="mb-4 border p-4 rounded-lg bg-base-100">
-            <!-- Header -->
-            <div class="flex font-semibold mb-2">
-                <div class="flex-1">Pilih Bundling</div>
-                <div class="w-32">Jumlah</div>
-                <div class="w-20"></div>
-            </div>
+    <!-- List Bundling -->
+    <div class="space-y-4">
+        <template x-for="(item, index) in bundlingItems" :key="index">
+            <div class="p-4 border rounded-lg bg-base-100 space-y-3">
 
-            <!-- Rows -->
-            <template x-for="(item, index) in bundlingItems" :key="'bundling-' + index">
-                <div class="w-full">
-                    <div class="flex items-center gap-4 mb-2">
-                        <select class="select select-bordered flex-1"
+                <!-- Baris 1: Bundling + Jumlah -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Bundling</label>
+                        <select class="select select-bordered w-full"
                             :name="`rencanaBundling[bundling_id][${index}]`"
                             x-model="item.bundling_id"
                             @change="syncItemBundling(index)"
                         >
                             <option value="">-- Pilih Bundling --</option>
                             @foreach($layanandanbundling['bundling'] as $bundle)
-                                <option value="{{ $bundle['id'] }}">{{ $bundle['nama'] }}</option>
+                                <option value="{{ $bundle['id'] }}">
+                                    {{ $bundle['nama'] }}
+                                </option>
                             @endforeach
                         </select>
-
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Jumlah</label>
                         <input type="number" min="1"
-                            class="input input-bordered w-32"
-                            :name="`rencanaBundling[jumlah_bundling][${index}]`"
+                            class="input input-bordered w-full"
                             x-model.number="item.jumlah_bundling"
                             @input="syncItemBundling(index)"
                         >
+                    </div>
+                </div>
 
-                        <input type="number" min="1"
-                            class="input input-bordered w-32"
-                            :name="`rencanaBundling[harga][${index}]`"
-                            x-model.number="item.harga"
-                            value="{{ $bundle['harga'] }}"
-                            @input="syncItemBundling(index)"
+                <!-- Baris 2: Harga Asli + Potongan + Diskon + Subtotal -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
+                    <!-- Harga Asli -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                        <input type="text"
+                            class="input input-bordered w-full bg-base-200"
+                            :value="formatCurrency(calcHargaAsli(item))"
+                            readonly
                         >
-
-                        <button type="button"
-                            class="btn btn-error btn-sm w-20"
-                            @click="removeBundling(index)"
-                            x-show="bundlingItems.length > 1">
-                            Hapus
-                        </button>
                     </div>
 
-                    {{-- Detail isi bundling --}}
-                    <template x-if="item.bundling_id">
-                        <div class="ml-4 mb-4 p-3 border rounded bg-base-200">
-                            @foreach($layanandanbundling['bundling'] as $bundle)
-                                <template x-if="item.bundling_id == '{{ $bundle['id'] }}'">
-                                    <div>
-                                        <p class="font-semibold">{{ $bundle['nama'] }}</p>
+                    <!-- Potongan Harga -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                        <input type="text"
+                            class="input input-bordered w-full"
+                            :value="formatCurrency(item.potongan)"
+                            @input="e => updatePotongan(index, e.target.value)"
+                        >
+                    </div>
 
-                                        {{-- Treatment --}}
-                                        <p class="mt-2 text-sm font-medium">Treatments:</p>
-                                        @if(isset($bundle['treatmentBundlings']) && count($bundle['treatmentBundlings']) > 0)
-                                            <ul class="list-disc list-inside text-sm">
-                                                @foreach($bundle['treatmentBundlings'] as $tb)
-                                                    <li>
-                                                        {{ $tb['treatment']['nama_treatment'] ?? '-' }},
-                                                        Tersedia :
-                                                        <span x-text="item.jumlah_bundling * {{ $tb->jumlah ?? 0 }}"></span>
-                                                        <i class="fa-solid fa-xmark text-[10px]"></i>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <ul class="list-disc list-inside text-sm">
-                                                <li>Tidak Tersedia</li>
-                                            </ul>
-                                        @endif
-
-                                        {{-- Pelayanan --}}
-                                        <p class="mt-2 text-sm font-medium">Pelayanan:</p>
-                                        @if(isset($bundle['pelayananBundlings']) && count($bundle['pelayananBundlings']) > 0)
-                                            <ul class="list-disc list-inside text-sm">
-                                                @foreach($bundle['pelayananBundlings'] as $pb)
-                                                    <li>{{ $pb['pelayanan']['nama_pelayanan'] . ', ' ?? '-' }}
-                                                        Tersedia :
-                                                        <span x-text="item.jumlah_bundling * {{ $pb->jumlah ?? 0 }}"></span>
-                                                        <i class="fa-solid fa-xmark text-[10px]"></i>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <ul class="list-disc list-inside text-sm">
-                                                <li>Tidak Tersedia</li>
-                                            </ul>
-                                        @endif
-
-                                        {{-- Produk / Obat --}}
-                                        <p class="mt-2 text-sm font-medium">Produk / Obat:</p>
-                                        @if(isset($bundle['produkObatBundlings']) && count($bundle['produkObatBundlings']) > 0)
-                                            <ul class="list-disc list-inside text-sm">
-                                                @foreach($bundle['produkObatBundlings'] as $ob)
-                                                    <li>{{ $ob['produk']['nama_dagang'] . ', ' ?? '-' }}
-                                                        Tersedia :
-                                                        <span x-text="item.jumlah_bundling * {{ $ob->jumlah ?? 0 }}"></span>
-                                                        <i class="fa-solid fa-xmark text-[10px]"></i>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <ul class="list-disc list-inside text-sm">
-                                                <li>Tidak Tersedia</li>
-                                            </ul>
-                                        @endif
-                                    </div>
-                                </template>
-                            @endforeach
+                    <!-- Diskon -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Diskon</label>
+                        <div class="flex items-center">
+                            <input type="number" min="0" max="100"
+                                class="input input-bordered w-full"
+                                x-model.number="item.diskon"
+                                @input="updateDiskon(index, item.diskon)"
+                            >
+                            <span class="ml-2">%</span>
                         </div>
-                    </template>
+                    </div>
+
+                    <!-- Subtotal -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                        <input type="text"
+                            class="input input-bordered w-full bg-base-200"
+                            :value="formatCurrency(calcSubtotal(item))"
+                            readonly
+                        >
+                    </div>
                 </div>
-            </template>
+
+                <!-- Detail isi bundling -->
+                <template x-if="item.bundling_id">
+                    <div class="ml-4 mt-4 p-3 border rounded bg-base-200">
+                        @foreach($layanandanbundling['bundling'] as $bundle)
+                            <template x-if="item.bundling_id == '{{ $bundle['id'] }}'">
+                                <div>
+                                    <p class="font-semibold">{{ $bundle['nama'] }}</p>
+
+                                    {{-- Treatment --}}
+                                    <p class="mt-2 text-sm font-medium">Treatments:</p>
+                                    @if(isset($bundle['treatmentBundlings']) && count($bundle['treatmentBundlings']) > 0)
+                                        <ul class="list-disc list-inside text-sm">
+                                            @foreach($bundle['treatmentBundlings'] as $tb)
+                                                <li>
+                                                    {{ $tb['treatment']['nama_treatment'] ?? '-' }},
+                                                    Tersedia :
+                                                    <span x-text="item.jumlah_bundling * {{ $tb->jumlah ?? 0 }}"></span>
+                                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <ul class="list-disc list-inside text-sm">
+                                            <li>Tidak Tersedia</li>
+                                        </ul>
+                                    @endif
+
+                                    {{-- Pelayanan --}}
+                                    <p class="mt-2 text-sm font-medium">Pelayanan:</p>
+                                    @if(isset($bundle['pelayananBundlings']) && count($bundle['pelayananBundlings']) > 0)
+                                        <ul class="list-disc list-inside text-sm">
+                                            @foreach($bundle['pelayananBundlings'] as $pb)
+                                                <li>
+                                                    {{ $pb['pelayanan']['nama_pelayanan'] ?? '-' }},
+                                                    Tersedia :
+                                                    <span x-text="item.jumlah_bundling * {{ $pb->jumlah ?? 0 }}"></span>
+                                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <ul class="list-disc list-inside text-sm">
+                                            <li>Tidak Tersedia</li>
+                                        </ul>
+                                    @endif
+
+                                    {{-- Produk / Obat --}}
+                                    <p class="mt-2 text-sm font-medium">Produk / Obat:</p>
+                                    @if(isset($bundle['produkObatBundlings']) && count($bundle['produkObatBundlings']) > 0)
+                                        <ul class="list-disc list-inside text-sm">
+                                            @foreach($bundle['produkObatBundlings'] as $ob)
+                                                <li>
+                                                    {{ $ob['produk']['nama_dagang'] ?? '-' }},
+                                                    Tersedia :
+                                                    <span x-text="item.jumlah_bundling * {{ $ob->jumlah ?? 0 }}"></span>
+                                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <ul class="list-disc list-inside text-sm">
+                                            <li>Tidak Tersedia</li>
+                                        </ul>
+                                    @endif
+                                </div>
+                            </template>
+                        @endforeach
+                    </div>
+                </template>
+
+                <!-- Tombol Hapus -->
+                <div class="flex justify-end">
+                    <button type="button"
+                        class="btn btn-error btn-sm"
+                        @click="removeBundling(index)"
+                        x-show="bundlingItems.length > 1">
+                        Hapus
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Footer Total -->
+        <div class="flex justify-end mt-4 font-bold text-lg">
+            <div class="mr-4">Total:</div>
+            <div x-text="formatCurrency(calcTotal())"></div>
         </div>
     </div>
-
 </div>
+
+<script>
+function bundlingForm() {
+    return {
+        // state
+        bundlingItems: [{ bundling_id: '', jumlah_bundling: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+        bundlings: @json($layanandanbundling['bundling']),
+
+        // helpers
+        getBundling(id) {
+            return this.bundlings.find(b => b.id == id);
+        },
+
+        formatCurrency(value) {
+            if (!value) return 'Rp 0';
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
+        },
+
+        // update potongan
+        updatePotongan(i, val) {
+            let number = parseInt(val.replace(/[^\d]/g, '')) || 0;
+            this.bundlingItems[i].potongan = number;
+            this.syncItemBundling(i);
+        },
+
+        // update diskon
+        updateDiskon(i, val) {
+            let number = parseInt(val) || 0;
+            if (number < 0) number = 0;
+            if (number > 100) number = 100;
+            this.bundlingItems[i].diskon = number;
+            this.syncItemBundling(i);
+        },
+
+        // kalkulasi
+        calcHargaAsli(item) {
+            let bundling = this.getBundling(item.bundling_id);
+            let harga = bundling ? Number(bundling.harga) : 0;
+            let jumlah = Number(item.jumlah_bundling) || 1;
+            return harga * jumlah;
+        },
+
+        calcSubtotal(item) {
+            let hargaAsli = this.calcHargaAsli(item);
+            let potongan = Number(item.potongan) || 0;
+            let diskon = Number(item.diskon) || 0;
+            let afterPotongan = hargaAsli - potongan;
+            if (afterPotongan < 0) afterPotongan = 0;
+            return afterPotongan - (afterPotongan * (diskon / 100));
+        },
+
+        calcTotal() {
+            return this.bundlingItems.reduce((total, item) => total + this.calcSubtotal(item), 0);
+        },
+
+        // aksi
+        addBundling() {
+            this.bundlingItems.push({ bundling_id: '', jumlah_bundling: 1, potongan: 0, diskon: 0, subtotal: 0 });
+            this.syncBundlingToLivewire();
+        },
+
+        removeBundling(index) {
+            this.bundlingItems.splice(index, 1);
+            this.reindexBundling();
+            this.syncBundlingToLivewire();
+            this.cleanupBundlingLivewire();
+        },
+
+        reindexBundling() {
+            this.bundlingItems = this.bundlingItems.map(item => ({ ...item }));
+        },
+
+        syncItemBundling(i) {
+            let item = this.bundlingItems[i];
+            let subtotal = this.calcSubtotal(item);
+            item.subtotal = subtotal;
+
+            @this.set(`rencana_bundling.bundling_id.${i}`, item.bundling_id);
+            @this.set(`rencana_bundling.jumlah_bundling.${i}`, item.jumlah_bundling);
+            @this.set(`rencana_bundling.potongan.${i}`, item.potongan);
+            @this.set(`rencana_bundling.diskon.${i}`, item.diskon);
+            @this.set(`rencana_bundling.subtotal.${i}`, item.subtotal);
+        },
+
+        syncBundlingToLivewire() {
+            this.bundlingItems.forEach((item, i) => this.syncItemBundling(i));
+        },
+
+        cleanupBundlingLivewire() {
+            let length = this.bundlingItems.length;
+            for (let i = length; i < 100; i++) {
+                @this.set(`rencana_bundling.bundling_id.${i}`, null);
+                @this.set(`rencana_bundling.jumlah_bundling.${i}`, null);
+                @this.set(`rencana_bundling.potongan.${i}`, null);
+                @this.set(`rencana_bundling.diskon.${i}`, null);
+                @this.set(`rencana_bundling.subtotal.${i}`, null);
+            }
+        }
+    }
+}
+</script>
