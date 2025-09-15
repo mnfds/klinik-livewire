@@ -122,7 +122,7 @@ class Create extends Component
         'potongan' => [],
         'diskon' => [],
         'subtotal' => [],
-        'details' => [   // 👈 tambahan
+        'details' => [
             'treatments' => [],
             'pelayanans' => [],
             'produks' => [],
