@@ -119,6 +119,14 @@ class Create extends Component
     public $rencana_bundling = [
         'bundling_id' => [],
         'jumlah_bundling' => [],
+        'potongan' => [],
+        'diskon' => [],
+        'subtotal' => [],
+        'details' => [   // 👈 tambahan
+            'treatments' => [],
+            'pelayanans' => [],
+            'produks' => [],
+        ]
     ];
 
     public $layanandanbundling = [
@@ -227,7 +235,7 @@ class Create extends Component
             'nama_dokter' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
         ]);
-        // dd([
+        dd([
         //     $this->selected_forms_subjective,
         //     $this->selected_forms_objective,
         //     $this->selected_forms_assessment,
@@ -241,10 +249,12 @@ class Create extends Component
             // $this->data_estetika,
             // $this->pemeriksaan_estetika,
             // $this->rencana_layanan,
+            // $this->rencana_estetika,
+            $this->rencana_bundling,
             // $this->obat_non_racikan,
             // $this->obat_racikan,
             // $this->bahan_racikan,
-        // ]);
+        ]);
 
         DB::beginTransaction();
 
@@ -393,7 +403,10 @@ class Create extends Component
                         RencananaBundlingRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'bundling_id'      => $bundlingId,
-                            'jumlah_bundling'  => $this->rencana_bundling['jumlah_bundling'][$index],
+                            'jumlah_bundling'  => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
+                            'potongan' => $this->rencana_bundling['potongan'][$index] ?? 0,
+                            'diskon' => $this->rencana_bundling['diskon'][$index] ?? 0,
+                            'subtotal' => $this->rencana_bundling['subtotal'][$index] ?? 0,
                         ]);
                     }
                 }

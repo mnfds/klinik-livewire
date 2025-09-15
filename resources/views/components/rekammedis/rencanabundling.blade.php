@@ -119,7 +119,7 @@
                                         <ul class="space-y-2">
                                             @foreach($bundle['treatmentBundlings'] as $tb)
                                                 <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
-                                                    <span class="font-medium">{{ $tb['treatment']['nama_treatment'] ?? '-' }}</span>
+                                                    <span class="text-sm">{{ $tb['treatment']['nama_treatment'] ?? '-' }}</span>
 
                                                     <!-- Jumlah Awal -->
                                                     <div>
@@ -173,7 +173,7 @@
                                         <ul class="space-y-2">
                                             @foreach($bundle['pelayananBundlings'] as $pb)
                                                 <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
-                                                    <span class="font-medium">{{ $pb['pelayanan']['nama_pelayanan'] ?? '-' }}</span>
+                                                    <span class="text-sm">{{ $pb['pelayanan']['nama_pelayanan'] ?? '-' }}</span>
 
                                                     <!-- Jumlah Awal -->
                                                     <div>
@@ -227,7 +227,7 @@
                                         <ul class="space-y-2">
                                             @foreach($bundle['produkBundlings'] as $prb)
                                                 <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
-                                                    <span class="font-medium">
+                                                    <span class="text-sm">
                                                         {{ $prb['produk']['nama_produk'] ?? $prb['produk']['nama_obat'] ?? '-' }}
                                                     </span>
 
@@ -406,6 +406,10 @@
                 @this.set(`rencana_bundling.potongan.${i}`, item.potongan);
                 @this.set(`rencana_bundling.diskon.${i}`, item.diskon);
                 @this.set(`rencana_bundling.subtotal.${i}`, item.subtotal);
+                    // sync detail isi bundling
+                @this.set(`rencana_bundling.treatments.${i}`, item.treatmentsDipakai);
+                @this.set(`rencana_bundling.pelayanans.${i}`, item.pelayananDipakai);
+                @this.set(`rencana_bundling.produks.${i}`, item.produkDipakai);
             },
 
             syncBundlingToLivewire() {

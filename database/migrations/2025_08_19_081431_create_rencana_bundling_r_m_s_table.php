@@ -18,6 +18,9 @@ return new class extends Migration
 
             $table->foreignId('bundling_id')->constrained('bundlings')->onDelete('cascade');
             $table->integer('jumlah_bundling')->nullable();
+            $table->integer('potongan')->nullable();
+            $table->integer('diskon')->nullable();
+            $table->integer('subtotal')->nullable();
             $table->timestamps();
         });
     }

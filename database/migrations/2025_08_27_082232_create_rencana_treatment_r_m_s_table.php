@@ -18,6 +18,9 @@ return new class extends Migration
 
             $table->foreignId('treatments_id')->constrained('treatments')->onDelete('cascade');
             $table->integer('jumlah_treatment')->nullable();
+            $table->integer('potongan')->nullable();
+            $table->integer('diskon')->nullable();
+            $table->integer('subtotal')->nullable();
             $table->timestamps();
         });
     }
