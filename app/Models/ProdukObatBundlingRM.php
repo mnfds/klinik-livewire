@@ -19,7 +19,7 @@ class ProdukObatBundlingRM extends Model
 
     public function produk()
     {
-        return $this->belongsTo(ProdukDanObat::class, 'produk_id');
+        return $this->belongsTo(ProdukDanObat::class, 'produk_obat_id');
     }
 
     public function pasien()

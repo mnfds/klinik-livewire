@@ -2,27 +2,30 @@
 
 namespace App\Livewire\Rekammedis;
 
+use App\Models\IcdRM;
 use Livewire\Component;
 use App\Models\Bundling;
-use App\Models\DataEstetikaRM;
 use App\Models\Pelayanan;
+use App\Models\Treatment;
+use App\Models\DiagnosaRM;
 use App\Models\KajianAwal;
 use App\Models\RekamMedis;
-use App\Models\DataKesehatanRM;
-use App\Models\DiagnosaRM;
-use App\Models\IcdRM;
-use App\Models\ObatNonRacikanRM;
+use App\Models\TandaVitalRM;
 use App\Models\ObatRacikanRM;
+use App\Models\DataEstetikaRM;
+use App\Models\DataKesehatanRM;
 use App\Models\PasienTerdaftar;
+use App\Models\ObatNonRacikanRM;
+use App\Models\PelayananBundlingRM;
+use App\Models\RencanaLayananRM;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
-use App\Models\RencanaLayananRM;
-use App\Models\RencananaBundlingRM;
+use App\Models\ProdukObatBundlingRM;
 use App\Models\RencanaTreatmentRM;
-use App\Models\TandaVitalRM;
-use App\Models\Treatment;
 use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Compilers\Mount;
+use App\Models\RencananaBundlingRM;
+use App\Models\TreatmentBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use App\View\Components\rekammedis\rencanalayanan;
 
@@ -37,6 +40,15 @@ class Create extends Component
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
+
+    // berisikan data bundling beserta isinya yang pernah dibeli oleh pasien
+    public $bundlingPasien = [
+        'treatments' => [],
+        'pelayanans' => [],
+        'produks' => [],
+    ];
+
+    public ?int $pasien_id = null;
     
     // berisikan data yang akan dimunculkan pada select layanan/tindakan
     public $layanan;
@@ -168,6 +180,11 @@ class Create extends Component
     {
         $this->nama_dokter = Auth::user()->dokter->nama_dokter ?? '-';
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
+        if ($pasien_terdaftar_id) {
+            $this->pasienTerdaftar = PasienTerdaftar::with('pasien')->find($pasien_terdaftar_id);
+            $this->pasien_id = $this->pasienTerdaftar?->pasien_id;
+        }
+
         $this->layanan = Pelayanan::all();
         $this->bundling = Bundling::with([
             'treatmentBundlings.treatment',
@@ -179,6 +196,23 @@ class Create extends Component
         $this->layanandanbundling['layanan'] = $this->layanan;
         $this->layanandanbundling['bundling'] = $this->bundling;
         $this->layanandanbundling['treatment'] = $this->treatment;
+
+        if ($this->pasien_id) {
+            // Ambil treatment bundling pasien
+            $this->bundlingPasien['treatments'] = TreatmentBundlingRM::with('bundling', 'treatment')
+                ->where('pasien_id', $this->pasien_id)
+                ->get();
+
+            // Ambil pelayanan bundling pasien
+            $this->bundlingPasien['pelayanans'] = PelayananBundlingRM::with('bundling', 'pelayanan')
+                ->where('pasien_id', $this->pasien_id)
+                ->get();
+
+            // Ambil produk/obat bundling pasien
+            $this->bundlingPasien['produks'] = ProdukObatBundlingRM::with('bundling', 'produk',)
+                ->where('pasien_id', $this->pasien_id)
+                ->get();
+        }
 
         if ($this->pasien_terdaftar_id) {
             $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
@@ -235,7 +269,7 @@ class Create extends Component
             'nama_dokter' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
         ]);
-        dd([
+        // dd([
         //     $this->selected_forms_subjective,
         //     $this->selected_forms_objective,
         //     $this->selected_forms_assessment,
@@ -250,11 +284,11 @@ class Create extends Component
             // $this->pemeriksaan_estetika,
             // $this->rencana_layanan,
             // $this->rencana_estetika,
-            $this->rencana_bundling,
+            // $this->rencana_bundling,
             // $this->obat_non_racikan,
             // $this->obat_racikan,
             // $this->bahan_racikan,
-        ]);
+        // ]);
 
         DB::beginTransaction();
 
@@ -408,6 +442,46 @@ class Create extends Component
                             'diskon' => $this->rencana_bundling['diskon'][$index] ?? 0,
                             'subtotal' => $this->rencana_bundling['subtotal'][$index] ?? 0,
                         ]);
+                        
+                        // Ambil pasien_id
+                        $pasienId = $this->pasien_id;
+
+                        // Simpan detail treatment
+                        if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
+                            foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
+                                TreatmentBundlingRM::create([
+                                    'pasien_id'      => $pasienId,
+                                    'bundling_id'    => $bundlingId,
+                                    'treatment_id'   => $t['treatment_id'],
+                                    'jumlah_awal'    => $t['jumlah_awal'],
+                                    'jumlah_terpakai'=> $t['jumlah_terpakai'],
+                                ]);
+                            }
+                        }
+                        // Simpan detail Pelayanan
+                        if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
+                            foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
+                                PelayananBundlingRM::create([
+                                    'pasien_id'      => $pasienId,
+                                    'bundling_id'    => $bundlingId,
+                                    'pelayanan_id'   => $t['pelayanan_id'],
+                                    'jumlah_awal'    => $t['jumlah_awal'],
+                                    'jumlah_terpakai'=> $t['jumlah_terpakai'],
+                                ]);
+                            }
+                        }
+                        // Simpan detail Produk & Obat
+                        if (!empty($this->rencana_bundling['details']['produks'][$index])) {
+                            foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
+                                ProdukObatBundlingRM::create([
+                                    'pasien_id'      => $pasienId,
+                                    'bundling_id'    => $bundlingId,
+                                    'produk_obat_id'   => $t['produk_obat_id'],
+                                    'jumlah_awal'    => $t['jumlah_awal'],
+                                    'jumlah_terpakai'=> $t['jumlah_terpakai'],
+                                ]);
+                            }
+                        }
                     }
                 }
           

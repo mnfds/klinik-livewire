@@ -287,7 +287,84 @@
                             </label>
 
                             <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
-                                Layanan/Tindakan Tersisa
+                                <h3 class="font-semibold mb-3">Layanan / Tindakan Tersisa</h3>
+
+                                @php
+                                    // Gabungkan semua data ke dalam array per bundling_id
+                                    $grouped = [];
+
+                                    foreach ($bundlingPasien['treatments'] as $t) {
+                                        $grouped[$t->bundling_id]['nama'] = $t->bundling->nama;
+                                        $grouped[$t->bundling_id]['treatments'][] = $t;
+                                    }
+
+                                    foreach ($bundlingPasien['pelayanans'] as $p) {
+                                        $grouped[$p->bundling_id]['nama'] = $p->bundling->nama;
+                                        $grouped[$p->bundling_id]['pelayanans'][] = $p;
+                                    }
+
+                                    foreach ($bundlingPasien['produks'] as $pr) {
+                                        $grouped[$pr->bundling_id]['nama'] = $pr->bundling->nama;
+                                        $grouped[$pr->bundling_id]['produks'][] = $pr;
+                                    }
+                                @endphp
+
+                                @if(count($grouped))
+                                    <ul class="space-y-4">
+                                        @foreach($grouped as $bundling)
+                                            <li class="border rounded-lg p-3">
+                                                <p class="font-semibold">{{ $bundling['nama'] }}</p>
+
+                                                {{-- Treatments --}}
+                                                @if(!empty($bundling['treatments']))
+                                                    <p class="text-sm font-medium mt-2">Treatments</p>
+                                                    <ul class="list-disc list-inside text-sm">
+                                                        @foreach($bundling['treatments'] as $t)
+                                                            <li>
+                                                                {{ $t->treatment->nama_treatment }}
+                                                                <span class="badge badge-sm badge-outline ml-2">
+                                                                    Sisa: {{ $t->jumlah_awal - $t->jumlah_terpakai }}
+                                                                </span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+
+                                                {{-- Pelayanans --}}
+                                                @if(!empty($bundling['pelayanans']))
+                                                    <p class="text-sm font-medium mt-2">Pelayanan</p>
+                                                    <ul class="list-disc list-inside text-sm">
+                                                        @foreach($bundling['pelayanans'] as $p)
+                                                            <li>
+                                                                {{ $p->pelayanan->nama_pelayanan }}
+                                                                <span class="badge badge-sm badge-outline ml-2">
+                                                                    Sisa: {{ $p->jumlah_awal - $p->jumlah_terpakai }}
+                                                                </span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+
+                                                {{-- Produks --}}
+                                                @if(!empty($bundling['produks']))
+                                                    <p class="text-sm font-medium mt-2">Produk / Obat</p>
+                                                    <ul class="list-disc list-inside text-sm">
+                                                        @foreach($bundling['produks'] as $pr)
+                                                            <li>
+                                                                {{ $pr->produk->nama_dagang }}
+                                                                <span class="badge badge-sm badge-outline ml-2">
+                                                                    Sisa: {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}
+                                                                </span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-sm text-gray-500">Tidak ada layanan tersisa</p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -310,7 +387,7 @@
                             <div class="tabs tabs-lift">
 
                                 {{-- TABS SUBJECTIVE --}}
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="SUBJECTIVE" style="background-image: none;"/>
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="SUBJECTIVE" style="background-image: none;" checked/>
                                 <div class="tab-content bg-base-100 border-base-300 p-2">
                                     {{-- SUBJECTIVE --}}
                                     <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
@@ -481,7 +558,7 @@
                                     </div>  
                                 </div>
                                 {{-- TABS PLAN --}}
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="PLAN" style="background-image: none;" checked/>
+                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="PLAN" style="background-image: none;"/>
                                 <div class="tab-content bg-base-100 border-base-300 p-2">
                                     {{-- PLAN --}}
                                     <div id="plan" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
@@ -500,8 +577,8 @@
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                     <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
                                                 @endif
-                                                    <option value="obat-non-racikan">Obat Non Racikan</option>
-                                                    <option value="obat-racikan">Obat Racikan</option>
+                                                    <option value="obat-non-racikan" selected>Obat Non Racikan</option>
+                                                    <option value="obat-racikan" selected>Obat Racikan</option>
                                             </select>
                                         </div>
 

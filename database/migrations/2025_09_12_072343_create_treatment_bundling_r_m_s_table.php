@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('treatment_id')->constrained('treatments')->onDelete('cascade');
             $table->integer('jumlah_awal')->default(0);
             $table->integer('jumlah_terpakai')->default(0);
+            $table->timestamps();
         });
     }
 
