@@ -519,7 +519,7 @@
                                     <div class="mt-2">
                                         <div class="font-semibold mb-1">Diagnosa</div>
                                         <div class="space-y-1">
-                                            <div>Catatan Diagnosa : {{ $rekammedis->diagnosaRM->diagnosa ?? '-' }} °C</div>
+                                            <div>Catatan Diagnosa : {{ $rekammedis->diagnosaRM->diagnosa ?? '-' }}</div>
                                         </div>
                                     </div>
                                 @endif
