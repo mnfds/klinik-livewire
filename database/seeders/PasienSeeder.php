@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Pasien;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PasienSeeder extends Seeder
@@ -14,26 +15,92 @@ class PasienSeeder extends Seeder
      */
     public function run(): void
     {
-        {
-            \Faker\Factory::create('id_ID');
-
-            for ($i = 0; $i < 10; $i++) {
-                Pasien::create([
-                    'no_register' => Str::random(10),
-                    'nik' => fake('id_ID')->nik(),
-                    'no_ihs' => fake('id_ID')->numerify('IHS##########'),
-                    'nama' => fake('id_ID')->name(),
-                    'alamat' => fake('id_ID')->address(),
-                    'no_telp' => fake('id_ID')->phoneNumber(),
-                    'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Wanita']),
-                    'agama' => fake('id_ID')->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu']),
-                    'profesi' => fake('id_ID')->jobTitle(),
-                    'tanggal_lahir' => fake('id_ID')->date(),
-                    'status' => fake('id_ID')->randomElement(['Menikah', 'Belum Menikah']),
-                    'foto_pasien' => fake('id_ID')->imageUrl(200, 200, 'people'),
-                    'deskripsi' => fake('id_ID')->sentence(),
-                ]);
-            }
-        }
+        DB::table('pasiens')->insert([
+            [
+                'no_register' => 'REG-' . Str::upper(Str::random(6)),
+                'nik' => '3201010101010001',
+                'no_ihs' => 'IHS-001',
+                'nama' => 'Ahmad Fauzi',
+                'alamat' => 'Jl. Merpati No.10, Jakarta',
+                'no_telp' => '081234567890',
+                'jenis_kelamin' => 'Laki-laki',
+                'agama' => 'Islam',
+                'profesi' => 'Karyawan Swasta',
+                'tanggal_lahir' => '1990-05-10',
+                'status' => 'Menikah',
+                'foto_pasien' => null,
+                'deskripsi' => 'Pasien baru, tidak ada riwayat penyakit berat.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'no_register' => 'REG-' . Str::upper(Str::random(6)),
+                'nik' => '3201010101010002',
+                'no_ihs' => 'IHS-002',
+                'nama' => 'Siti Aminah',
+                'alamat' => 'Jl. Kenanga No.5, Bandung',
+                'no_telp' => '082345678901',
+                'jenis_kelamin' => 'Wanita',
+                'agama' => 'Islam',
+                'profesi' => 'Guru',
+                'tanggal_lahir' => '1985-08-15',
+                'status' => 'Menikah',
+                'foto_pasien' => null,
+                'deskripsi' => 'Pasien rutin kontrol kesehatan.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'no_register' => 'REG-' . Str::upper(Str::random(6)),
+                'nik' => '3201010101010003',
+                'no_ihs' => 'IHS-003',
+                'nama' => 'Budi Santoso',
+                'alamat' => 'Jl. Melati No.7, Surabaya',
+                'no_telp' => '083456789012',
+                'jenis_kelamin' => 'Laki-laki',
+                'agama' => 'Kristen',
+                'profesi' => 'Pegawai Negeri',
+                'tanggal_lahir' => '1995-12-20',
+                'status' => 'Belum Menikah',
+                'foto_pasien' => null,
+                'deskripsi' => 'Pasien dengan riwayat alergi ringan.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'no_register' => 'REG-' . Str::upper(Str::random(6)),
+                'nik' => '3201010101010004',
+                'no_ihs' => 'IHS-004',
+                'nama' => 'Dewi Lestari',
+                'alamat' => 'Jl. Anggrek No.12, Yogyakarta',
+                'no_telp' => '084567890123',
+                'jenis_kelamin' => 'Wanita',
+                'agama' => 'Hindu',
+                'profesi' => 'Mahasiswa',
+                'tanggal_lahir' => '2000-03-05',
+                'status' => 'Belum Menikah',
+                'foto_pasien' => null,
+                'deskripsi' => 'Pasien baru, ingin cek kesehatan rutin.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'no_register' => 'REG-' . Str::upper(Str::random(6)),
+                'nik' => '3201010101010005',
+                'no_ihs' => 'IHS-005',
+                'nama' => 'Rudi Hartono',
+                'alamat' => 'Jl. Sakura No.9, Semarang',
+                'no_telp' => '085678901234',
+                'jenis_kelamin' => 'Laki-laki',
+                'agama' => 'Islam',
+                'profesi' => 'Wiraswasta',
+                'tanggal_lahir' => '1988-11-30',
+                'status' => 'Menikah',
+                'foto_pasien' => null,
+                'deskripsi' => 'Pasien rutin periksa tahunan.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }

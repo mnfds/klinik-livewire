@@ -33,8 +33,8 @@
                 <label class="label font-medium">Lokasi Disimpan</label>
                 <select class="select select-bordered w-full" wire:model.defer="lokasi">
                     <option value="">Pilih Lokasi</option>
-                    <option value="gudang besar">Gudang Besar</option>
-                    <option value="gudang kecil">Gudang Kecil</option>
+                    <option value="Gudang Besar">Gudang Besar</option>
+                    <option value="Gudang Kecil">Gudang Kecil</option>
                 </select>
             </div>
 

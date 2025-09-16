@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'admin123',
-            'email' => 'admin@gmail.com.',
+            'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
             'role_id' => 1,
@@ -25,9 +25,10 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        // Dokter
         DB::table('users')->insert([
             'name' => 'dokter123',
-            'email' => 'dokter@gmail.com.',
+            'email' => 'dokter@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('dokter123'),
             'role_id' => 2,
@@ -37,10 +38,31 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'dokter321',
-            'email' => 'dokter321@gmail.com.',
+            'email' => 'dokter321@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('dokter321'),
             'role_id' => 2,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        //Perawat
+        DB::table('users')->insert([
+            'name' => 'perawat123',
+            'email' => 'perawat123@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('perawat123'),
+            'role_id' => 3,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'perawat321',
+            'email' => 'perawat321@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('perawat321'),
+            'role_id' => 3,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

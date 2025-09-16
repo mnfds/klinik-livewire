@@ -6,47 +6,32 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class ProdukdanobatbundlingSeeder extends Seeder
+class TreatmentbundlingSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('produk_obat_bundlings')->insert([
-            [
-                'bundling_id' => 1,
-                'produk_id' => 1, // Paracetamol 500mg
-                'jumlah' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'bundling_id' => 1,
-                'produk_id' => 2, // Amoxicillin 250mg
-                'jumlah' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'bundling_id' => 1,
-                'produk_id' => 3, // Cetrizine 10mg
-                'jumlah' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
+        DB::table('treatment_bundlings')->insert([
             // --- Paket Perawatan Wajah Dasar (bundling_id = 2) ---
             [
                 'bundling_id' => 2,
-                'produk_id' => 6, // Betadine Solution
+                'treatments_id' => 1, // Facial Dasar
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'bundling_id' => 2,
-                'produk_id' => 7, // Facial Wash Brightening
+                'treatments_id' => 2, // Pembersihan Komedo
+                'jumlah' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'bundling_id' => 2,
+                'treatments_id' => 3, // Masker Wajah
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -55,14 +40,21 @@ class ProdukdanobatbundlingSeeder extends Seeder
             // --- Paket Anti Jerawat (bundling_id = 3) ---
             [
                 'bundling_id' => 3,
-                'produk_id' => 7, // Facial Wash Brightening
+                'treatments_id' => 4, // Facial Anti Jerawat
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'bundling_id' => 3,
-                'produk_id' => 8, // Moisturizer Aloe Vera Gel
+                'treatments_id' => 5, // Obat Jerawat
+                'jumlah' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'bundling_id' => 3,
+                'treatments_id' => 6, // Masker Soothing
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -71,14 +63,21 @@ class ProdukdanobatbundlingSeeder extends Seeder
             // --- Paket Whitening (bundling_id = 4) ---
             [
                 'bundling_id' => 4,
-                'produk_id' => 8, // Moisturizer Aloe Vera Gel
+                'treatments_id' => 7, // Serum Whitening
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'bundling_id' => 4,
-                'produk_id' => 9, // Sunscreen SPF 50
+                'treatments_id' => 3, // Masker Wajah / Gold
+                'jumlah' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'bundling_id' => 4,
+                'treatments_id' => 6, // Facial Premium
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -87,21 +86,21 @@ class ProdukdanobatbundlingSeeder extends Seeder
             // --- Paket Relaksasi & Hydrating (bundling_id = 5) ---
             [
                 'bundling_id' => 5,
-                'produk_id' => 8, // Moisturizer Aloe Vera Gel
+                'treatments_id' => 7, // Facial Hidrasi / Hydrating
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'bundling_id' => 5,
-                'produk_id' => 9, // Sunscreen SPF 50
+                'treatments_id' => 6, // Hydrating Gel Therapy
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'bundling_id' => 5,
-                'produk_id' => 10, // Lip Balm Strawberry
+                'treatments_id' => 5, // Massage Relaksasi
                 'jumlah' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),

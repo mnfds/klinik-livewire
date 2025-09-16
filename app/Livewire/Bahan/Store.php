@@ -35,7 +35,7 @@ class Store extends Component
             'satuan'   => $this->satuan,
             'kode'   => $this->kode,
             'lokasi'   => $this->lokasi,
-            'catatan'   => $this->keterangan,
+            'keterangan'   => $this->keterangan,
         ]);
 
         $bahanbaku->mutasibahan()->create([
