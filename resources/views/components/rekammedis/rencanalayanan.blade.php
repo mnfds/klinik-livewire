@@ -58,7 +58,7 @@
             <!-- Header -->
             <div class="flex font-semibold mb-2">
                 <div class="flex-1">Pilih Layanan</div>
-                <div class="w-32">Jumlah</div>
+                <div class="w-32 hidden">Jumlah</div>
                 <div class="w-20"></div> {{-- untuk kolom tombol hapus --}}
             </div>
 
@@ -77,7 +77,7 @@
                     </select>
 
                     <input type="number" min="1"
-                        class="input input-bordered w-32"
+                        class="input input-bordered w-32 hidden"
                         :name="`rencanaLayanan[jumlah_pelayanan][${index}]`"
                         x-model.number="item.jumlah_pelayanan"
                         @input="syncItemLayanan(index)"

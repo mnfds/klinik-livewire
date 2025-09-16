@@ -77,7 +77,7 @@
         </div>
 
         {{-- Metode KB --}}
-        <div>
+        <div class="hidden">
             <label class="label"><span class="label-text">Metode KB yang Digunakan</span></label>
             <div class="flex flex-wrap gap-4">
                 @foreach (['Pil', 'Suntik', 'Implant', 'IUD', 'Steril', 'Tidak Menggunakan'] as $kb)
