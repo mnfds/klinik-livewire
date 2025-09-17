@@ -401,6 +401,8 @@
                                                     <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                     <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
+                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
+                                                    <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Data Kesehatan</option>
                                                 @endif
                                             </select>
                                         </div>
@@ -438,6 +440,9 @@
                                             @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                 <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
                                                 <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
+                                            @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
+                                                <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Tanda Vital Pasien</option>
+                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Pemeriksaan Fisik</option>
                                             @endif
                                             </select>
                                         </div>
@@ -574,6 +579,8 @@
                                                     <option value="obat-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Produk Estetika</option>
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                     <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
+                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
+                                                    <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Rencana Tindakan Medis</option>
                                                 @endif
                                                     <option value="obat-non-racikan" selected>Obat Non Racikan</option>
                                                     <option value="obat-racikan" selected>Obat Racikan</option>
