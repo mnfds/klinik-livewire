@@ -20,11 +20,13 @@ use App\Models\PelayananBundlingRM;
 use App\Models\RencanaLayananRM;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
+use App\Models\ProdukDanObat;
 use App\Models\ProdukObatBundlingRM;
 use App\Models\RencanaTreatmentRM;
 use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Compilers\Mount;
 use App\Models\RencananaBundlingRM;
+use App\Models\RencanaProdukRM;
 use App\Models\TreatmentBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use App\View\Components\rekammedis\rencanalayanan;
@@ -54,6 +56,7 @@ class Create extends Component
     public $layanan;
     public $bundling;
     public $treatment;
+    public $skincare;
 
     // FORM DATA YANG PILIH //
     public array $selected_forms_subjective = [];
@@ -128,6 +131,14 @@ class Create extends Component
         'subtotal' => [],
     ];
 
+    public $obat_estetika = [
+        'produk_id' => [],
+        'jumlah_produk' => [],
+        'potongan' => [],
+        'diskon' => [],
+        'subtotal' => [],
+    ];
+
     public $rencana_bundling = [
         'bundling_id' => [],
         'jumlah_bundling' => [],
@@ -145,6 +156,7 @@ class Create extends Component
         'layanan' => [],
         'treatment' => [],
         'bundling' => [],
+        'skincare' => [],
     ];
 
     public $obat_non_racikan = [
@@ -192,10 +204,12 @@ class Create extends Component
             'produkObatBundlings.produk',
         ])->get();
         $this->treatment = Treatment::all();
+        $this->skincare = ProdukDanObat::all();
 
         $this->layanandanbundling['layanan'] = $this->layanan;
         $this->layanandanbundling['bundling'] = $this->bundling;
         $this->layanandanbundling['treatment'] = $this->treatment;
+        $this->layanandanbundling['skincare'] = $this->skincare;
 
         if ($this->pasien_id) {
             // Ambil treatment bundling pasien
@@ -285,6 +299,7 @@ class Create extends Component
             // $this->rencana_layanan,
             // $this->rencana_estetika,
             // $this->rencana_bundling,
+            // $this->obat_estetika,
             // $this->obat_non_racikan,
             // $this->obat_racikan,
             // $this->bahan_racikan,
@@ -427,6 +442,20 @@ class Create extends Component
                             'rekam_medis_id'   => $rekammedis->id,
                             'pelayanan_id'     => $pelayananId,
                             'jumlah_pelayanan' => $this->rencana_layanan['jumlah_pelayanan'][$index],
+                        ]);
+                    }
+                }
+
+                if (in_array('obat-estetika', $this->selected_forms_plan)) {
+
+                    foreach ($this->obat_estetika['produk_id'] as $index => $produkId) {
+                        RencanaProdukRM::create([
+                            'rekam_medis_id'   => $rekammedis->id,
+                            'produk_id'     => $produkId,
+                            'jumlah_produk' => $this->obat_estetika['jumlah_produk'][$index] ?? 1,
+                            'potongan' => $this->obat_estetika['potongan'][$index] ?? 0,
+                            'diskon' => $this->obat_estetika['diskon'][$index] ?? 0,
+                            'subtotal' => $this->obat_estetika['subtotal'][$index] ?? 0,
                         ]);
                     }
                 }

@@ -11,4 +11,14 @@ class ProdukDanObat extends Model
 
     protected $table = 'produk_dan_obats';
     protected $guarded = ['id'];
+
+    public function rencanaProdukdanObat()
+    {
+        return $this->hasMany(RencanaProdukRM::class, 'produk_id');
+    }
+
+    public function produkObatBundlings()
+    {
+        return $this->hasMany(ProdukObatBundling::class, 'produk_id');
+    }
 }

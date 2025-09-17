@@ -573,11 +573,11 @@
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Plan</div>
-                            @if ($rekammedis?->rencanaLayananRM || $rekammedis?->rencanaBundlingRM || $rekammedis?->obatNonRacikanRM || $rekammedis?->obatRacikanRM)
+                            @if ($rekammedis?->rencanaLayananRM || $rekammedis?->rencanaTreatmentRM || $rekammedis?->rencanaProdukRM || $rekammedis?->rencanaBundlingRM || $rekammedis?->obatNonRacikanRM || $rekammedis?->obatRacikanRM)
                             
                                 @if ($rekammedis->rencanaLayananRM)
                                     <div class="mt-1">
-                                        <div class="font-semibold">TINDAKAN</div>
+                                        <div class="font-semibold">Layanan Medis</div>
 
                                         @foreach ($rekammedis->rencanaLayananRM as $layanans)
                                             @php
@@ -591,6 +591,56 @@
                                                 @else
                                                     <ul class="ml-4 list-disc">
                                                         @foreach ($layanan as $index => $c)
+                                                            <li>{{ $c }}  {{ $jumlah[$index] ?? '0' }}x</li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                @if ($rekammedis->rencanaTreatmentRM)
+                                    <div class="mt-1">
+                                        <div class="font-semibold">Layanan Estetika</div>
+
+                                        @foreach ($rekammedis->rencanaTreatmentRM as $treatments)
+                                            @php
+                                                $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
+                                                $treatment = $decode($treatments->treatment->nama_treatment ?? null);
+                                                $jumlah = $decode($treatments->jumlah_treatment ?? null);
+                                            @endphp
+                                            <div class="mb-2">
+                                                @if(empty($treatment))
+                                                    -
+                                                @else
+                                                    <ul class="ml-4 list-disc">
+                                                        @foreach ($treatment as $index => $c)
+                                                            <li>{{ $c }}  {{ $jumlah[$index] ?? '0' }}x</li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                @if ($rekammedis->rencanaProdukRM)
+                                    <div class="mt-1">
+                                        <div class="font-semibold">Produk Estetika</div>
+
+                                        @foreach ($rekammedis->rencanaProdukRM as $produkEstetika)
+                                            @php
+                                                $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
+                                                $produkobat = $decode($produkEstetika->produk->nama_dagang ?? null);
+                                                $jumlah = $decode($produkEstetika->jumlah_produk ?? null);
+                                            @endphp
+                                            <div class="mb-2">
+                                                @if(empty($produkobat))
+                                                    -
+                                                @else
+                                                    <ul class="ml-4 list-disc">
+                                                        @foreach ($produkobat as $index => $c)
                                                             <li>{{ $c }}  {{ $jumlah[$index] ?? '0' }}x</li>
                                                         @endforeach
                                                     </ul>

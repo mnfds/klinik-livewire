@@ -574,6 +574,7 @@
                                                 @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
                                                     <option value="rencana-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
                                                     <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
+                                                    <option value="obat-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Produk Estetika</option>
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
                                                     <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
                                                 @endif
@@ -603,6 +604,14 @@
                                             <x-rekammedis.rencanabundling 
                                                 :layanandanbundling="$layanandanbundling" 
                                                 :rencanaBundling="$rencana_bundling"
+                                            />
+                                        </div>
+
+                                        <!-- PRODUK DAN OBAT ESTETIKA -->
+                                        <div x-show="selectedFormsPlan.includes('obat-estetika')" style="display: none" wire:ignore >
+                                            <x-rekammedis.obatestetika 
+                                                :layanandanbundling="$layanandanbundling"
+                                                :obatEstetika="$obat_estetika"
                                             />
                                         </div>
 
