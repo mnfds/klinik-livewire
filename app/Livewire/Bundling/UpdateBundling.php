@@ -2,22 +2,26 @@
 
 namespace App\Livewire\Bundling;
 
+use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\Pelayanan;
+use App\Models\Treatment;
+use Livewire\Attributes\On;
 use App\Models\ProdukDanObat;
 use App\Models\PelayananBundling;
 use App\Models\ProdukObatBundling;
-use Livewire\Component;
-use Livewire\Attributes\On;
+use App\Models\TreatmentBundling;
 
 class UpdateBundling extends Component
 {
     public $bundlingId;
 
     public $nama, $deskripsi, $harga, $diskon, $harga_bersih;
+    public $treatmentInputs = [];
     public $pelayananInputs = [];
     public $produkInputs = [];
 
+    public $treatmentList = [];
     public $pelayananList = [];
     public $produkObatList = [];
 
@@ -25,17 +29,19 @@ class UpdateBundling extends Component
 
     public function mount()
     {
+        $this->treatmentList = Treatment::select('id', 'nama_treatment')->orderBy('nama_treatment')->get();
         $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')->orderBy('nama_pelayanan')->get();
         $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')->orderBy('nama_dagang')->get();
+
     }
 
     #[On('editBundling')]
     public function editBundling($rowId)
     {
-        $this->reset(['pelayananInputs', 'produkInputs']); // reset agar tidak dobel
+        $this->reset(['treatmentInputs', 'pelayananInputs', 'produkInputs']); // reset agar tidak dobel
         $this->bundlingId = $rowId;
 
-        $bundling = Bundling::with(['pelayananBundlings', 'produkObatBundlings'])->findOrFail($rowId);
+        $bundling = Bundling::with(['treatmentBundlings', 'pelayananBundlings', 'produkObatBundlings'])->findOrFail($rowId);
 
         $this->nama = $bundling->nama;
         $this->deskripsi = $bundling->deskripsi;
@@ -45,6 +51,13 @@ class UpdateBundling extends Component
 
         $this->harga_show = (int) preg_replace('/\D/', '', $this->harga);
         $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
+
+        $this->treatmentInputs = $bundling->treatmentBundlings->map(function ($item) {
+            return [
+                'treatments_id' => $item->treatments_id,
+                'jumlah' => $item->jumlah ?? 1,
+            ];
+        })->toArray();
 
         $this->pelayananInputs = $bundling->pelayananBundlings->map(function ($item) {
             return [
@@ -61,6 +74,17 @@ class UpdateBundling extends Component
         })->toArray();
 
         $this->dispatch('openModalEditBundling');
+    }
+
+    public function addTreatmentRow()
+    {
+        $this->treatmentInputs[] = ['treatments_id' => null, 'jumlah' => 1];
+    }
+
+    public function removeTreatmentRow($index)
+    {
+        unset($this->treatmentInputs[$index]);
+        $this->treatmentInputs = array_values($this->treatmentInputs);
     }
 
     public function addPelayananRow()
@@ -93,6 +117,9 @@ class UpdateBundling extends Component
             'diskon' => 'required|numeric|min:0|max:100',
             'harga_bersih' => 'required|numeric|min:0',
 
+            'treatmentInputs.*.treatments_id' => 'nullable|exists:treatments,id',
+            'treatmentInputs.*.jumlah' => 'nullable|numeric|min:1',
+
             'pelayananInputs.*.pelayanan_id' => 'nullable|exists:pelayanans,id',
             'pelayananInputs.*.jumlah' => 'nullable|numeric|min:1',
 
@@ -109,8 +136,19 @@ class UpdateBundling extends Component
             'harga_bersih' => $this->harga_bersih,
         ]);
 
+        TreatmentBundling::where('bundling_id', $bundling->id)->delete();
         PelayananBundling::where('bundling_id', $bundling->id)->delete();
         ProdukObatBundling::where('bundling_id', $bundling->id)->delete();
+
+        foreach ($this->treatmentInputs as $item) {
+            if ($item['treatments_id']) {
+                TreatmentBundling::create([
+                    'bundling_id' => $bundling->id,
+                    'treatments_id' => $item['treatments_id'],
+                    'jumlah' => $item['jumlah'] ?? 1,
+                ]);
+            }
+        }
 
         foreach ($this->pelayananInputs as $item) {
             if ($item['pelayanan_id']) {

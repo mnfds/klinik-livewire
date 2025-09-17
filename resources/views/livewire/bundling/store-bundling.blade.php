@@ -43,7 +43,7 @@
 
             {{-- Pelayanan Dinamis --}}
             <div class="form-control">
-                <label class="label font-semibold">Pelayanan</label>
+                <label class="label font-semibold">Pelayanan Medis</label>
                 <div class="space-y-2">
                     @foreach ($pelayananInputs as $index => $row)
                         <div class="flex flex-col md:flex-row gap-2">
