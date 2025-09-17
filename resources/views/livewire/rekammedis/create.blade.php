@@ -73,25 +73,29 @@
                                     <div>: {{ $pasienTerdaftar->pasien->nama }}</div>
                                 </div>
                                 <div class="flex">
-                                    <div class="w-32 font-bold">No. Register</div>
-                                    <div>: {{ $pasienTerdaftar->pasien->no_register }}</div>
+                                    <div class="w-32 font-bold">No. RM / No. IHS</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->no_register }} / {{ $pasienTerdaftar->pasien->no_ihs }}</div>
                                 </div>
                             </div>
 
                             <!-- Baris 2 -->
                             <div class="grid grid-cols-2 gap-x-6">
                                 <div class="flex">
+                                    <div class="w-32 font-bold">Jenis Kelamin</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->jenis_kelamin }}</div>
+                                </div>
+                                <div class="flex">
                                     <div class="w-32 font-bold">Tanggal Lahir</div>
                                     <div>: {{ \Carbon\Carbon::parse($pasienTerdaftar->pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
                                 </div>
-                                <div class="flex">
+                                {{-- <div class="flex">
                                     <div class="w-32 font-bold">No. IHS</div>
                                     <div>: {{ $pasienTerdaftar->pasien->no_ihs }}</div>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <!-- Baris 3 -->
-                            <div class="grid grid-cols-2 gap-x-6">
+                            {{-- <div class="grid grid-cols-2 gap-x-6">
                                 <div class="flex">
                                     <div class="w-32 font-bold">Jenis Kelamin</div>
                                     <div>: {{ $pasienTerdaftar->pasien->jenis_kelamin }}</div>
@@ -100,7 +104,7 @@
                                     <div class="w-32 font-bold">NIK</div>
                                     <div>: {{ $pasienTerdaftar->pasien->nik }}</div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
                     </div>

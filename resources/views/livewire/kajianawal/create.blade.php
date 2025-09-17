@@ -137,7 +137,7 @@
                                         <div class="font-bold w-32">Poliklinik</div>
                                         <div>: {{ $pasienTerdaftar->poliklinik->nama_poli ?? '-' }}</div>
 
-                                        <div class="font-bold w-32">No. Register</div>
+                                        <div class="font-bold w-32">No. RM</div>
                                         <div>: {{ $pasienTerdaftar->pasien->no_register ?? '-' }}</div>
 
                                         <div class="font-bold w-32">No. IHS</div>
@@ -152,9 +152,9 @@
                                     <div class="grid grid-cols-2">
                                         <div class="font-bold w-32">Nama Pasien</div>
                                         <div>: {{ $pasienTerdaftar->pasien->nama ?? '-' }}</div>
-
+{{-- 
                                         <div class="font-bold w-32">NIK</div>
-                                        <div>: {{ $pasienTerdaftar->pasien->nik ?? '-' }}</div>
+                                        <div>: {{ $pasienTerdaftar->pasien->nik ?? '-' }}</div> --}}
 
                                         <div class="font-bold w-32">Tanggal Lahir</div>
                                         <div>: {{ $pasienTerdaftar->pasien->tanggal_lahir ?? '-' }}</div>

@@ -64,7 +64,7 @@
                             
                             <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
                                 <div><span class="font-medium">Nama</span> : {{ $pasien->nama }}</div>
-                                <div><span class="font-medium">No. Register</span> : {{ $pasien->no_register }}</div>
+                                <div><span class="font-medium">No. RM</span> : {{ $pasien->no_register }}</div>
                                 <div><span class="font-medium">NIK</span> : {{ $pasien->nik }}</div>
                                 <div><span class="font-medium">No. IHS</span> : {{ $pasien->no_ihs }}</div>
                                 <div><span class="font-medium">Jenis Kelamin</span> : {{ $pasien->jenis_kelamin }}</div>

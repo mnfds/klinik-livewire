@@ -53,7 +53,7 @@
                                             <p>{{ $pasien->nama }}</p>
                                         </div>
                                         <div>
-                                            <p class="font-semibold">Nomor Register:</p>
+                                            <p class="font-semibold">No. RM:</p>
                                             <p>{{ $pasien->no_register }}</p>
                                         </div>
                                         <div>

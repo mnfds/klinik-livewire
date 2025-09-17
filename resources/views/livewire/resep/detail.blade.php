@@ -56,7 +56,7 @@
                                             <div>: {{ $pasienTerdaftar->pasien->nama }}</div>
                                         </div>
                                         <div class="flex">
-                                            <div class="w-32 font-bold">No. Register</div>
+                                            <div class="w-32 font-bold">No. RM</div>
                                             <div>: {{ $pasienTerdaftar->pasien->no_register }}</div>
                                         </div>
                                     </div>

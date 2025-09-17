@@ -42,7 +42,7 @@
                         {{-- No Register --}}
                         <div class="form-control w-full">
                             <label class="label">
-                                <span class="label-text">No Register <span class="text-error">*</span></span>
+                                <span class="label-text">No RM <span class="text-error">*</span></span>
                             </label>
                             <div class="flex w-full gap-2">
                                 <input type="text" wire:model="no_register"

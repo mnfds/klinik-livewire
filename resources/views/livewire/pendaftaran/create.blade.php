@@ -125,7 +125,7 @@
 
                                 {{-- No Register --}}
                                 <div class="form-control">
-                                    <label class="label"><span class="label-text">No. Register</span></label>
+                                    <label class="label"><span class="label-text">No. RM</span></label>
                                     <p class="p-2 border rounded bg-gray-100">{{ $no_register }}</p>
                                 </div>
 

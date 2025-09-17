@@ -3,7 +3,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Input No Register dengan tombol Generate --}}
             <div class="form-control w-full">
-                <label class="label"><span class="label-text">No Register <span class="text-error">*</span></span></label>
+                <label class="label"><span class="label-text">No RM <span class="text-error">*</span></span></label>
                 <div class="flex w-full gap-2">
                     <input type="text" wire:model="no_register"
                         placeholder="Masukkan Huruf Awal dan klik Generate"
