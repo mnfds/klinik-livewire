@@ -1,5 +1,13 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
     x-data="bundlingForm()"
+        x-init="
+        $watch('bundlingItems', () => {
+            const total = calcTotal();
+            window.dispatchEvent(
+                new CustomEvent('total-bundling-updated', { detail: total })
+            );
+        })
+    "
 >
     @props([
         'rencanaBundling' => [

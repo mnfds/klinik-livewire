@@ -1,4 +1,15 @@
-<div class="pt-1 pb-12">
+<div class="pt-1 pb-12"
+    x-data="{ 
+        totalBundling: 0, 
+        totalTreatment: 0, 
+        totalProduk: 0 
+    }"
+    x-init="
+        window.addEventListener('total-bundling-updated', e => totalBundling = e.detail);
+        window.addEventListener('total-treatment-updated', e => totalTreatment = e.detail);
+        window.addEventListener('total-produk-updated', e => totalProduk = e.detail);
+    "
+>
     <div class="max-w-full mx-auto sm:px-6 lg:px-8 space-y-6">
         <!-- Breadcrumbs (hanya muncul di layar lg ke atas) -->
         <div class="hidden lg:flex justify-end px-4">
@@ -578,12 +589,14 @@
                                                     <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
                                                     <option value="obat-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Produk Estetika</option>
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
+                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Obat Non Racikan</option>
+                                                    <option value="obat-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Obat Racikan</option>
                                                     <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
                                                 @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
                                                     <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Rencana Tindakan Medis</option>
+                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Obat Non Racikan</option>
+                                                    <option value="obat-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Obat Racikan</option>
                                                 @endif
-                                                    <option value="obat-non-racikan" selected>Obat Non Racikan</option>
-                                                    <option value="obat-racikan" selected>Obat Racikan</option>
                                             </select>
                                         </div>
 
@@ -647,7 +660,7 @@
                         <!-- B: Button -->
                         <div class="bg-base-100 shadow rounded-box p-4 pb-7">
                             <h3 class="font-semibold mb-4">Aksi</h3>
-                            <button wire:click.prevent="create" class="btn btn-success w-full mb-1" wire:loading.attr="disabled">
+                            <button wire:click.prevent="create" class="btn btn-primary w-full mb-1" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
@@ -655,8 +668,17 @@
                                 class="btn btn-info mb-1 w-full" >
                                 <i class="fa-solid fa-book-medical"></i> Riwayat Rekam Medis
                             </a>
+                            @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                                <div class="btn w-full btn-success mb-1 ">
+                                    <i class="fa-solid fa-money-bill-1-wave"></i>
+                                    Grand Total: 
+                                    <span 
+                                        x-text="(totalBundling + totalTreatment + totalProduk)
+                                            .toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })">
+                                    </span>
+                                </div>
+                            @endif
                         </div>
-
                     </div>
                 </div>
                 

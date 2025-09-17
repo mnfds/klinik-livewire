@@ -1,5 +1,13 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
     x-data="treatmentForm()"
+    x-init="
+        $watch('treatmentItems', () => {
+            const total = calcTotal();
+            window.dispatchEvent(
+                new CustomEvent('total-treatment-updated', { detail: total })
+            );
+        })
+    "
 >
     @props([
         'rencanaEstetika' => [

@@ -1,5 +1,14 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
     x-data="obatEstetikaForm()"
+        x-init="
+        $watch('produkItems', () => {
+            const total = calcTotal();
+            window.dispatchEvent(
+                new CustomEvent('total-produk-updated', { detail: total })
+            );
+        })
+    "
+
 >
     @props([
         'obatEstetika' => [
