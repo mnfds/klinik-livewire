@@ -19,7 +19,7 @@ class TreatmentBundlingRM extends Model
 
     public function treatment()
     {
-        return $this->belongsTo(Treatment::class, 'treatment_id');
+        return $this->belongsTo(Treatment::class, 'treatments_id');
     }
 
     public function pasien()

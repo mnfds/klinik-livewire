@@ -137,7 +137,7 @@
                                                             <button type="button" class="btn btn-xs btn-error"
                                                                 @click="
                                                                     initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
-                                                                        idKey: 'treatment_id',
+                                                                        idKey: 'treatments_id',
                                                                         idValue: {{ $tb['treatment']['id'] }},
                                                                         perBundle: {{ $tb->jumlah ?? 0 }}
                                                                     });
@@ -154,7 +154,7 @@
                                                             <button type="button" class="btn btn-xs btn-success"
                                                                 @click="
                                                                     initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
-                                                                        idKey: 'treatment_id',
+                                                                        idKey: 'treatments_id',
                                                                         idValue: {{ $tb['treatment']['id'] }},
                                                                         perBundle: {{ $tb->jumlah ?? 0 }}
                                                                     });

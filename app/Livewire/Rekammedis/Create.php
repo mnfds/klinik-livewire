@@ -452,7 +452,7 @@ class Create extends Component
                                 TreatmentBundlingRM::create([
                                     'pasien_id'      => $pasienId,
                                     'bundling_id'    => $bundlingId,
-                                    'treatment_id'   => $t['treatment_id'],
+                                    'treatments_id'   => $t['treatments_id'],
                                     'jumlah_awal'    => $t['jumlah_awal'],
                                     'jumlah_terpakai'=> $t['jumlah_terpakai'],
                                 ]);

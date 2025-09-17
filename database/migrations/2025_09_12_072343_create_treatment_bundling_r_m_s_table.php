@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pasien_id')->constrained('pasiens')->onDelete('cascade');
             $table->foreignId('bundling_id')->constrained('bundlings')->onDelete('cascade');
-            $table->foreignId('treatment_id')->constrained('treatments')->onDelete('cascade');
+            $table->foreignId('treatments_id')->constrained('treatments')->onDelete('cascade');
             $table->integer('jumlah_awal')->default(0);
             $table->integer('jumlah_terpakai')->default(0);
             $table->timestamps();
