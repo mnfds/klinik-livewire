@@ -50,59 +50,56 @@
 
                 <!-- Kolom Kiri -->
                 <div class="lg:col-span-3 space-y-6">
+
+                    <!-- Biodata -->
                     <div class="bg-base-100 text-base-content shadow rounded-box p-6 space-y-4">
-                        <div class="tabs tabs-lift">
-                            <!-- A: Biodata Pasien -->
-                            <label class="tab gap-2 cursor-pointer">
-                                <input type="radio" name="my_tabs_3" class="hidden" checked />
-                                <i class="fa-solid fa-id-card"></i>
-                                Biodata
-                            </label>
-                            <div class="tab-content bg-base-100 border-base-300 p-6 text-base-content">
-                                <h2 class="text-lg font-semibold border-b pb-2">Biodata Pasien</h2>
-                                <div class="space-y-2 text-sm mt-2">
-
-                                    <!-- Baris 1 -->
-                                    <div class="grid grid-cols-2 gap-x-6">
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">Nama</div>
-                                            <div>: {{ $pasienTerdaftar->pasien->nama }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">No. Register</div>
-                                            <div>: {{ $pasienTerdaftar->pasien->no_register }}</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Baris 2 -->
-                                    <div class="grid grid-cols-2 gap-x-6">
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">Tanggal Lahir</div>
-                                            <div>: {{ \Carbon\Carbon::parse($pasienTerdaftar->pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">No. IHS</div>
-                                            <div>: {{ $pasienTerdaftar->pasien->no_ihs }}</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Baris 3 -->
-                                    <div class="grid grid-cols-2 gap-x-6">
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">Jenis Kelamin</div>
-                                            <div>: {{ $pasienTerdaftar->pasien->jenis_kelamin }}</div>
-                                        </div>
-                                        <div class="flex">
-                                            <div class="w-32 font-bold">NIK</div>
-                                            <div>: {{ $pasienTerdaftar->pasien->nik }}</div>
-                                        </div>
-                                    </div>
-
+                        <h2 class="text-lg font-semibold border-b pb-2">Biodata Pasien</h2>
+                        <div class="space-y-2 text-sm mt-2">
+                            <!-- Baris 1 -->
+                            <div class="grid grid-cols-2 gap-x-6">
+                                <div class="flex">
+                                    <div class="w-32 font-bold">Nama</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->nama }}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32 font-bold">No. Register</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->no_register }}</div>
                                 </div>
                             </div>
+
+                            <!-- Baris 2 -->
+                            <div class="grid grid-cols-2 gap-x-6">
+                                <div class="flex">
+                                    <div class="w-32 font-bold">Tanggal Lahir</div>
+                                    <div>: {{ \Carbon\Carbon::parse($pasienTerdaftar->pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32 font-bold">No. IHS</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->no_ihs }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Baris 3 -->
+                            <div class="grid grid-cols-2 gap-x-6">
+                                <div class="flex">
+                                    <div class="w-32 font-bold">Jenis Kelamin</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->jenis_kelamin }}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32 font-bold">NIK</div>
+                                    <div>: {{ $pasienTerdaftar->pasien->nik }}</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Informasi Kajian dll -->
+                    <div class="bg-base-100 text-base-content shadow rounded-box p-6 space-y-4">
+                        <div class="tabs tabs-lift">
                             <!-- A: Hasil Kajian Awal -->
                             <label class="tab gap-2 cursor-pointer">
-                                <input type="radio" name="my_tabs_3" class="hidden" />
+                                <input type="radio" name="my_tabs_3" class="hidden" checked />
                                 <i class="fa-solid fa-clipboard-list"></i>
                                 Hasil Kajian
                             </label>
@@ -369,7 +366,7 @@
                         </div>
                     </div>
 
-                    <!-- C: Form -->
+                    <!-- Form -->
                     <div class="bg-base-100 shadow rounded-box p-6 space-y-6">
                         <h2 class="text-lg font-semibold border-b pb-2">Form Rekam Medis</h2>
                         <form wire:submit.prevent="create" class="space-y-6">
