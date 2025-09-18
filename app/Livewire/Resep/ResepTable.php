@@ -42,7 +42,11 @@ final class ResepTable extends PowerGridComponent
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'pasien' => ['nama', 'no_register'],
+            'poliklinik' => ['nama_poli'],
+            'dokter' => ['nama_dokter'],
+        ];
     }
 
     public function fields(): PowerGridFields

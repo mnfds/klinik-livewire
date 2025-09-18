@@ -58,7 +58,7 @@ final class MutasiTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Tipe', 'tipe')->sortable()->searchable(),
+            Column::make('Tipe', 'tipe')->searchable(),
             
             Column::make('Nama', 'barang.nama')->searchable(),
 
@@ -68,7 +68,7 @@ final class MutasiTable extends PowerGridComponent
 
             Column::make('Orang Terkait', 'diajukan_oleh')->searchable(),
             
-            Column::make('Keterangan', 'catatan')->searchable(),
+            Column::make('Keterangan', 'catatan'),
 
             Column::action('Action')
         ];

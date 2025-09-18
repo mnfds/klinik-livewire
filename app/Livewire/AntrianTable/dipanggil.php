@@ -46,6 +46,8 @@ final class Dipanggil extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
+            ->add('kode', fn ($row) => $row->kode ?? '-')
+            ->add('nomor_antrian', fn ($row) => $row->nomor_antrian ?? '-')
             ->add('kode_nomor', function ($row) {
                 return $row->kode . '-' . $row->nomor_antrian;
             })
@@ -59,7 +61,9 @@ final class Dipanggil extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Nomor Antrian', 'kode_nomor')->searchable()->sortable(),
+            Column::make('Nomor Antrian', 'kode_nomor'),
+            Column::make('kode', 'kode')->hidden()->searchable(),
+            Column::make('nomor', 'nomor_antrian')->hidden()->searchable(),
             Column::make('Tanggal', 'created_at_formatted')->sortable(),
             Column::action('Action'),
         ];

@@ -70,7 +70,7 @@ final class UsersTable extends PowerGridComponent
 
             Column::make('Username', 'name')->sortable()->searchable(),
 
-            Column::make('Alamat Email', 'email'),
+            Column::make('Alamat Email', 'email')->searchable(),
 
             Column::make('Telepon', 'biodata.telepon'),
             Column::make('Role', 'role.nama_role', 'role_id'),

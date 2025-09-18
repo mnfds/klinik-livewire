@@ -55,13 +55,13 @@ final class JamKerjaTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Kode Shift', 'nama_shift')->sortable(),
+            Column::make('Kode Shift', 'nama_shift')->searchable(),
 
             Column::make('Tipe Shift', 'tipe_shift')->searchable(),
 
-            Column::make('Jam Mulai', 'jam_mulai'),
+            Column::make('Jam Mulai', 'jam_mulai')->searchable()->sortable(),
 
-            Column::make('Jam Selesai', 'jam_selesai'),
+            Column::make('Jam Selesai', 'jam_selesai')->searchable()->sortable(),
 
             Column::make('Lintas Hari', 'lewat_hari')->toggleable(),
 

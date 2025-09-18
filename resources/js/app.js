@@ -4,6 +4,8 @@ import './bootstrap';
 
 // resources/js/app.js
 import './../../vendor/power-components/livewire-powergrid/dist/powergrid'
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 function initThemeToggle() {
     const savedTheme = localStorage.getItem('theme') || 'emerald';

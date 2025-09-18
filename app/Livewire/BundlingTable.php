@@ -31,12 +31,20 @@ final class BundlingTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Bundling::query();
+        return Bundling::query()->with([
+            'treatmentBundlings.treatment',
+            'pelayananBundlings.pelayanan',
+            'produkObatBundlings.produk'
+        ]);
     }
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'treatmentBundlings.treatment' => ['nama_treatment'],
+            'pelayananBundlings.pelayanan' => ['nama_pelayanan'],
+            'produkObatBundlings.produk' => ['nama_dagang'],
+        ];
     }
 
     public function fields(): PowerGridFields
@@ -90,7 +98,6 @@ final class BundlingTable extends PowerGridComponent
             Column::make('#', '')->index(),
 
             Column::make('Nama', 'nama')
-                ->sortable()
                 ->searchable(),
 
             Column::make('Harga', 'harga_formatted', 'harga')
@@ -106,6 +113,20 @@ final class BundlingTable extends PowerGridComponent
                 ->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Aktif', 'aktif')->toggleable(),
+
+            Column::make('nama', 'nama')->hidden()->searchable(),
+
+            Column::make('Treatment', 'treatmentBundlings.treatment.nama_treatment')
+                ->hidden()
+                ->searchable(),
+
+            Column::make('Pelayanan', 'pelayananBundlings.pelayanan.nama_pelayanan')
+                ->hidden()
+                ->searchable(),
+
+            Column::make('Produk', 'produkObatBundlings.produk.nama_dagang')
+                ->hidden()
+                ->searchable(),
 
             Column::action('Aksi')
         ];

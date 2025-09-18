@@ -59,12 +59,13 @@ final class PelayananTable extends PowerGridComponent
                 ->searchable(),
 
             Column::make('Harga Dasar', 'harga_pelayanan')
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
 
-            Column::make('Diskon', 'diskon'),
+            Column::make('Diskon', 'diskon')
+                ->sortable(),
 
-            Column::make('Harga Bersih', 'harga_bersih'),
+            Column::make('Harga Bersih', 'harga_bersih')
+                ->sortable(),
 
             Column::make('Deskripsi', 'deskripsi'),
 

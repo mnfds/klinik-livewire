@@ -36,7 +36,7 @@ final class TreatmentTable extends PowerGridComponent
 
     public function relationSearch(): array
     {
-        return [];
+        return ['treatmentbahan.bahanbaku' => ['nama'],];
     }
 
     public function fields(): PowerGridFields
@@ -48,6 +48,13 @@ final class TreatmentTable extends PowerGridComponent
             ->add('harga_bersih', fn ($treatment) => number_format($treatment->harga_bersih, 0, ',', '.'))
             ->add('deskripsi')
             ->add('nama_bahan', function ($row) {
+                return $row->treatmentbahan
+                    ->map(fn($item) => $item->bahanbaku->nama ?? '-')
+                    ->implode(', ');
+            })
+            ->add('harga', fn($row) => $row->harga_treatment) // kolom asli harga untuk sortable
+            ->add('diskon_asli', fn($row) => $row->diskon)   // kolom asli diskon untuk sortable
+            ->add('bahan', function ($row) {
                 return $row->treatmentbahan
                     ->map(fn($item) => $item->bahanbaku->nama ?? '-')
                     ->implode(', ');
@@ -63,19 +70,27 @@ final class TreatmentTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Harga Dasar', 'harga_treatment')
+            Column::make('Harga Dasar', 'harga')
                 ->sortable()
-                ->searchable(),
+                ->hidden(),
 
-            Column::make('Diskon', 'diskon'),
+            Column::make('Diskon', 'diskon_asli')
+                ->sortable()
+                ->hidden(),
 
-            Column::make('Harga Bersih', 'harga_bersih'),
+            Column::make('Harga Dasar', 'harga_treatment')
+                ->sortable(),
+
+            Column::make('Diskon', 'diskon')
+            ->sortable(),
+
+            Column::make('Harga Bersih', 'harga_bersih')
+                ->sortable(),
 
             Column::make('Deskripsi', 'deskripsi'),
 
             Column::make('Bahan Baku Terkait', 'nama_bahan')
-                            ->sortable()
-                            ->searchable(),
+                ->searchable(),
 
             Column::action('Action')
         ];

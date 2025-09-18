@@ -36,13 +36,16 @@ final class RoleTable extends PowerGridComponent
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'aksesrole.akses' => ['nama_akses'],
+        ];
     }
 
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            ->add('nama_role')
+            ->add('nama_role', fn($row) => $row->nama_role ?? '-')
+            ->add('akses', fn($row) => $row->nomor_antrian ?? '-') 
             ->add('nama_akses', function ($data) {
                 return $data->aksesrole
                     ->map(fn($item) => $item->akses->nama_akses ?? '-')
@@ -56,13 +59,13 @@ final class RoleTable extends PowerGridComponent
             Column::make('#', '')->index(),
 
             Column::make('Nama Role', 'nama_role')
-                ->editOnClick(hasPermission: true)
-                ->sortable()
-                ->searchable(),
+                ->editOnClick(hasPermission: true),
 
-            Column::make('Nama Akses', 'nama_akses')
-                ->sortable()
-                ->searchable(),
+            Column::make('Nama Akses', 'nama_akses'),
+
+            Column::make('nama_role', 'nama_role')->hidden()->searchable(),
+            
+            Column::make('akses', 'akses')->hidden()->searchable(),
 
             Column::action('Action'),
         ];

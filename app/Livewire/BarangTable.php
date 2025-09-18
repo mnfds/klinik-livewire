@@ -31,7 +31,28 @@ final class BarangTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Barang::query();
+        return Barang::query()
+            ->select('barangs.*')
+            ->selectSub(function ($query) {
+                $query->from('mutasi_barangs')
+                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
+                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id')
+                    ->where('tipe', 'masuk');
+            }, 'stok_masuk')
+            ->selectSub(function ($query) {
+                $query->from('mutasi_barangs')
+                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
+                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id')
+                    ->where('tipe', 'keluar');
+            }, 'stok_keluar')
+            ->selectSub(function ($query) {
+                $query->from('mutasi_barangs')
+                    ->selectRaw(
+                        '(COALESCE(SUM(CASE WHEN tipe = "masuk" THEN jumlah END), 0) 
+                        - COALESCE(SUM(CASE WHEN tipe = "keluar" THEN jumlah END), 0))'
+                    )
+                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id');
+            }, 'sisa_stok');
     }
 
     public function relationSearch(): array
@@ -46,24 +67,9 @@ final class BarangTable extends PowerGridComponent
             ->add('nama')
             ->add('kode')
             ->add('satuan')
-            ->add('stok_masuk', function (Barang $barang) {
-                $stok_masuk = $barang->mutasi()
-                    ->where('tipe', 'masuk')
-                    ->sum('jumlah');
-
-                return $stok_masuk;
-            })
-            ->add('stok_keluar', function (Barang $barang) {
-                return $barang->mutasi()
-                    ->where('tipe', 'keluar')
-                    ->sum('jumlah');
-
-            })
-            ->add('sisa_stok', function (Barang $barang) {
-                $masuk = $barang->mutasi()->where('tipe', 'masuk')->sum('jumlah');
-                $keluar = $barang->mutasi()->where('tipe', 'keluar')->sum('jumlah');
-                return $masuk - $keluar;
-            })
+            ->add('stok_masuk')
+            ->add('stok_keluar')
+            ->add('sisa_stok')
             ->add('lokasi')
             ->add('keterangan');
     }
