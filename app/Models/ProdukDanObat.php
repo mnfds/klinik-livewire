@@ -21,4 +21,9 @@ class ProdukDanObat extends Model
     {
         return $this->hasMany(ProdukObatBundling::class, 'produk_id');
     }
+    
+    public function riwayatTransaksi()
+    {
+        return $this->hasMany(RiwayatTransaksiApotik::class, 'produk_id');
+    }
 }

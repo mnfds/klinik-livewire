@@ -220,6 +220,12 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== RESEP OBAT ====== //
 
+
+    // ====== KASIR APOTIK ====== //
+
+    Route::view('/apotik', 'apotik.kasir')->name('apotik.kasir');
+
+    // ====== KASIR APOTIK ====== //
 });
 
 

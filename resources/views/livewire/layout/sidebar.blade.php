@@ -214,8 +214,12 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="#" wire:navigate>Klinik</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Apotik</x-side-link></li>
+                        <li>
+                            <x-side-link href="#" wire:navigate>Klinik</x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="{{ route('apotik.kasir') }}" :active="request()->routeIs('apotik.*')" wire:navigate>Apotik</x-side-link>
+                        </li>
                     </ul>
                 </li>
                 <li>
