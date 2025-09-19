@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Apotik;
 
-use App\Models\TransaksiApotik;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Number;
+use App\Models\TransaksiApotik;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class TransaksiTable extends PowerGridComponent
@@ -46,10 +47,11 @@ final class TransaksiTable extends PowerGridComponent
         return PowerGrid::fields()
         ->add('no_transaksi')
         ->add('kasir_nama')
-        ->add('total_potongan', fn ($row) => $row->riwayat->sum('potongan'))
-        ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon'))
+        ->add('total_potongan', fn ($row) => number_format($row->riwayat->sum('potongan'), 0, ',', '.'))
+        ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon') ? $row->riwayat->sum('diskon') . '%' : '0%')
         ->add('total_harga')
-        ->add('tanggal');
+        ->add('total_harga_format', fn ($row) => Number::currency($row->total_harga, in: 'IDR', locale: 'id_ID', precision: 0))
+        ->add('tanggal', fn ($row) => \Carbon\Carbon::parse($row->tanggal)->format('d M Y H:i'));
     }
 
     public function columns(): array
@@ -70,7 +72,8 @@ final class TransaksiTable extends PowerGridComponent
             Column::make('Diskon', 'total_diskon')
                 ->sortable(),
 
-            Column::make('Total', 'total_harga')
+            Column::make('Bayar', 'total_harga_format', 'total_harga')
+                ->withSum('Total', header: false, footer: true)
                 ->sortable(),
 
             Column::make('Tanggal', 'tanggal')
@@ -78,6 +81,13 @@ final class TransaksiTable extends PowerGridComponent
                 ->searchable(),
 
             Column::action('Action')
+        ];
+    }
+
+    public function summarizeFormat(): array
+    {
+        return [
+            'total_harga.{sum}' => fn ($value) => Number::currency($value, in: 'IDR', locale: 'id_ID', precision : 0),
         ];
     }
 
@@ -97,6 +107,15 @@ final class TransaksiTable extends PowerGridComponent
                     'title' => 'Lihat detail',
                     'onclick' => "Livewire.navigate('".route('users.edit', $row->id)."')",
                     'class' => 'btn btn-primary'
+                ]),
+
+            Button::add('update')
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+                ->tag('button') // supaya tidak jadi <a>
+                ->attributes([
+                    'title' => 'Udit Data',
+                    'onclick' => "Livewire.navigate('".route('users.edit', $row->id)."')",
+                    'class' => 'btn btn-secondary'
                 ]),
 
             Button::add('delete')
