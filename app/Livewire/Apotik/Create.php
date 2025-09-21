@@ -15,37 +15,44 @@ class Create extends Component
     {
         $this->produk = ProdukDanObat::all();
 
-        $this->obat_estetika[] = [
+        $this->obat_estetika[] = $this->emptyRow();
+    }
+
+    private function emptyRow()
+    {
+        return [
             'produk_id' => null,
             'jumlah_produk' => 1,
             'potongan' => 0,
             'diskon' => 0,
             'harga_asli' => 0,
             'subtotal' => 0,
+            'uuid' => (string) \Illuminate\Support\Str::uuid(), // unik untuk wire:key
         ];
     }
 
     public function addRow()
     {
-        $this->obat_estetika[] = [
-            'produk_id' => null,
-            'jumlah_produk' => 1,
-            'potongan' => 0,
-            'diskon' => 0,
-            'harga_asli' => 0,
-            'subtotal' => 0,
-        ];
+        $this->obat_estetika[] = $this->emptyRow();
     }
 
-    public function removeRow($index)
+    public function removeRow($uuid)
     {
-        unset($this->obat_estetika[$index]);
-        $this->obat_estetika = array_values($this->obat_estetika); // reindex array
+        $this->obat_estetika = array_values(array_filter(
+            $this->obat_estetika,
+            fn($row) => $row['uuid'] !== $uuid
+        ));
     }
 
     public function updatedObatEstetika($value, $key)
     {
-        [$index, $field] = explode('.', $key);
+        $parts = explode('.', $key, 2);
+
+        if (count($parts) !== 2) {
+            return;
+        }
+
+        [$index, $field] = $parts;
 
         if (in_array($field, ['produk_id', 'jumlah_produk', 'potongan', 'diskon'])) {
             $row = $this->obat_estetika[$index];
@@ -73,5 +80,4 @@ class Create extends Component
     {
         return view('livewire.apotik.create');
     }
-
 }
