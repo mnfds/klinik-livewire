@@ -32,7 +32,7 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
-                        <a href="{{ route('users.create') }}" class="btn btn-success">
+                        <a href="{{ route('apotik.create') }}" class="btn btn-success">
                             <i class="fa-solid fa-plus"></i> Transaksi
                         </a>
                     </div>

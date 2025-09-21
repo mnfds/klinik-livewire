@@ -105,7 +105,7 @@ final class TransaksiTable extends PowerGridComponent
                 ->tag('button') // supaya tidak jadi <a>
                 ->attributes([
                     'title' => 'Lihat detail',
-                    'onclick' => "Livewire.navigate('".route('users.edit', $row->id)."')",
+                    'onclick' => "Livewire.navigate('".route('apotik.detail', $row->id)."')",
                     'class' => 'btn btn-primary'
                 ]),
 
@@ -114,7 +114,7 @@ final class TransaksiTable extends PowerGridComponent
                 ->tag('button') // supaya tidak jadi <a>
                 ->attributes([
                     'title' => 'Udit Data',
-                    'onclick' => "Livewire.navigate('".route('users.edit', $row->id)."')",
+                    'onclick' => "Livewire.navigate('".route('apotik.update', $row->id)."')",
                     'class' => 'btn btn-secondary'
                 ]),
 

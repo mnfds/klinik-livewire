@@ -224,7 +224,15 @@ Route::middleware(['auth'])->group(function () {
     // ====== KASIR APOTIK ====== //
 
     Route::view('/apotik', 'apotik.kasir')->name('apotik.kasir');
+    Route::view('/apotik/create', 'apotik.create')->name('apotik.create');
 
+    Route::get('/apotik/{id}/update', function ($id) { 
+        return view('apotik.update', ['id' => $id]);
+    })->name('apotik.update');
+
+    Route::get('/apotik/{id}/detail', function ($id) {
+        return view('apotik.detail', ['id' => $id]);
+    })->name('apotik.detail');
     // ====== KASIR APOTIK ====== //
 });
 
