@@ -41,17 +41,15 @@
 
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <div class="divider">Pembelian</div>
-                                @foreach($obat_estetika as $index => $item)
-                                    <div 
-                                        class="p-4 border rounded-lg bg-base-100 space-y-3"
-                                        wire:key="row-{{ $item['uuid'] }}" 
+                                @foreach($obat_estetika as $uuid => $item)
+                                    <div wire:key="row-{{ $uuid }}"
                                         x-data="{
-                                            produk_id: @entangle('obat_estetika.' . $index . '.produk_id').defer,
-                                            jumlah_produk: @entangle('obat_estetika.' . $index . '.jumlah_produk').defer,
-                                            potongan: @entangle('obat_estetika.' . $index . '.potongan').defer,
-                                            diskon: @entangle('obat_estetika.' . $index . '.diskon').defer,
-                                            harga_asli: @entangle('obat_estetika.' . $index . '.harga_asli').defer,
-                                            subtotal: @entangle('obat_estetika.' . $index . '.subtotal').defer,
+                                            produk_id: @entangle('obat_estetika.' . $uuid . '.produk_id').defer,
+                                            jumlah_produk: @entangle('obat_estetika.' . $uuid . '.jumlah_produk').defer,
+                                            potongan: @entangle('obat_estetika.' . $uuid . '.potongan').defer,
+                                            diskon: @entangle('obat_estetika.' . $uuid . '.diskon').defer,
+                                            harga_asli: @entangle('obat_estetika.' . $uuid . '.harga_asli').defer,
+                                            subtotal: @entangle('obat_estetika.' . $uuid . '.subtotal').defer,
                                             get hargaProduk() {
                                                 let produk = {{ Js::from($produk) }}.find(p => p.id == this.produk_id);
                                                 return produk ? produk.harga_dasar : 0;
@@ -61,8 +59,8 @@
                                                 this.harga_asli = base;
                                                 let afterPotongan = base - (this.potongan || 0);
                                                 this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0) / 100);
-                                                @this.set('obat_estetika.{{ $index }}.harga_asli', this.harga_asli);
-                                                @this.set('obat_estetika.{{ $index }}.subtotal', this.subtotal);
+                                                @this.set('obat_estetika.{{ $uuid }}.harga_asli', this.harga_asli);
+                                                @this.set('obat_estetika.{{ $uuid }}.subtotal', this.subtotal);
                                             },
                                             formatRupiah(val) {
                                                 return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
@@ -123,7 +121,7 @@
                                         <!-- Tombol Hapus -->
                                         <div class="flex justify-end">
                                             <button type="button" class="btn btn-error btn-sm"
-                                                    wire:click="removeRow('{{ $item['uuid'] }}')"
+                                                    wire:click="removeRow('{{ $uuid }}')"
                                                     @if(count($obat_estetika) === 1) disabled @endif>
                                                 Hapus
                                             </button>

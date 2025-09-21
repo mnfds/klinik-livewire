@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Apotik;
 
-use App\Models\ProdukDanObat;
 use Livewire\Component;
+use Illuminate\Support\Str;
+use App\Models\ProdukDanObat;
 use Livewire\Volt\Compilers\Mount;
 
 class Create extends Component
@@ -31,17 +32,33 @@ class Create extends Component
         ];
     }
 
+    private function findIndexByUuid($uuid)
+    {
+        foreach ($this->obat_estetika as $i => $row) {
+            if ($row['uuid'] === $uuid) {
+                return $i;
+            }
+        }
+        return null;
+    }
+
     public function addRow()
     {
-        $this->obat_estetika[] = $this->emptyRow();
+        $uuid = (string) Str::uuid();
+        $this->obat_estetika[$uuid] = [
+            'produk_id' => null,
+            'jumlah_produk' => 1,
+            'potongan' => 0,
+            'diskon' => 0,
+            'harga_asli' => 0,
+            'subtotal' => 0,
+            'uuid' => $uuid,
+        ];
     }
 
     public function removeRow($uuid)
     {
-        $this->obat_estetika = array_values(array_filter(
-            $this->obat_estetika,
-            fn($row) => $row['uuid'] !== $uuid
-        ));
+        unset($this->obat_estetika[$uuid]);
     }
 
     public function updatedObatEstetika($value, $key)
