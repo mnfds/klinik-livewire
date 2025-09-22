@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\ProdukDanObat;
 use App\Models\TransaksiApotik;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class Create extends Component
 {
@@ -73,8 +74,40 @@ class Create extends Component
 
     public function create()
     {
-        dd($this->obat_estetika);
-        // nanti disini bisa disimpan ke DB
+        // Hitung total harga
+        $total = collect($this->obat_estetika)
+            ->sum(fn($item) => (int) $item['subtotal']);
+
+        // Generate no_transaksi unik
+        $noTransaksi = 'TRX-' . now()->format('YmdHis');
+
+        // Simpan transaksi utama
+        $transaksi = TransaksiApotik::create([
+            'no_transaksi' => $noTransaksi,
+            'kasir_nama'   => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name ?? 'Kasir',
+            'tanggal'      => now(),
+            'total_harga'  => $total,
+        ]);
+
+        // Simpan riwayat detail
+        foreach ($this->obat_estetika as $row) {
+            $transaksi->riwayat()->create([
+                'produk_id'     => $row['produk_id'],
+                'jumlah_produk' => $row['jumlah_produk'] ?? 0,
+                'potongan'      => $row['potongan'] ?: 0,
+                'diskon'        => $row['diskon'] ?: 0,
+                'subtotal'      => $row['subtotal'] ?? 0,
+            ]);
+        }
+
+        // Reset form setelah simpan
+        $this->reset('obat_estetika');
+
+        // Optional: tampilkan notifikasi
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Transaksi berhasil disimpan!',
+        ]);
     }
 
     public function render()
