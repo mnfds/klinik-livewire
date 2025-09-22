@@ -132,13 +132,44 @@
 
                             <div class="space-y-2" x-data="{ items: @entangle('obat_estetika') }">
                                 <template x-for="row in Object.values(items)" :key="row.uuid">
-                                    <div class="flex justify-between">
-                                        <span x-text="(row.produk_id ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang) : '-')"></span>
-                                        <span x-text="(row.subtotal || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
+                                    <div class="border-b pb-2 mb-2">
+                                        <div class="flex justify-between">
+                                            <span>
+                                                <span x-text="(row.produk_id ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang) : '-')"></span>
+                                                (<span x-text="row.jumlah_produk"></span>x)
+                                            </span>
+
+                                            <!-- Harga asli (coret kalau ada potongan/diskon) -->
+                                            <span :class="(row.potongan > 0 || row.diskon > 0) ? 'line-through text-gray-500' : ''"
+                                                x-text="(row.harga_asli || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })">
+                                            </span>
+                                        </div>
+
+                                        <!-- tampilkan potongan jika ada -->
+                                        <template x-if="row.potongan && row.potongan > 0">
+                                            <div class="flex justify-between text-sm text-red-600">
+                                                <span>Potongan:</span>
+                                                <span x-text="Number(row.potongan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
+                                            </div>
+                                        </template>
+
+                                        <!-- tampilkan diskon jika ada -->
+                                        <template x-if="row.diskon && row.diskon > 0">
+                                            <div class="flex justify-between text-sm text-blue-600">
+                                                <span>Diskon:</span>
+                                                <span x-text="row.diskon + '%'"></span>
+                                            </div>
+                                        </template>
+
+                                        <!-- subtotal final -->
+                                        <div class="flex justify-between font-semibold text-green-600">
+                                            <span>Subtotal:</span>
+                                            <span x-text="(row.subtotal || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
+                                        </div>
                                     </div>
                                 </template>
 
-                                <div class="flex justify-between font-bold my-4">
+                                <div class="flex justify-between font-bold my-4 border-t pt-2">
                                     <span>Total:</span>
                                     <span x-text="Object.values(items).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
                                 </div>

@@ -108,6 +108,8 @@ class Create extends Component
             'type' => 'success',
             'message' => 'Transaksi berhasil disimpan!',
         ]);
+
+        return redirect()->route('apotik.kasir');
     }
 
     public function render()
