@@ -38,102 +38,88 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
-
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <div class="divider">Pembelian</div>
-                                @foreach($obat_estetika as $uuid => $item)
-                                    <div wire:key="row-{{ $uuid }}"
-                                        x-data="{
-                                            produk_id: @entangle('obat_estetika.' . $uuid . '.produk_id').defer,
-                                            jumlah_produk: @entangle('obat_estetika.' . $uuid . '.jumlah_produk').defer,
-                                            potongan: @entangle('obat_estetika.' . $uuid . '.potongan').defer,
-                                            diskon: @entangle('obat_estetika.' . $uuid . '.diskon').defer,
-                                            harga_asli: @entangle('obat_estetika.' . $uuid . '.harga_asli').defer,
-                                            subtotal: @entangle('obat_estetika.' . $uuid . '.subtotal').defer,
-                                            get hargaProduk() {
-                                                let produk = {{ Js::from($produk) }}.find(p => p.id == this.produk_id);
-                                                return produk ? produk.harga_dasar : 0;
-                                            },
-                                            hitung() {
-                                                let base = this.hargaProduk * (this.jumlah_produk || 1);
-                                                this.harga_asli = base;
-                                                let afterPotongan = base - (this.potongan || 0);
-                                                this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0) / 100);
-                                                @this.set('obat_estetika.{{ $uuid }}.harga_asli', this.harga_asli);
-                                                @this.set('obat_estetika.{{ $uuid }}.subtotal', this.subtotal);
-                                            },
-                                            formatRupiah(val) {
-                                                return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-                                            }
-                                        }"
-                                        x-init="hitung()"
-                                        @input="hitung()"
-                                    >
-                                        <!-- Baris 1: Produk + Jumlah -->
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Produk</label>
-                                                <select class="select select-bordered w-full" x-model="produk_id" @change="hitung()">
-                                                    <option value="">-- Pilih Produk --</option>
-                                                    @foreach($produk as $p)
-                                                        <option value="{{ $p->id }}">{{ $p->nama_dagang }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                                                <input type="number" min="1" class="input input-bordered w-full"
-                                                    x-model="jumlah_produk" @input="hitung()">
-                                            </div>
+
+                            @foreach($obat_estetika as $uuid => $item)
+                                <div wire:key="row-{{ $uuid }}"
+                                    x-data="{
+                                        produk_id: @entangle("obat_estetika.$uuid.produk_id"),
+                                        jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk"),
+                                        potongan: @entangle("obat_estetika.$uuid.potongan"),
+                                        diskon: @entangle("obat_estetika.$uuid.diskon"),
+                                        harga_asli: @entangle("obat_estetika.$uuid.harga_asli"),
+                                        subtotal: @entangle("obat_estetika.$uuid.subtotal"),
+                                        get hargaProduk() {
+                                            let produk = {{ Js::from($produk) }}.find(p => p.id == this.produk_id);
+                                            return produk ? produk.harga_dasar : 0;
+                                        },
+                                        hitung() {
+                                            let base = this.hargaProduk * (this.jumlah_produk || 1);
+                                            this.harga_asli = base;
+                                            let afterPotongan = base - (this.potongan || 0);
+                                            this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0)/100);
+                                        },
+                                        formatRupiah(val) {
+                                            return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
+                                        }
+                                    }"
+                                    x-init="hitung()"
+                                    @input="hitung()"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Produk</label>
+                                            <select class="select select-bordered w-full" x-model="produk_id" @change="hitung()">
+                                                <option value="">-- Pilih Produk --</option>
+                                                @foreach($produk as $p)
+                                                    <option value="{{ $p->id }}">{{ $p->nama_dagang }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-
-                                        <!-- Baris 2: Harga Asli + Potongan + Diskon + Subtotal -->
-                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                                <input type="text" class="input input-bordered w-full bg-base-200"
-                                                    :value="formatRupiah(harga_asli)" readonly>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-                                                <input type="number" class="input input-bordered w-full"
-                                                    x-model="potongan" @input="hitung()">
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Diskon</label>
-                                                <div class="flex items-center">
-                                                    <input type="number" min="0" max="100" class="input input-bordered w-full"
-                                                        x-model="diskon" @input="hitung()">
-                                                    <span class="ml-2">%</span>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-sm font-semibold mb-1">Subtotal</label>
-                                                <input type="text" class="input input-bordered w-full bg-base-200"
-                                                    :value="formatRupiah(subtotal)" readonly>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tombol Hapus -->
-                                        <div class="flex justify-end">
-                                            <button type="button" class="btn btn-error btn-sm"
-                                                    wire:click="removeRow('{{ $uuid }}')"
-                                                    @if(count($obat_estetika) === 1) disabled @endif>
-                                                Hapus
-                                            </button>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Jumlah</label>
+                                            <input type="number" min="1" class="input input-bordered w-full"
+                                                x-model="jumlah_produk" @input="hitung()">
                                         </div>
                                     </div>
-                                @endforeach
-                            <!-- Tombol Tambah Row -->
-                            <div class="mt-4">
-                                <button type="button" class="btn btn-primary btn-sm" wire:click="addRow">
-                                    Tambah Produk
-                                </button>
-                            </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                                            <input type="text" class="input input-bordered w-full bg-base-200"
+                                                :value="formatRupiah(harga_asli)" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                                            <input type="text" class="input input-bordered w-full input-rupiah-transaksi" placeholder="Rp 0">
+                                            <input type="hidden" class="input-rupiah-hidden-transaksi" wire:model.defer="obat_estetika.{{ $uuid }}.potongan">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(subtotal)" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end mt-2">
+                                        <button type="button" class="btn btn-error btn-sm"
+                                                wire:click="removeRow('{{ $uuid }}')"
+                                                @if(count($obat_estetika) === 1) disabled @endif>
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                    <hr class="my-2">
+                                </div>
+                            @endforeach
+
+                            <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
+                                Tambah Produk
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -144,22 +130,18 @@
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
 
-                            <div class="space-y-2">
-                                @foreach($obat_estetika as $item)
+                            <div class="space-y-2" x-data="{ items: @entangle('obat_estetika') }">
+                                <template x-for="row in Object.values(items)" :key="row.uuid">
                                     <div class="flex justify-between">
-                                        <span>{{ $item['produk_id'] ? $produk->find($item['produk_id'])->nama_dagang : '-' }}</span>
-                                        <span>
-                                            Rp {{ number_format($item['subtotal'] ?? 0, 0, ',', '.') }}
-                                        </span>
+                                        <span x-text="(row.produk_id ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang) : '-')"></span>
+                                        <span x-text="(row.subtotal || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
                                     </div>
-                                @endforeach
-                            </div>
+                                </template>
 
-                            <div class="flex justify-between font-bold my-4">
-                                <span>Total:</span>
-                                <span>
-                                    Rp {{ number_format(collect($obat_estetika)->sum('subtotal'), 0, ',', '.') }}
-                                </span>
+                                <div class="flex justify-between font-bold my-4">
+                                    <span>Total:</span>
+                                    <span x-text="Object.values(items).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
+                                </div>
                             </div>
 
                             <button wire:click.prevent="create"
@@ -177,3 +159,36 @@
 
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener("livewire:navigated", initTransaksiRupiah);
+    document.addEventListener("livewire:initialized", () => {
+        Livewire.hook('morph.updated', () => {
+            initTransaksiRupiah();
+        });
+    });
+
+    function initTransaksiRupiah() {
+        document.querySelectorAll('.input-rupiah-transaksi').forEach(function(input) {
+            if (!input.cleave) { // biar tidak double init
+                input.cleave = new Cleave(input, {
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand',
+                    numeralDecimalMark: ',',
+                    delimiter: '.',
+                });
+
+                // sinkron ke hidden input wire:model
+                input.addEventListener('input', function() {
+                    let rawValue = input.cleave.getRawValue();
+                    let hidden = input.closest('div').querySelector('.input-rupiah-hidden-transaksi');
+                    if (hidden) hidden.value = rawValue;
+                    hidden.dispatchEvent(new Event('input'));
+                });
+            }
+        });
+    }
+</script>
+@endpush
+
