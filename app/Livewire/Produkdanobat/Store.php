@@ -7,7 +7,7 @@ use App\Models\ProdukDanObat;
 
 class Store extends Component
 {
-    public $nama_dagang, $kode, $sediaan, $harga_dasar, $stok;
+    public $nama_dagang, $golongan, $kode, $sediaan, $harga_dasar, $stok;
     public $expired_at, $batch, $lokasi, $supplier, $harga_bersih;
     public $diskon = 0;
 
@@ -20,6 +20,7 @@ class Store extends Component
     {
         $this->validate([
             'nama_dagang' => 'required|string',
+            'golongan' => 'required|string',
             'kode' => 'required|string|unique:produk_dan_obats,kode',
             'sediaan' => 'required|string',
             'harga_dasar' => 'required|integer|min:0',
@@ -41,6 +42,7 @@ class Store extends Component
 
         ProdukDanObat::create([
             'nama_dagang' => $this->nama_dagang,
+            'golongan' => $this->golongan,
             'kode' => $this->kode,
             'sediaan' => $this->sediaan,
             'harga_dasar' => $this->harga_dasar,

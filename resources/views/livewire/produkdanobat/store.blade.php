@@ -41,6 +41,23 @@
                 </select>
             </div>
 
+            {{-- Golongan --}}
+            <div>
+                <label class="label font-semibold">Golongan Produk/Obat</label>
+                <select class="select select-bordered w-full" wire:model.lazy="golongan" required>
+                    <option>Pilih Golongan</option>
+                    <option value="Skincare">Skincare</option>
+                    <option value="Obat Bebas">Obat Bebas</option>
+                    <option value="Obat Bebas Terbatas">Obat Bebas Terbatas</option>
+                    <option value="Obat Keras">Obat Keras</option>
+                    <option value="Obat Narkotika">Obat Narkotika</option>
+                    <option value="Obat Psikotropika"> Obat Psikotropika</option>
+                    <option value="Obat fitofarmaka">Obat fitofarmaka</option>
+                    <option value="OHT (Obat Herbal Terstandar)">OHT (Obat Herbal Terstandar)</option>
+                    <option value="Jamu">Jamu</option>
+                </select>
+            </div>
+
             {{-- Harga Jual --}}
             <div>
                 <label class="label font-semibold">Harga Jual</label>

@@ -8,7 +8,7 @@ use App\Models\ProdukDanObat;
 class Update extends Component
 {
     public $produkDanObatId;
-    public $nama_dagang,$kode,$sediaan,$harga_dasar, $harga_bersih;
+    public $nama_dagang,$golongan,$kode,$sediaan,$harga_dasar, $harga_bersih;
     public $stok,$expired_at,$batch,$lokasi,$supplier;
     public $diskon = 0;
 
@@ -23,6 +23,7 @@ class Update extends Component
         $produkObat = ProdukDanObat::findOrFail($rowId);
 
         $this->nama_dagang   =   $produkObat->nama_dagang;
+        $this->golongan      =   $produkObat->golongan;
         $this->kode          =   $produkObat->kode;
         $this->sediaan       =   $produkObat->sediaan;
         $this->harga_dasar   =   $produkObat->harga_dasar;
@@ -55,6 +56,7 @@ class Update extends Component
     {
         $this->validate([
             'nama_dagang'   => 'required|string|max:255',
+            'golongan'      => 'required|string|max:255',
             'kode'          => 'required|string|max:100',
             'sediaan'       => 'required|string|max:100',
             'harga_dasar'   => 'required|numeric|min:0',
@@ -68,6 +70,7 @@ class Update extends Component
 
         ProdukDanObat::where('id', $this->produkDanObatId)->update([
             'nama_dagang'   => $this->nama_dagang,
+            'golongan'      => $this->golongan,
             'kode'          => $this->kode,
             'sediaan'       => $this->sediaan,
             'harga_dasar'   => $this->harga_dasar,

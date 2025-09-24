@@ -43,6 +43,7 @@ final class ProdukObatTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('nama_dagang')
+            ->add('golongan')
             ->add('kode')
             ->add('sediaan')
             ->add('harga_dasar', fn ($produkdanobat) => number_format($produkdanobat->harga_dasar, 0, ',', '.'))
@@ -59,37 +60,37 @@ final class ProdukObatTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
+
+            // Identitas produk
             Column::make('Nama Produk/Obat', 'nama_dagang')
                 ->searchable(),
-
+            Column::make('Golongan Obat', 'golongan')
+                ->searchable(),
             Column::make('Kode', 'kode')
                 ->searchable(),
-
             Column::make('Satuan', 'sediaan')
                 ->searchable(),
 
+            // Harga
             Column::make('Harga Jual', 'harga_dasar')
                 ->sortable(),
-
             Column::make('Diskon', 'diskon')
                 ->sortable(),
-
             Column::make('Harga Bersih', 'harga_bersih')
                 ->sortable(),
 
+            // Ketersediaan
             Column::make('Stok Tersisa', 'stok')
                 ->sortable(),
-            
             Column::make('Kadaluarsa', 'expired_at')
                 ->sortable()
                 ->searchable(),
 
+            // Info tambahan
             Column::make('Batch', 'batch')
                 ->searchable(),
-
             Column::make('Lokasi', 'lokasi')
                 ->searchable(),
-
             Column::make('Supplier', 'supplier')
                 ->searchable(),
 

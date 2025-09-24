@@ -41,8 +41,25 @@
                 </select>
             </div>
 
+            {{-- Golongan --}}
+            <div>
+                <label class="label font-semibold">Golongan Produk/Obat</label>
+                <select class="select select-bordered w-full" wire:model.lazy="golongan" required>
+                    <option>Pilih Golongan</option>
+                    <option value="Skincare">Skincare</option>
+                    <option value="Obat Bebas">Obat Bebas</option>
+                    <option value="Obat Bebas Terbatas">Obat Bebas Terbatas</option>
+                    <option value="Obat Keras">Obat Keras</option>
+                    <option value="Obat Narkotika">Obat Narkotika</option>
+                    <option value="Obat Psikotropika"> Obat Psikotropika</option>
+                    <option value="Obat fitofarmaka">Obat fitofarmaka</option>
+                    <option value="OHT (Obat Herbal Terstandar)">OHT (Obat Herbal Terstandar)</option>
+                    <option value="Jamu">Jamu</option>
+                </select>
+            </div>
+
             {{-- Harga & Diskon --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {{-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> --}}
                 <div class="form-control">
                     <label class="label font-semibold">Harga Jual</label>
                     <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
@@ -53,7 +70,7 @@
                     <label class="label font-semibold">Diskon (%)</label>
                     <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
                 </div>
-            </div>
+            {{-- </div> --}}
 
             {{-- Harga Bersih --}}
             <div class="form-control">

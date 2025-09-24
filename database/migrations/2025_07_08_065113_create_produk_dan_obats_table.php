@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('produk_dan_obats', function (Blueprint $table) {
             $table->id();
             $table->string('nama_dagang');
+            $table->string('golongan')->nullable();
             $table->string('kode')->unique();
             $table->string('sediaan');
             $table->unsignedBigInteger('harga_dasar');
