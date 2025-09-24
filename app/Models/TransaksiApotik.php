@@ -17,4 +17,9 @@ class TransaksiApotik extends Model
         return $this->hasMany(RiwayatTransaksiApotik::class, 'transaksi_id');
     }
 
+    public function pasien()
+    {
+        return $this->belongsTo(Pasien::class, 'pasien_id');
+    }
+
 }

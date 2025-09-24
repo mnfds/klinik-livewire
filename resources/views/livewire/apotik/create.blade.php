@@ -38,7 +38,52 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
-                        <div class="bg-base-100 shadow rounded-box p-6">
+                        <div class="bg-base-100 shadow rounded-box p-6"
+                            x-data="{
+                                items: @entangle('obat_estetika'),
+                                produkList: {{ Js::from($produk) }},
+                                get showPasienInput() {
+                                    // cek apakah ada row yang produknya masuk golongan wajib pasien
+                                    return Object.values(this.items).some(row => {
+                                        let p = this.produkList.find(pr => pr.id == row.produk_id);
+                                        if (!p) return false;
+                                        return ['Obat Bebas Terbatas','Obat Keras','Skincare','Obat Narkotika']
+                                            .includes(p.golongan);
+                                    });
+                                }
+                            }"
+                        >
+                            <!-- hanya tampil kalau perlu -->
+                            <template x-if="showPasienInput">
+                                <div class="mb-4" x-data="searchPasien()">
+                                    <label class="block text-sm font-semibold mb-1">Nama Pasien</label>
+
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ketik nama atau no register..."
+                                        class="input input-bordered w-full"
+                                        x-model="query"
+                                        @input.debounce.300ms="search()"
+                                        @click="open = true"
+                                    >
+
+                                    <div 
+                                        x-show="open && results.length > 0" 
+                                        class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full"
+                                    >
+                                        <template x-for="item in results" :key="item.id">
+                                            <div 
+                                                @click="select(item)" 
+                                                class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                x-text="item.text">
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <input type="hidden" name="pasien_id" x-model="selectedId" x-ref="pasienId">
+                                </div>
+                            </template>
+
                             <div class="divider">Pembelian</div>
 
                             @foreach($obat_estetika as $uuid => $item)
@@ -219,6 +264,35 @@
                 });
             }
         });
+    }
+</script>
+{{-- SEARCH PASIEN --}}
+<script>
+    function searchPasien() {
+        return {
+            query: '',
+            results: [],
+            open: false,
+            selectedId: null,
+
+            async search() {
+                if (this.query.length < 2) {
+                    this.results = [];
+                    return;
+                }
+                const res = await fetch(`/search/pasien?q=${this.query}`);
+                this.results = await res.json();
+            },
+
+            select(item) {
+                this.query = item.text;
+                this.selectedId = item.id;
+                this.results = [];
+                this.open = false;
+                // update ke Livewire
+                @this.set('pasien_id', this.selectedId);
+            }
+        }
     }
 </script>
 @endpush

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class Create extends Component
 {
     public $produk;
+    public $pasien_id;
     public $obat_estetika = [];
 
     public function mount()
@@ -87,6 +88,7 @@ class Create extends Component
             'kasir_nama'   => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name ?? 'Kasir',
             'tanggal'      => now(),
             'total_harga'  => $total,
+            'pasien_id'  => $this->pasien_id,
         ]);
 
         // Simpan riwayat detail

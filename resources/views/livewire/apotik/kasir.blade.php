@@ -31,9 +31,12 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 <div class="p-6 text-base-content space-y-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <a href="{{ route('apotik.create') }}" class="btn btn-success">
+                    <div class="flex justify-start items-center mb-4">
+                        <a href="{{ route('apotik.create') }}" class="btn btn-success mx-1">
                             <i class="fa-solid fa-plus"></i> Transaksi
+                        </a>
+                        <a href="{{ route('pasien.create') }}" class="btn btn-success mx-1">
+                            <i class="fa-solid fa-plus"></i> Pasien
                         </a>
                     </div>
                     <livewire:apotik.transaksi-table />

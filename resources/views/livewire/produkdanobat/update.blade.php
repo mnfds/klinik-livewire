@@ -55,6 +55,7 @@
                     <option value="Obat fitofarmaka">Obat fitofarmaka</option>
                     <option value="OHT (Obat Herbal Terstandar)">OHT (Obat Herbal Terstandar)</option>
                     <option value="Jamu">Jamu</option>
+                    <option value="Lain - Lain">Lain - Lain</option>
                 </select>
             </div>
 

@@ -208,7 +208,7 @@
                     </ul>
                 </li>
                 <li x-data="{ open: false }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*')">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">
                         <i class="fa-solid fa-cash-register"></i>
                         <span class="flex-1 ml-3 text-left">Transaksi</span>
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>

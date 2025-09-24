@@ -37,8 +37,18 @@
                 {{-- Kolom Kiri: Detail Produk --}}
                 <div class="lg:col-span-4 space-y-6">
                     <div class="bg-base-100 shadow rounded-box p-4">
-                        <h3 class="font-semibold mb-4">Detail Transaksi</h3>
-
+                        <div class="border-b pb-4 mb-4">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                Detail Transaksi
+                            </h3>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p><span class="font-semibold">Pasien:</span> {{ $transaksi->pasien->nama ?? '-'}}</p>
+                                <p><span class="font-semibold">Tanggal:</span> 
+                                    {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d M Y H:i') }}
+                                </p>
+                                <p><span class="font-semibold">No. Transaksi:</span> {{ $transaksi->no_transaksi }}</p>
+                            </div>
+                        </div>
                         <div class="space-y-4">
                             @foreach($transaksi->riwayat as $item)
                                 <div class="border-b pb-2">

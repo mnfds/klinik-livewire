@@ -98,6 +98,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pasien/{id}/detail', function ($id) {
         return view('pasien.detail', ['id' => $id]);
     })->name('pasien.detail');
+    Route::get('/search/pasien', function (Request $request) {
+        $search = $request->q;
+        return \App\Models\Pasien::query()
+            ->where('nama', 'like', "%$search%")
+            ->orWhere('no_register', 'like', "%$search%")
+            ->limit(10)
+            ->get()
+            ->map(fn($pasien) => [
+                'id' => $pasien->id,
+                'text' => $pasien->no_register . ' - ' . $pasien->nama,
+            ]);
+    });
     // ====== PASIEN ====== //
 
     // ====== PENDAFTARAN ====== //

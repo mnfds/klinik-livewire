@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transaksi_apotiks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pasien_id')->nullable()->constrained('pasiens')->onDelete('cascade');
             $table->string('no_transaksi')->unique();
             $table->string('kasir_nama');
             $table->dateTime('tanggal')->default(now());
