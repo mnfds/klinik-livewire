@@ -14,10 +14,10 @@ class Detail extends Component
     public array $obatNonRacikanItems = [];
     public array $obatRacikanItems = [];
 
-    // variabel simpan dari form
-    public $obatFinalNonracik = [];
-    public $obatFinalRacikan = [];
-    public $biayaFinal = ['tuslah' => 0, 'embalase' => 0];
+    public $obatNonracikFinal = '[]';
+    public $obatRacikanFinal = '[]';
+    public $tuslah = 0;
+    public $embalase = 0;
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -64,11 +64,17 @@ class Detail extends Component
         return view('livewire.resep.detail');
     }
 
-     public function create(){
+    public function create()
+    {
+        $nonracik = json_decode($this->obatNonracikFinal, true);
+        $racikan = json_decode($this->obatRacikanFinal, true);
+
         dd([
-            'nonracik' => $this->obatFinalNonracik,
-            'racikan' => $this->obatFinalRacikan,
-            'biaya' => $this->biayaFinal,
+            'nonracik' => $nonracik,
+            'racikan' => $racikan,
+            'tuslah' => $this->tuslah,
+            'embalase' => $this->embalase,
         ]);
-     }
+    }
+
 }

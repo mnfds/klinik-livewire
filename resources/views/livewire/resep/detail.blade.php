@@ -318,9 +318,12 @@
                                         </details>
 
                                         <!-- Input Apoteker Non Racikan -->
-                                        <div x-data="obatManager('nonracik')" x-init="init()"
+                                        <div x-data="obatManager('nonracik')" x-init="$watch('inputs', value => {
+                                                        $refs.nonracikHidden.value = JSON.stringify(value);
+                                                        $refs.nonracikHidden.dispatchEvent(new Event('input'));
+                                                    }, {deep:true})"
                                             class="border rounded-lg bg-base-100 p-2">
-
+                                            <input type="hidden" x-ref="nonracikHidden" wire:model="obatNonracikFinal">
                                             <template x-for="(item, i) in inputs" :key="item.uid">
                                                 <div class="mx-1 my-2">
                                                     <div class="flex gap-2 items-start">
@@ -413,9 +416,12 @@
                                         </details>
 
                                         <!-- Input Apoteker Racikan -->
-                                        <div x-data="obatManager('racikan')" x-init="init()"
+                                        <div x-data="obatManager('racikan')" x-init="$watch('inputs', value => {
+                                                        $refs.racikanHidden.value = JSON.stringify(value);
+                                                        $refs.racikanHidden.dispatchEvent(new Event('input'));
+                                                    }, {deep:true})"
                                             class="border rounded-lg bg-base-100 p-2">
-
+                                            <input type="hidden" x-ref="racikanHidden" wire:model="obatRacikanFinal">
                                             <template x-for="(item, i) in inputs" :key="item.uid">
                                                 <div class="mx-1 my-2">
                                                     <div class="flex gap-2 items-start">
@@ -472,22 +478,29 @@
                                 </div>
 
                                 <div class="mt-6 p-6 bg-base-200 rounded-lg flex items-center gap-6" 
-                                    x-data="biayaTambahan()" x-init="init()">
-                                    
+                                    x-data="biayaTambahan()" x-init="$watch('tuslah', value => {
+                                            $refs.tuslahHidden.value = value;
+                                            $refs.tuslahHidden.dispatchEvent(new Event('input'));
+                                        });
+                                        $watch('embalase', value => {
+                                            $refs.embalaseHidden.value = value;
+                                            $refs.embalaseHidden.dispatchEvent(new Event('input'));
+                                        });">
+
                                     <!-- Tuslah -->
                                     <div class="flex items-center gap-2 text-sm font-semibold">
                                         <label class="w-20">Tuslah :</label>
-                                        <input type="text" x-model="tuslahDisplay"
-                                            @input="updateFromDisplay('tuslah')"
+                                        <input type="text" x-model="tuslahDisplay" @input="updateFromDisplay('tuslah')"
                                             class="input input-sm w-32 text-right" placeholder="Rp 0" />
+                                        <input type="hidden" x-ref="tuslahHidden" wire:model="tuslah">
                                     </div>
 
                                     <!-- Embalase -->
                                     <div class="flex items-center gap-2 text-sm font-semibold">
                                         <label class="w-20">Embalase :</label>
-                                        <input type="text" x-model="embalaseDisplay"
-                                            @input="updateFromDisplay('embalase')"
+                                        <input type="text" x-model="embalaseDisplay" @input="updateFromDisplay('embalase')"
                                             class="input input-sm w-32 text-right" placeholder="Rp 0" />
+                                        <input type="hidden" x-ref="embalaseHidden" wire:model="embalase">
                                     </div>
                                 </div>
 
