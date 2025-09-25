@@ -30,7 +30,7 @@ final class ResepTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return PasienTerdaftar::where('status_terdaftar', 'peresepan')
-            ->whereDate('created_at', today())
+            // ->whereDate('created_at', today())
             ->with([
                 'pasien',
                 'poliklinik', 

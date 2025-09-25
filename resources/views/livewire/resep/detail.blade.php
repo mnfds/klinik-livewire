@@ -288,7 +288,7 @@
                 <div class="lg:col-span-4">
                     <div class="bg-base-100 shadow rounded-box">
                         <div class="p-6 text-base-content space-y-6">
-                            <form action="">
+                            <form wire:submit.prevent="create">
                                 {{-- Data Resep --}}
                                 <div class="tabs tabs-lift" x-data="totalKeseluruhan()">
 
@@ -321,7 +321,7 @@
                                         <div x-data="obatManager('nonracik')" x-init="init()"
                                             class="border rounded-lg bg-base-100 p-2">
 
-                                            <template x-for="(item, i) in inputs" :key="i">
+                                            <template x-for="(item, i) in inputs" :key="item.uid">
                                                 <div class="mx-1 my-2">
                                                     <div class="flex gap-2 items-start">
                                                         <!-- Nama Obat -->
@@ -416,7 +416,7 @@
                                         <div x-data="obatManager('racikan')" x-init="init()"
                                             class="border rounded-lg bg-base-100 p-2">
 
-                                            <template x-for="(item, i) in inputs" :key="i">
+                                            <template x-for="(item, i) in inputs" :key="item.uid">
                                                 <div class="mx-1 my-2">
                                                     <div class="flex gap-2 items-start">
                                                         <!-- Nama Obat -->
@@ -509,9 +509,10 @@
                                     </div>
                                 </div>
 
-                                <div class="p-2">
-                                    <button class="btn btn-success w-full">Update</button>
-                                </div>
+                                <button wire:click.prevent="create" class="btn btn-primary w-full mb-1" wire:loading.attr="disabled">
+                                    <span wire:loading.remove>Update</span>
+                                    <span wire:loading.inline>Loading...</span>
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -521,7 +522,6 @@
         </div>
     </div>
 </div>
-@push('scripts')
 <script>
     const currency = new Intl.NumberFormat('id-ID', { 
             style: 'currency', 
@@ -536,6 +536,7 @@
                 inputs: [],
                 addInput() {
                     this.inputs.push({
+                        uid: Date.now() + Math.random(),
                         id:'', nama:'', jumlah:'', satuan:'',
                         harga_satuan:0, harga_satuan_display:'',
                         total:0, total_display:''
@@ -657,4 +658,3 @@
             }
         }
 </script>
-@endpush
