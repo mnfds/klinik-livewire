@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('bahan_racikan_finals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('obat_racikan_final_id')->constrained('obat_racikan_finals')->onDelete('cascade');
-            $table->text('nama_obat_racikan')->nullable();
-            $table->integer('jumlah_obat_racikan')->nullable();
-            $table->text('satuan_obat_racikan')->nullable();
-            $table->unsignedBigInteger('harga_obat_racikan')->nullable();
-            $table->unsignedBigInteger('subtotal_obat_racikan')->nullable();
-            
+            $table->foreignId('produk_id')->constrained('produk_dan_obats')->onDelete('restrict');
+            $table->integer('jumlah_obat')->nullable();
+            $table->string('satuan_obat')->nullable();
+            $table->unsignedBigInteger('harga_obat')->nullable();
+            $table->unsignedBigInteger('total_obat')->nullable();
+
+
             $table->timestamps();
         });
     }

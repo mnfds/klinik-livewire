@@ -13,17 +13,15 @@ return new class extends Migration
     {
         Schema::create('obat_racikan_finals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
-
-            $table->text('nama_racikan')->nullable();
+            $table->foreignId('obat_final_id')->constrained('obat_finals')->onDelete('cascade');
+            $table->string('nama_racikan')->nullable();
             $table->integer('jumlah_racikan')->nullable();
-            $table->text('satuan_racikan')->nullable();
-            $table->text('dosis_obat_racikan')->nullable();
-            $table->text('hari_obat_racikan')->nullable();
-            $table->text('aturan_pakai_racikan')->nullable();
-            $table->text('metode_racikan')->nullable();
-            $table->unsignedBigInteger('embalase')->nullable();
-            $table->unsignedBigInteger('tuslah')->nullable();
+            $table->string('satuan_racikan')->nullable();
+            $table->string('total_racikan')->nullable();
+            $table->string('dosis')->nullable();
+            $table->string('hari')->nullable();
+            $table->string('aturan_pakai')->nullable();
+            $table->string('metode_racikan')->nullable();
             $table->timestamps();
         });
     }

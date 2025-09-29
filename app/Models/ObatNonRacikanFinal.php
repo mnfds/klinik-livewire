@@ -8,9 +8,14 @@ class ObatNonRacikanFinal extends Model
 {
     protected $table = 'obat_non_racikan_finals';
     protected $guarded = ['id'];
-
-    public function rekammedis()
+    
+    public function obatFinal()
     {
-        return $this->belongsTo(RekamMedis::class);
+        return $this->belongsTo(ObatFinal::class);
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(ProdukDanObat::class, 'produk_id');
     }
 }

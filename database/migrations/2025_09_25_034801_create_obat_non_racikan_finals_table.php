@@ -13,19 +13,15 @@ return new class extends Migration
     {
         Schema::create('obat_non_racikan_finals', function (Blueprint $table) {
             $table->id();
-            // Relasi ke rekam medis
-            $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
-            
-            $table->text('nama_obat_non_racikan')->nullable();
-            $table->integer('jumlah_obat_non_racikan')->nullable();
-            $table->text('satuan_obat_non_racikan')->nullable();
-            $table->text('dosis_obat_non_racikan')->nullable();
-            $table->text('hari_obat_non_racikan')->nullable();
-            $table->text('aturan_pakai_obat_non_racikan')->nullable();
-            $table->unsignedBigInteger('harga_obat_racikan')->nullable();
-            $table->unsignedBigInteger('subtotal_obat_racikan')->nullable();
-            $table->unsignedBigInteger('embalase')->nullable();
-            $table->unsignedBigInteger('tuslah')->nullable();
+            $table->foreignId('obat_final_id')->constrained('obat_finals')->onDelete('cascade');
+            $table->foreignId('produk_id')->constrained('produk_dan_obats')->onDelete('restrict');
+            $table->integer('jumlah_obat')->nullable();
+            $table->string('satuan_obat')->nullable();
+            $table->unsignedBigInteger('harga_obat')->nullable();
+            $table->unsignedBigInteger('total_obat')->nullable();
+            $table->string('dosis')->nullable();
+            $table->string('hari')->nullable();
+            $table->string('aturan_pakai')->nullable();
             $table->timestamps();
         });
     }

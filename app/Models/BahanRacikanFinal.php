@@ -11,6 +11,11 @@ class BahanRacikanFinal extends Model
 
     public function obatRacikanFinal()
     {
-        return $this->belongsTo(ObatRacikanFinal::class, 'obat_racikan_final_id');
+        return $this->belongsTo(ObatRacikanFinal::class);
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(ProdukDanObat::class, 'produk_id');
     }
 }

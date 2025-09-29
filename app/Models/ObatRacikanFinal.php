@@ -9,13 +9,13 @@ class ObatRacikanFinal extends Model
     protected $table = 'obat_racikan_finals';
     protected $guarded = ['id'];
 
-    public function rekammedis()
+    public function obatFinal()
     {
-        return $this->belongsTo(RekamMedis::class);
+        return $this->belongsTo(ObatFinal::class);
     }
 
-    public function bahanRacikanFinal()
+    public function bahanRacikanFinals()
     {
-        return $this->hasMany(BahanRacikanFinal::class, 'obat_racikan_final_id');
+        return $this->hasMany(BahanRacikanFinal::class);
     }
 }

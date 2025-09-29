@@ -4,6 +4,9 @@ namespace App\Livewire\Resep;
 
 use Livewire\Component;
 use App\Models\PasienTerdaftar;
+use App\Models\ObatRacikanFinal;
+use App\Models\BahanRacikanFinal;
+use App\Models\ObatNonRacikanFinal;
 
 class Detail extends Component
 {
@@ -14,10 +17,48 @@ class Detail extends Component
     public array $obatNonRacikanItems = [];
     public array $obatRacikanItems = [];
 
-    public $obatNonracikFinal = '[]';
-    public $obatRacikanFinal = '[]';
-    public $tuslah = 0;
-    public $embalase = 0;
+    //input obat final
+    public $rekammedis_id;
+    public $tuslah;
+    public $embalase;
+
+    public $racikanInput = [
+        [
+            'obat_final_id', //ambil dari variable create obat_final
+            'nama_racikan', // ambil dari obatRacikanItems
+            'jumlah_racikan', //ambil dari form
+            'satuan_racikan', //ambil dari form
+            'total_racikan', //ambil dari form
+            'dosis', // ambil dari obatRacikanItems
+            'hari', // ambil dari obatRacikanItems
+            'aturan_pakai', // ambil dari obatRacikanItems
+            'metode_racikan', // ambil dari obatRacikanItems
+        ]
+    ];
+
+    public $bahanRacikanInput = [
+        [
+            'produk_id',
+            'obat_racikan_final_id',
+            'jumlah_obat',
+            'satuan_obat',
+            'harga_obat',
+            'total_obat',
+        ]
+    ];
+    public $nonRacikanInput = [
+        [
+            'obat_final_id', //ambil dari variabel  create obat_final
+            'produk_id', // ambil dari form
+            'jumlah_obat', // ambil dari form
+            'satuan_obat', // ambil dari form
+            'harga_obat', // ambil dari form
+            'total_obat',  // ambil dari form
+            'dosis', // ambil dari obatNonRacikanItems
+            'hari', // ambil dari obatNonRacikanItems
+            'aturan_pakai', // ambil dari obatNonRacikanItems
+            ]
+    ];
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -27,6 +68,8 @@ class Detail extends Component
             'rekamMedis.obatNonRacikanRM',
             'rekamMedis.obatRacikanRM.bahanRacikan',
         ])->findOrFail($this->pasien_terdaftar_id);
+
+        $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
 
         // mapping data obat non racikan
         $this->obatNonRacikanItems = $this->pasienTerdaftar->rekamMedis->obatNonRacikanRM->map(fn($o) => [
@@ -68,12 +111,16 @@ class Detail extends Component
     {
         $nonracik = json_decode($this->obatNonracikFinal, true);
         $racikan = json_decode($this->obatRacikanFinal, true);
-
+        $datadokter = [
+            'datanonracik' => $this->obatNonRacikanItems,
+            'daataobatracik' => $this->obatRacikanItems,
+        ];
         dd([
             'nonracik' => $nonracik,
             'racikan' => $racikan,
             'tuslah' => $this->tuslah,
             'embalase' => $this->embalase,
+            'datadokter' => $datadokter,
         ]);
     }
 

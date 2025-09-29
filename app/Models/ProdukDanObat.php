@@ -26,4 +26,14 @@ class ProdukDanObat extends Model
     {
         return $this->hasMany(RiwayatTransaksiApotik::class, 'produk_id');
     }
+
+    public function obatNonRacikanFinals()
+    {
+        return $this->hasMany(ObatNonRacikanFinal::class, 'produk_id');
+    }
+
+    public function bahanRacikanFinals()
+    {
+        return $this->hasMany(BahanRacikanFinal::class, 'produk_id');
+    }
 }
