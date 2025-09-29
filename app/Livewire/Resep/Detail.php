@@ -22,6 +22,9 @@ class Detail extends Component
     public $tuslah;
     public $embalase;
 
+    public $obatNonracikFinal = '[]';
+    public $obatRacikanFinal = '[]';
+
     public $racikanInput = [
         [
             'obat_final_id', //ambil dari variable create obat_final

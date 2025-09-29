@@ -416,63 +416,69 @@
                                         </details>
 
                                         <!-- Input Apoteker Racikan -->
-                                        <div x-data="obatManager('racikan')" x-init="$watch('inputs', value => {
-                                                        $refs.racikanHidden.value = JSON.stringify(value);
-                                                        $refs.racikanHidden.dispatchEvent(new Event('input'));
-                                                    }, {deep:true})"
-                                            class="border rounded-lg bg-base-100 p-2">
-                                            <input type="hidden" x-ref="racikanHidden" wire:model="obatRacikanFinal">
-                                            <template x-for="(item, i) in inputs" :key="item.uid">
-                                                <div class="mx-1 my-2">
-                                                    <div class="flex gap-2 items-start">
-                                                        <!-- Nama Obat -->
-                                                        <div class="relative flex-1" x-data="searchObat(i, inputs)">
-                                                            <input type="text" x-model="query" @input="search()"
-                                                                @focus="open = true" @click.away="open = false"
-                                                                class="input input-bordered w-full"
-                                                                placeholder="Cari bahan racikan..." />
+<!-- Racikan Per Resep -->
+<div x-data="racikanManager()" x-init="init()" class="border rounded-lg bg-base-100 p-2">
 
-                                                            <div x-show="open && results.length > 0"
-                                                                class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
-                                                                <template x-for="result in results" :key="result.id">
-                                                                    <div @click="select(result)"
-                                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
-                                                                        <span x-text="result.text"></span>
-                                                                    </div>
-                                                                </template>
-                                                            </div>
-                                                        </div>
+    <!-- Hidden input untuk Livewire -->
+    <input type="hidden" x-ref="racikanHidden" wire:model="obatRacikanFinal">
 
-                                                        <!-- Jumlah -->
-                                                        <input type="number" x-model="item.jumlah"
-                                                            @input="$dispatch('hitung-total',{index:i})"
-                                                            class="input input-bordered w-20" placeholder="Jumlah" />
+    <!-- Loop tiap racikan -->
+    <template x-for="(racikan, rIndex) in racikanList" :key="racikan.uid">
+        <div class="border rounded-lg p-4 mb-4 bg-base-100">
 
-                                                        <!-- Satuan -->
-                                                        <input type="text" x-model="item.satuan" readonly
-                                                            class="input input-bordered w-20 bg-base-200"
-                                                            placeholder="Satuan" />
+            <!-- Nama Racikan -->
+            <div class="flex gap-2 items-center mb-3">
+                <input type="text" x-model="racikan.nama_racikan"
+                    placeholder="Nama Racikan" class="input input-bordered flex-1"/>
+                <button type="button" @click="removeRacikan(rIndex)" class="btn btn-error btn-sm">Hapus Racikan</button>
+            </div>
 
-                                                        <!-- Harga Satuan -->
-                                                        <input type="text" x-model="item.harga_satuan_display" readonly
-                                                            class="input input-bordered w-28 bg-base-200 text-right"
-                                                            placeholder="Harga" />
+            <!-- Loop bahan racikan -->
+            <template x-for="(bahan, bIndex) in racikan.bahan" :key="bahan.uid">
+                <div class="flex gap-2 mb-2 items-start">
+                    
+                    <!-- Search Obat -->
+                    <div class="relative flex-1" x-data="searchObat(rIndex, bIndex, racikanList)">
+                        <input type="text" x-model="query" @input="search()" @focus="open = true"
+                            @click.away="open = false" placeholder="Cari nama obat..."
+                            class="input input-bordered w-full" />
+                        <div x-show="open && results.length > 0"
+                            class="absolute z-50 bg-white border w-full max-h-48 overflow-y-auto rounded-lg mt-1 shadow">
+                            <template x-for="result in results" :key="result.id">
+                                <div @click="select(result)" class="px-3 py-2 hover:bg-blue-100 cursor-pointer">
+                                    <span x-text="result.text"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
 
-                                                        <!-- Total -->
-                                                        <input type="text" x-model="item.total_display" readonly
-                                                            class="input input-bordered w-28 bg-base-200 text-right"
-                                                            placeholder="Total" />
+                    <!-- Jumlah -->
+                    <input type="number" x-model="bahan.jumlah" @input="hitungTotalBahan(rIndex, bIndex)"
+                        placeholder="Jumlah" class="input input-bordered w-20"/>
 
-                                                        <button type="button" class="btn btn-error btn-sm"
-                                                            @click="inputs.splice(i,1); updateGrandTotal()">✕</button>
-                                                    </div>
-                                                </div>
-                                            </template>
+                    <!-- Satuan -->
+                    <input type="text" x-model="bahan.satuan" readonly class="input input-bordered w-20 bg-base-200"/>
 
-                                            <!-- Tombol Tambah -->
-                                            <button type="button" class="btn btn-primary btn-sm" @click="addInput()">+
-                                                Tambah Bahan</button>
-                                        </div>
+                    <!-- Harga Satuan -->
+                    <input type="text" x-model="bahan.harga_satuan_display" readonly
+                        class="input input-bordered w-28 bg-base-200 text-right"/>
+
+                    <!-- Total -->
+                    <input type="text" x-model="bahan.total_display" readonly
+                        class="input input-bordered w-28 bg-base-200 text-right"/>
+
+                    <button type="button" @click="removeBahan(rIndex, bIndex)" class="btn btn-error btn-sm">✕</button>
+                </div>
+            </template>
+
+            <button type="button" @click="addBahan(rIndex)" class="btn btn-primary btn-sm mt-1">+ Tambah Bahan</button>
+
+        </div>
+    </template>
+
+    <button type="button" @click="addRacikan()" class="btn btn-primary btn-sm mb-4">+ Tambah Racikan Baru</button>
+
+</div>
                                     </div>
 
                                 </div>
@@ -536,7 +542,7 @@
     </div>
 </div>
 <script>
-    const currency = new Intl.NumberFormat('id-ID', { 
+        const currency = new Intl.NumberFormat('id-ID', { 
             style: 'currency', 
             currency: 'IDR', 
             minimumFractionDigits: 0 
@@ -580,6 +586,54 @@
                     this.$dispatch('update-total', { type, total });
                 },
                 formatCurrency
+            }
+        }
+
+        function racikanManager() {
+            return {
+                racikanList: [],
+                init() {
+                    // jika mau preload dari Livewire, bisa assign di sini
+                },
+                addRacikan() {
+                    this.racikanList.push({
+                        uid: Date.now()+Math.random(),
+                        nama_racikan: '',
+                        bahan: []
+                    });
+                },
+                removeRacikan(rIndex) {
+                    this.racikanList.splice(rIndex,1);
+                    this.updateGrandTotal();
+                },
+                addBahan(rIndex) {
+                    this.racikanList[rIndex].bahan.push({
+                        uid: Date.now()+Math.random(),
+                        id:'', nama:'', jumlah:'', satuan:'',
+                        harga_satuan:0, harga_satuan_display:'',
+                        total:0, total_display:''
+                    });
+                },
+                removeBahan(rIndex, bIndex) {
+                    this.racikanList[rIndex].bahan.splice(bIndex,1);
+                    this.updateGrandTotal();
+                },
+                hitungTotalBahan(rIndex,bIndex) {
+                    const bahan = this.racikanList[rIndex].bahan[bIndex];
+                    const jumlah = parseFloat(bahan.jumlah) || 0;
+                    const harga = parseFloat(bahan.harga_satuan) || 0;
+                    bahan.total = jumlah * harga;
+                    bahan.total_display = formatCurrency(bahan.total);
+                    bahan.harga_satuan_display = formatCurrency(harga);
+                    this.updateGrandTotal();
+                },
+                updateGrandTotal() {
+                    let total = 0;
+                    this.racikanList.forEach(r => {
+                        r.bahan.forEach(b => total += parseFloat(b.total) || 0);
+                    });
+                    this.$dispatch('update-total', { type:'racikan', total });
+                }
             }
         }
 
