@@ -1,20 +1,21 @@
 <?php
 
-use App\Livewire\Bahan\Riwayat as BahanRiwayat;
 use App\Models\Icd;
 use App\Models\User;
 use App\Models\Pasien;
 use App\Models\KfaObat;
+use App\Models\Pelayanan;
 use App\Models\NomorAntrian;
 use Illuminate\Http\Request;
 use App\Models\ProdukDanObat;
 use App\Livewire\Pasien\Detail;
-use App\Livewire\Barang\Riwayat as BarangRiwayat;
 use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\JamKerja\DataJamKerja;
+use App\Livewire\Bahan\Riwayat as BahanRiwayat;
+use App\Livewire\Barang\Riwayat as BarangRiwayat;
 
 // Route::view('/', 'welcome');
 
@@ -240,6 +241,17 @@ Route::middleware(['auth'])->group(function () {
                 'harga' => $b->harga, // supaya bisa dipakai di calcHargaAsli
             ]);
     });
+
+    Route::get('/ajax/layanan', function (Request $request) {
+        $query = $request->get('q', '');
+        return Pelayanan::where('nama_pelayanan', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($layanan) => [
+                'id' => $layanan->id,
+                'nama' => $layanan->nama_pelayanan,
+            ]);
+    })->name('ajax.layanan');
 
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
