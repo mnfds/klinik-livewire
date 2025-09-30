@@ -203,6 +203,20 @@ Route::middleware(['auth'])->group(function () {
 
         return response()->json($merged->values());
     });
+
+    Route::get('/ajax/produk', function (Request $request) {
+        $query = $request->get('q', '');
+        return \App\Models\ProdukDanObat::where('nama_dagang', 'like', "%{$query}%")
+            ->orderBy('nama_dagang')
+            ->take(20)
+            ->get()
+            ->map(fn($produk) => [
+                'id' => $produk->id,
+                'text' => $produk->nama_dagang,
+                'harga' => $produk->harga_dasar,
+            ]);
+    });
+
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
     // ====== RESEP OBAT ====== //

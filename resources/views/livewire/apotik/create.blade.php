@@ -95,16 +95,37 @@
                                         diskon: @entangle("obat_estetika.$uuid.diskon"),
                                         harga_asli: @entangle("obat_estetika.$uuid.harga_asli"),
                                         subtotal: @entangle("obat_estetika.$uuid.subtotal"),
-                                        get hargaProduk() {
-                                            let produk = {{ Js::from($produk) }}.find(p => p.id == this.produk_id);
-                                            return produk ? produk.harga_dasar : 0;
+
+                                        query: '',
+                                        results: [],
+                                        open: false,
+
+                                        async searchProduk() {
+                                            if (this.query.length < 2) {
+                                                this.results = [];
+                                                return;
+                                            }
+
+                                            const res = await fetch(`/search-produk-obat?q=${this.query}`);
+                                            const data = await res.json();
+                                            this.results = data;
                                         },
+
+                                        selectProduk(item) {
+                                            this.query = item.text;
+                                            this.produk_id = item.id;
+                                            this.harga_asli = item.harga; // langsung assign harga dari API
+                                            this.results = [];
+                                            this.open = false;
+                                            this.hitung();
+                                        },
+
                                         hitung() {
-                                            let base = this.hargaProduk * (this.jumlah_produk || 1);
-                                            this.harga_asli = base;
+                                            let base = (this.harga_asli || 0) * (this.jumlah_produk || 1);
                                             let afterPotongan = base - (this.potongan || 0);
                                             this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0)/100);
                                         },
+
                                         formatRupiah(val) {
                                             return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
                                         }
@@ -113,27 +134,37 @@
                                     @input="hitung()"
                                 >
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                                        <div>
+                                        <div x-data>
                                             <label class="block text-sm font-semibold mb-1">Produk</label>
-                                            <select class="select select-bordered w-full" x-model="produk_id" @change="hitung()">
-                                                <option value="">-- Pilih Produk --</option>
-                                                @foreach($produk as $p)
-                                                    <option value="{{ $p->id }}">{{ $p->nama_dagang }}</option>
-                                                @endforeach
-                                            </select>
+                                            <input type="text"
+                                                placeholder="Ketik nama produk..."
+                                                class="input input-bordered w-full"
+                                                x-model="query"
+                                                @input.debounce.300ms="searchProduk()"
+                                                @click="open = true"
+                                            >
+
+                                            <div x-show="open && results.length > 0"
+                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full">
+                                                <template x-for="item in results" :key="item.id">
+                                                    <div @click="selectProduk(item)"
+                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                        x-text="item.text">
+                                                    </div>
+                                                </template>
+                                            </div>
                                         </div>
+
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                                            <input type="number" min="1" class="input input-bordered w-full"
-                                                x-model="jumlah_produk" @input="hitung()">
+                                            <input type="number" min="1" class="input input-bordered w-full" x-model="jumlah_produk" @input="hitung()">
                                         </div>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                            <input type="text" class="input input-bordered w-full bg-base-200"
-                                                :value="formatRupiah(harga_asli)" readonly>
+                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_asli)" readonly>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>

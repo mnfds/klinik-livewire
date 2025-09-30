@@ -283,7 +283,7 @@ class Create extends Component
             'nama_dokter' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
         ]);
-        // dd([
+        dd([
         //     $this->selected_forms_subjective,
         //     $this->selected_forms_objective,
         //     $this->selected_forms_assessment,
@@ -299,11 +299,11 @@ class Create extends Component
             // $this->rencana_layanan,
             // $this->rencana_estetika,
             // $this->rencana_bundling,
-            // $this->obat_estetika,
+            $this->obat_estetika,
             // $this->obat_non_racikan,
             // $this->obat_racikan,
             // $this->bahan_racikan,
-        // ]);
+        ]);
 
         DB::beginTransaction();
 
