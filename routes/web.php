@@ -217,6 +217,30 @@ Route::middleware(['auth'])->group(function () {
             ]);
     });
 
+    Route::get('/ajax/treatment', function (Request $request) {
+        $query = $request->get('q', '');
+        return \App\Models\Treatment::where('nama_treatment', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($t) => [
+                'id' => $t->id,
+                'text' => $t->nama_treatment,
+                'harga' => $t->harga_treatment,
+            ]);
+    });
+
+    Route::get('/ajax/bundling', function (Request $request) {
+        $query = $request->get('q', '');
+        return \App\Models\Bundling::where('nama', 'like', "%{$query}%")
+            ->limit(20)
+            ->get()
+            ->map(fn ($b) => [
+                'id' => $b->id,
+                'text' => $b->nama,
+                'harga' => $b->harga, // supaya bisa dipakai di calcHargaAsli
+            ]);
+    });
+
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
 
     // ====== RESEP OBAT ====== //

@@ -42,7 +42,35 @@
                 
                 <!-- Baris 1: Treatment + Jumlah -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                    <div>
+                    <div x-data="singleSelectTreatment(
+                        () => item.treatments_id,
+                        (val) => { 
+                            item.treatments_id = val.id; 
+                            item.nama_treatment = val.text; 
+                            item.harga = val.harga; 
+                            syncItemTreatment(index); 
+                        }
+                        )" x-init="init()">
+                        <label class="block text-sm font-semibold mb-1">Treatment</label>
+                        <div class="relative">
+                            <input type="text"
+                                class="input input-bordered w-full"
+                                placeholder="Ketik untuk cari treatment..."
+                                x-model="search"
+                                @input.debounce.300ms="fetchOptions(); open = true"
+                                @focus="open = true"
+                            >
+                            <div x-show="open" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
+                                <template x-for="opt in filteredOptions" :key="opt.id">
+                                    <div @click="choose(opt)" class="p-2 hover:bg-primary/20 cursor-pointer">
+                                        <span x-text="opt.text"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                  
+                    {{-- <div>
                         <label class="block text-sm font-semibold mb-1">Treatment</label>
                         <select class="select select-bordered w-full"
                             :name="`rencanaEstetika[treatments_id][${index}]`"
@@ -56,7 +84,7 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
                     <div>
                         <label class="block text-sm font-semibold mb-1">Jumlah</label>
                         <input type="number" min="1"
@@ -235,6 +263,35 @@ function treatmentForm() {
                 @this.set(`rencana_estetika.diskon.${i}`, null);
                 @this.set(`rencana_estetika.subtotal.${i}`, null);
             }
+        }
+    }
+}
+function singleSelectTreatment(getModel, setModel) {
+    return {
+        open: false,
+        selected: null,
+        search: '',
+        filteredOptions: [],
+        fetchOptions() {
+            if (this.search.trim() === '') { 
+                this.filteredOptions = []; 
+                return; 
+            }
+            fetch(`/ajax/treatment?q=${encodeURIComponent(this.search)}`)
+                .then(r => r.json())
+                .then(data => { this.filteredOptions = data; });
+        },
+        choose(item) {
+            this.selected = item;
+            setModel(item);
+            this.search = item.text; // langsung tampil nama treatment terpilih
+            this.filteredOptions = [];
+            this.open = false;
+        },
+        remove() {
+            this.selected = null;
+            setModel(null);
+            this.search = '';
         }
     }
 }
