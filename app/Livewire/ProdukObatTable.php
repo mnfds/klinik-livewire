@@ -7,9 +7,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class ProdukObatTable extends PowerGridComponent
@@ -51,6 +52,7 @@ final class ProdukObatTable extends PowerGridComponent
             ->add('harga_bersih', fn ($produkdanobat) => number_format($produkdanobat->harga_bersih, 0, ',', '.'))
             ->add('stok', fn ($produkdanobat) => number_format($produkdanobat->stok, 0, ',', '.'))
             ->add('expired_at')
+            ->add('reminder')
             ->add('batch')
             ->add('lokasi')
             ->add('supplier');
@@ -161,15 +163,17 @@ final class ProdukObatTable extends PowerGridComponent
         ]);
     }
 
-    /*
     public function actionRules($row): array
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
+        return [
+            Rule::rows()
+                ->when(fn ($row) =>
+                    $row->expired_at &&
+                    $row->reminder &&
+                    Carbon::parse($row->expired_at)->format('Y-m')
+                        <= Carbon::now()->addMonths($row->reminder)->format('Y-m')
+                )
+                ->setAttribute('class', 'text-red-600 font-semibold'),
         ];
     }
-    */
 }

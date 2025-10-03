@@ -8,7 +8,7 @@ use App\Models\ProdukDanObat;
 class Store extends Component
 {
     public $nama_dagang, $golongan, $kode, $sediaan, $harga_dasar, $stok;
-    public $expired_at, $batch, $lokasi, $supplier, $harga_bersih;
+    public $expired_at,$reminder, $batch, $lokasi, $supplier, $harga_bersih;
     public $diskon = 0;
 
     public function render()
@@ -27,6 +27,7 @@ class Store extends Component
             'diskon' => 'nullable|min:0|max:100',
             'stok' => 'required|integer|min:0',
             'expired_at' => 'nullable|date',
+            'reminder' => 'nullable|integer',
             'batch' => 'nullable|string',
             'lokasi' => 'nullable|string',
             'supplier' => 'nullable|string',
@@ -50,6 +51,7 @@ class Store extends Component
             'harga_bersih' => $this->harga_bersih,
             'stok' => $this->stok,
             'expired_at' => $this->expired_at,
+            'reminder' => $this->reminder,
             'batch' => $this->batch,
             'lokasi' => $this->lokasi,
             'supplier' => $this->supplier,

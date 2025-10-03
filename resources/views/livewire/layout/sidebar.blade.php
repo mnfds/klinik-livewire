@@ -37,7 +37,7 @@
                     <span class="text-sm text-base-content">Master Data</span>
                 </li>
 
-                @php
+                {{-- @php
                     $masterLinks = [
                         ['name' => 'Staff', 'icon' => 'fa-solid fa-user-nurse', 'url' => 'users.data'],
                         ['name' => 'Dokter', 'icon' => 'fa-solid fa-user-doctor', 'url' => 'dokter.data'],
@@ -63,6 +63,59 @@
                         >
                             <i class="{{ $item['icon'] }}"></i>
                             <span class="ml-3">{{ $item['name'] }}</span>
+                        </x-side-link>
+                    </li>
+                @endforeach --}}
+                @php
+                    use App\Models\ProdukDanObat;
+                    use Illuminate\Support\Carbon;
+
+                    $now = Carbon::today();
+
+                    // Cek apakah ada produk yang masuk bulan reminder
+                    $produkAdaReminder = ProdukDanObat::query()
+                        ->whereNotNull('expired_at')
+                        ->whereNotNull('reminder')
+                        ->get()
+                        ->contains(function ($row) use ($now) {
+                            $expired      = Carbon::parse($row->expired_at)->startOfMonth();
+                            $reminderDate = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
+
+                            // muncul jika sekarang >= reminderDate
+                            return $now->greaterThanOrEqualTo($reminderDate);
+                        });
+
+                    $masterLinks = [
+                        ['name' => 'Staff', 'icon' => 'fa-solid fa-user-nurse', 'url' => 'users.data'],
+                        ['name' => 'Dokter', 'icon' => 'fa-solid fa-user-doctor', 'url' => 'dokter.data'],
+                        ['name' => 'Role & Akses','icon' => 'fa-solid fa-unlock-keyhole', 'url' => 'role-akses.data'],
+                        ['name' => 'Jam Kerja','icon' => 'fa-solid fa-business-time','url' => 'jamkerja.data'],
+                        ['name' => 'Poliklinik','icon' => 'fa-solid fa-house-chimney-medical','url' => 'poliklinik.data'],
+                        [
+                            'name' => 'Produk & Obat',
+                            'icon' => 'fa-solid fa-pills',
+                            'url'  => 'produk-obat.data',
+                            'warning' => $produkAdaReminder
+                        ],
+                        ['name' => 'Pelayanan','icon' => 'fa-solid fa-hand-holding-medical', 'url' => 'pelayanan.data'],
+                        ['name' => 'Paket Bundling','icon' => 'fa-solid fa-gifts', 'url' => 'bundling.data'],
+                    ];
+                @endphp
+
+                @foreach ($masterLinks as $item)
+                    @php
+                        $href   = $item['url'] ? route($item['url']) : '#';
+                        $active = $item['url'] ? request()->routeIs($item['url']) : false;
+                    @endphp
+                    <li>
+                        <x-side-link href="{{ $href }}" :active="$active" wire:navigate>
+                            <i class="{{ $item['icon'] }}"></i>
+                            <span class="ml-3">{{ $item['name'] }}</span>
+
+                            {{-- tampilkan ikon warning kalau ada reminder --}}
+                            @if (!empty($item['warning']))
+                                <i class="fa-solid fa-triangle-exclamation ml-auto rounded-full text-error p-1 bg-accent-content"></i>
+                            @endif
                         </x-side-link>
                     </li>
                 @endforeach

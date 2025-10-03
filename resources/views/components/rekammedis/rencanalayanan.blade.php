@@ -98,7 +98,8 @@
                     >
 
                     <!-- Dropdown Hasil -->
-                    <div class="absolute z-50 bg-white border rounded w-full max-h-48 overflow-y-auto"
+                    <div class="absolute left-0 right-0 top-full mt-1 z-50 
+                            bg-white border rounded w-full max-h-48 overflow-y-auto shadow-lg"
                         x-show="show && results.length"
                         @click.outside="show=false">
                         <template x-for="l in results" :key="l.id">

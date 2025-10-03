@@ -9,7 +9,7 @@ class Update extends Component
 {
     public $produkDanObatId;
     public $nama_dagang,$golongan,$kode,$sediaan,$harga_dasar, $harga_bersih;
-    public $stok,$expired_at,$batch,$lokasi,$supplier;
+    public $stok,$expired_at,$reminder,$batch,$lokasi,$supplier;
     public $diskon = 0;
 
     public $harga_dasar_show;
@@ -31,6 +31,7 @@ class Update extends Component
         $this->harga_bersih  =   $produkObat->harga_bersih ?? $produkObat->harga_dasar;
         $this->stok          =   $produkObat->stok;
         $this->expired_at    =   $produkObat->expired_at;
+        $this->reminder      =   $produkObat->reminder;
         $this->batch         =   $produkObat->batch;
         $this->lokasi        =   $produkObat->lokasi;
         $this->supplier      =   $produkObat->supplier;
@@ -63,6 +64,7 @@ class Update extends Component
             'diskon'        => 'nullable|min:0|max:100',
             'stok'          => 'required|integer|min:0',
             'expired_at'    => 'nullable|date',
+            'reminder'    => 'nullable|integer',
             'batch'         => 'nullable|string|max:100',
             'lokasi'        => 'nullable|string|max:100',
             'supplier'      => 'nullable|string|max:255',
@@ -78,6 +80,7 @@ class Update extends Component
             'harga_bersih'  => $this->harga_bersih,
             'stok'          => $this->stok,
             'expired_at'    => $this->expired_at,
+            'reminder'      => $this->reminder,
             'batch'         => $this->batch,
             'lokasi'        => $this->lokasi,
             'supplier'      => $this->supplier,

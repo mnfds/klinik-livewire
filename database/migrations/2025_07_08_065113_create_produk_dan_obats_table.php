@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('harga_bersih')->nullable();
             $table->integer('stok');
             $table->date('expired_at')->nullable();
+            $table->integer('reminder')->nullable();
             $table->string('batch')->nullable();
             $table->string('lokasi')->nullable();
             $table->string('supplier')->nullable();

@@ -91,6 +91,12 @@
                 <input type="date" class="input input-bordered w-full" wire:model.lazy="expired_at">
             </div>
 
+            {{-- Stok --}}
+            <div>
+                <label class="label font-semibold">Ingatkan berapa bulan sebelum barang expired?</label>
+                <input type="number" class="input input-bordered w-full" wire:model.lazy="reminder" min="0">
+            </div>
+
             {{-- Batch --}}
             <div>
                 <label class="label font-semibold">Batch</label>
