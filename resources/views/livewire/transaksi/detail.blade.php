@@ -1,0 +1,366 @@
+<div class="pt-1 pb-12">
+    <div class="max-w-full mx-auto sm:px-6 lg:px-8 space-y-6">
+
+        <!-- Breadcrumbs -->
+        <div class="hidden lg:flex justify-end px-4">
+            <div class="breadcrumbs text-sm">
+                <ul>
+                    <li>
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-folder"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('transaksi.kasir') }}" class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-folder"></i> Transaksi
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('transaksi.kasir') }}" class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-folder-open"></i> Proses Pembayaran
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Page Title -->
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
+            <h1 class="text-lg font-bold text-base-content">
+                <i class="fa-solid fa-layer-group"></i> Proses Pembayaran
+            </h1>
+        </div>
+
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-6 gap-6">
+                
+                {{-- Kolom Kiri: Detail Produk --}}
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-base-100 shadow rounded-box p-4">
+                        <div class="border-b pb-4 mb-4">
+                            <h3 class="text-xl font-bold mb-2">
+                                Rincian Pembayaran
+                            </h3>
+                            <div class="text-sm text-base-content space-y-1">
+                                <p><span class="font-semibold">Pasien:</span> {{ $pasien->nama ?? '-' }}</p>
+                                <p><span class="font-semibold">No. Rekam Medis:</span> {{ $pasien->no_register ?? '-' }}</p>
+                                <p><span class="font-semibold mb-2">Tanggal:</span> {{ now()->format('d M Y H:i') }}</p>
+                                <p><span class="font-semibold">Kasir:</span> {{ Auth::user()->biodata->nama_lengkap }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Pelayanan --}}
+                        @if($pelayanan->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Pelayanan</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($pelayanan as $item)
+                                        <div class="bg-base-100 border border-base-300 border-t-3 border-t-primary rounded-lg p-3 shadow-sm hover:shadow transition">
+                                            {{-- Nama pelayanan --}}
+                                            <div class="font-semibold text-base-content mb-1">
+                                                {{ ucfirst($item->pelayanan->nama_pelayanan ?? '-') }}
+                                            </div>
+
+                                            {{-- Harga --}}
+                                            <div class="text-sm text-base-content/70">
+                                                {{ $item->jumlah_pelayanan ?? 0 }} x 
+                                                Rp {{ number_format($item->pelayanan->harga_pelayanan ?? 0, 0, ',', '.') }}
+                                            </div>
+
+                                            {{-- Diskon, Potongan dan Subtotal --}}
+                                            <div class="mt-2 text-sm space-y-0.5">
+                                                @if ($item->potongan)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Potongan</span>
+                                                    <span class="font-medium text-base-content/70">
+                                                        {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                                @endif
+                                                @if ($item->diskon)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Diskon</span>
+                                                    <span class="font-medium text-base-content">
+                                                        {{ $item->diskon ? $item->diskon . '%' : '-' }}
+                                                    </span>
+                                                </div>
+                                                @endif
+                                                <div class="flex justify-between border-t border-dashed pt-1">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">
+                                                        {{-- Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }} --}}
+                                                        Rp {{ number_format($item->pelayanan->harga_pelayanan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Treatment --}}
+                        @if($treatment->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Treatment</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($treatment as $item)
+                                        <div class="bg-base-100 border border-base-300 border-t-3 border-t-error rounded-lg p-3 shadow-sm hover:shadow transition">
+                                            {{-- Nama treatment --}}
+                                            <div class="font-semibold text-base-content mb-1">
+                                                {{ ucfirst($item->treatment->nama_treatment ?? '-') }}
+                                            </div>
+
+                                            {{-- Baris harga: jumlah x harga satuan --}}
+                                            <div class="text-sm text-base-content/70">
+                                                {{ $item->jumlah_treatment ?? 0 }} x 
+                                                Rp {{ number_format($item->treatment->harga_treatment ?? 0, 0, ',', '.') }}
+                                            </div>
+
+                                            {{-- Diskon, Potongan dan Subtotal --}}
+                                            <div class="mt-2 text-sm space-y-0.5">
+                                                @if ($item->potongan)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Potongan</span>
+                                                    <span class="font-medium text-base-content/70">
+                                                        {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                                @endif
+                                                @if ($item->diskon)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Diskon</span>
+                                                    <span class="font-medium text-base-content/70">
+                                                        {{ $item->diskon ? $item->diskon . '%' : '-' }}
+                                                    </span>
+                                                </div>
+                                                @endif
+                                                <div class="flex justify-between border-t border-dashed pt-1">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">
+                                                        Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Produk --}}
+                        @if($produk->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Produk</h4>
+                                
+                                <div class="space-y-3">
+                                    @foreach($produk as $item)
+                                        <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+                                            {{-- Nama produk --}}
+                                            <div class="font-semibold text-base-content mb-1">
+                                                {{ ucfirst($item->produk->nama_dagang ?? '-') }}
+                                            </div>
+
+                                            {{-- Baris harga: jumlah x harga satuan --}}
+                                            <div class="text-sm text-base-content/70">
+                                                {{ $item->jumlah_produk ?? 1 }} x 
+                                                Rp {{ number_format($item->produk->harga_dasar ?? 0, 0, ',', '.') }}
+                                            </div>
+
+                                            {{-- Diskon, Potongan dan Subtotal --}}
+                                            <div class="mt-2 text-sm space-y-0.5">
+                                                @if ($item->potongan)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Potongan</span>
+                                                    <span class="font-medium text-base-content/70">
+                                                        Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                                @endif
+
+                                                @if ($item->diskon)
+                                                <div class="flex justify-between">
+                                                    <span class="text-base-content/70">Diskon</span>
+                                                    <span class="font-medium text-base-content/70">
+                                                        {{ $item->diskon ? $item->diskon . '%' : '-' }}
+                                                    </span>
+                                                </div>
+                                                @endif
+
+                                                <div class="flex justify-between border-t border-dashed pt-1">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">
+                                                        Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Bundling --}}
+                        @if($bundling->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Bundling</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($bundling as $item)
+                                        <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
+                                            
+                                            {{-- Nama bundling dan harga --}}
+                                            <div class="font-semibold text-base-content mb-1">
+                                                {{ ucfirst($item->bundling->nama ?? '-') }}
+                                            </div>
+
+                                            {{-- Jumlah, Harga Satuan, Potongan, Diskon --}}
+                                            <div class="text-sm text-base-content/70">
+                                                <div class="">
+                                                    <span class="font-medium text-base-content/70">{{ $item->jumlah_bundling ?? 0 }} x </span>
+                                                    <span class="font-medium text-base-content/70">Rp {{ number_format($item->bundling->harga ?? 0, 0, ',', '.') }}</span>
+                                                </div>
+
+                                                @if ($item->potongan)
+                                                    <div class="flex justify-between">
+                                                        <span class="font-medium text-base-content/70">Potongan</span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+
+                                                @if ($item->diskon)
+                                                    <div class="flex justify-between">
+                                                        <span class="font-medium text-base-content/70">Diskon</span>
+                                                        <span class="font-medium text-base-content/70">{{ $item->diskon }}%</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            {{-- Detail item bundling --}}
+                                            <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
+                                                @php $hasItems = false; @endphp
+
+                                                {{-- Treatment --}}
+                                                @foreach($item->bundling->treatmentBundlingRM ?? [] as $t)
+                                                    @php $hasItems = true; @endphp
+                                                    <div class="flex justify-between items-center">
+                                                        <span>
+                                                            {{ $t->treatment->nama_treatment ?? '-' }}
+                                                            <span class="text-xs text-base-content/70">(Treatment)</span>
+                                                        </span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            {{ $t->jumlah_terpakai ?? 0 }} dari {{ $t->jumlah_awal ?? 0 }} telah digunakan
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+
+                                                {{-- Pelayanan --}}
+                                                @foreach($item->bundling->pelayananBundlingRM ?? [] as $p)
+                                                    @php $hasItems = true; @endphp
+                                                    <div class="flex justify-between items-center">
+                                                        <span>
+                                                            {{ $p->pelayanan->nama_pelayanan ?? '-' }}
+                                                            <span class="text-xs text-base-content/70">(Pelayanan)</span>
+                                                        </span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            {{ $p->jumlah_terpakai ?? 0 }} dari {{ $p->jumlah_awal ?? 0 }} telah digunakan
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+
+                                                {{-- Produk --}}
+                                                @foreach($item->bundling->produkObatBundlingRM ?? [] as $pr)
+                                                    @php $hasItems = true; @endphp
+                                                    <div class="flex justify-between items-center">
+                                                        <span>
+                                                            {{ $pr->produk->nama_dagang ?? '-' }}
+                                                            <span class="text-xs text-base-content/70">(Produk)</span>
+                                                        </span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            {{ $pr->jumlah_terpakai ?? 0 }} dari {{ $pr->jumlah_awal ?? 0 }} telah diambil
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+
+                                                @unless($hasItems)
+                                                    <div class="italic text-base-content/70">Tidak ada item di bundling ini.</div>
+                                                @endunless
+                                            </div>
+
+                                            {{-- Subtotal --}}
+                                            <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
+                                                <span class="text-base-content">Subtotal</span>
+                                                <span class="font-semibold text-base-content">
+                                                    Rp {{ number_format($item->subtotal ?? ($item->bundling->harga ?? 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                    </div>
+                </div>
+
+                {{-- Kolom Kanan: Invoice --}}
+                <div class="lg:col-span-2">
+                    <div class="sticky top-20 space-y-6">
+                        <div class="bg-base-100  border-t-3 border-t-info shadow rounded-box p-4">
+                            <h3 class="font-semibold mb-4">Invoice</h3>
+                            <div class="space-y-2">
+
+                                {{-- Daftar item --}}
+                                @foreach([$pelayanan, $treatment, $produk, $bundling] as $collection)
+                                    @foreach($collection as $item)
+                                        @php
+                                            $nama = $item->pelayanan->nama_pelayanan
+                                                ?? $item->treatment->nama_treatment
+                                                ?? $item->produk->nama_dagang
+                                                ?? $item->bundling->nama
+                                                ?? '-';
+
+                                            $harga = $item->pelayanan->harga_pelayanan
+                                                ?? $item->treatment->harga_treatment
+                                                ?? $item->produk->harga_dasar
+                                                ?? $item->bundling->harga
+                                                ?? 0;
+                                        @endphp
+                                        <div class="flex justify-between">
+                                            <span>{{ $nama }}</span>
+                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @endforeach
+
+                                {{-- Total --}}
+                                @php
+                                    $total = collect([$pelayanan, $treatment, $produk, $bundling])
+                                        ->flatten()
+                                        ->reduce(function ($carry, $item) {
+                                            $harga = $item->pelayanan->harga_pelayanan
+                                                ?? $item->treatment->harga_treatment
+                                                ?? $item->produk->harga_dasar
+                                                ?? $item->bundling->harga
+                                                ?? 0;
+                                            return $carry + $harga;
+                                        }, 0);
+                                @endphp
+                                <div class="flex justify-between font-bold my-4">
+                                    <span>Total:</span>
+                                    <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

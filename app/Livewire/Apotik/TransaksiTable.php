@@ -113,7 +113,7 @@ final class TransaksiTable extends PowerGridComponent
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->tag('button') // supaya tidak jadi <a>
                 ->attributes([
-                    'title' => 'Udit Data',
+                    'title' => 'Edit Data',
                     'onclick' => "Livewire.navigate('".route('apotik.update', $row->id)."')",
                     'class' => 'btn btn-secondary'
                 ]),

@@ -296,6 +296,14 @@ Route::middleware(['auth'])->group(function () {
         return view('apotik.detail', ['id' => $id]);
     })->name('apotik.detail');
     // ====== KASIR APOTIK ====== //
+    
+    // ====== KASIR KLINIK ====== //
+    Route::view('/transaksi/klinik', 'transaksi.data')->name('transaksi.kasir');
+    Route::get('/transaksi/klinik/{id}/detail', function ($id) {
+        return view('transaksi.detail', ['id' => $id]);
+    })->name('transaksi.detail');
+    // ====== KASIR KLINIK ====== //
+
 });
 
 
