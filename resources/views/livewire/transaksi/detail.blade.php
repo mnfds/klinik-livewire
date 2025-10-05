@@ -44,7 +44,7 @@
                             <div class="text-sm text-base-content space-y-1">
                                 <p><span class="font-semibold">Pasien:</span> {{ $pasien->nama ?? '-' }}</p>
                                 <p><span class="font-semibold">No. Rekam Medis:</span> {{ $pasien->no_register ?? '-' }}</p>
-                                <p><span class="font-semibold mb-2">Tanggal:</span> {{ now()->format('d M Y H:i') }}</p>
+                                <p><span class="font-semibold mb-2">Tanggal:</span> {{ $pasienTerdaftar->created_at->translatedFormat('d M Y H:i') }}</p>
                                 <p><span class="font-semibold">Kasir:</span> {{ Auth::user()->biodata->nama_lengkap }}</p>
                             </div>
                         </div>
@@ -354,6 +354,7 @@
                                     <span>Total:</span>
                                     <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
                                 </div>
+                                <button class="btn btn-success mb-1 w-full"><i class="fa-solid fa-plus"></i> Bayar</button>
                             </div>
                         </div>
                     </div>

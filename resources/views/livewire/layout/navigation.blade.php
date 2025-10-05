@@ -16,7 +16,7 @@ new class extends Component
     }
 }; ?>
 
-<nav class="bg-base-100 border-b border-base-200 px-4 sm:px-6 lg:px-8">
+<nav class="sticky top-0 z-50 bg-base-100 border-b border-base-200 px-4 sm:px-6 lg:px-8 backdrop-blur-sm bg-opacity-95">
     <div class="flex justify-between items-center h-[60px] max-w-7xl mx-auto">
         <!-- Sidebar Toggle (Mobile & Desktop) -->
         <div class="flex items-center">
