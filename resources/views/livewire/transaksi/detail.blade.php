@@ -318,18 +318,27 @@
                                 @foreach([$pelayanan, $treatment, $produk, $bundling] as $collection)
                                     @foreach($collection as $item)
                                         @php
+                                            // ambil nama item berdasarkan relasi yang aktif
                                             $nama = $item->pelayanan->nama_pelayanan
                                                 ?? $item->treatment->nama_treatment
                                                 ?? $item->produk->nama_dagang
                                                 ?? $item->bundling->nama
                                                 ?? '-';
 
-                                            $harga = $item->pelayanan->harga_pelayanan
-                                                ?? $item->treatment->harga_treatment
-                                                ?? $item->produk->harga_dasar
-                                                ?? $item->bundling->harga
-                                                ?? 0;
+                                            // tentukan harga secara aman berdasarkan jenis
+                                            if (isset($item->pelayanan)) {
+                                                $harga = $item->subtotal ?? $item->pelayanan->harga_pelayanan ?? 0;
+                                            } elseif (isset($item->treatment)) {
+                                                $harga = $item->subtotal ?? $item->treatment->harga_treatment ?? 0;
+                                            } elseif (isset($item->produk)) {
+                                                $harga = $item->subtotal ?? $item->produk->harga_jual ?? 0;
+                                            } elseif (isset($item->bundling)) {
+                                                $harga = $item->subtotal ?? $item->bundling->harga_bundling ?? 0;
+                                            } else {
+                                                $harga = 0;
+                                            }
                                         @endphp
+
                                         <div class="flex justify-between">
                                             <span>{{ $nama }}</span>
                                             <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
@@ -342,11 +351,18 @@
                                     $total = collect([$pelayanan, $treatment, $produk, $bundling])
                                         ->flatten()
                                         ->reduce(function ($carry, $item) {
-                                            $harga = $item->pelayanan->harga_pelayanan
-                                                ?? $item->treatment->harga_treatment
-                                                ?? $item->produk->harga_dasar
-                                                ?? $item->bundling->harga
-                                                ?? 0;
+                                            if (isset($item->pelayanan)) {
+                                                $harga = $item->subtotal ?? $item->pelayanan->harga_pelayanan ?? 0;
+                                            } elseif (isset($item->treatment)) {
+                                                $harga = $item->subtotal ?? $item->treatment->harga_treatment ?? 0;
+                                            } elseif (isset($item->produk)) {
+                                                $harga = $item->subtotal ?? $item->produk->harga_jual ?? 0;
+                                            } elseif (isset($item->bundling)) {
+                                                $harga = $item->subtotal ?? $item->bundling->harga_bundling ?? 0;
+                                            } else {
+                                                $harga = 0;
+                                            }
+
                                             return $carry + $harga;
                                         }, 0);
                                 @endphp
