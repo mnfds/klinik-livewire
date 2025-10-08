@@ -292,24 +292,23 @@
                                 {{-- INPUT OBAT NON RACIK DAN RACIK --}}
                                 <div class="mb-2">
                                     <div class="tabs tabs-lift">
-                                        {{-- NON RACIK --}}
-                                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Obat Non Racik" checked="checked" style="background-image: none;"/>
+                                        {{-- TAB NON RACIK --}}
+                                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content"
+                                            aria-label="Obat Non Racik" checked="checked" style="background-image: none;" />
+
                                         <div class="tab-content bg-base-100 border-base-300 p-6">
                                             {{-- INFORMASI OBAT NON RACIK DARI DOKTER --}}
                                             <div class="mb-4">
-                                                <h3 class="font-semibold mb-4">
-                                                    Obat Non Racik
-                                                </h3>
+                                                <h3 class="font-semibold mb-4">Obat Non Racik</h3>
                                                 <details class="collapse bg-base-100 border-base-300 border">
                                                     <summary class="collapse-title font-semibold">Resep Dokter</summary>
-
                                                     <div class="collapse-content text-sm space-y-4">
                                                         @forelse ($obat_dokter_nonracikan as $nonracik)
                                                             <div class="p-4 rounded-lg border border-base-300 bg-base-200">
                                                                 <p><span class="font-semibold">Nama Obat:</span> {{ $nonracik['nama_obat_non_racikan'] }}</p>
                                                                 <p><span class="font-semibold">Jumlah:</span> {{ $nonracik['jumlah_obat_non_racikan'] }} {{ $nonracik['satuan_obat_non_racikan'] }}</p>
-                                                                <p><span class="font-semibold">Dosis:</span> {{ $nonracik['dosis_obat_non_racikan'] }} x {{ $nonracik['hari_obat_non_racikan'] }}</p>
-                                                                <p class="col-span-2"><span class="font-semibold">Aturan Pakai:</span> {{ $nonracik['aturan_pakai_obat_non_racikan'] }}</p>
+                                                                <p><span class="font-semibold">Dosis:</span> {{ $nonracik['dosis_obat_non_racikan'] }} × {{ $nonracik['hari_obat_non_racikan'] }}</p>
+                                                                <p><span class="font-semibold">Aturan Pakai:</span> {{ $nonracik['aturan_pakai_obat_non_racikan'] }}</p>
                                                             </div>
                                                         @empty
                                                             <p class="text-gray-500 italic">Tidak ada data resep dari dokter.</p>
@@ -317,89 +316,133 @@
                                                     </div>
                                                 </details>
                                             </div>
+
                                             {{-- INPUT OBAT NON RACIK DARI APOTEKER --}}
-                                            <div>
+                                            <div 
+                                                x-data="{
+                                                    obatList: [{
+                                                        nama_obat: '',
+                                                        jumlah_obat: '',
+                                                        satuan_obat: '',
+                                                        harga_obat: '',
+                                                        total_obat: '',
+                                                        dosis: '',
+                                                        hari: '',
+                                                        aturan_pakai: ''
+                                                    }],
+                                                    addObat() {
+                                                        this.obatList.push({
+                                                            nama_obat: '',
+                                                            jumlah_obat: '',
+                                                            satuan_obat: '',
+                                                            harga_obat: '',
+                                                            total_obat: '',
+                                                            dosis: '',
+                                                            hari: '',
+                                                            aturan_pakai: ''
+                                                        });
+                                                    },
+                                                    removeObat(index) {
+                                                        this.obatList.splice(index, 1);
+                                                    },
+                                                    submitToLivewire() {
+                                                        // Kirim data Alpine ke Livewire property
+                                                        $wire.set('input_apoteker_nonracikan', this.obatList);
+                                                        $wire.call('store');
+                                                    }
+                                                }"
+                                            >
                                                 <h3 class="font-semibold mb-4">Input Obat</h3>
 
-                                                <div class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4">
-                                                    {{-- BARIS 1 --}}
-                                                    <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end">
-                                                        {{-- Nama Obat --}}
-                                                        <div class="form-control md:col-span-3">
-                                                            <label class="label font-semibold">Nama</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.nama_obat" type="text" class="input input-bordered w-full" placeholder="Nama obat" />
-                                                        </div>
+                                                <template x-for="(obat, index) in obatList" :key="index">
+                                                    <div class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4 mt-4">
+                                                        {{-- === BARIS 1 === --}}
+                                                        <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end">
+                                                            <div class="form-control md:col-span-3">
+                                                                <label class="label font-semibold">Nama</label>
+                                                                <input type="text" class="input input-bordered w-full" placeholder="Nama obat"
+                                                                    x-model="obat.nama_obat" />
+                                                            </div>
 
-                                                        {{-- Jumlah --}}
-                                                        <div class="form-control md:col-span-1">
-                                                            <label class="label font-semibold">Jumlah</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.jumlah_obat" type="number" class="input input-bordered w-full" placeholder="0" />
-                                                        </div>
+                                                            <div class="form-control md:col-span-1">
+                                                                <label class="label font-semibold">Jumlah</label>
+                                                                <input type="number" class="input input-bordered w-full" placeholder="0"
+                                                                    x-model="obat.jumlah_obat" />
+                                                            </div>
 
-                                                        {{-- Satuan --}}
-                                                        <div class="form-control md:col-span-1">
-                                                            <label class="label font-semibold">Satuan</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.satuan_obat" type="text" class="input input-bordered w-full" placeholder="Tablet" />
-                                                        </div>
+                                                            <div class="form-control md:col-span-1">
+                                                                <label class="label font-semibold">Satuan</label>
+                                                                <input type="text" class="input input-bordered w-full" placeholder="Tablet"
+                                                                    x-model="obat.satuan_obat" />
+                                                            </div>
 
-                                                        {{-- Harga --}}
-                                                        <div class="form-control md:col-span-1">
-                                                            <label class="label font-semibold">Harga</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.harga_obat" type="text" class="input input-bordered w-full" placeholder="Rp 0" />
-                                                        </div>
+                                                            <div class="form-control md:col-span-1">
+                                                                <label class="label font-semibold">Harga</label>
+                                                                <input type="number" class="input input-bordered w-full" placeholder="Rp 0"
+                                                                    x-model="obat.harga_obat"
+                                                                    x-effect="obat.total_obat = obat.jumlah_obat * obat.harga_obat" />
+                                                            </div>
 
-                                                        {{-- Subtotal --}}
-                                                        <div class="form-control md:col-span-2">
-                                                            <label class="label font-semibold">Subtotal</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.total_obat" type="text" class="input input-bordered w-full" placeholder="Rp 0" />
-                                                        </div>
-                                                    </div>
-
-                                                    {{-- BARIS 2 --}}
-                                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-                                                        {{-- Dosis x Hari (inline) --}}
-                                                        <div class="form-control md:col-span-2">
-                                                            <label class="label font-semibold">Dosis × Hari</label>
-                                                            <div class="flex items-center gap-2">
-                                                                <input wire:model.defer="input_apoteker_nonracikan.dosis" type="text" class="input input-bordered w-full" placeholder="3" />
-                                                                <span class="text-lg font-semibold">×</span>
-                                                                <input wire:model.defer="input_apoteker_nonracikan.hari" type="text" class="input input-bordered w-full" placeholder="1" />
+                                                            <div class="form-control md:col-span-2">
+                                                                <label class="label font-semibold">Subtotal</label>
+                                                                <input type="number" class="input input-bordered w-full" placeholder="Rp 0"
+                                                                    x-model="obat.total_obat" readonly />
                                                             </div>
                                                         </div>
 
-                                                        {{-- Aturan Pakai --}}
-                                                        <div class="form-control md:col-span-4">
-                                                            <label class="label font-semibold">Instruksi Pemakaian</label>
-                                                            <input wire:model.defer="input_apoteker_nonracikan.aturan_pakai" type="text" class="input input-bordered w-full" placeholder="sesudah makan" />
+                                                        {{-- === BARIS 2 === --}}
+                                                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                                                            <div class="form-control md:col-span-2">
+                                                                <label class="label font-semibold">Dosis × Hari</label>
+                                                                <div class="flex items-center gap-2">
+                                                                    <input type="text" class="input input-bordered w-full" placeholder="3"
+                                                                        x-model="obat.dosis" />
+                                                                    <span class="text-lg font-semibold">×</span>
+                                                                    <input type="text" class="input input-bordered w-full" placeholder="1"
+                                                                        x-model="obat.hari" />
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-control md:col-span-3">
+                                                                <label class="label font-semibold">Instruksi Pemakaian</label>
+                                                                <input type="text" class="input input-bordered w-full" placeholder="sesudah makan"
+                                                                    x-model="obat.aturan_pakai" />
+                                                            </div>
+
+                                                            <div class="form-control md:col-span-1">
+                                                                <button type="button" @click="removeObat(index)" class="btn btn-error w-full">Hapus</button>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </template>
+
+                                                <div class="mt-4 flex justify-between">
+                                                    <button type="button" @click="addObat()" class="btn btn-primary">+ Tambah Obat</button>
+                                                    <button type="button" @click="submitToLivewire()" class="btn btn-success">Simpan</button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {{-- RACIK --}}
-                                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Obat Racikan" style="background-image: none;"/>
+                                        {{-- TAB RACIK --}}
+                                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content"
+                                            aria-label="Obat Racikan" style="background-image: none;" />
                                         <div class="tab-content bg-base-100 border-base-300 p-6">
                                             {{-- INFORMASI OBAT RACIKAN DARI DOKTER --}}
                                             <div class="mb-4">
-                                                <h3 class="font-semibold mb-4">
-                                                    Obat Racik
-                                                </h3>
+                                                <h3 class="font-semibold mb-4">Obat Racik</h3>
                                                 <details class="collapse bg-base-100 border-base-300 border">
                                                     <summary class="collapse-title font-semibold">Resep Dokter</summary>
-
                                                     <div class="collapse-content text-sm space-y-4">
                                                         @forelse ($obat_dokter_racikan as $racik)
                                                             <div class="p-4 rounded-lg border border-base-300 bg-base-200">
                                                                 <p><span class="font-semibold">Nama Obat:</span> {{ $racik['nama_racikan'] }}</p>
                                                                 <p><span class="font-semibold">Jumlah:</span> {{ $racik['jumlah_racikan'] }} {{ $racik['satuan_racikan'] }}</p>
-                                                                <p><span class="font-semibold">Dosis:</span> {{ $racik['dosis_obat_racikan'] }} x {{ $racik['hari_obat_racikan'] }}</p>
-                                                                <p class="col-span-2"><span class="font-semibold">Aturan Pakai:</span> {{ $racik['aturan_pakai_racikan'] }}</p>
+                                                                <p><span class="font-semibold">Dosis:</span> {{ $racik['dosis_obat_racikan'] }} × {{ $racik['hari_obat_racikan'] }}</p>
+                                                                <p><span class="font-semibold">Aturan Pakai:</span> {{ $racik['aturan_pakai_racikan'] }}</p>
                                                                 <div class="mt-2 p-2 border rounded bg-base-100">
                                                                     <h4>Bahan Racikan:</h4>
                                                                     @foreach ($racik['bahan'] as $bahan)
-                                                                    <div class="text-sm">{{ $bahan['nama_obat_racikan'] }}, {{ $bahan['jumlah_obat_racikan'] }} {{ $bahan['satuan_obat_racikan'] }}</div>
-                                                                        
+                                                                        <div class="text-sm">{{ $bahan['nama_obat_racikan'] }}, {{ $bahan['jumlah_obat_racikan'] }} {{ $bahan['satuan_obat_racikan'] }}</div>
                                                                     @endforeach
                                                                 </div>
                                                             </div>
@@ -409,36 +452,25 @@
                                                     </div>
                                                 </details>
                                             </div>
-                                            {{-- INPUT NAMA RACIKAN DAN OBAT YANG DI RACIK DARI APOTEKER --}}
-                                            <div>
-                                                
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 {{-- EMBALASE DAN TUSLAH --}}
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-2 border bg-base-200 border-base-300 rounded-lg p-3">
-                                    {{-- Tuslah --}}
                                     <div class="form-control">
                                         <label class="label font-semibold">Tuslah</label>
-                                        <input wire:model.defer="data_apoteker.tuslah"
-                                            type="text"
-                                            class="input input-bordered w-full"
-                                            placeholder="Rp. 0" />
+                                        <input wire:model.defer="data_apoteker.tuslah" type="text"
+                                            class="input input-bordered w-full" placeholder="Rp. 0" />
                                     </div>
-
-                                    {{-- Embalase --}}
                                     <div class="form-control">
                                         <label class="label font-semibold">Embalase</label>
-                                        <input wire:model.defer="data_apoteker.embalase"
-                                            type="text"
-                                            class="input input-bordered w-full"
-                                            placeholder="Rp. 0" />
+                                        <input wire:model.defer="data_apoteker.embalase" type="text"
+                                            class="input input-bordered w-full" placeholder="Rp. 0" />
                                     </div>
-
-                                    {{-- Rekam Medis ID (hidden) --}}
                                     <input type="hidden" wire:model.defer="data_apoteker.rekam_medis_id">
                                 </div>
+
                                 {{-- RINCIAN HARGA --}}
                                 <div class="items-end border bg-base-200 border-base-300 rounded-lg p-3 my-3">
                                     <div class="border-b-2 border-dotted border-neutral mb-2">
@@ -449,10 +481,9 @@
                                         <p class="font-semibold text-sm">Total Keseluruhan : Rp.</p>
                                     </div>
                                 </div>
+
                                 <div>
-                                    <button type="submit" class="btn btn-primary w-full">
-                                        simpan
-                                    </button>
+                                    <button type="submit" class="btn btn-primary w-full">Simpan</button>
                                 </div>
                             </form>
                         </div>
