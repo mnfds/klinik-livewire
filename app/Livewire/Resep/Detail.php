@@ -13,54 +13,43 @@ class Detail extends Component
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
 
-    // hanya untuk binding data ke form
-    public array $obatNonRacikanItems = [];
-    public array $obatRacikanItems = [];
+    // DATA DOKTER DARI SOAP
+    public array $obat_dokter_nonracikan = [];
+    public array $obat_dokter_racikan = [];
 
-    //input obat final
-    public $rekammedis_id;
-    public $tuslah;
-    public $embalase;
-
-    public $obatNonracikFinal = '[]';
-    public $obatRacikanFinal = '[]';
-
-    public $racikanInput = [
-        [
-            'obat_final_id', //ambil dari variable create obat_final
-            'nama_racikan', // ambil dari obatRacikanItems
-            'jumlah_racikan', //ambil dari form
-            'satuan_racikan', //ambil dari form
-            'total_racikan', //ambil dari form
-            'dosis', // ambil dari obatRacikanItems
-            'hari', // ambil dari obatRacikanItems
-            'aturan_pakai', // ambil dari obatRacikanItems
-            'metode_racikan', // ambil dari obatRacikanItems
-        ]
+    // DATA APOTEKER YANG AKAN DI STORE
+    public array $input_apoteker_nonracikan = [
+        'nama_obat' => '',
+        'jumlah_obat' => '',
+        'satuan_obat' => '',
+        'harga_obat' => '',
+        'total_obat' => '',
+        'dosis' => '',
+        'hari' => '',
+        'aturan_pakai' => '',
     ];
-
-    public $bahanRacikanInput = [
-        [
-            'produk_id',
-            'obat_racikan_final_id',
-            'jumlah_obat',
-            'satuan_obat',
-            'harga_obat',
-            'total_obat',
-        ]
+    public array $input_apoteker_racikan = [
+        'nama_racikan' => '',
+        'jumlah_racikan' => '',
+        'satuan_racikan' => '',
+        'total_racikan' => '',
+        'dosis' => '',
+        'hari' => '',
+        'aturan_pakai' => '',
+        'metode_racikan' => '',
+        'bahan' => [
+            'produk_id' => '',
+            'jumlah_obat' => '',
+            'satuan_obat' => '',
+            'harga_obat' => '',
+            'total_obat' => '',
+        ],
+        
     ];
-    public $nonRacikanInput = [
-        [
-            'obat_final_id', //ambil dari variabel  create obat_final
-            'produk_id', // ambil dari form
-            'jumlah_obat', // ambil dari form
-            'satuan_obat', // ambil dari form
-            'harga_obat', // ambil dari form
-            'total_obat',  // ambil dari form
-            'dosis', // ambil dari obatNonRacikanItems
-            'hari', // ambil dari obatNonRacikanItems
-            'aturan_pakai', // ambil dari obatNonRacikanItems
-            ]
+    public $data_apoteker = [
+        'rekam_medis_id' => '',
+        'tuslah' => '',
+        'embalase' => '',
     ];
 
     public function mount($pasien_terdaftar_id = null)
@@ -72,42 +61,62 @@ class Detail extends Component
             'rekamMedis.obatRacikanRM.bahanRacikan',
         ])->findOrFail($this->pasien_terdaftar_id);
 
-        $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
+        $rekamMedis = $this->pasienTerdaftar->rekamMedis;
+        $this->data_apoteker['rekam_medis_id'] =  $rekamMedis->id ?? null;
 
-        // mapping data obat non racikan
-        $this->obatNonRacikanItems = $this->pasienTerdaftar->rekamMedis->obatNonRacikanRM->map(fn($o) => [
-                'id'   => $o->id,
-                'nama_obat_non_racikan'   => $o->nama_obat_non_racikan,
-                'jumlah_obat_non_racikan' => $o->jumlah_obat_non_racikan,
-                'satuan_obat_non_racikan' => $o->satuan_obat_non_racikan,
-                'dosis_obat_non_racikan'  => $o->dosis_obat_non_racikan,
-                'hari_obat_non_racikan'   => $o->hari_obat_non_racikan,
-                'aturan_pakai_obat_non_racikan' => $o->aturan_pakai_obat_non_racikan,
-            ])->toArray();
+        if ($rekamMedis) {
+            // Obat non racikan
+            $this->obat_dokter_nonracikan = $rekamMedis->obatNonRacikanRM
+                ->map(function ($obat) {
+                    return [
+                        'id'                            => $obat->id,
+                        'nama_obat_non_racikan'         => $obat->nama_obat_non_racikan ?? '-',
+                        'jumlah_obat_non_racikan'       => $obat->jumlah_obat_non_racikan ?? '-',
+                        'satuan_obat_non_racikan'       => $obat->satuan_obat_non_racikan ?? '-',
+                        'dosis_obat_non_racikan'        => $obat->dosis_obat_non_racikan ?? '-',
+                        'hari_obat_non_racikan'         => $obat->hari_obat_non_racikan ?? '-',
+                        'aturan_pakai_obat_non_racikan' => $obat->aturan_pakai_obat_non_racikan ?? '-',
+                    ];
+                })->toArray();
 
-        // mapping data obat racikan
-        $this->obatRacikanItems = $this->pasienTerdaftar->rekamMedis->obatRacikanRM->map(fn($r) => [
-                'id' => $r->id,
-                'nama_racikan' => $r->nama_racikan,
-                'jumlah_racikan' => $r->jumlah_racikan,
-                'satuan_racikan' => $r->satuan_racikan,
-                'dosis_obat_racikan' => $r->dosis_obat_racikan,
-                'hari_obat_racikan' => $r->hari_obat_racikan,
-                'aturan_pakai_racikan' => $r->aturan_pakai_racikan,
-                'metode_racikan' => $r->metode_racikan,
-                'bahan' => $r->bahanRacikan->map(fn($b) => [
-                    'id' => $b->id,
-                    'nama_obat_racikan'   => $b->nama_obat_racikan,
-                    'jumlah_obat_racikan' => $b->jumlah_obat_racikan,
-                    'satuan_obat_racikan' => $b->satuan_obat_racikan,
-                ])->toArray(),
-            ])->toArray();
+            // Obat racikan
+            $this->obat_dokter_racikan = $rekamMedis->obatRacikanRM
+                ->map(function ($racikan) {
+                    return [
+                        'id' => $racikan->id,
+                        'nama_racikan'          => $racikan->nama_racikan,
+                        'jumlah_racikan'        => $racikan->jumlah_racikan,
+                        'satuan_racikan'        => $racikan->satuan_racikan,
+                        'dosis_obat_racikan'    => $racikan->dosis_obat_racikan,
+                        'hari_obat_racikan'     => $racikan->hari_obat_racikan,
+                        'aturan_pakai_racikan'  => $racikan->aturan_pakai_racikan,
+                        'metode_racikan'        => $racikan->metode_racikan,
+                        'bahan'                 => $racikan->bahanRacikan
+                        ->map(function ($bahan) {
+                            return [
+                                'nama_obat_racikan' => $bahan->nama_obat_racikan,
+                                'jumlah_obat_racikan' => $bahan->jumlah_obat_racikan,
+                                'satuan_obat_racikan' => $bahan->satuan_obat_racikan,
+                            ];
+                        })->toArray(),
+                    ];
+                })->toArray();
 
+            // dd($this->obat_dokter_nonracikan);
+        }
     }
 
     public function render()
     {
         return view('livewire.resep.detail');
+    }
+
+    public function store(){
+        dd([
+            $this->input_apoteker_nonracikan,
+            $this->input_apoteker_racikan,
+            $this->data_apoteker,
+        ]);
     }
 
     public function create()
