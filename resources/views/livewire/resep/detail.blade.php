@@ -417,7 +417,15 @@
 
                                         <!-- Input Apoteker Racikan -->
 <!-- Racikan Per Resep -->
-<div x-data="racikanManager()" x-init="init()" class="border rounded-lg bg-base-100 p-2">
+<div x-data="racikanManager()" 
+     x-init="
+        init();
+        $watch('racikanList', value => {
+            $refs.racikanHidden.value = JSON.stringify(value);
+            $refs.racikanHidden.dispatchEvent(new Event('input'));
+        }, { deep: true })
+     "
+     class="border rounded-lg bg-base-100 p-2">
 
     <!-- Hidden input untuk Livewire -->
     <input type="hidden" x-ref="racikanHidden" wire:model="obatRacikanFinal">
@@ -436,8 +444,6 @@
             <!-- Loop bahan racikan -->
             <template x-for="(bahan, bIndex) in racikan.bahan" :key="bahan.uid">
                 <div class="flex gap-2 mb-2 items-start">
-                    
-                    <!-- Search Obat -->
                     <div class="relative flex-1" x-data="searchObat(rIndex, bIndex, racikanList)">
                         <input type="text" x-model="query" @input="search()" @focus="open = true"
                             @click.away="open = false" placeholder="Cari nama obat..."
@@ -452,18 +458,14 @@
                         </div>
                     </div>
 
-                    <!-- Jumlah -->
                     <input type="number" x-model="bahan.jumlah" @input="hitungTotalBahan(rIndex, bIndex)"
                         placeholder="Jumlah" class="input input-bordered w-20"/>
 
-                    <!-- Satuan -->
                     <input type="text" x-model="bahan.satuan" readonly class="input input-bordered w-20 bg-base-200"/>
 
-                    <!-- Harga Satuan -->
                     <input type="text" x-model="bahan.harga_satuan_display" readonly
                         class="input input-bordered w-28 bg-base-200 text-right"/>
 
-                    <!-- Total -->
                     <input type="text" x-model="bahan.total_display" readonly
                         class="input input-bordered w-28 bg-base-200 text-right"/>
 
@@ -472,13 +474,12 @@
             </template>
 
             <button type="button" @click="addBahan(rIndex)" class="btn btn-primary btn-sm mt-1">+ Tambah Bahan</button>
-
         </div>
     </template>
 
     <button type="button" @click="addRacikan()" class="btn btn-primary btn-sm mb-4">+ Tambah Racikan Baru</button>
-
 </div>
+
                                     </div>
 
                                 </div>
@@ -593,32 +594,45 @@
             return {
                 racikanList: [],
                 init() {
-                    // jika mau preload dari Livewire, bisa assign di sini
+                    // preload dari Livewire jika perlu
                 },
                 addRacikan() {
                     this.racikanList.push({
-                        uid: Date.now()+Math.random(),
+                        uid: Date.now() + Math.random(),
                         nama_racikan: '',
                         bahan: []
                     });
                 },
                 removeRacikan(rIndex) {
-                    this.racikanList.splice(rIndex,1);
+                    this.racikanList.splice(rIndex, 1);
                     this.updateGrandTotal();
                 },
                 addBahan(rIndex) {
                     this.racikanList[rIndex].bahan.push({
-                        uid: Date.now()+Math.random(),
-                        id:'', nama:'', jumlah:'', satuan:'',
-                        harga_satuan:0, harga_satuan_display:'',
-                        total:0, total_display:''
+                        uid: Date.now() + Math.random(),
+                        id: '', nama: '', jumlah: '', satuan: '',
+                        harga_satuan: 0, harga_satuan_display: '',
+                        total: 0, total_display: ''
                     });
                 },
                 removeBahan(rIndex, bIndex) {
-                    this.racikanList[rIndex].bahan.splice(bIndex,1);
+                    this.racikanList[rIndex].bahan.splice(bIndex, 1);
                     this.updateGrandTotal();
                 },
-                hitungTotalBahan(rIndex,bIndex) {
+                // 👇 method baru — dipanggil oleh searchObat()
+                updateBahanFromSearch(rIndex, bIndex, result) {
+                    const bahan = this.racikanList[rIndex].bahan[bIndex];
+                    bahan.id = result.id;
+                    bahan.nama = result.text; // atau result.nama_obat_aktual
+                    bahan.satuan = result.satuan || '';
+                    bahan.harga_satuan = result.harga || 0;
+                    bahan.harga_satuan_display = formatCurrency(result.harga || 0);
+                    bahan.total = (parseFloat(bahan.jumlah) || 0) * (parseFloat(result.harga) || 0);
+                    bahan.total_display = formatCurrency(bahan.total);
+
+                    this.updateGrandTotal();
+                },
+                hitungTotalBahan(rIndex, bIndex) {
                     const bahan = this.racikanList[rIndex].bahan[bIndex];
                     const jumlah = parseFloat(bahan.jumlah) || 0;
                     const harga = parseFloat(bahan.harga_satuan) || 0;
@@ -632,43 +646,68 @@
                     this.racikanList.forEach(r => {
                         r.bahan.forEach(b => total += parseFloat(b.total) || 0);
                     });
-                    this.$dispatch('update-total', { type:'racikan', total });
+                    this.$dispatch('update-total', { type: 'racikan', total });
                 }
-            }
+            };
         }
 
         // Komponen pencarian obat (untuk dropdown search ajax)
-        function searchObat(i, inputs) {
+        function searchObat(...args) {
             return {
-                query: inputs[i].nama || '',
+                query: '',
                 results: [],
                 open: false,
                 async search() {
-                    if (this.query.length < 2) { this.results = []; return; }
-                    const res  = await fetch(`{{ route('search.ProdukObat') }}?q=${encodeURIComponent(this.query)}`);
+                    if (this.query.length < 2) {
+                        this.results = [];
+                        return;
+                    }
+                    const res = await fetch(`{{ route('search.ProdukObat') }}?q=${encodeURIComponent(this.query)}`);
                     const data = await res.json();
                     this.results = data;
                 },
                 select(result) {
-                    // Set pilihan + harga/satuan
                     this.query = result.text;
-                    this.open  = false;
+                    this.open = false;
 
-                    inputs[i].id      = result.id;
-                    inputs[i].nama    = result.text;
-                    inputs[i].satuan  = result.satuan;
-                    inputs[i].harga_satuan = result.harga;
-                    inputs[i].harga_satuan_display = formatCurrency(result.harga);
+                    // --- CASE 1: DIPANGGIL DARI NON RACIK ---
+                    if (args.length === 2) {
+                        const [i, inputs] = args;
+                        const item = inputs[i];
+                        item.id = result.id;
+                        item.nama = result.text;
+                        item.satuan = result.satuan;
+                        item.harga_satuan = result.harga;
+                        item.harga_satuan_display = formatCurrency(result.harga);
 
-                    const jumlah = parseFloat(inputs[i].jumlah) || 0;
-                    const total  = jumlah * (parseFloat(result.harga) || 0);
-                    inputs[i].total = total;
-                    inputs[i].total_display = formatCurrency(total);
+                        const jumlah = parseFloat(item.jumlah) || 0;
+                        const total = jumlah * (parseFloat(result.harga) || 0);
+                        item.total = total;
+                        item.total_display = formatCurrency(total);
 
-                    // **WAJIB**: trigger hitung-total supaya parent updateGrandTotal()
-                    this.$dispatch('hitung-total', { index: i });
-                }
-            }
+                        this.$dispatch('hitung-total', { index: i });
+                        return;
+                    }
+
+                    // --- CASE 2: DIPANGGIL DARI RACIKAN ---
+                    if (args.length >= 3) {
+                        const [rIndex, bIndex, racikanList] = args;
+                        const bahan = racikanList[rIndex].bahan[bIndex];
+                        bahan.id = result.id;
+                        bahan.nama = result.text;
+                        bahan.satuan = result.satuan;
+                        bahan.harga_satuan = result.harga;
+                        bahan.harga_satuan_display = formatCurrency(result.harga);
+
+                        const jumlah = parseFloat(bahan.jumlah) || 0;
+                        const total = jumlah * (parseFloat(result.harga) || 0);
+                        bahan.total = total;
+                        bahan.total_display = formatCurrency(total);
+
+                        this.$dispatch('hitung-total', { rIndex, bIndex });
+                    }
+                },
+            };
         }
 
         function biayaTambahan() {
