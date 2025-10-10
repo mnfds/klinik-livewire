@@ -49,128 +49,6 @@
                             </div>
                         </div>
 
-                        {{-- OBAT NON RACIK --}}
-                        @if($obatapoteker->isNotEmpty())
-                            <div class="mb-6">
-                                <h4 class="font-semibold mb-2 text-base-content">Obat Non Racik</h4>
-
-                                <div class="space-y-3">
-                                    @foreach($obatapoteker as $final)
-                                        @foreach ($final->obatNonRacikanFinals as $item)
-                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
-                                                {{-- Nama pelayanan --}}
-                                                <div class="font-semibold text-base-content mb-1">
-                                                    {{ ucfirst($item->produk->nama_dagang ?? '-') }}
-                                                </div>
-
-                                                {{-- Harga --}}
-                                                <div class="text-sm text-base-content/70">
-                                                    {{ $item->jumlah_obat ?? 0 }} {{ $item->satuan_obat }} x 
-                                                    Rp {{ number_format($item->harga_obat ?? 0, 0, ',', '.') }}
-                                                </div>
-
-                                                {{-- Diskon, Potongan dan Subtotal --}}
-                                                <div class="mt-2 text-sm space-y-0.5">
-                                                    @if ($item->potongan)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-base-content/70">Potongan</span>
-                                                        <span class="font-medium text-base-content/70">
-                                                            {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                    @if ($item->diskon)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-base-content/70">Diskon</span>
-                                                        <span class="font-medium text-base-content">
-                                                            {{ $item->diskon ? $item->diskon . '%' : '-' }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                    <div class="flex justify-between border-t border-dashed pt-1">
-                                                        <span class="text-base-content">Subtotal</span>
-                                                        <span class="font-semibold text-base-content">
-                                                            {{-- Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }} --}}
-                                                            Rp {{ number_format($item->total_obat ?? 0, 0, ',', '.') }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- OBAT RACIK --}}
-                        @if($obatapoteker->isNotEmpty())
-                            <div class="mb-6">
-                                <h4 class="font-semibold mb-2 text-base-content">Obat Racik</h4>
-
-                                <div class="space-y-3">
-                                    @foreach($obatapoteker as $final)
-                                        @foreach ($final->obatRacikanFinals as $item)
-                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
-                                                {{-- Nama Racikan --}}
-                                                <div class="font-semibold text-base-content mb-1">
-                                                    {{ ucfirst($item->nama_racikan ?? '-') }}
-                                                </div>
-
-                                                {{-- Diskon, Potongan dan Subtotal --}}
-                                                <div class="mt-2 text-sm space-y-0.5">
-                                                    @if ($item->potongan)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-base-content/70">Potongan</span>
-                                                        <span class="font-medium text-base-content/70">
-                                                            {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                    @if ($item->diskon)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-base-content/70">Diskon</span>
-                                                        <span class="font-medium text-base-content">
-                                                            {{ $item->diskon ? $item->diskon . '%' : '-' }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                </div>
-
-                                                {{-- Detail item bundling --}}
-                                                <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
-                                                    @php $hasItems = false; @endphp
-
-                                                    {{-- Bahan Racikan --}}
-                                                    @foreach($item->bahanRacikanFinals ?? [] as $detail)
-                                                        @php $hasItems = true; @endphp
-                                                        <div class="flex justify-between items-center">
-                                                            <span>
-                                                                {{ $detail->produk->nama_dagang ?? '-' }}
-                                                            </span>
-                                                            <span class="font-medium text-base-content/70">
-                                                                {{ $detail->jumlah_obat ?? 0 }} {{ $detail->satuan_obat }} x {{ number_format($detail->harga_obat ?? 0, 0, ',', '.') }}
-                                                            </span>
-                                                        </div>
-                                                    @endforeach
-
-                                                    @unless($hasItems)
-                                                        <div class="italic text-base-content/70">Tidak ada Resep Obat.</div>
-                                                    @endunless
-                                                </div>
-                                                {{-- Subtotal --}}
-                                                <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
-                                                    <span class="text-base-content">Subtotal</span>
-                                                    <span class="font-semibold text-base-content">
-                                                        Rp {{ number_format($item->total_racikan ?? 0, 0, ',', '.') }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
                         {{-- Pelayanan --}}
                         @if($pelayanan->isNotEmpty())
                             <div class="mb-6">
@@ -426,6 +304,206 @@
                             </div>
                         @endif
 
+                        @if ($obatapoteker->isNotEmpty())
+
+                            {{-- === OBAT NON RACIK (FINAL) === --}}
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Obat Non Racik</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($obatapoteker as $final)
+                                        @foreach($final->obatNonRacikanFinals ?? [] as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                {{-- Nama Obat --}}
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->produk->nama_dagang ?? '-') }}
+                                                </div>
+
+                                                {{-- Jumlah & Harga --}}
+                                                <div class="text-sm text-base-content/70">
+                                                    {{ $item->jumlah_obat ?? 0 }} {{ $item->satuan_obat ?? '' }} ×
+                                                    Rp {{ number_format($item->harga_obat ?? 0, 0, ',', '.') }}
+                                                </div>
+
+                                                {{-- Potongan & Diskon --}}
+                                                <div class="mt-2 text-sm space-y-0.5">
+                                                    @if ($item->potongan)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Potongan</span>
+                                                            <span class="font-medium text-base-content/70">
+                                                                Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+
+                                                    @if ($item->diskon)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Diskon</span>
+                                                            <span class="font-medium text-base-content">
+                                                                {{ $item->diskon }}%
+                                                            </span>
+                                                        </div>
+                                                    @endif
+
+                                                    {{-- Subtotal --}}
+                                                    <div class="flex justify-between border-t border-dashed pt-1">
+                                                        <span class="text-base-content">Subtotal</span>
+                                                        <span class="font-semibold text-base-content">
+                                                            Rp {{ number_format($item->total_obat ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- === OBAT RACIK (FINAL) === --}}
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Obat Racik</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($obatapoteker as $final)
+                                        @foreach($final->obatRacikanFinals ?? [] as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                {{-- Nama Racikan --}}
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->nama_racikan ?? '-') }}
+                                                </div>
+
+                                                {{-- Potongan & Diskon --}}
+                                                <div class="mt-2 text-sm space-y-0.5">
+                                                    @if ($item->potongan)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Potongan</span>
+                                                            <span class="font-medium text-base-content/70">
+                                                                Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                    @if ($item->diskon)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Diskon</span>
+                                                            <span class="font-medium text-base-content">
+                                                                {{ $item->diskon }}%
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Bahan Racikan --}}
+                                                <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
+                                                    @php $bahanList = $item->bahanRacikanFinals ?? collect(); @endphp
+
+                                                    @if($bahanList->isNotEmpty())
+                                                        @foreach($bahanList as $detail)
+                                                            <div class="flex justify-between items-center">
+                                                                <span>{{ $detail->produk->nama_dagang ?? '-' }}</span>
+                                                                <span class="font-medium text-base-content/70">
+                                                                    {{ $detail->jumlah_obat ?? 0 }} {{ $detail->satuan_obat ?? '' }} × Rp {{ number_format($detail->harga_obat ?? 0, 0, ',', '.') }}
+                                                                </span>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <div class="italic text-base-content/70">Tidak ada bahan racikan.</div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Subtotal --}}
+                                                <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">
+                                                        Rp {{ number_format($item->total_racikan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endforeach
+                                </div>
+                            </div>
+
+                        @else
+                            {{-- === OBAT NON RACIK (RME Draft) === --}}
+                            @if($obatnonracik->isNotEmpty())
+                                <div class="mb-6">
+                                    <h4 class="font-semibold mb-2 text-base-content">Obat Non Racik</h4>
+
+                                    <div class="space-y-3">
+                                        @foreach($obatnonracik as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->nama_obat_non_racikan ?? '-') }}
+                                                </div>
+
+                                                <div class="text-sm text-base-content/70">
+                                                    {{ $item->jumlah_obat_non_racikan ?? 0 }} {{ $item->satuan_obat_non_racikan ?? '' }}
+                                                </div>
+
+                                                {{-- Diskon & Potongan --}}
+                                                <div class="mt-2 text-sm space-y-0.5">
+                                                    @if ($item->potongan)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Potongan</span>
+                                                            <span class="font-medium text-base-content/70">
+                                                                Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                    @if ($item->diskon)
+                                                        <div class="flex justify-between">
+                                                            <span class="text-base-content/70">Diskon</span>
+                                                            <span class="font-medium text-base-content/70">{{ $item->diskon }}%</span>
+                                                        </div>
+                                                    @endif
+                                                    <div class="flex justify-between border-t border-dashed pt-1">
+                                                        <span class="text-base-content">Subtotal</span>
+                                                        <span class="font-semibold text-base-content">Sedang Dalam Proses</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- === OBAT RACIK (RME Draft) === --}}
+                            @if($obatracik->isNotEmpty())
+                                <div class="mb-6">
+                                    <h4 class="font-semibold mb-2 text-base-content">Obat Racik</h4>
+
+                                    <div class="space-y-3">
+                                        @foreach($obatracik as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->nama_racikan ?? '-') }}
+                                                </div>
+
+                                                <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
+                                                    @php $bahanList = $item->bahanRacikan ?? collect(); @endphp
+
+                                                    @if($bahanList->isNotEmpty())
+                                                        @foreach($bahanList as $b)
+                                                            <div class="flex justify-between items-center">
+                                                                <span>{{ $b->nama_obat_racikan ?? '-' }}</span>
+                                                                <span>{{ $b->jumlah_obat_racikan ?? 0 }} {{ $b->satuan_obat_racikan ?? '' }}</span>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <div class="italic text-base-content/70">Tidak ada bahan racikan.</div>
+                                                    @endif
+                                                </div>
+
+                                                <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">Sedang Dalam Proses</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
                     </div>
                 </div>
 

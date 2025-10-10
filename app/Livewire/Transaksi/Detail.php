@@ -17,6 +17,8 @@ class Detail extends Component
     public $pasien;
     public $rekammedis_id;
     public $obatapoteker;
+    public $obatracik;
+    public $obatnonracik;
     public $pelayanan;
     public $treatment;
     public $produk;
@@ -31,6 +33,8 @@ class Detail extends Component
             'pasien',
             'rekamMedis.rencanaLayananRM.pelayanan',
             'rekamMedis.obatFinal',
+            'rekamMedis.obatNonRacikanRM',
+            'rekamMedis.obatRacikanRM.bahanRacikan',
             'rekamMedis.rencanaTreatmentRM.treatment',
             'rekamMedis.rencanaProdukRM.produk',
             'rekamMedis.rencanaBundlingRM.bundling.treatmentBundlings',
@@ -48,6 +52,8 @@ class Detail extends Component
         // Jika ada rekam medis, ambil semua rencana dari relasi yang sudah di-eager load
         if ($rekamMedis) {
             $this->obatapoteker     = $rekamMedis->obatFinal ?? collect();
+            $this->obatnonracik     = $rekamMedis->obatNonRacikanRM ?? collect();
+            $this->obatracik        = $rekamMedis->obatRacikanRM ?? collect();
             $this->pelayanan        = $rekamMedis->rencanaLayananRM ?? collect();
             $this->treatment        = $rekamMedis->rencanaTreatmentRM ?? collect();
             $this->produk           = $rekamMedis->rencanaProdukRM ?? collect();
