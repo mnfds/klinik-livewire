@@ -16,6 +16,7 @@ class Detail extends Component
 
     public $pasien;
     public $rekammedis_id;
+    public $obatapoteker;
     public $pelayanan;
     public $treatment;
     public $produk;
@@ -29,6 +30,7 @@ class Detail extends Component
         $this->pasienTerdaftar = PasienTerdaftar::with([
             'pasien',
             'rekamMedis.rencanaLayananRM.pelayanan',
+            'rekamMedis.obatFinal',
             'rekamMedis.rencanaTreatmentRM.treatment',
             'rekamMedis.rencanaProdukRM.produk',
             'rekamMedis.rencanaBundlingRM.bundling.treatmentBundlings',
@@ -45,12 +47,13 @@ class Detail extends Component
 
         // Jika ada rekam medis, ambil semua rencana dari relasi yang sudah di-eager load
         if ($rekamMedis) {
-            $this->pelayanan = $rekamMedis->rencanaLayananRM ?? collect();
-            $this->treatment = $rekamMedis->rencanaTreatmentRM ?? collect();
-            $this->produk    = $rekamMedis->rencanaProdukRM ?? collect();
-            $this->bundling  = $rekamMedis->rencanaBundlingRM ?? collect();
+            $this->obatapoteker     = $rekamMedis->obatFinal ?? collect();
+            $this->pelayanan        = $rekamMedis->rencanaLayananRM ?? collect();
+            $this->treatment        = $rekamMedis->rencanaTreatmentRM ?? collect();
+            $this->produk           = $rekamMedis->rencanaProdukRM ?? collect();
+            $this->bundling         = $rekamMedis->rencanaBundlingRM ?? collect();
         } else {
-            $this->pelayanan = $this->treatment = $this->produk = $this->bundling = collect();
+            $this->pelayanan        = $this->treatment = $this->produk = $this->bundling = collect();
         }
     }
 

@@ -49,6 +49,128 @@
                             </div>
                         </div>
 
+                        {{-- OBAT NON RACIK --}}
+                        @if($obatapoteker->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Obat Non Racik</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($obatapoteker as $final)
+                                        @foreach ($final->obatNonRacikanFinals as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                {{-- Nama pelayanan --}}
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->produk->nama_dagang ?? '-') }}
+                                                </div>
+
+                                                {{-- Harga --}}
+                                                <div class="text-sm text-base-content/70">
+                                                    {{ $item->jumlah_obat ?? 0 }} {{ $item->satuan_obat }} x 
+                                                    Rp {{ number_format($item->harga_obat ?? 0, 0, ',', '.') }}
+                                                </div>
+
+                                                {{-- Diskon, Potongan dan Subtotal --}}
+                                                <div class="mt-2 text-sm space-y-0.5">
+                                                    @if ($item->potongan)
+                                                    <div class="flex justify-between">
+                                                        <span class="text-base-content/70">Potongan</span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                    @endif
+                                                    @if ($item->diskon)
+                                                    <div class="flex justify-between">
+                                                        <span class="text-base-content/70">Diskon</span>
+                                                        <span class="font-medium text-base-content">
+                                                            {{ $item->diskon ? $item->diskon . '%' : '-' }}
+                                                        </span>
+                                                    </div>
+                                                    @endif
+                                                    <div class="flex justify-between border-t border-dashed pt-1">
+                                                        <span class="text-base-content">Subtotal</span>
+                                                        <span class="font-semibold text-base-content">
+                                                            {{-- Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }} --}}
+                                                            Rp {{ number_format($item->total_obat ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- OBAT RACIK --}}
+                        @if($obatapoteker->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Obat Racik</h4>
+
+                                <div class="space-y-3">
+                                    @foreach($obatapoteker as $final)
+                                        @foreach ($final->obatRacikanFinals as $item)
+                                            <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
+                                                {{-- Nama Racikan --}}
+                                                <div class="font-semibold text-base-content mb-1">
+                                                    {{ ucfirst($item->nama_racikan ?? '-') }}
+                                                </div>
+
+                                                {{-- Diskon, Potongan dan Subtotal --}}
+                                                <div class="mt-2 text-sm space-y-0.5">
+                                                    @if ($item->potongan)
+                                                    <div class="flex justify-between">
+                                                        <span class="text-base-content/70">Potongan</span>
+                                                        <span class="font-medium text-base-content/70">
+                                                            {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                    @endif
+                                                    @if ($item->diskon)
+                                                    <div class="flex justify-between">
+                                                        <span class="text-base-content/70">Diskon</span>
+                                                        <span class="font-medium text-base-content">
+                                                            {{ $item->diskon ? $item->diskon . '%' : '-' }}
+                                                        </span>
+                                                    </div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Detail item bundling --}}
+                                                <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
+                                                    @php $hasItems = false; @endphp
+
+                                                    {{-- Bahan Racikan --}}
+                                                    @foreach($item->bahanRacikanFinals ?? [] as $detail)
+                                                        @php $hasItems = true; @endphp
+                                                        <div class="flex justify-between items-center">
+                                                            <span>
+                                                                {{ $detail->produk->nama_dagang ?? '-' }}
+                                                            </span>
+                                                            <span class="font-medium text-base-content/70">
+                                                                {{ $detail->jumlah_obat ?? 0 }} {{ $detail->satuan_obat }} x {{ number_format($detail->harga_obat ?? 0, 0, ',', '.') }}
+                                                            </span>
+                                                        </div>
+                                                    @endforeach
+
+                                                    @unless($hasItems)
+                                                        <div class="italic text-base-content/70">Tidak ada Resep Obat.</div>
+                                                    @endunless
+                                                </div>
+                                                {{-- Subtotal --}}
+                                                <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
+                                                    <span class="text-base-content">Subtotal</span>
+                                                    <span class="font-semibold text-base-content">
+                                                        Rp {{ number_format($item->total_racikan ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Pelayanan --}}
                         @if($pelayanan->isNotEmpty())
                             <div class="mb-6">
@@ -310,33 +432,26 @@
                 {{-- Kolom Kanan: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
-                        <div class="bg-base-100  border-t-3 border-t-info shadow rounded-box p-4">
+                        <div class="bg-base-100 border-t-3 border-t-info shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
-                            <div class="space-y-2">
+                            <div class="space-y-2 text-sm">
 
-                                {{-- Daftar item --}}
+                                {{-- === Pelayanan, Treatment, Produk, Bundling === --}}
                                 @foreach([$pelayanan, $treatment, $produk, $bundling] as $collection)
                                     @foreach($collection as $item)
                                         @php
-                                            // ambil nama item berdasarkan relasi yang aktif
                                             $nama = $item->pelayanan->nama_pelayanan
                                                 ?? $item->treatment->nama_treatment
                                                 ?? $item->produk->nama_dagang
                                                 ?? $item->bundling->nama
                                                 ?? '-';
 
-                                            // tentukan harga secara aman berdasarkan jenis
-                                            if (isset($item->pelayanan)) {
-                                                $harga = $item->subtotal ?? $item->pelayanan->harga_pelayanan ?? 0;
-                                            } elseif (isset($item->treatment)) {
-                                                $harga = $item->subtotal ?? $item->treatment->harga_treatment ?? 0;
-                                            } elseif (isset($item->produk)) {
-                                                $harga = $item->subtotal ?? $item->produk->harga_jual ?? 0;
-                                            } elseif (isset($item->bundling)) {
-                                                $harga = $item->subtotal ?? $item->bundling->harga_bundling ?? 0;
-                                            } else {
-                                                $harga = 0;
-                                            }
+                                            $harga = $item->subtotal
+                                                ?? $item->pelayanan->harga_pelayanan
+                                                ?? $item->treatment->harga_treatment
+                                                ?? $item->produk->harga_jual
+                                                ?? $item->bundling->harga_bundling
+                                                ?? 0;
                                         @endphp
 
                                         <div class="flex justify-between">
@@ -346,35 +461,77 @@
                                     @endforeach
                                 @endforeach
 
-                                {{-- Total --}}
+                                {{-- === Obat Non Racikan & Racikan === --}}
+                                @foreach($obatapoteker as $obat)
+                                    {{-- Non Racikan --}}
+                                    @foreach($obat->obatNonRacikanFinals ?? [] as $non)
+                                        <div class="flex justify-between">
+                                            <span>{{ $non->produk->nama_dagang }}</span>
+                                            <span>Rp {{ number_format($non->total_obat ?? 0, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+
+                                    {{-- Racikan --}}
+                                    @foreach($obat->obatRacikanFinals ?? [] as $racik)
+                                        <div class="flex justify-between">
+                                            <span>{{ $racik->nama_racikan ?? 'Obat Racikan' }}</span>
+                                            <span>Rp {{ number_format($racik->total_racikan ?? 0, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                    {{-- Tambahan Tuslah & Embalase --}}
+                                    @if($obat->tuslah)
+                                        <div class="flex justify-between">
+                                            <span>Tuslah</span>
+                                            <span>Rp {{ number_format($obat->tuslah, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endif
+    
+                                    @if($obat->embalase)
+                                        <div class="flex justify-between">
+                                            <span>Embalase</span>
+                                            <span>Rp {{ number_format($obat->embalase, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endif
+                                @endforeach
+
+
+                                <hr class="my-2 border-base-300">
+
+                                {{-- === Hitung Total === --}}
                                 @php
                                     $total = collect([$pelayanan, $treatment, $produk, $bundling])
                                         ->flatten()
-                                        ->reduce(function ($carry, $item) {
-                                            if (isset($item->pelayanan)) {
-                                                $harga = $item->subtotal ?? $item->pelayanan->harga_pelayanan ?? 0;
-                                            } elseif (isset($item->treatment)) {
-                                                $harga = $item->subtotal ?? $item->treatment->harga_treatment ?? 0;
-                                            } elseif (isset($item->produk)) {
-                                                $harga = $item->subtotal ?? $item->produk->harga_jual ?? 0;
-                                            } elseif (isset($item->bundling)) {
-                                                $harga = $item->subtotal ?? $item->bundling->harga_bundling ?? 0;
-                                            } else {
-                                                $harga = 0;
-                                            }
+                                        ->sum(function ($item) {
+                                            return $item->subtotal
+                                                ?? $item->pelayanan->harga_pelayanan
+                                                ?? $item->treatment->harga_treatment
+                                                ?? $item->produk->harga_jual
+                                                ?? $item->bundling->harga_bundling
+                                                ?? 0;
+                                        });
 
-                                            return $carry + $harga;
-                                        }, 0);
+                                    // Tambahkan total dari obat
+                                    foreach ($obatapoteker as $obat) {
+                                        $total += ($obat->obatNonRacikanFinals?->sum('total_obat') ?? 0)
+                                                + ($obat->obatRacikanFinals?->sum('total_racikan') ?? 0)
+                                                + ($obat->tuslah ?? 10000)
+                                                + ($obat->embalase ?? 10000);
+                                    }
                                 @endphp
-                                <div class="flex justify-between font-bold my-4">
+
+                                <div class="flex justify-between font-bold text-base mt-3">
                                     <span>Total:</span>
                                     <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
                                 </div>
-                                <button class="btn btn-success mb-1 w-full"><i class="fa-solid fa-plus"></i> Bayar</button>
+
+                                <button class="btn btn-success btn-sm mt-4 w-full">
+                                    <i class="fa-solid fa-plus"></i> Bayar
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
             </div>
         </div>

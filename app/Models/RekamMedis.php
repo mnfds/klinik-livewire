@@ -86,7 +86,7 @@ class RekamMedis extends Model
     // ----- OBAT DOKTER YANG MENYESUAIKAN APOTEK ----- //
     public function obatFinal()
     {
-        return $this->hasOne(ObatFinal::class);
+        return $this->hasMany(ObatFinal::class);
     }
 
 }
