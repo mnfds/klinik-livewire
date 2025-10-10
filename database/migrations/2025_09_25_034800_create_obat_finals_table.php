@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('obat_finals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
+            $table->unsignedBigInteger('totalracik')->nullable();
+            $table->unsignedBigInteger('totalnonracik')->nullable();
             $table->unsignedBigInteger('embalase')->nullable();
             $table->unsignedBigInteger('tuslah')->nullable();
             $table->timestamps();

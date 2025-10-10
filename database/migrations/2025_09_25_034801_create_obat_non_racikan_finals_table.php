@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): void 
     {
         Schema::create('obat_non_racikan_finals', function (Blueprint $table) {
             $table->id();

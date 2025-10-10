@@ -3,9 +3,11 @@
 namespace App\Livewire\Resep;
 
 use Livewire\Component;
+use App\Models\ObatFinal;
 use App\Models\PasienTerdaftar;
 use App\Models\ObatRacikanFinal;
 use App\Models\BahanRacikanFinal;
+use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
 
 class Detail extends Component
@@ -21,6 +23,8 @@ class Detail extends Component
     public $rekammedis_id;
     public $tuslah;
     public $embalase;
+    public $totalracik;
+    public $totalnonracik;
 
     public $obatNonracikFinal = '[]';
     public $obatRacikanFinal = '[]';
@@ -28,27 +32,28 @@ class Detail extends Component
     public $racikanInput = [
         [
             'obat_final_id', //ambil dari variable create obat_final
-            'nama_racikan', // ambil dari obatRacikanItems
+            'nama_racikan', // ambil dari form
             'jumlah_racikan', //ambil dari form
             'satuan_racikan', //ambil dari form
             'total_racikan', //ambil dari form
-            'dosis', // ambil dari obatRacikanItems
-            'hari', // ambil dari obatRacikanItems
-            'aturan_pakai', // ambil dari obatRacikanItems
-            'metode_racikan', // ambil dari obatRacikanItems
+            'dosis', // ambil dari form
+            'hari', // ambil dari form
+            'aturan_pakai', // ambil dari form
+            'metode_racikan', // tidak digunakan terlebih dahulu
         ]
     ];
 
     public $bahanRacikanInput = [
         [
-            'produk_id',
-            'obat_racikan_final_id',
+            'produk_id', 
+            'obat_racikan_final_id', // ambil dari id pada varibel create racikan
             'jumlah_obat',
             'satuan_obat',
             'harga_obat',
             'total_obat',
         ]
     ];
+
     public $nonRacikanInput = [
         [
             'obat_final_id', //ambil dari variabel  create obat_final
@@ -57,9 +62,9 @@ class Detail extends Component
             'satuan_obat', // ambil dari form
             'harga_obat', // ambil dari form
             'total_obat',  // ambil dari form
-            'dosis', // ambil dari obatNonRacikanItems
-            'hari', // ambil dari obatNonRacikanItems
-            'aturan_pakai', // ambil dari obatNonRacikanItems
+            'dosis', // ambil dari form
+            'hari', // ambil dari form
+            'aturan_pakai', // ambil dari form
             ]
     ];
 
@@ -110,21 +115,121 @@ class Detail extends Component
         return view('livewire.resep.detail');
     }
 
-    public function create()
+    public function hitungTotalObat()
     {
         $nonracik = json_decode($this->obatNonracikFinal, true);
         $racikan = json_decode($this->obatRacikanFinal, true);
-        $datadokter = [
-            'datanonracik' => $this->obatNonRacikanItems,
-            'daataobatracik' => $this->obatRacikanItems,
-        ];
-        dd([
-            'nonracik' => $nonracik,
-            'racikan' => $racikan,
-            'tuslah' => $this->tuslah,
-            'embalase' => $this->embalase,
-            'datadokter' => $datadokter,
-        ]);
+
+        $totalNonRacik = 0;
+        $totalRacik = 0;
+
+        // Hitung total non racik
+        if (is_array($nonracik) && count($nonracik) > 0) {
+            foreach ($nonracik as $item) {
+                $totalNonRacik += (int) ($item['total'] ?? 0);
+            }
+        }
+
+        // Hitung total racik
+        if (is_array($racikan) && count($racikan) > 0) {
+            foreach ($racikan as $index => $racik) {
+                $totalBahan = 0;
+
+                if (!empty($racik['bahan'])) {
+                    foreach ($racik['bahan'] as $bahan) {
+                        $totalBahan += (int) ($bahan['total'] ?? 0);
+                    }
+                }
+
+                // simpan ke array racikan
+                $racikan[$index]['total_racikan'] = $totalBahan;
+
+                $totalRacik += $totalBahan;
+            }
+        }
+
+        // simpan hasil ke properti
+        $this->totalnonracik = $totalNonRacik;
+        $this->totalracik = $totalRacik;
+
+        // opsional: update kembali versi encoded JSON racikan (kalau perlu dikirim ke DB)
+        $this->obatRacikanFinal = json_encode($racikan);
     }
+
+    public function create()
+    {
+        $this->hitungTotalObat();
+
+        $nonracik = json_decode($this->obatNonracikFinal, true);
+        $racikan = json_decode($this->obatRacikanFinal, true);
+
+        DB::beginTransaction();
+
+        try {
+            // 1. Buat data obat_final
+            $obatFinal = ObatFinal::create([
+                'rekam_medis_id' => $this->rekammedis_id,
+                'totalracik' => $this->totalracik,
+                'totalnonracik' => $this->totalnonracik,
+                'embalase' => $this->embalase,
+                'tuslah' => $this->tuslah,
+            ]);
+
+            // 2. Simpan data obat non racikan
+            if (is_array($nonracik) && count($nonracik) > 0) {
+                foreach ($nonracik as $item) {
+                    ObatNonRacikanFinal::create([
+                        'obat_final_id' => $obatFinal->id,
+                        'produk_id' => $item['id'],
+                        'jumlah_obat' => $item['jumlah'],
+                        'satuan_obat' => $item['satuan'],
+                        'harga_obat' => $item['harga_satuan'],
+                        'total_obat' => $item['total'],
+                        'dosis' => $item['dosis'],
+                        'hari' => $item['hari'],
+                        'aturan_pakai' => $item['aturan_pakai'],
+                    ]);
+                }
+            }
+
+            // 3. Simpan data racikan dan bahan-bahannya
+            if (is_array($racikan) && count($racikan) > 0) {
+                foreach ($racikan as $racik) {
+                    $racikanFinal = ObatRacikanFinal::create([
+                        'obat_final_id' => $obatFinal->id,
+                        'nama_racikan' => $racik['nama_racikan'],
+                        'jumlah_racikan' => $racik['jumlah_racikan'],
+                        'satuan_racikan' => $racik['satuan_racikan'],
+                        'total_racikan' => $racik['total_racikan'],
+                        'dosis' => $racik['dosis'],
+                        'hari' => $racik['hari'],
+                        'aturan_pakai' => $racik['aturan_pakai'],
+                        'metode_racikan' => $racik['metode_racikan'] ?? null,
+                    ]);
+
+                    if (!empty($racik['bahan']) && is_array($racik['bahan'])) {
+                        foreach ($racik['bahan'] as $bahan) {
+                            BahanRacikanFinal::create([
+                                'obat_racikan_final_id' => $racikanFinal->id,
+                                'produk_id' => $bahan['id'],
+                                'jumlah_obat' => $bahan['jumlah'],
+                                'satuan_obat' => $bahan['satuan'],
+                                'harga_obat' => $bahan['harga_satuan'],
+                                'total_obat' => $bahan['total'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            session()->flash('success', 'Data obat berhasil disimpan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+        }
+    }
+
 
 }
