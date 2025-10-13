@@ -249,14 +249,14 @@
                             <x-side-link href="{{ route('pendaftaran.data') }}" 
                                 :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')"  
                                 wire:navigate>
-                                Pasien Terdaftar
+                                Terdaftar
                             </x-side-link>
                         </li>
-                        <li>
+                        {{-- <li>
                             <x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link>
-                        </li>
+                        </li> --}}
                         <li>
-                            <x-side-link href="#" wire:navigate>Pasien Berjanji Temu</x-side-link>
+                            <x-side-link href="#" wire:navigate>Reservasi</x-side-link>
                         </li>
                     </ul>
                 </li>
