@@ -297,7 +297,7 @@
                                         aria-label="Obat Non Racik" checked="checked" style="background-image: none;" />
                                     <div class="tab-content bg-base-100 border-base-300 p-6 space-y-6">
 
-                                        <h3 class="font-semibold text-lg">Obat Non Racikan</h3>
+                                        <h3 class="font-semibold text-lg mb-4">Obat Non Racikan</h3>
 
                                         <!-- Resep Dokter -->
                                         <details class="collapse collapse-arrow border rounded-lg">
@@ -405,7 +405,7 @@
                                     <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
                                         aria-label="Obat Racikan" style="background-image: none;" />
                                     <div class="tab-content bg-base-100 border-base-300 p-6">
-                                        <h3 class="font-semibold mb-4">Obat Racikan</h3>
+                                        <h3 class="font-semibold text-lg mb-4">Obat Racikan</h3>
 
                                         <!-- Resep Dokter -->
                                         <details class="collapse collapse-arrow border rounded-lg mb-4">
@@ -555,6 +555,67 @@
                                                 </button>
                                             </div>
                                         </div>
+
+                                    </div>
+
+                                    <!-- Tab Produk -->
+                                    <input type="radio" name="tab_resep" class="tab bg-transparent text-base-content"
+                                        aria-label="Produk" style="background-image: none;" />
+                                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                                        <h3 class="font-semibold text-lg mb-4">Produk dibeli</h3>
+
+                                        {{-- PRODUK & BUNDLING --}}
+                                        @if (!empty($produkRencanaItems) || !empty($produkBundlingItems))
+                                        <details class="collapse collapse-arrow border rounded-lg mb-4">
+                                            <summary class="collapse-title font-semibold">Produk & Bundling</summary>
+                                            <div class="collapse-content text-sm space-y-6">
+
+                                                {{-- RENCANA PRODUK --}}
+                                                @if (!empty($produkRencanaItems))
+                                                <div>
+                                                    <h4 class="font-semibold mb-2 text-base-content">Produk</h4>
+                                                    <div class="space-y-2">
+                                                        @forelse ($produkRencanaItems as $p)
+                                                            <div class="p-3 border rounded-lg bg-base-200">
+                                                                <strong>{{ $p['nama_produk'] ?? '-' }}</strong><br>
+                                                                Jumlah: {{ $p['jumlah'] ?? '-' }} {{ $p['satuan'] ?? '-' }}
+                                                            </div>
+                                                        @empty
+                                                            <p class="text-sm text-gray-500">Tidak ada produk.</p>
+                                                        @endforelse
+                                                    </div>
+                                                </div>
+                                                @endif
+
+                                                {{-- PRODUK DARI BUNDLING --}}
+                                                @if (!empty($produkBundlingItems))
+                                                <div>
+                                                    <h4 class="font-semibold mb-2 text-base-content">Produk dari Bundling</h4>
+                                                    @php
+                                                        $bundlingGrouped = collect($produkBundlingItems)->groupBy('nama_bundling');
+                                                    @endphp
+
+                                                    <div class="space-y-3">
+                                                        @foreach ($bundlingGrouped as $namaBundling => $produkList)
+                                                            <div class="p-3 border rounded-lg bg-base-200">
+                                                                <strong>{{ $namaBundling }}</strong>
+                                                                <div class="mt-2 p-2 border rounded bg-base-100">
+                                                                    @foreach ($produkList as $p)
+                                                                        <div class="text-sm">
+                                                                            - {{ $p['nama_produk'] ?? '-' }} :
+                                                                            {{ $p['jumlah'] ?? '-' }} {{ $p['satuan'] ?? '-' }}
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                @endif
+
+                                            </div>
+                                        </details>
+                                        @endif
 
                                     </div>
 

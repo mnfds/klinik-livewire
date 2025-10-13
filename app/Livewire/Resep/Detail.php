@@ -18,6 +18,8 @@ class Detail extends Component
     // hanya untuk binding data ke form
     public array $obatNonRacikanItems = [];
     public array $obatRacikanItems = [];
+    public array $produkRencanaItems = [];
+    public array $produkBundlingItems = [];
 
     //input obat final
     public $rekammedis_id;
@@ -75,6 +77,8 @@ class Detail extends Component
         $this->pasienTerdaftar = PasienTerdaftar::with([
             'rekamMedis.obatNonRacikanRM',
             'rekamMedis.obatRacikanRM.bahanRacikan',
+            'rekamMedis.rencanaProdukRM',
+            'rekamMedis.rencanaBundlingRM.bundling.produkObatBundlings.produk',
         ])->findOrFail($this->pasien_terdaftar_id);
 
         $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
@@ -107,6 +111,30 @@ class Detail extends Component
                     'satuan_obat_racikan' => $b->satuan_obat_racikan,
                 ])->toArray(),
             ])->toArray();
+
+        // mapping data produk individual
+        $this->produkRencanaItems = $this->pasienTerdaftar->rekamMedis->rencanaProdukRM->map(fn($p) => [
+            'id' => $p->id,
+            'nama_produk' => $p->produk->nama_dagang,
+            'jumlah' => $p->jumlah_produk,
+            'satuan' => $p->produk->sediaan,
+        ])->toArray();
+        // mapping data produk bundling
+        $this->produkBundlingItems = $this->pasienTerdaftar
+            ->rekamMedis
+            ->rencanaBundlingRM
+            ->flatMap(function ($rencanaBundling) {
+                return $rencanaBundling->bundling->produkObatBundlings->map(function ($p) use ($rencanaBundling) {
+                    return [
+                        'bundling_id' => $rencanaBundling->bundling->id,
+                        'nama_bundling' => $rencanaBundling->bundling->nama,
+                        'produk_id' => $p->produk->id ?? null,
+                        'nama_produk' => $p->produk->nama_dagang ?? '-',
+                        'jumlah' => $p->jumlah ?? '-',
+                        'satuan' => $p->produk->sediaan ?? '-',
+                    ];
+                });
+            })->toArray();
 
     }
 
