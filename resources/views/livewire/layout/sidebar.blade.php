@@ -252,12 +252,16 @@
                                 Terdaftar
                             </x-side-link>
                         </li>
+                        <li>
+                            <x-side-link href="{{ route('reservasi.data') }}" 
+                                :active="request()->routeIs('reservasi.*')"  
+                                wire:navigate>
+                                Reservasi
+                            </x-side-link>
+                        </li>
                         {{-- <li>
                             <x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link>
                         </li> --}}
-                        <li>
-                            <x-side-link href="#" wire:navigate>Reservasi</x-side-link>
-                        </li>
                     </ul>
                 </li>
                 <li x-data="{ open: false }">

@@ -303,7 +303,10 @@ Route::middleware(['auth'])->group(function () {
         return view('transaksi.detail', ['id' => $id]);
     })->name('transaksi.detail');
     // ====== KASIR KLINIK ====== //
-
+    
+    // ====== RESERVASI ====== //
+    Route::view('/reservasi', 'reservasi.data')->name('reservasi.data');
+    // ====== RESERVASI ====== //
 });
 
 
