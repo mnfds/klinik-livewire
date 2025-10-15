@@ -194,6 +194,10 @@ class Detail extends Component
         DB::beginTransaction();
 
         try {
+
+            PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
+                ->update(['status_terdaftar' => 'pembayaran']);
+
             // 1. Buat data obat_final
             $obatFinal = ObatFinal::create([
                 'rekam_medis_id' => $this->rekammedis_id,
@@ -252,10 +256,23 @@ class Detail extends Component
 
             DB::commit();
 
-            session()->flash('success', 'Data obat berhasil disimpan.');
+            $this->dispatch('toast',[
+                'type' => 'success',
+                'message' => 'Data Obat Berhasil Ditambahkan',
+            ]);
+
+            $this->dispatch('closeStoreModal');
+
+            $this->reset();
+
+            return redirect()->route('resep.data');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Gagal Menyimpan Data: ' . $e->getMessage()
+            ]);
         }
     }
 

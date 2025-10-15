@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Transaksi;
 
-use App\Models\PasienTerdaftar;
 use Illuminate\Support\Carbon;
+use App\Models\PasienTerdaftar;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class TransaksiTable extends PowerGridComponent
@@ -31,7 +32,7 @@ final class TransaksiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::where('status_terdaftar', ['peresepan','transaksi','selesai'])
+        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'pembayaran', 'lunas'])
             // ->whereDate('created_at', today())
             ->with([
                 'pasien',
@@ -65,8 +66,14 @@ final class TransaksiTable extends PowerGridComponent
             })
             ->add('status', fn ($row) =>
                 $row->status_terdaftar === 'peresepan'
-                    ? '<span class="badge badge-primary">Hitung Resep</span>'
-                    : ($row->status_terdaftar ?? '-')
+                    ? '<span class="badge badge-accent">Diproses</span>'
+                    : ($row->status_terdaftar === 'pembayaran'
+                        ? '<span class="badge badge-secondary">Pembayaran</span>'
+                        : ($row->status_terdaftar === 'lunas'
+                            ? '<span class="badge badge-success">Selesai</span>'
+                            : ($row->status_terdaftar ?? '-')
+                        )
+                    )
             )
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
             ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga
@@ -125,26 +132,36 @@ final class TransaksiTable extends PowerGridComponent
     public function actions(PasienTerdaftar $row): array
     {
         return [
-            Button::add('prosesTransaksi')
-                ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Proses Transaksi')
+            Button::add('cekresepbutton')
+                ->slot('<i class="fa-solid fa-tablets"></i> Peresepan')
                 ->tag('button')
                 ->attributes([
                     'title' => 'Lihat Resep Obat',
+                    'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
+                    'class' => 'btn btn-accent',
+                ]),
+            Button::add('bayarbutton')
+                ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Pembayaran')
+                ->tag('button')
+                ->attributes([
+                    'title' => 'Pembayaran Obat',
                     'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
                     'class' => 'btn btn-secondary',
                 ]),
         ];
     }
 
-    /*
     public function actionRules($row): array
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
+        return [
+            Rule::button('cekresepbutton')
+                ->when(fn($row) => $row->status_terdaftar !== 'peresepan')
+                ->hide(),
+
+            Rule::button('bayarbutton')
+                ->when(fn($row) => $row->status_terdaftar !== 'pembayaran')
                 ->hide(),
         ];
     }
-    */
+
 }

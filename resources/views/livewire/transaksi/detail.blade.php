@@ -601,10 +601,16 @@
                                     <span>Total:</span>
                                     <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
                                 </div>
-
-                                <button class="btn btn-success btn-sm mt-4 w-full">
-                                    <i class="fa-solid fa-plus"></i> Bayar
-                                </button>
+                                
+                                @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
+                                    <button class="btn btn-success btn-sm mt-4 w-full">
+                                        <i class="fa-solid fa-plus"></i> Bayar
+                                    </button>
+                                @else
+                                    <button class="btn btn-warning btn-sm mt-4 w-full">
+                                        <i class="fa-solid fa-rotate"></i> Diproses
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

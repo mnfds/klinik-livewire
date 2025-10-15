@@ -315,8 +315,23 @@ class Create extends Component
                     'tingkat_kesadaran' => $this->tingkat_kesadaran,
                 ]);
 
+                $status = 'pembayaran';
+                if (
+                    !empty($this->obat_non_racikan['nama_obat_non_racikan']) &&
+                    count(array_filter($this->obat_non_racikan['nama_obat_non_racikan'])) > 0
+                ) {
+                    $status = 'peresepan';
+                }
+
+                if (!empty($this->racikanItems) && count($this->racikanItems) > 0) {
+                    $status = 'peresepan';
+                }
+                
                 PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                    ->update(['status_terdaftar' => 'peresepan']);
+                    ->update(['status_terdaftar' => $status]);
+
+                // PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
+                //     ->update(['status_terdaftar' => 'peresepan']);
 
             // ----- SUBJECTIVE ----- //
 
