@@ -17,6 +17,11 @@ class Pasien extends Model
         return $this->hasMany(PasienTerdaftar::class);
     }
 
+    public function reservasis()
+    {
+        return $this->hasMany(Reservasi::class);
+    }
+
     public function pelayananBundlings()
     {
         return $this->hasMany(PelayananBundlingRM::class);

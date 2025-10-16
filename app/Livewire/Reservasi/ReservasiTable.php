@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Livewire\Reservasi;
+
+use App\Models\Reservasi;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use PowerComponents\LivewirePowerGrid\Button;
+use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Filter;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
+use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+
+final class ReservasiTable extends PowerGridComponent
+{
+    public string $tableName = 'reservasi-table-yckzvi-table';
+
+    public function setUp(): array
+    {
+        // $this->showCheckBox();
+
+        return [
+            PowerGrid::header()
+                ->showSearchInput(),
+            PowerGrid::footer()
+                ->showPerPage()
+                ->showRecordCount(),
+        ];
+    }
+
+    public function datasource(): Builder
+    {
+        return Reservasi::whereDate('created_at', today())
+            ->with(['pasien', 'poliklinik', 'dokter']);
+    }
+
+    public function relationSearch(): array
+    {
+        return [
+            'pasien' => ['nama', 'no_register'],
+            'poliklinik' => ['nama_poli'],
+            'dokter' => ['nama_dokter'],
+        ];
+    }
+
+    public function fields(): PowerGridFields
+    {
+        return PowerGrid::fields()
+            ->add('#') // untuk nomor urut
+            ->add('pasien.nama', fn ($row) => $row->pasien->nama ?? '-') // Nama Pasien
+            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No 
+            ->add('nama_dan_register', function($row){
+                return strtoupper($row->pasien->nama) . '<br><span class="text-sm text-gray-500">' . $row->pasien->no_register . '</span>';
+            })
+            ->add('poliklinik.nama_poli', fn ($row) => $row->poliklinik->nama_poli ?? '-') // Nama Poli
+            ->add('dokter.nama_dokter', fn ($row) => $row->dokter->nama_dokter ?? '-') // Dokter yang menangani
+            ->add('dokter_dan_poli', function($row){
+                return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
+            })
+            ->add('status', fn ($row) =>
+                match ($row->status) {
+                    'belum bayar' => '<span class="badge badge-accent">Belum Bayar</span>',
+                    'belum lunas' => '<span class="badge badge-secondary">Belum Lunas</span>',
+                    'lunas' => '<span class="badge badge-success">Lunas</span>',
+                    'selesai' => '<span class="badge badge-primary">Selesai</span>',
+                    'batal' => '<span class="badge badge-error">Batal</span>',
+                    default => '<span class="badge">-</span>',
+                }
+            )
+            ->add('catatan')
+            ->add('tanggal_reservasi');
+    }
+
+    public function columns(): array
+    {
+        return [
+            Column::make('#', '')->index(),
+
+            Column::make('Tanggal Reservasi', 'tanggal_reservasi')
+                ->sortable(),
+
+            Column::make('Nama Pasien', 'pasien.nama')
+                ->searchable()
+                ->hidden(),
+
+            Column::make('No. Register', 'pasien.no_register')
+                ->searchable()
+                ->hidden(),
+
+            Column::make('Pasien', 'nama_dan_register')
+                ->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Poli Tujuan', 'poliklinik.nama_poli')
+                ->searchable()
+                ->hidden(),
+
+            Column::make('Dokter', 'dokter.nama_dokter')
+                ->searchable()
+                ->hidden(),
+
+            Column::make('Poli dan Dokter', 'dokter_dan_poli')
+                ->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Catatan', 'catatan')
+                ->searchable(),
+
+            Column::make('status', 'status')
+                ->searchable(),
+
+            Column::action('Action') // untuk tombol edit/delete
+        ];
+    }
+
+    public function filters(): array
+    {
+        return [
+        ];
+    }
+
+    #[\Livewire\Attributes\On('edit')]
+    public function edit($rowId): void
+    {
+        $this->js('alert('.$rowId.')');
+    }
+
+    public function actions(Reservasi $row): array
+    {
+        return [
+            Button::add('edit')
+                ->slot('Edit: '.$row->id)
+                ->id()
+                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
+                ->dispatch('edit', ['rowId' => $row->id])
+        ];
+    }
+
+    /*
+    public function actionRules($row): array
+    {
+       return [
+            // Hide button edit for ID 1
+            Rule::button('edit')
+                ->when(fn($row) => $row->id === 1)
+                ->hide(),
+        ];
+    }
+    */
+}

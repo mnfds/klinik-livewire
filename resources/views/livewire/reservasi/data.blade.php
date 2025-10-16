@@ -32,7 +32,7 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 
                 <div class="p-6 text-base-content space-y-4">
-                    <livewire:Resep.Resep-Table />
+                    <livewire:Reservasi.Reservasi-Table />
                 </div>
             </div>
         </div>

@@ -25,4 +25,9 @@ class PoliKlinik extends Model
     {
         return $this->hasMany(PasienTerdaftar::class, 'poli_id');
     }
+
+    public function reservasis()
+    {
+        return $this->hasMany(Reservasi::class, 'poli_id');
+    }
 }

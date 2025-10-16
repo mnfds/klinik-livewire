@@ -26,4 +26,9 @@ class Dokter extends Model
     {
         return $this->hasMany(PasienTerdaftar::class, 'dokter_id');
     }
+
+    public function reservasis()
+    {
+        return $this->hasMany(Reservasi::class, 'dokter_id');
+    }
 }
