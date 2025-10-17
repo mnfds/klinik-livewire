@@ -236,14 +236,37 @@
                     </ul>
                 </li>
 
-                <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') || request()->routeIs('rekam-medis-pasien.*') ? 'true' : 'false' }} }">
-                    <x-side-link @click.prevent="open = !open" 
-                        class="cursor-pointer" 
-                        :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')">
+                @php
+                    use App\Models\Reservasi;
+                    // use Illuminate\Support\Carbon;
+
+                    $hariIni = Carbon::today();
+                    $duaHariKedepan = Carbon::today()->addDays(1);
+
+                    $reservasiCount = Reservasi::whereDate('tanggal_reservasi', '<=', $duaHariKedepan)
+                        ->whereIn('status', ['belum bayar', 'belum lunas', 'selesai', 'batal'])
+                        ->count();
+                @endphp
+
+                <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') || request()->routeIs('rekam-medis-pasien.*') || request()->routeIs('reservasi.*') ? 'true' : 'false' }} }">
+                    <x-side-link 
+                        @click.prevent="open = !open" 
+                        class="cursor-pointer relative" 
+                        :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*', 'reservasi.*')"
+                    >
                         <i class="fa-solid fa-notes-medical"></i>
                         <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
+
+                        <template x-if="!open && {{ $reservasiCount }} > 0">
+                            <span class="absolute right-6 top-1/2 -translate-y-1/2 bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-bell"></i>
+                            </span>
+                        </template>
+
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
+
+                    {{-- Submenu --}}
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
                         <li>
                             <x-side-link href="{{ route('pendaftaran.data') }}" 
@@ -257,13 +280,17 @@
                                 :active="request()->routeIs('reservasi.*')"  
                                 wire:navigate>
                                 Reservasi
+                                {{-- 🔕 Badge muncul di submenu hanya jika terbuka --}}
+                                @if ($reservasiCount > 0)
+                                    <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                        <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                    </span>
+                                @endif
                             </x-side-link>
                         </li>
-                        {{-- <li>
-                            <x-side-link href="#" wire:navigate>Pasien Tindak Lanjut</x-side-link>
-                        </li> --}}
                     </ul>
                 </li>
+
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">
                         <i class="fa-solid fa-cash-register"></i>

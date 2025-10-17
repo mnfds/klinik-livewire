@@ -31,8 +31,7 @@ final class ReservasiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Reservasi::whereDate('created_at', today())
-            ->with(['pasien', 'poliklinik', 'dokter']);
+        return Reservasi::with(['pasien', 'poliklinik', 'dokter']);
     }
 
     public function relationSearch(): array
@@ -60,11 +59,11 @@ final class ReservasiTable extends PowerGridComponent
             })
             ->add('status', fn ($row) =>
                 match ($row->status) {
-                    'belum bayar' => '<span class="badge badge-accent">Belum Bayar</span>',
-                    'belum lunas' => '<span class="badge badge-secondary">Belum Lunas</span>',
-                    'lunas' => '<span class="badge badge-success">Lunas</span>',
-                    'selesai' => '<span class="badge badge-primary">Selesai</span>',
-                    'batal' => '<span class="badge badge-error">Batal</span>',
+                    'belum bayar' => '<span class="badge badge-accent px-2 whitespace-nowrap">Belum Bayar</span>',
+                    'belum lunas' => '<span class="badge badge-secondary px-2 whitespace-nowrap">Belum Lunas</span>',
+                    'lunas' => '<span class="badge badge-success px-2 whitespace-nowrap">Lunas</span>',
+                    'selesai' => '<span class="badge badge-primary px-2 whitespace-nowrap">Selesai</span>',
+                    'batal' => '<span class="badge badge-error px-2 whitespace-nowrap">Batal</span>',
                     default => '<span class="badge">-</span>',
                 }
             )
