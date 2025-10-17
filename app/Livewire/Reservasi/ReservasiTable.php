@@ -118,23 +118,56 @@ final class ReservasiTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
-    }
-
     public function actions(Reservasi $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Edit: '.$row->id)
-                ->id()
-                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id])
+            Button::add('editReservasi')  
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+                ->attributes([
+                    'onclick' => 'modaleditreservasi.showModal()',
+                    'class' => 'btn btn-primary'
+                ])
+                ->dispatchTo('poli.update-poliklinik', 'editPoli', ['rowId' => $row->id]),
+            
+            Button::add('deleteReservasi')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+                ->class('btn btn-error')
+                ->dispatch('deleteModalReservasi', ['rowId' => $row->id]),
         ];
     }
 
+    #[\Livewire\Attributes\On('deleteModalReservasi')]
+    public function deleteModalReservasi($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasideletereservasi', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasideletereservasi')]
+    public function konfirmasideletereservasi($rowId): void
+    {
+        Reservasi::findOrFail($rowId)->delete();
+
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
+    }
     /*
     public function actionRules($row): array
     {
