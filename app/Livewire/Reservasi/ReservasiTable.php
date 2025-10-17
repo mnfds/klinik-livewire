@@ -120,6 +120,15 @@ final class ReservasiTable extends PowerGridComponent
     public function actions(Reservasi $row): array
     {
         return [
+            Button::add('pendaftaranButton')
+                ->slot('<i class="fa-solid fa-notes-medical"></i> Daftar')
+                ->tag('button')
+                ->attributes([
+                    'title' => 'Pendaftaran Pasien',
+                    'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id,] )."')",
+                    'class' => 'btn btn-secondary'
+                ]),
+
             Button::add('editReservasi')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([

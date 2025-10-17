@@ -272,7 +272,7 @@
                             <x-side-link href="{{ route('pendaftaran.data') }}" 
                                 :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')"  
                                 wire:navigate>
-                                Terdaftar
+                                Pendaftaran
                             </x-side-link>
                         </li>
                         <li>
