@@ -7,9 +7,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class BahanTable extends PowerGridComponent
@@ -70,6 +71,7 @@ final class BahanTable extends PowerGridComponent
             ->add('stok_masuk')
             ->add('stok_keluar')
             ->add('sisa_stok')
+            ->add('expired_at')
             ->add('lokasi')
             ->add('keterangan');
     }
@@ -84,6 +86,7 @@ final class BahanTable extends PowerGridComponent
             Column::make('Stok Masuk ', 'stok_masuk')->sortable(),
             Column::make('Stok Keluar ', 'stok_keluar')->sortable(),
             Column::make('Stok Tersisa ', 'sisa_stok')->sortable(),
+            Column::make('Kadaluarsa', 'expired_at')->sortable()->searchable(),
             Column::make('Lokasi Disimpan ', 'lokasi')->searchable(),
             Column::make('Keterangan ', 'keterangan'),
             Column::action('Action')
@@ -147,15 +150,17 @@ final class BahanTable extends PowerGridComponent
         ]);
     }
 
-    /*
     public function actionRules($row): array
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
+        return [
+            Rule::rows()
+                ->when(fn ($row) =>
+                    $row->expired_at &&
+                    $row->reminder &&
+                    Carbon::parse($row->expired_at)->format('Y-m')
+                        <= Carbon::now()->addMonths($row->reminder)->format('Y-m')
+                )
+                ->setAttribute('class', 'text-red-600 font-semibold'),
         ];
     }
-    */
 }

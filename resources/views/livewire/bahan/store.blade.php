@@ -44,6 +44,16 @@
             </div>
 
             <div>
+                <label class="label font-semibold">Expired</label>
+                <input type="date" class="input input-bordered w-full" wire:model.lazy="expired_at">
+            </div>
+                       
+            <div>
+                <label class="label font-semibold">Ingatkan berapa bulan sebelum barang expired?</label>
+                <input type="number" class="input input-bordered w-full" wire:model.lazy="reminder" min="0">
+            </div>
+
+            <div>
                 <label class="label font-medium">Keterangan</label>
                 <textarea wire:model.lazy="keterangan" class="textarea textarea-bordered w-full" rows="3"></textarea>
             </div>

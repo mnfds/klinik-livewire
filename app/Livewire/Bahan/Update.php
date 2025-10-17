@@ -8,7 +8,7 @@ use Livewire\Component;
 class Update extends Component
 {
     public $bahan_id;
-    public $nama, $kode, $satuan, $lokasi, $keterangan;
+    public $nama, $kode, $satuan, $lokasi, $expired_at, $reminder, $keterangan;
     public $bahan;
 
 
@@ -23,6 +23,8 @@ class Update extends Component
         $this->kode   = $bahan->kode;
         $this->satuan   = $bahan->satuan;
         $this->lokasi   = $bahan->lokasi;
+        $this->expired_at   = $bahan->expired_at;
+        $this->reminder   = $bahan->reminder;
         $this->keterangan   = $bahan->keterangan;
 
         $this->dispatch('openModal');
@@ -35,6 +37,8 @@ class Update extends Component
             'satuan' => 'required',
             'kode' => 'nullable',
             'lokasi' => 'nullable',
+            'expired_at' => 'nullable',
+            'reminder' => 'nullable',
             'keterangan' => 'nullable',
         ]);
 
@@ -43,6 +47,8 @@ class Update extends Component
             'satuan' => $this->satuan,
             'kode' => $this->kode,
             'lokasi' => $this->lokasi,
+            'expired_at' => $this->expired_at,
+            'reminder' => $this->reminder,
             'keterangan' => $this->keterangan,
         ]);
 

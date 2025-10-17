@@ -137,14 +137,46 @@
                     </x-side-link>
                 </li>
 
-                <li x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }">
-                    <x-side-link @click.prevent="open = !open" 
+                @php
+                    use App\Models\BahanBaku;
+
+                    $today = Carbon::today();
+
+                    // Cek bahan baku yang sudah masuk periode reminder
+                    $bahanHampirExpired = BahanBaku::query()
+                        ->whereNotNull('expired_at')
+                        ->whereNotNull('reminder')
+                        ->get()
+                        ->filter(function ($row) use ($today) {
+                            $reminderDate = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
+                            return $today->greaterThanOrEqualTo($reminderDate);
+                        });
+
+                    $jumlahReminder = $bahanHampirExpired->count();
+                @endphp
+
+                <li 
+                    x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
+                    >
+                    <x-side-link 
+                        @click.prevent="open = !open" 
                         class="cursor-pointer" 
-                        :active="request()->routeIs('barang.*', 'bahanbaku.*',)">
+                        :active="request()->routeIs('barang.*', 'bahanbaku.*')"
+                        >
                         <i class="fa-solid fa-boxes-stacked"></i>
                         <span class="flex-1 ml-3 text-left">Persediaan</span>
-                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+
+                        {{-- ✅ Badge Reminder: tampil di menu utama hanya jika belum dibuka --}}
+                        <template x-if="!open && {{ $jumlahReminder }} > 0">
+                            <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-bell"></i>
+                            </span>
+                        </template>
+
+                        <i class="fa-solid fa-chevron-right transition-transform duration-200" 
+                        :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
+
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
                         <li>
                             <x-side-link href="{{ route('barang.data') }}" 
@@ -158,6 +190,13 @@
                                 :active="request()->routeIs('bahanbaku.*')"  
                                 wire:navigate>
                                 Bahan Baku
+
+                                @if($jumlahReminder > 0)
+                                    <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                        <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                    </span>
+                                @endif
+
                             </x-side-link>
                         </li>
                     </ul>
@@ -258,7 +297,7 @@
                         <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
 
                         <template x-if="!open && {{ $reservasiCount }} > 0">
-                            <span class="absolute right-6 top-1/2 -translate-y-1/2 bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                            <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
                                 <i class="fa-solid fa-bell"></i>
                             </span>
                         </template>
@@ -280,7 +319,6 @@
                                 :active="request()->routeIs('reservasi.*')"  
                                 wire:navigate>
                                 Reservasi
-                                {{-- 🔕 Badge muncul di submenu hanya jika terbuka --}}
                                 @if ($reservasiCount > 0)
                                     <span class="ml-auto rounded-full text-warning bg-accent-content">
                                         <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>

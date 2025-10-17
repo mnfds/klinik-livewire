@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('satuan')->default('pcs');
             $table->integer('stok')->default(0); // disimpan langsung
             $table->string('lokasi')->nullable(); // lokasi tujuan/asal
+            $table->date('expired_at')->nullable();
+            $table->integer('reminder')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });
