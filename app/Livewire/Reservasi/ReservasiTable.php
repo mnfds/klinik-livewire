@@ -127,7 +127,7 @@ final class ReservasiTable extends PowerGridComponent
                     'onclick' => 'modaleditreservasi.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('poli.update-poliklinik', 'editPoli', ['rowId' => $row->id]),
+                ->dispatchTo('reservasi.update', 'editreservasi', ['rowId' => $row->id]),
             
             Button::add('deleteReservasi')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
