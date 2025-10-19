@@ -59,7 +59,6 @@
     <script>
         function hitungHargaBersihPelayananEdit() {
             const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
-            const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan');
             const diskonInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="diskon"]');
             const hargaHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]');
             const potonganHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="potongan"]');

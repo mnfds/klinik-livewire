@@ -21,6 +21,13 @@
                 <input type="hidden" wire:model.defer="harga_treatment" class="input-rupiah-hidden">
             </div>
 
+            {{-- Harga Pelayanan --}}
+            <div class="form-control">
+                <label class="label font-semibold">Potongan</label>
+                <input type="text" id="display_potongan" class="input input-bordered input-rupiah w-full" wire:model.defer="display_potongan" placeholder="Rp 0">
+                <input type="hidden" wire:model.defer="potongan" class="input-rupiah-hidden">
+            </div>
+
             {{-- Diskon --}}
             <div class="form-control">
                 <label class="label font-semibold">Diskon (%)</label>
@@ -50,32 +57,43 @@
 
     {{-- Script --}}
     <script>
+        // Hitung ulang harga bersih berdasarkan harga treatment dan diskon
         function hitungHargaBersihPelayananEditEstetika() {
-            const hargaInput = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="harga_treatment"]');
-            const diskonInput = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="diskon"]');
-            const hargaBersihInput = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="harga_bersih"]');
-            const hargaBersihDisplay = document.querySelector('#modaleditpelayananEstetika #display_harga_bersih_estetika');
+            const modal = document.querySelector('#modaleditpelayananEstetika');
+            if (!modal) return;
+
+            const hargaInput = modal.querySelector('input[wire\\:model\\.defer="harga_treatment"]');
+            const diskonInput = modal.querySelector('input[wire\\:model\\.defer="diskon"]');
+            const hargaBersihInput = modal.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
+            const hargaBersihDisplay = modal.querySelector('#display_harga_bersih_estetika');
 
             if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
 
             const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
+
+            // Rumus: harga bersih = harga - (harga * diskon / 100)
             const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
 
+            // Set nilai input hidden agar Livewire menangkap perubahan
             hargaBersihInput.value = hargaBersih;
             hargaBersihInput.dispatchEvent(new Event('input'));
 
+            // Update tampilan yang sudah diformat Cleave
             if (hargaBersihDisplay._cleave) {
                 hargaBersihDisplay._cleave.setRawValue(hargaBersih);
             }
         }
 
+        // Isi ulang nilai awal harga dan harga bersih saat modal dibuka kembali
         function isiAwalHargaPelayananEditEstetika() {
-            const hargaDisplay = document.querySelector('#modaleditpelayananEstetika #display_harga_treatment');
-            const hargaBersihDisplay = document.querySelector('#modaleditpelayananEstetika #display_harga_bersih_estetika');
+            const modal = document.querySelector('#modaleditpelayananEstetika');
+            if (!modal) return;
 
-            const hargaHiddenValue = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="harga_treatment"]')?.value || "0";
-            const hargaBersihHiddenValue = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
+            const hargaDisplay = modal.querySelector('#display_harga_treatment');
+            const hargaBersihDisplay = modal.querySelector('#display_harga_bersih_estetika');
+            const hargaHiddenValue = modal.querySelector('input[wire\\:model\\.defer="harga_treatment"]')?.value || "0";
+            const hargaBersihHiddenValue = modal.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
 
             if (hargaDisplay && hargaDisplay._cleave) {
                 hargaDisplay._cleave.setRawValue(hargaHiddenValue);
@@ -86,9 +104,13 @@
             }
         }
 
+        // Tambahkan ulang event listener pada input harga dan diskon
         function reinitUpdatePelayananListenersEstetika() {
-            const hargaInput = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="harga_treatment"]');
-            const diskonInput = document.querySelector('#modaleditpelayananEstetika input[wire\\:model\\.defer="diskon"]');
+            const modal = document.querySelector('#modaleditpelayananEstetika');
+            if (!modal) return;
+
+            const hargaInput = modal.querySelector('input[wire\\:model\\.defer="harga_treatment"]');
+            const diskonInput = modal.querySelector('input[wire\\:model\\.defer="diskon"]');
 
             if (hargaInput) {
                 hargaInput.removeEventListener('input', hitungHargaBersihPelayananEditEstetika);
@@ -103,12 +125,14 @@
             hitungHargaBersihPelayananEditEstetika();
         }
 
+        // Fungsi utama untuk reinitialize saat modal dibuka atau Livewire merender ulang
         function reinitUpdatePelayananModalHelpersEstetika() {
-            initCleaveRupiah();
+            initCleaveRupiah(); // Fungsi global Cleave (sudah dipakai di produk/obat)
             isiAwalHargaPelayananEditEstetika();
             reinitUpdatePelayananListenersEstetika();
         }
 
+        // Listener utama
         document.addEventListener('DOMContentLoaded', reinitUpdatePelayananModalHelpersEstetika);
         document.addEventListener('livewire:load', () => {
             Livewire.hook('message.processed', reinitUpdatePelayananModalHelpersEstetika);

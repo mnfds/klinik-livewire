@@ -10,8 +10,9 @@ class UpdateTreatment extends Component
     public $treatmentId;
     public $nama_treatment, $harga_treatment, $harga_bersih, $deskripsi;
     public $diskon = 0;
+    public $potongan = 0;
 
-    public $harga_treatment_show, $harga_bersih_show;
+    public $potongan_show, $harga_treatment_show, $harga_bersih_show;
  
     #[\Livewire\Attributes\On('editTreatment')]
     public function editTreatment($rowId): void
@@ -22,10 +23,12 @@ class UpdateTreatment extends Component
 
         $this->nama_treatment  = $treatment->nama_treatment;
         $this->harga_treatment = $treatment->harga_treatment;
-        $this->deskripsi       = $treatment->deskripsi;
+        $this->potongan        = $treatment->potongan ?? 0;
         $this->diskon          = $treatment->diskon ?? 0;
         $this->harga_bersih    = $treatment->harga_bersih ?? $treatment->harga_treatment;
+        $this->deskripsi       = $treatment->deskripsi;
 
+        $this->potongan_show = (int) preg_replace('/\D/', '', $this->potongan);
         $this->harga_treatment_show = (int) preg_replace('/\D/', '', $this->harga_treatment);
         $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
         $this->dispatch('setHargaTreatment', $this->harga_treatment);
@@ -37,8 +40,13 @@ class UpdateTreatment extends Component
         if (in_array($property, ['harga_treatment', 'diskon'])) {
             $harga  = (int) $this->harga_treatment;
             $diskon = (int) $this->diskon;
+            $potongan = (int) $this->potongan;
 
-            $this->harga_bersih = $harga - ($harga * $diskon / 100);
+            $hargaSetelahPotongan = Max(0, $harga - $potongan);
+
+            $diskonNominal = ($hargaSetelahPotongan * $diskon) / 100;
+
+            $this->harga_bersih = max(0, $hargaSetelahPotongan - $diskonNominal);
         }
     }
 
@@ -47,6 +55,7 @@ class UpdateTreatment extends Component
         $this->validate([
             'nama_treatment'   => 'required',
             'harga_treatment'  => 'required|numeric|min:0',
+            'potongan'         => 'nullable|numeric|min:0',
             'diskon'           => 'nullable|numeric|min:0|max:100',
             'deskripsi'        => 'nullable|string',
         ]);
@@ -54,6 +63,7 @@ class UpdateTreatment extends Component
         Treatment::where('id', $this->treatmentId)->update([
             'nama_treatment'  => $this->nama_treatment,
             'harga_treatment' => $this->harga_treatment,
+            'potongan'        => $this->potongan,
             'diskon'          => $this->diskon,
             'harga_bersih'    => $this->harga_bersih,
             'deskripsi'       => $this->deskripsi,

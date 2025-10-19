@@ -14,14 +14,21 @@
                 <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_treatment">
             </div>
 
-            {{-- Harga & Diskon --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-control">
-                    <label class="label font-semibold">Harga Dasar</label>
-                    <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
-                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_treatment">
-                </div>
+            {{-- Harga --}}
+            <div class="form-control">
+                <label class="label font-semibold">Harga Dasar</label>
+                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_treatment">
+            </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Potongan --}}
+                <div class="form-control">
+                    <label class="label font-semibold">Potongan</label>
+                    <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="potongan">
+                </div>
+                {{-- Diskon --}}
                 <div class="form-control">
                     <label class="label font-semibold">Diskon (%)</label>
                     <input type="number" class="input input-bordered w-full" placeholder="0-100" min="0" max="100" wire:model.defer="diskon">
@@ -55,15 +62,20 @@
             const root = document.querySelector('#storeModalPelayananEstetika');
 
             const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_treatment"]')?.previousElementSibling;
+            const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
             const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
             const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
 
-            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+            if (!hargaInput || !potonganInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
 
             const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const potongan = parseInt(potonganInput.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
-            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+            
+            const hargaSetelahPotongan = Math.max(0, harga - potongan);
+            const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+            const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
 
             hargaBersihInput.value = hargaBersih;
 
@@ -80,17 +92,16 @@
             const root = document.querySelector('#storeModalPelayananEstetika');
 
             const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_treatment"]')?.previousElementSibling;
+            const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling; 
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
 
-            if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersihEstetika);
-                hargaInput.addEventListener('input', hitungHargaBersihEstetika);
-            }
 
-            if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersihEstetika);
-                diskonInput.addEventListener('input', hitungHargaBersihEstetika);
+        [hargaInput, potonganInput, diskonInput].forEach(el => {
+            if (el) {
+                el.removeEventListener('input', hitungHargaBersihEstetika);
+                el.addEventListener('input', hitungHargaBersihEstetika);
             }
+        });
 
             hitungHargaBersihEstetika();
         }
