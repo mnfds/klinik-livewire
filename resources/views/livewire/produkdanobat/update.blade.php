@@ -60,18 +60,24 @@
             </div>
 
             {{-- Harga & Diskon --}}
-            {{-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> --}}
-                <div class="form-control">
-                    <label class="label font-semibold">Harga Jual</label>
-                    <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
-                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
-                </div>
+            <div class="form-control">
+                <label class="label font-semibold">Harga Jual</label>
+                <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
+            </div>
 
-                <div class="form-control">
-                    <label class="label font-semibold">Diskon (%)</label>
-                    <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
-                </div>
-            {{-- </div> --}}
+            {{-- Potongan --}}
+            <div>
+                <label class="label font-semibold">Potongan</label>
+                <input type="text" id="display_potongan" class="input input-bordered input-rupiah w-full" wire:model.defer="potongan_show" placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="potongan">
+            </div>
+            
+            {{-- Diskon --}}
+            <div class="form-control">
+                <label class="label font-semibold">Diskon (%)</label>
+                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
+            </div>
 
             {{-- Harga Bersih --}}
             <div class="form-control">
@@ -128,72 +134,98 @@
         </form>
     </div>
 
-    {{-- Script --}}
-    <script>
-        function hitungHargaBersihProdukEdit() {
-            const hargaInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_dasar"]');
-            const diskonInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="diskon"]');
-            const hargaBersihInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_bersih"]');
-            const hargaBersihDisplay = document.querySelector('#modaleditprodukdanobat #display_harga_bersih');
+<script>
+    function hitungHargaBersihProdukEdit() {
+        const root = document.querySelector('#modaleditprodukdanobat');
 
-            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+        // Ambil input Cleave (tampilan), bukan hidden Livewire
+        const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+        const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
+        const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+        
+        // Hidden Livewire & tampilan harga bersih
+        const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
+        const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
 
-            const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
-            const diskon = parseFloat(diskonInput.value || 0);
-            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+        if (!hargaInput || !potonganInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
 
-            hargaBersihInput.value = hargaBersih;
-            hargaBersihInput.dispatchEvent(new Event('input'));
+        // Ambil nilai dan ubah ke angka murni
+        const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+        const potongan = parseInt(potonganInput.value.replace(/\D/g, '') || 0);
+        const diskon = parseFloat(diskonInput.value || 0);
 
-            if (hargaBersihDisplay._cleave) {
-                hargaBersihDisplay._cleave.setRawValue(hargaBersih);
-            }
+        // Harga setelah potongan nominal
+        const hargaSetelahPotongan = Math.max(0, harga - potongan);
+
+        // Diskon nominal dari harga setelah potongan
+        const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+
+        // Harga bersih akhir
+        const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
+
+        // Update hidden input Livewire
+        hargaBersihInput.value = hargaBersih;
+        hargaBersihInput.dispatchEvent(new Event('input'));
+
+        // Update tampilan format rupiah
+        if (hargaBersihDisplay._cleave) {
+            hargaBersihDisplay._cleave.setRawValue(hargaBersih);
+        } else {
+            hargaBersihDisplay.value = hargaBersih;
         }
+    }
 
-        function isiAwalHargaDanBersihProdukEdit() {
-            const hargaDisplay = document.querySelector('#display_harga_dasar');
-            const hargaBersihDisplay = document.querySelector('#display_harga_bersih');
+    function isiAwalHargaDanBersihProdukEdit() {
+        const root = document.querySelector('#modaleditprodukdanobat');
 
-            const hargaHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.value || "0";
-            const hargaBersihHiddenValue = document.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
+        const hargaDisplay = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+        const potonganDisplay = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
+        const hargaBersihDisplay = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.previousElementSibling;
 
-            if (hargaDisplay && hargaDisplay._cleave) {
-                hargaDisplay._cleave.setRawValue(hargaHiddenValue);
-            }
+        const hargaHiddenValue = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.value || "0";
+        const potonganHiddenValue = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.value || "0";
+        const hargaBersihHiddenValue = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
 
-            if (hargaBersihDisplay && hargaBersihDisplay._cleave) {
-                hargaBersihDisplay._cleave.setRawValue(hargaBersihHiddenValue);
-            }
+        if (hargaDisplay && hargaDisplay._cleave) {
+            hargaDisplay._cleave.setRawValue(hargaHiddenValue);
         }
-
-        function reinitUpdateProdukObatListeners() {
-            const hargaInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="harga_dasar"]');
-            const diskonInput = document.querySelector('#modaleditprodukdanobat input[wire\\:model\\.defer="diskon"]');
-
-            if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersihProdukEdit);
-                hargaInput.addEventListener('input', hitungHargaBersihProdukEdit);
-            }
-
-            if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersihProdukEdit);
-                diskonInput.addEventListener('input', hitungHargaBersihProdukEdit);
-            }
-
-            hitungHargaBersihProdukEdit();
+        if (potonganDisplay && potonganDisplay._cleave) {
+            potonganDisplay._cleave.setRawValue(potonganHiddenValue);
         }
-
-        function reinitUpdateProdukObatModalHelpers() {
-            initCleaveRupiah(); // inisialisasi semua input-rupiah
-            isiAwalHargaDanBersihProdukEdit(); // isi input harga awal dari Livewire
-            reinitUpdateProdukObatListeners(); // set event listener
+        if (hargaBersihDisplay && hargaBersihDisplay._cleave) {
+            hargaBersihDisplay._cleave.setRawValue(hargaBersihHiddenValue);
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', reinitUpdateProdukObatModalHelpers);
-        document.addEventListener('livewire:load', () => {
-            Livewire.hook('message.processed', reinitUpdateProdukObatModalHelpers);
+    function reinitUpdateProdukObatListeners() {
+        const root = document.querySelector('#modaleditprodukdanobat');
+
+        const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+        const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
+        const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
+
+        [hargaInput, potonganInput, diskonInput].forEach(input => {
+            if (input) {
+                input.removeEventListener('input', hitungHargaBersihProdukEdit);
+                input.addEventListener('input', hitungHargaBersihProdukEdit);
+            }
         });
-        document.addEventListener('livewire:navigated', reinitUpdateProdukObatModalHelpers);
-    </script>
+
+        hitungHargaBersihProdukEdit();
+    }
+
+    function reinitUpdateProdukObatModalHelpers() {
+        initCleaveRupiah(); // inisialisasi semua input-rupiah
+        isiAwalHargaDanBersihProdukEdit(); // isi input harga awal dari Livewire
+        reinitUpdateProdukObatListeners(); // set event listener
+    }
+
+    document.addEventListener('DOMContentLoaded', reinitUpdateProdukObatModalHelpers);
+    document.addEventListener('livewire:load', () => {
+        Livewire.hook('message.processed', reinitUpdateProdukObatModalHelpers);
+    });
+    document.addEventListener('livewire:navigated', reinitUpdateProdukObatModalHelpers);
+</script>
+
 
 </dialog>

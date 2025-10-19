@@ -44,6 +44,7 @@ final class TreatmentTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('nama_treatment')
             ->add('harga_treatment', fn ($treatment) => number_format($treatment->harga_treatment, 0, ',', '.'))
+            ->add('potongan_treatment', fn ($treatment) => number_format($treatment->potongan, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih', fn ($treatment) => number_format($treatment->harga_bersih, 0, ',', '.'))
             ->add('deskripsi')
@@ -52,6 +53,7 @@ final class TreatmentTable extends PowerGridComponent
                     ->map(fn($item) => $item->bahanbaku->nama ?? '-')
                     ->implode(', ');
             })
+            ->add('potongan', fn($row) => $row->potongan) // kolom asli potongan untuk sortable
             ->add('harga', fn($row) => $row->harga_treatment) // kolom asli harga untuk sortable
             ->add('diskon_asli', fn($row) => $row->diskon)   // kolom asli diskon untuk sortable
             ->add('bahan', function ($row) {
@@ -74,11 +76,18 @@ final class TreatmentTable extends PowerGridComponent
                 ->sortable()
                 ->hidden(),
 
+            Column::make('Potongan', 'potongan')
+                ->sortable()
+                ->hidden(),
+
             Column::make('Diskon', 'diskon_asli')
                 ->sortable()
                 ->hidden(),
 
             Column::make('Harga Dasar', 'harga_treatment')
+                ->sortable(),
+
+            Column::make('Potongan', 'potongan_treatment')
                 ->sortable(),
 
             Column::make('Diskon', 'diskon')

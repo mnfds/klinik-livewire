@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('sediaan');
             $table->unsignedBigInteger('harga_dasar');
             $table->unsignedBigInteger('diskon')->nullable();
+            $table->unsignedBigInteger('potongan')->nullable();
             $table->unsignedBigInteger('harga_bersih')->nullable();
             $table->integer('stok');
             $table->date('expired_at')->nullable();

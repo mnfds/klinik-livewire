@@ -52,6 +52,7 @@ final class BundlingTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('nama')
             ->add('harga_formatted', fn ($row) => 'Rp'.number_format($row->harga, 0, ',', '.'))
+            ->add('potongan_formatted', fn ($row) => 'Rp'.number_format($row->potongan, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih_formatted', fn ($row) => 'Rp'.number_format($row->harga_bersih, 0, ',', '.'))
             ->add('aktif')
@@ -101,6 +102,9 @@ final class BundlingTable extends PowerGridComponent
                 ->searchable(),
 
             Column::make('Harga', 'harga_formatted', 'harga')
+                ->sortable(),
+
+            Column::make('Potongan', 'potongan_formatted', 'potongan')
                 ->sortable(),
                 
             Column::make('Diskon', 'diskon')

@@ -66,6 +66,13 @@
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
             </div>
 
+            {{-- Potongan --}}
+            <div>
+                <label class="label font-semibold">Potongan</label>
+                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="potongan">
+            </div>
+
             {{-- Diskon --}}
             <div>
                 <label class="label font-semibold">Diskon (%)</label>
@@ -127,30 +134,44 @@
         </form>
     </div>
 
-    {{-- Script diseragamkan --}}
+    {{-- Script --}}
     <script>
         function hitungHargaBersihProduk() {
             const root = document.querySelector('#storeModalProdukDanObat');
 
             const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+            const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
             const hargaBersihInput = root.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
             const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
 
-            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+            if (!hargaInput || !potonganInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
 
+            // Ambil nilai dan ubah ke angka murni
             const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const potongan = parseInt(potonganInput.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
-            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
 
+            // Logika: harga setelah potongan
+            const hargaSetelahPotongan = Math.max(0, harga - potongan);
+
+            // Diskon nominal
+            const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+
+            // Harga bersih akhir
+            const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
+
+            // Update hidden input Livewire
             hargaBersihInput.value = hargaBersih;
 
+            // Update tampilan format rupiah
             if (hargaBersihDisplay._cleave) {
                 hargaBersihDisplay._cleave.setRawValue(hargaBersih);
             } else {
                 hargaBersihDisplay.value = hargaBersih;
             }
 
+            // Trigger Livewire update
             hargaBersihInput.dispatchEvent(new Event('input'));
         }
 
@@ -158,23 +179,22 @@
             const root = document.querySelector('#storeModalProdukDanObat');
 
             const hargaInput = root.querySelector('input[wire\\:model\\.defer="harga_dasar"]')?.previousElementSibling;
+            const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling;
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
 
-            if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersihProduk);
-                hargaInput.addEventListener('input', hitungHargaBersihProduk);
-            }
+            [hargaInput, potonganInput, diskonInput].forEach(el => {
+                if (el) {
+                    el.removeEventListener('input', hitungHargaBersihProduk);
+                    el.addEventListener('input', hitungHargaBersihProduk);
+                }
+            });
 
-            if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersihProduk);
-                diskonInput.addEventListener('input', hitungHargaBersihProduk);
-            }
-
+            // Jalankan awal
             hitungHargaBersihProduk();
         }
 
         function reinitProdukModalHelpers() {
-            initCleaveRupiah(); // global
+            initCleaveRupiah(); // fungsi global kamu
             reinitHargaProdukListeners();
         }
 

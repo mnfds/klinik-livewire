@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
-            $table->integer('harga')->default(0);          // Harga sebelum diskon
-            $table->integer('diskon')->default(0);         // Dalam persen (misal 10 = 10%)
-            $table->integer('harga_bersih')->default(0);   // Harga setelah diskon (opsional hitung manual/otomatis)
+            $table->integer('harga')->default(0);
+            $table->integer('diskon')->default(0);
+            $table->integer('potongan')->default(0);
+            $table->integer('harga_bersih')->default(0);
             $table->boolean('aktif')->default(true);
             $table->timestamps();
         });

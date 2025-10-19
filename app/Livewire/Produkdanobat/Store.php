@@ -10,6 +10,7 @@ class Store extends Component
     public $nama_dagang, $golongan, $kode, $sediaan, $harga_dasar, $stok;
     public $expired_at,$reminder, $batch, $lokasi, $supplier, $harga_bersih;
     public $diskon = 0;
+    public $potongan = 0;
 
     public function render()
     {
@@ -18,12 +19,14 @@ class Store extends Component
 
     public function store()
     {
+
         $this->validate([
             'nama_dagang' => 'required|string',
             'golongan' => 'required|string',
             'kode' => 'required|string|unique:produk_dan_obats,kode',
             'sediaan' => 'required|string',
             'harga_dasar' => 'required|integer|min:0',
+            'potongan' => 'required|integer|min:0',
             'diskon' => 'nullable|min:0|max:100',
             'stok' => 'required|integer|min:0',
             'expired_at' => 'nullable|date',
@@ -35,11 +38,17 @@ class Store extends Component
 
         // Hitung harga bersih
         $harga = (float) $this->harga_dasar;
-        $diskon = (float) $this->diskon;
+        $potongan = (float) $this->potongan;
+        $diskon = (float) $this->diskon ?? 0;
 
-        $diskonNominal = ($harga * $diskon) / 100;
-        $this->harga_bersih = $harga - $diskonNominal;
+        // Harga setelah potongan nominal
+        $hargaSetelahPotongan = max(0, $harga - $potongan);
 
+        // Hitung diskon dalam nominal
+        $diskonNominal = ($hargaSetelahPotongan * $diskon) / 100;
+
+        // Harga bersih akhir
+        $this->harga_bersih = max(0, $hargaSetelahPotongan - $diskonNominal);
 
         ProdukDanObat::create([
             'nama_dagang' => $this->nama_dagang,
@@ -47,6 +56,7 @@ class Store extends Component
             'kode' => $this->kode,
             'sediaan' => $this->sediaan,
             'harga_dasar' => $this->harga_dasar,
+            'potongan' => $this->potongan,
             'diskon' => $this->diskon,
             'harga_bersih' => $this->harga_bersih,
             'stok' => $this->stok,

@@ -48,6 +48,7 @@ final class ProdukObatTable extends PowerGridComponent
             ->add('kode')
             ->add('sediaan')
             ->add('harga_dasar', fn ($produkdanobat) => number_format($produkdanobat->harga_dasar, 0, ',', '.'))
+            ->add('potongan', fn ($produkdanobat) => number_format($produkdanobat->potongan, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih', fn ($produkdanobat) => number_format($produkdanobat->harga_bersih, 0, ',', '.'))
             ->add('stok', fn ($produkdanobat) => number_format($produkdanobat->stok, 0, ',', '.'))
@@ -75,6 +76,8 @@ final class ProdukObatTable extends PowerGridComponent
 
             // Harga
             Column::make('Harga Jual', 'harga_dasar')
+                ->sortable(),
+            Column::make('Potongan', 'potongan')
                 ->sortable(),
             Column::make('Diskon', 'diskon')
                 ->sortable(),

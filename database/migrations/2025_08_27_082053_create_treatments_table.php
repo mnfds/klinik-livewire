@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('harga_treatment');
             $table->string('deskripsi')->nullable();
             $table->unsignedBigInteger('diskon')->nullable();
+            $table->unsignedBigInteger('potongan')->nullable();
             $table->unsignedBigInteger('harga_bersih')->nullable();
             $table->timestamps();
         });
