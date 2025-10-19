@@ -7,7 +7,6 @@
         <h3 class="text-xl font-semibold mb-4">Edit Pelayanan</h3>
 
         <form wire:submit.prevent="update" class="space-y-4">
-
             {{-- Nama Pelayanan --}}
             <div class="form-control">
                 <label class="label font-semibold">Nama Pelayanan</label>
@@ -59,6 +58,7 @@
     <script>
         function hitungHargaBersihPelayananEdit() {
             const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
+            const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan'); // ✅ DITAMBAHKAN
             const diskonInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="diskon"]');
             const hargaHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]');
             const potonganHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="potongan"]');
@@ -71,7 +71,7 @@
             const potongan = parseInt(potonganDisplay.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
 
-            // set value ke hidden (Livewire expect angka asli di hidden)
+            // set value ke hidden (Livewire expects angka asli di hidden)
             hargaHidden.value = harga;
             potonganHidden.value = potongan;
 
@@ -91,7 +91,6 @@
             const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
             const hargaBersihDisplay = document.querySelector('#modaleditpelayanan #display_harga_bersih');
             const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan');
-
 
             const hargaHiddenValue = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]')?.value || "0";
             const potonganHiddenValue = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="potongan"]')?.value || "0";

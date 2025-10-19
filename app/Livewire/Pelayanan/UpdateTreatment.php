@@ -37,7 +37,7 @@ class UpdateTreatment extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['harga_treatment', 'diskon'])) {
+        if (in_array($property, ['harga_treatment', 'diskon', 'potongan'])) {
             $harga  = (int) $this->harga_treatment;
             $diskon = (int) $this->diskon;
             $potongan = (int) $this->potongan;
