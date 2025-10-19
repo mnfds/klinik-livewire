@@ -20,14 +20,23 @@
                 <textarea class="textarea textarea-bordered w-full" placeholder="Deskripsi bundling" wire:model.defer="deskripsi"></textarea>
             </div>
 
-            {{-- Harga & Diskon --}}
+            {{-- Harga --}}
+            <div class="form-control">
+                <label class="label font-semibold">Harga</label>
+                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga">
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {{-- Potongan --}}
                 <div class="form-control">
-                    <label class="label font-semibold">Harga</label>
+                    <label class="label font-semibold">Potongan</label>
                     <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
-                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga">
+                    <input type="hidden" class="input-rupiah-hidden" wire:model.defer="potongan">
                 </div>
 
+                {{-- Diskon --}}
                 <div class="form-control">
                     <label class="label font-semibold">Diskon (%)</label>
                     <input type="number" class="input input-bordered w-full" placeholder="0-100" min="0" max="100" wire:model.defer="diskon" required>
@@ -116,15 +125,20 @@
     <script>
         function hitungHargaBersih() {
             const hargaInput = document.querySelector('input[wire\\:model\\.defer="harga"]');
+            const potonganInput = document.querySelector('input[wire\\:model\\.defer="potongan"]');
             const diskonInput = document.querySelector('input[wire\\:model\\.defer="diskon"]');
             const hargaBersihInput = document.querySelector('input[wire\\:model\\.defer="harga_bersih"]');
             const hargaBersihDisplay = hargaBersihInput?.previousElementSibling;
 
-            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+            if (!hargaInput || !potonganInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
 
             const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const potongan = parseInt(potonganInput.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
-            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+
+            const hargaSetelahPotongan = Math.max(0, harga - potongan);
+            const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+            const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
 
             hargaBersihInput.value = hargaBersih;
 
@@ -139,17 +153,15 @@
 
         function reinitHargaBersihListeners() {
             const hargaInput = document.querySelector('input[wire\\:model\\.defer="harga"]');
+            const potonganInput = document.querySelector('input[wire\\:model\\.defer="potongan"]');
             const diskonInput = document.querySelector('input[wire\\:model\\.defer="diskon"]');
-
-            if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersih);
-                hargaInput.addEventListener('input', hitungHargaBersih);
-            }
-
-            if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersih);
-                diskonInput.addEventListener('input', hitungHargaBersih);
-            }
+            
+            [hargaInput, potonganInput, diskonInput].forEach(el => {
+                if (el) {
+                    el.removeEventListener('input', hitungHargaBersih);
+                    el.addEventListener('input', hitungHargaBersih);
+                }
+            });
 
             hitungHargaBersih();
         }

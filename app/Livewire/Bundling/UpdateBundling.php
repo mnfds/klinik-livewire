@@ -16,7 +16,7 @@ class UpdateBundling extends Component
 {
     public $bundlingId;
 
-    public $nama, $deskripsi, $harga, $diskon, $harga_bersih;
+    public $nama, $deskripsi, $harga, $diskon, $potongan, $harga_bersih;
     public $treatmentInputs = [];
     public $pelayananInputs = [];
     public $produkInputs = [];
@@ -25,7 +25,7 @@ class UpdateBundling extends Component
     public $pelayananList = [];
     public $produkObatList = [];
 
-    public $harga_show, $harga_bersih_show;
+    public $potongan_show, $harga_show, $harga_bersih_show;
 
     public function mount()
     {
@@ -46,9 +46,11 @@ class UpdateBundling extends Component
         $this->nama = $bundling->nama;
         $this->deskripsi = $bundling->deskripsi;
         $this->harga = $bundling->harga;
-        $this->diskon = $bundling->diskon;
+        $this->potongan = $bundling->potongan ?? 0;
+        $this->diskon = $bundling->diskon ?? 0;
         $this->harga_bersih = $bundling->harga_bersih;
 
+        $this->potongan_show = (int) preg_replace('/\D/', '', $this->potongan);
         $this->harga_show = (int) preg_replace('/\D/', '', $this->harga);
         $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
 
@@ -114,6 +116,7 @@ class UpdateBundling extends Component
         $this->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
+            'potongan' => 'required|numeric|min:0',
             'diskon' => 'required|numeric|min:0|max:100',
             'harga_bersih' => 'required|numeric|min:0',
 
@@ -132,6 +135,7 @@ class UpdateBundling extends Component
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'harga' => $this->harga,
+            'potongan' => $this->potongan,
             'diskon' => $this->diskon,
             'harga_bersih' => $this->harga_bersih,
         ]);

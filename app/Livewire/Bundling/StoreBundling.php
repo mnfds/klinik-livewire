@@ -20,6 +20,7 @@ class StoreBundling extends Component
     public $deskripsi;
     public $harga;
     public $diskon;
+    public $potongan;
     public $harga_bersih;
 
     // Form dinamis
@@ -78,7 +79,8 @@ class StoreBundling extends Component
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
             'harga' => 'required|numeric|min:0',
-            'diskon' => 'required|numeric|min:0|max:100',
+            'potongan' => 'nullable|numeric|min:0',
+            'diskon' => 'nullable|numeric|min:0|max:100',
             'harga_bersih' => 'required|numeric|min:0',
 
             'treatmentInputs.*.treatments_id' => 'nullable|exists:treatments,id',
@@ -95,6 +97,7 @@ class StoreBundling extends Component
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'harga' => $this->harga,
+            'potongan' => $this->potongan,
             'diskon' => $this->diskon,
             'harga_bersih' => $this->harga_bersih,
         ]);

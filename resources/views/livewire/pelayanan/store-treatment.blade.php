@@ -95,13 +95,12 @@
             const potonganInput = root.querySelector('input[wire\\:model\\.defer="potongan"]')?.previousElementSibling; 
             const diskonInput = root.querySelector('input[wire\\:model\\.defer="diskon"]');
 
-
-        [hargaInput, potonganInput, diskonInput].forEach(el => {
-            if (el) {
-                el.removeEventListener('input', hitungHargaBersihEstetika);
-                el.addEventListener('input', hitungHargaBersihEstetika);
-            }
-        });
+            [hargaInput, potonganInput, diskonInput].forEach(el => {
+                if (el) {
+                    el.removeEventListener('input', hitungHargaBersihEstetika);
+                    el.addEventListener('input', hitungHargaBersihEstetika);
+                }
+            });
 
             hitungHargaBersihEstetika();
         }
