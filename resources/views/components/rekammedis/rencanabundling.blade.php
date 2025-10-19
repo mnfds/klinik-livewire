@@ -46,6 +46,8 @@
                             (val) => { 
                                 item.bundling_id = val.id;
                                 item.nama_bundling = val.text;
+                                item.potongan = val.potongan;
+                                item.diskon = val.diskon;
                                 onChangeBundling(index); // reset & sync detail
                             }
                             )" x-init="init()">

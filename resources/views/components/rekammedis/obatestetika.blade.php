@@ -46,7 +46,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <div x-data="singleSelectProduk(
                         () => item.produk_id,
-                        (val) => { item.produk_id = val.id; item.nama_produk = val.text; item.harga = val.harga; syncItemProduk(index); }
+                        (val) => { item.produk_id = val.id; item.nama_produk = val.text; item.harga = val.harga; item.potongan = val.potongan; item.diskon = val.diskon; syncItemProduk(index); }
                         )" x-init="init()">
                         <label class="block text-sm font-semibold mb-1">Produk</label>
                         <div class="relative">

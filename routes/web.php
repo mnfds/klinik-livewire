@@ -215,6 +215,8 @@ Route::middleware(['auth'])->group(function () {
                 'id' => $produk->id,
                 'text' => $produk->nama_dagang,
                 'harga' => $produk->harga_dasar,
+                'potongan' => $produk->potongan,
+                'diskon' => $produk->diskon,
             ]);
     });
 
@@ -227,6 +229,8 @@ Route::middleware(['auth'])->group(function () {
                 'id' => $t->id,
                 'text' => $t->nama_treatment,
                 'harga' => $t->harga_treatment,
+                'potongan' => $t->potongan,
+                'diskon' => $t->diskon,
             ]);
     });
 
@@ -239,6 +243,8 @@ Route::middleware(['auth'])->group(function () {
                 'id' => $b->id,
                 'text' => $b->nama,
                 'harga' => $b->harga, // supaya bisa dipakai di calcHargaAsli
+                'potongan' => $b->potongan, 
+                'diskon' => $b->diskon, 
             ]);
     });
 

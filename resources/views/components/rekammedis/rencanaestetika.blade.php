@@ -48,6 +48,8 @@
                             item.treatments_id = val.id; 
                             item.nama_treatment = val.text; 
                             item.harga = val.harga; 
+                            item.potongan = val.potongan; 
+                            item.diskon = val.diskon; 
                             syncItemTreatment(index); 
                         }
                         )" x-init="init()">
