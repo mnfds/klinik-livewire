@@ -11,6 +11,7 @@ class StorePelayanan extends Component
     public $harga_pelayanan;
     public $deskripsi;
     public $diskon = 0;
+    public $potongan = 0;
     public $harga_bersih;
 
     public function render()
@@ -20,24 +21,37 @@ class StorePelayanan extends Component
 
     public function store()
     {
+        // dd([
+        //     'harga_pelayanan' => $this->harga_pelayanan,
+        //     'potongan' => $this->potongan,
+        //     'diskon' => $this->diskon,
+        //     'harga_bersih' => $this->harga_bersih,
+        // ]);
         $this->validate([
             'nama_pelayanan'  => 'required',
             'harga_pelayanan' => 'required',
             'diskon'          => 'nullable|min:0|max:100',
+            'potongan'        => 'nullable|min:0|integer',
             'deskripsi'       => 'nullable',
         ]);
 
          // Hitung harga bersih
         $harga = (float) $this->harga_pelayanan;
-        $diskon = (float) $this->diskon;
+        $diskon = (float) $this->diskon ?? 0;
+        $potongan = (float) $this->potongan ?? 0;
 
-        $diskonNominal = ($harga * $diskon) / 100;
-        $this->harga_bersih = $harga - $diskonNominal;
+        // Harga Setelah Potogan Nominal
+        $hargaSetelahPotongan = Max(0, $harga - $potongan);
+        // Hitung Diskon Dalam Nominal
+        $diskonNominal = ($hargaSetelahPotongan * $diskon) / 100;
+        // Harga Bersih
+        $this->harga_bersih = max(0, $hargaSetelahPotongan - $diskonNominal);
 
         Pelayanan::create([
             'nama_pelayanan'   => $this->nama_pelayanan,
             'harga_pelayanan'  => $this->harga_pelayanan,
             'diskon'           => $this->diskon,
+            'potongan'         => $this->potongan,
             'harga_bersih'     => $this->harga_bersih,
             'deskripsi'        => $this->deskripsi,
         ]);

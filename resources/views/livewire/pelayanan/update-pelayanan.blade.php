@@ -21,6 +21,13 @@
                 <input type="hidden" wire:model.defer="harga_pelayanan" class="input-rupiah-hidden">
             </div>
 
+            {{-- Potongan --}}
+            <div class="form-control">
+                <label class="label font-semibold">Potongan</label>
+                <input type="text" id="display_potongan" class="input input-bordered input-rupiah w-full" wire:model.defer="potongan_show" placeholder="Rp 0">
+                <input type="hidden" wire:model.defer="potongan" class="input-rupiah-hidden">
+            </div>
+
             {{-- Diskon --}}
             <div class="form-control">
                 <label class="label font-semibold">Diskon (%)</label>
@@ -51,16 +58,27 @@
     {{-- Script --}}
     <script>
         function hitungHargaBersihPelayananEdit() {
-            const hargaInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]');
+            const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
+            const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan');
             const diskonInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="diskon"]');
+            const hargaHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]');
+            const potonganHidden = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="potongan"]');
             const hargaBersihInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_bersih"]');
             const hargaBersihDisplay = document.querySelector('#modaleditpelayanan #display_harga_bersih');
 
-            if (!hargaInput || !diskonInput || !hargaBersihInput || !hargaBersihDisplay) return;
+            if (!hargaDisplay || !potonganDisplay || !diskonInput || !hargaHidden || !potonganHidden || !hargaBersihInput) return;
 
-            const harga = parseInt(hargaInput.value.replace(/\D/g, '') || 0);
+            const harga = parseInt(hargaDisplay.value.replace(/\D/g, '') || 0);
+            const potongan = parseInt(potonganDisplay.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
-            const hargaBersih = Math.max(0, Math.round(harga - (harga * (diskon / 100))));
+
+            // set value ke hidden (Livewire expect angka asli di hidden)
+            hargaHidden.value = harga;
+            potonganHidden.value = potongan;
+
+            const hargaSetelahPotongan = Math.max(0, harga - potongan);
+            const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+            const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
 
             hargaBersihInput.value = hargaBersih;
             hargaBersihInput.dispatchEvent(new Event('input'));
@@ -73,32 +91,35 @@
         function isiAwalHargaPelayananEdit() {
             const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
             const hargaBersihDisplay = document.querySelector('#modaleditpelayanan #display_harga_bersih');
+            const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan');
+
 
             const hargaHiddenValue = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]')?.value || "0";
+            const potonganHiddenValue = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="potongan"]')?.value || "0";
             const hargaBersihHiddenValue = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_bersih"]')?.value || "0";
 
             if (hargaDisplay && hargaDisplay._cleave) {
                 hargaDisplay._cleave.setRawValue(hargaHiddenValue);
             }
-
+            if (potonganDisplay && potonganDisplay._cleave) {
+                potonganDisplay._cleave.setRawValue(potonganHiddenValue);
+            }
             if (hargaBersihDisplay && hargaBersihDisplay._cleave) {
                 hargaBersihDisplay._cleave.setRawValue(hargaBersihHiddenValue);
             }
         }
 
         function reinitUpdatePelayananListeners() {
-            const hargaInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="harga_pelayanan"]');
+            const hargaDisplay = document.querySelector('#modaleditpelayanan #display_harga_pelayanan');
+            const potonganDisplay = document.querySelector('#modaleditpelayanan #display_potongan');
             const diskonInput = document.querySelector('#modaleditpelayanan input[wire\\:model\\.defer="diskon"]');
 
-            if (hargaInput) {
-                hargaInput.removeEventListener('input', hitungHargaBersihPelayananEdit);
-                hargaInput.addEventListener('input', hitungHargaBersihPelayananEdit);
-            }
-
-            if (diskonInput) {
-                diskonInput.removeEventListener('input', hitungHargaBersihPelayananEdit);
-                diskonInput.addEventListener('input', hitungHargaBersihPelayananEdit);
-            }
+            [hargaDisplay, potonganDisplay, diskonInput].forEach(el => {
+                if (el) {
+                    el.removeEventListener('input', hitungHargaBersihPelayananEdit);
+                    el.addEventListener('input', hitungHargaBersihPelayananEdit);
+                }
+            });
 
             hitungHargaBersihPelayananEdit();
         }
