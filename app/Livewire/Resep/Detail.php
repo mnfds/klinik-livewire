@@ -220,6 +220,7 @@ class Detail extends Component
                         'dosis' => $item['dosis'],
                         'hari' => $item['hari'],
                         'aturan_pakai' => $item['aturan_pakai'],
+                        'konfirmasi' => 'proses',
                     ]);
                 }
             }
@@ -236,6 +237,7 @@ class Detail extends Component
                         'dosis' => $racik['dosis'],
                         'hari' => $racik['hari'],
                         'aturan_pakai' => $racik['aturan_pakai'],
+                        'konfirmasi' => 'proses',
                         'metode_racikan' => $racik['metode_racikan'] ?? null,
                     ]);
 

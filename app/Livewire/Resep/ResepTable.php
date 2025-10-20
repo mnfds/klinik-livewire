@@ -29,7 +29,7 @@ final class ResepTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::where('status_terdaftar', 'peresepan')
+        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'lunas'])
             // ->whereDate('created_at', today())
             ->with([
                 'pasien',
@@ -66,7 +66,10 @@ final class ResepTable extends PowerGridComponent
             ->add('status', fn ($row) =>
                 $row->status_terdaftar === 'peresepan'
                     ? '<span class="badge badge-primary">Hitung Resep</span>'
-                    : ($row->status_terdaftar ?? '-')
+                    : ($row->status_terdaftar === 'lunas'
+                        ? '<span class="badge badge-success">Tebus Obat/Produk</span>'
+                        : ($row->status_terdaftar ?? '-')
+                    )
             )
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
             ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga

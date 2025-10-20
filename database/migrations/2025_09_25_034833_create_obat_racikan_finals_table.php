@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('hari')->nullable();
             $table->string('aturan_pakai')->nullable();
             $table->string('metode_racikan')->nullable();
+            $table->string('konfirmasi')->nullable();
             $table->timestamps();
         });
     }

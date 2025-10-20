@@ -4,10 +4,12 @@ namespace App\Livewire\Transaksi;
 
 use Livewire\Component;
 use App\Models\PasienTerdaftar;
-use App\Models\RencanaLayananRM;
-use App\Models\RencananaBundlingRM;
 use App\Models\RencanaProdukRM;
+use App\Models\ObatRacikanFinal;
+use App\Models\RencanaLayananRM;
 use App\Models\RencanaTreatmentRM;
+use App\Models\ObatNonRacikanFinal;
+use App\Models\RencananaBundlingRM;
 
 class Detail extends Component
 {
@@ -23,6 +25,10 @@ class Detail extends Component
     public $treatment;
     public $produk;
     public $bundling;
+
+    // Obat yang di centang
+    public $selectedObat = []; // untuk non racikan
+    public $selectedRacikan = [];
 
     public function mount($id)
     {
@@ -61,10 +67,42 @@ class Detail extends Component
         } else {
             $this->pelayanan        = $this->treatment = $this->produk = $this->bundling = collect();
         }
+
+        // Auto-check semua obat non-racik
+        $this->selectedObat = $this->obatapoteker
+            ->flatMap(fn($final) => $final->obatNonRacikanFinals->pluck('id'))
+            ->toArray();
+
+        // Auto-check semua obat racik
+        $this->selectedRacikan = $this->obatapoteker
+            ->flatMap(fn($final) => $final->obatRacikanFinals->pluck('id'))
+            ->toArray();
     }
 
     public function render()
     {
         return view('livewire.transaksi.detail');
+    }
+
+    public function create(){
+        $nonRacikanIds = $this->selectedObat;
+        $racikanIds = $this->selectedRacikan;
+
+        // Update kolom konfirmasi menjadi 'terkonfirmasi'
+        if (!empty($nonRacikanIds)) {
+            ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
+                ->update(['konfirmasi' => 'terkonfirmasi']);
+        }
+
+        if (!empty($racikanIds)) {
+            ObatRacikanFinal::whereIn('id', $racikanIds)
+                ->update(['konfirmasi' => 'terkonfirmasi']);
+        }
+
+        PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
+        
+        $this->reset();
+
+        return redirect()->route('transaksi.kasir');
     }
 }

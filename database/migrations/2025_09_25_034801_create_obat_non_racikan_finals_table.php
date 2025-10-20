@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('dosis')->nullable();
             $table->string('hari')->nullable();
             $table->string('aturan_pakai')->nullable();
+            $table->string('konfirmasi')->nullable();
             $table->timestamps();
         });
     }
