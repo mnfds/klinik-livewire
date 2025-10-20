@@ -316,14 +316,11 @@ class Create extends Component
                 ]);
 
                 $status = 'pembayaran';
-                if (
-                    !empty($this->obat_non_racikan['nama_obat_non_racikan']) &&
-                    count(array_filter($this->obat_non_racikan['nama_obat_non_racikan'])) > 0
-                ) {
+                if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
                     $status = 'peresepan';
                 }
 
-                if (!empty($this->racikanItems) && count($this->racikanItems) > 0) {
+                if (in_array('obat-racikan', $this->selected_forms_plan)) {
                     $status = 'peresepan';
                 }
                 
