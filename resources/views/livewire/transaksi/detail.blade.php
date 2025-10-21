@@ -313,48 +313,74 @@
                                     <div class="space-y-3">
                                         @foreach($obatapoteker as $final)
                                             @foreach($final->obatNonRacikanFinals ?? [] as $item)
-                                                <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
-                                                    {{-- Nama Obat --}}
-                                                    <div class="font-semibold text-base-content mb-1">
-                                                        <input type="checkbox" wire:model="selectedObat" value="{{ $item->id }}" class="checkbox checkbox-primary checkbox-xs" />
-                                                        {{ ucfirst($item->produk->nama_dagang ?? '-') }}
-                                                    </div>
-    
-                                                    {{-- Jumlah & Harga --}}
-                                                    <div class="text-sm text-base-content/70">
-                                                        {{ $item->jumlah_obat ?? 0 }} {{ $item->satuan_obat ?? '' }} ×
-                                                        Rp {{ number_format($item->harga_obat ?? 0, 0, ',', '.') }}
-                                                    </div>
-    
-                                                    {{-- Potongan & Diskon --}}
-                                                    <div class="mt-2 text-sm space-y-0.5">
-                                                        @if ($item->potongan)
-                                                            <div class="flex justify-between">
-                                                                <span class="text-base-content/70">Potongan</span>
-                                                                <span class="font-medium text-base-content/70">
-                                                                    Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                <label class="block cursor-pointer"
+                                                        x-data="{
+                                                            get checked() {
+                                                                return $wire.selectedObat.includes({{ $item->id }});
+                                                            },
+                                                            updateLivewire(e) {
+                                                                let updated = [...$wire.selectedObat];
+
+                                                                if (e.target.checked) {
+                                                                    if (!updated.includes({{ $item->id }})) {
+                                                                        updated.push({{ $item->id }});
+                                                                    }
+                                                                } else {
+                                                                    updated = updated.filter(i => i !== {{ $item->id }});
+                                                                }
+
+                                                                $wire.set('selectedObat', updated);
+                                                            }
+                                                        }"
+                                                    >
+                                                    <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+
+                                                        {{-- Nama Obat --}}
+                                                        <div class="font-semibold text-base-content mb-1 flex items-center gap-2">
+                                                            <input type="checkbox"
+                                                                :checked="checked"
+                                                                @change="updateLivewire($event)"
+                                                                class="checkbox checkbox-primary checkbox-xs"
+                                                            />
+                                                            {{ ucfirst($item->produk->nama_dagang ?? '-') }}
+                                                        </div>
+
+                                                        {{-- Jumlah & Harga --}}
+                                                        <div class="text-sm text-base-content/70" :class="checked ? '' : 'blur-[2px]'">
+                                                            {{ $item->jumlah_obat ?? 0 }} {{ $item->satuan_obat ?? '' }} ×
+                                                            Rp {{ number_format($item->harga_obat ?? 0, 0, ',', '.') }}
+                                                        </div>
+
+                                                        {{-- Potongan & Diskon --}}
+                                                        <div class="mt-2 text-sm space-y-0.5" :class="checked ? '' : 'blur-[2px]'">
+                                                            @if ($item->potongan)
+                                                                <div class="flex justify-between">
+                                                                    <span class="text-base-content/70">Potongan</span>
+                                                                    <span class="font-medium text-base-content/70">
+                                                                        Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+
+                                                            @if ($item->diskon)
+                                                                <div class="flex justify-between">
+                                                                    <span class="text-base-content/70">Diskon</span>
+                                                                    <span class="font-medium text-base-content">
+                                                                        {{ $item->diskon }}%
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Subtotal --}}
+                                                            <div class="flex justify-between border-t border-dashed pt-1">
+                                                                <span class="text-base-content">Subtotal</span>
+                                                                <span class="font-semibold text-base-content">
+                                                                    Rp {{ number_format($item->total_obat ?? 0, 0, ',', '.') }}
                                                                 </span>
                                                             </div>
-                                                        @endif
-    
-                                                        @if ($item->diskon)
-                                                            <div class="flex justify-between">
-                                                                <span class="text-base-content/70">Diskon</span>
-                                                                <span class="font-medium text-base-content">
-                                                                    {{ $item->diskon }}%
-                                                                </span>
-                                                            </div>
-                                                        @endif
-    
-                                                        {{-- Subtotal --}}
-                                                        <div class="flex justify-between border-t border-dashed pt-1">
-                                                            <span class="text-base-content">Subtotal</span>
-                                                            <span class="font-semibold text-base-content">
-                                                                Rp {{ number_format($item->total_obat ?? 0, 0, ',', '.') }}
-                                                            </span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </label>
                                             @endforeach
                                         @endforeach
                                     </div>
@@ -367,59 +393,86 @@
                                     <div class="space-y-3">
                                         @foreach($obatapoteker as $final)
                                             @foreach($final->obatRacikanFinals ?? [] as $item)
-                                                <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
-                                                    {{-- Nama Racikan --}}
-                                                    <div class="font-semibold text-base-content mb-1">
-                                                        <input type="checkbox" wire:model="selectedRacikan" value="{{ $item->id }}" class="checkbox checkbox-primary checkbox-xs" />
-                                                        {{ ucfirst($item->nama_racikan ?? '-') }}
-                                                    </div>
-    
-                                                    {{-- Potongan & Diskon --}}
-                                                    <div class="mt-2 text-sm space-y-0.5">
-                                                        @if ($item->potongan)
-                                                            <div class="flex justify-between">
-                                                                <span class="text-base-content/70">Potongan</span>
-                                                                <span class="font-medium text-base-content/70">
-                                                                    Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
-                                                                </span>
-                                                            </div>
-                                                        @endif
-                                                        @if ($item->diskon)
-                                                            <div class="flex justify-between">
-                                                                <span class="text-base-content/70">Diskon</span>
-                                                                <span class="font-medium text-base-content">
-                                                                    {{ $item->diskon }}%
-                                                                </span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-    
-                                                    {{-- Bahan Racikan --}}
-                                                    <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2">
-                                                        @php $bahanList = $item->bahanRacikanFinals ?? collect(); @endphp
-    
-                                                        @if($bahanList->isNotEmpty())
-                                                            @foreach($bahanList as $detail)
-                                                                <div class="flex justify-between items-center">
-                                                                    <span>{{ $detail->produk->nama_dagang ?? '-' }}</span>
+                                                <label class="block cursor-pointer"
+                                                        wire:ignore
+                                                        x-data="{
+                                                            get checked() {
+                                                                return $wire.selectedRacikan.includes({{ $item->id }});
+                                                            },
+                                                            toggle() {
+                                                                let updated = [...$wire.selectedRacikan];
+                                                                const id = {{ $item->id }};
+
+                                                                if (updated.includes(id)) {
+                                                                    updated = updated.filter(i => i !== id);
+                                                                } else {
+                                                                    updated.push(id);
+                                                                }
+
+                                                                $wire.set('selectedRacikan', updated);
+                                                            }
+                                                        }"
+                                                    >
+                                                    <div class="bg-base-100 border border-base-300 border-t-3 border-t-success rounded-lg p-3 shadow-sm hover:shadow transition">
+
+                                                        {{-- Nama Racikan --}}
+                                                        <div class="font-semibold text-base-content mb-1 flex items-center gap-2">
+                                                            <input type="checkbox"
+                                                                :checked="checked"
+                                                                @change="toggle()"
+                                                                class="checkbox checkbox-primary checkbox-xs"
+                                                            />
+                                                            {{ ucfirst($item->nama_racikan ?? '-') }}
+                                                        </div>
+
+                                                        {{-- Potongan & Diskon --}}
+                                                        <div class="mt-2 text-sm space-y-0.5" :class="checked ? '' : 'blur-[2px]'">
+                                                            @if ($item->potongan)
+                                                                <div class="flex justify-between">
+                                                                    <span class="text-base-content/70">Potongan</span>
                                                                     <span class="font-medium text-base-content/70">
-                                                                        {{ $detail->jumlah_obat ?? 0 }} {{ $detail->satuan_obat ?? '' }} × Rp {{ number_format($detail->harga_obat ?? 0, 0, ',', '.') }}
+                                                                        Rp {{ number_format($item->potongan ?? 0, 0, ',', '.') }}
                                                                     </span>
                                                                 </div>
-                                                            @endforeach
-                                                        @else
-                                                            <div class="italic text-base-content/70">Tidak ada bahan racikan.</div>
-                                                        @endif
+                                                            @endif
+
+                                                            @if ($item->diskon)
+                                                                <div class="flex justify-between">
+                                                                    <span class="text-base-content/70">Diskon</span>
+                                                                    <span class="font-medium text-base-content">
+                                                                        {{ $item->diskon }}%
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+
+                                                        {{-- Bahan Racikan --}}
+                                                        <div class="ml-3 text-sm text-base-content/70 mt-3 space-y-2" :class="checked ? '' : 'blur-[2px]'">
+                                                            @php $bahanList = $item->bahanRacikanFinals ?? collect(); @endphp
+
+                                                            @if($bahanList->isNotEmpty())
+                                                                @foreach($bahanList as $detail)
+                                                                    <div class="flex justify-between items-center">
+                                                                        <span>{{ $detail->produk->nama_dagang ?? '-' }}</span>
+                                                                        <span class="font-medium text-base-content/70">
+                                                                            {{ $detail->jumlah_obat ?? 0 }} {{ $detail->satuan_obat ?? '' }} × Rp {{ number_format($detail->harga_obat ?? 0, 0, ',', '.') }}
+                                                                        </span>
+                                                                    </div>
+                                                                @endforeach
+                                                            @else
+                                                                <div class="italic text-base-content/70">Tidak ada bahan racikan.</div>
+                                                            @endif
+                                                        </div>
+
+                                                        {{-- Subtotal --}}
+                                                        <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm" :class="checked ? '' : 'blur-[2px]'">
+                                                            <span class="text-base-content">Subtotal</span>
+                                                            <span class="font-semibold text-base-content">
+                                                                Rp {{ number_format($item->total_racikan ?? 0, 0, ',', '.') }}
+                                                            </span>
+                                                        </div>
                                                     </div>
-    
-                                                    {{-- Subtotal --}}
-                                                    <div class="flex justify-between border-t border-dashed pt-2 mt-3 text-sm">
-                                                        <span class="text-base-content">Subtotal</span>
-                                                        <span class="font-semibold text-base-content">
-                                                            Rp {{ number_format($item->total_racikan ?? 0, 0, ',', '.') }}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                </label>
                                             @endforeach
                                         @endforeach
                                     </div>
