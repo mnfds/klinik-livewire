@@ -596,37 +596,49 @@
 
                                 {{-- === Obat Non Racikan & Racikan === --}}
                                 @foreach($obatapoteker as $obat)
+
                                     {{-- Non Racikan --}}
                                     @foreach($obat->obatNonRacikanFinals ?? [] as $non)
-                                        <div class="flex justify-between">
-                                            <span>{{ $non->produk->nama_dagang }}</span>
-                                            <span>Rp {{ number_format($non->total_obat ?? 0, 0, ',', '.') }}</span>
-                                        </div>
+                                        @if(in_array($non->id, $selectedObat ?? []))
+                                            <div class="flex justify-between">
+                                                <span>{{ $non->produk->nama_dagang }}</span>
+                                                <span>Rp {{ number_format($non->total_obat ?? 0, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
                                     @endforeach
 
                                     {{-- Racikan --}}
                                     @foreach($obat->obatRacikanFinals ?? [] as $racik)
-                                        <div class="flex justify-between">
-                                            <span>{{ $racik->nama_racikan ?? 'Obat Racikan' }}</span>
-                                            <span>Rp {{ number_format($racik->total_racikan ?? 0, 0, ',', '.') }}</span>
-                                        </div>
+                                        @if(in_array($racik->id, $selectedRacikan ?? []))
+                                            <div class="flex justify-between">
+                                                <span>{{ $racik->nama_racikan ?? 'Obat Racikan' }}</span>
+                                                <span>Rp {{ number_format($racik->total_racikan ?? 0, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
                                     @endforeach
-                                    {{-- Tambahan Tuslah & Embalase --}}
-                                    @if($obat->tuslah)
-                                        <div class="flex justify-between">
-                                            <span>Tuslah</span>
-                                            <span>Rp {{ number_format($obat->tuslah, 0, ',', '.') }}</span>
-                                        </div>
-                                    @endif
-    
-                                    @if($obat->embalase)
-                                        <div class="flex justify-between">
-                                            <span>Embalase</span>
-                                            <span>Rp {{ number_format($obat->embalase, 0, ',', '.') }}</span>
-                                        </div>
-                                    @endif
-                                @endforeach
 
+                                    {{-- Tuslah & Embalase -> khusus racikan --}}
+                                    @php
+                                        $adaRacikanDipilih = $obat->obatRacikanFinals?->whereIn('id', $selectedRacikan ?? [])->isNotEmpty();
+                                    @endphp
+
+                                    @if($adaRacikanDipilih)
+                                        @if($obat->tuslah)
+                                            <div class="flex justify-between">
+                                                <span>Tuslah</span>
+                                                <span>Rp {{ number_format($obat->tuslah, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
+
+                                        @if($obat->embalase)
+                                            <div class="flex justify-between">
+                                                <span>Embalase</span>
+                                                <span>Rp {{ number_format($obat->embalase, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
+                                    @endif
+
+                                @endforeach
 
                                 <hr class="my-2 border-base-300">
 
@@ -634,21 +646,26 @@
                                 @php
                                     $total = collect([$pelayanan, $treatment, $produk, $bundling])
                                         ->flatten()
-                                        ->sum(function ($item) {
-                                            return $item->subtotal
-                                                ?? $item->pelayanan->harga_pelayanan
-                                                ?? $item->treatment->harga_treatment
-                                                ?? $item->produk->harga_jual
-                                                ?? $item->bundling->harga_bundling
-                                                ?? 0;
-                                        });
+                                        ->sum(fn($item) => $item->subtotal
+                                            ?? $item->pelayanan->harga_pelayanan
+                                            ?? $item->treatment->harga_treatment
+                                            ?? $item->produk->harga_jual
+                                            ?? $item->bundling->harga_bundling
+                                            ?? 0
+                                        );
 
-                                    // Tambahkan total dari obat
                                     foreach ($obatapoteker as $obat) {
-                                        $total += ($obat->obatNonRacikanFinals?->sum('total_obat') ?? 0)
-                                                + ($obat->obatRacikanFinals?->sum('total_racikan') ?? 0)
-                                                + ($obat->tuslah ?? 10000)
-                                                + ($obat->embalase ?? 10000);
+                                        // Total obat dipilih
+                                        $total +=
+                                            ($obat->obatNonRacikanFinals?->whereIn('id', $selectedObat ?? [])->sum('total_obat') ?? 0) +
+                                            ($obat->obatRacikanFinals?->whereIn('id', $selectedRacikan ?? [])->sum('total_racikan') ?? 0);
+
+                                        // Tambah tuslah & embalase hanya jika ada racikan terpilih
+                                        $adaRacikanDipilih = $obat->obatRacikanFinals?->whereIn('id', $selectedRacikan ?? [])->isNotEmpty();
+
+                                        if($adaRacikanDipilih){
+                                            $total += ($obat->tuslah ?? 0) + ($obat->embalase ?? 0);
+                                        }
                                     }
                                 @endphp
 
