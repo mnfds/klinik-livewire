@@ -264,6 +264,7 @@ Route::middleware(['auth'])->group(function () {
     // ====== RESEP OBAT ====== //
     Route::view('/resep', 'resep.data')->name('resep.data');
     Route::view('/resep-pasien', 'resep.detail')->name('resep.detail');
+    Route::view('/resep-pasien-tebus-obat', 'resep.tebus')->name('resep.tebus');
     Route::get('/search-produk-obat', function (\Illuminate\Http\Request $request) {
         $search = $request->q;
 

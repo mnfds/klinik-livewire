@@ -11,6 +11,7 @@ use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 
 final class ResepTable extends PowerGridComponent
 {
@@ -65,9 +66,9 @@ final class ResepTable extends PowerGridComponent
             })
             ->add('status', fn ($row) =>
                 $row->status_terdaftar === 'peresepan'
-                    ? '<span class="badge badge-primary">Hitung Resep</span>'
+                    ? '<span class="badge badge-secondary">Kalkulasi Resep</span>'
                     : ($row->status_terdaftar === 'lunas'
-                        ? '<span class="badge badge-success">Tebus Obat/Produk</span>'
+                        ? '<span class="badge badge-primary">Siap Ditebus</span>'
                         : ($row->status_terdaftar ?? '-')
                     )
             )
@@ -129,25 +130,36 @@ final class ResepTable extends PowerGridComponent
     {
         return [
             Button::add('cekresepbutton')
-                ->slot('<i class="fa-solid fa-file-prescription"></i> Cek Resep')
+                ->slot('<i class="fa-solid fa-mortar-pestle"></i> Verifikasi Resep')
                 ->tag('button')
                 ->attributes([
-                    'title' => 'Lihat Resep Obat',
+                    'title' => 'Input Obat dari Resep',
                     'onclick' => "Livewire.navigate('" . route('resep.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
                     'class' => 'btn btn-secondary',
+                ]),
+
+            Button::add('tebusbutton')
+                ->slot('<i class="fa-solid fa-file-prescription"></i> Daftar Obat Tebusan')
+                ->tag('button')
+                ->attributes([
+                    'title' => 'List Obat untuk Ditebus',
+                    'onclick' => "Livewire.navigate('" . route('resep.tebus', ['pasien_terdaftar_id' => $row->id]) . "')",
+                    'class' => 'btn btn-primary',
                 ]),
         ];
     }
 
-    /*
     public function actionRules($row): array
     {
        return [
             // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
+            Rule::button('cekresepbutton')
+                ->when(fn($row) => $row->status_terdaftar === 'lunas')
+                ->hide(),
+
+            Rule::button('tebusbutton')
+                ->when(fn($row) => $row->status_terdaftar === 'peresepan')
                 ->hide(),
         ];
     }
-    */
 }
