@@ -158,7 +158,7 @@ final class BahanTable extends PowerGridComponent
                     $row->expired_at &&
                     $row->reminder &&
                     Carbon::parse($row->expired_at)->format('Y-m')
-                        <= Carbon::now()->addMonths($row->reminder)->format('Y-m')
+                        <= Carbon::now()->addMonths( $row->reminder)->format('Y-m')
                 )
                 ->setAttribute('class', 'text-red-600 font-semibold'),
         ];

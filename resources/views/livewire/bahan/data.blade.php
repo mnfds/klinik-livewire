@@ -45,10 +45,10 @@
 
                         <!-- KANAN: Stok Keluar & Masuk -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
-                            <button onclick="document.getElementById('takeModalBahan').showModal()" class="btn btn-secondary w-full">
+                            <button onclick="document.getElementById('takeModalBahanbaku').showModal()" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-circle-minus"></i> Keluar
                             </button>
-                            <button onclick="document.getElementById('restockModalBahan').showModal()" class="btn btn-primary w-full">
+                            <button onclick="document.getElementById('restockModalBahanbaku').showModal()" class="btn btn-primary w-full">
                                 <i class="fa-solid fa-circle-plus"></i> Masuk
                             </button>
                         </div>

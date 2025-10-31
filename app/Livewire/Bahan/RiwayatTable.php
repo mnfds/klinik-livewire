@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Bahan;
 
-use App\Models\MutasiBahanBaku;
+use App\Models\MutasiBahanbaku;
 use App\TipeRiwayatBahanbaku;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,7 +32,7 @@ final class RiwayatTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return MutasiBahanBaku::with(['bahanbaku']);
+        return MutasiBahanbaku::with(['bahanbaku']);
     }
 
     public function relationSearch(): array
@@ -83,7 +83,7 @@ final class RiwayatTable extends PowerGridComponent
         ];
     }
 
-    public function actions(MutasiBahanBaku $row): array
+    public function actions(MutasiBahanbaku $row): array
     {
         return [
             Button::add('updatemutasibahan')  
@@ -124,7 +124,7 @@ final class RiwayatTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletemutasibahan')]
     public function konfirmasideletemutasibahan($rowId): void
     {
-        MutasiBahanBaku::findOrFail($rowId)->delete();
+        MutasiBahanbaku::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
 
