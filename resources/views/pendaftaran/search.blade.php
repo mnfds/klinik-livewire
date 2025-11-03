@@ -77,7 +77,7 @@
                                         <li>
                                             <a href="{{ route('pendaftaran.search') }}" class="inline-flex items-center gap-1">
                                                 <i class="fa-regular fa-folder-open"></i>
-                                                Daftarkan Pasien
+                                                Lanjutkan Pendaftaran
                                             </a>
                                         </li>
                                     </ul>
@@ -120,7 +120,7 @@
                                             <!-- Tombol Aksi -->
                                             <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2">
                                                 <button type="submit" class="btn btn-primary w-full sm:w-auto">
-                                                    Daftarkan Pasien
+                                                    Lanjutkan Pendaftaran
                                                 </button>
                                                 <a href="{{ route('pasien.create') }}" class="btn btn-success w-full sm:w-auto">
                                                     Tambah Pasien

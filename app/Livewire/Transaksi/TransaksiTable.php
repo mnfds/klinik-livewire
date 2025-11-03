@@ -32,7 +32,7 @@ final class TransaksiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'pembayaran', 'lunas'])
+        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'pembayaran', 'lunas', 'selesai'])
             // ->whereDate('created_at', today())
             ->with([
                 'pasien',
@@ -70,8 +70,11 @@ final class TransaksiTable extends PowerGridComponent
                     : ($row->status_terdaftar === 'pembayaran'
                         ? '<span class="badge badge-secondary">Pembayaran</span>'
                         : ($row->status_terdaftar === 'lunas'
-                            ? '<span class="badge badge-success">Selesai</span>'
-                            : ($row->status_terdaftar ?? '-')
+                            ? '<span class="badge badge-primary">Siap Tebus</span>'
+                            : ($row->status_terdaftar === 'selesai'
+                                ? '<span class="badge badge-success">Selesai</span>'
+                                : ($row->status_terdaftar ?? '-')
+                            )
                         )
                     )
             )

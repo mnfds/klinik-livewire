@@ -30,7 +30,7 @@ final class ResepTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'lunas'])
+        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'lunas', 'selesai'])
             // ->whereDate('created_at', today())
             ->with([
                 'pasien',
@@ -66,10 +66,13 @@ final class ResepTable extends PowerGridComponent
             })
             ->add('status', fn ($row) =>
                 $row->status_terdaftar === 'peresepan'
-                    ? '<span class="badge badge-secondary">Kalkulasi Resep</span>'
+                    ? '<span class="badge badge-accent">Kalkulasi Resep</span>'
                     : ($row->status_terdaftar === 'lunas'
                         ? '<span class="badge badge-primary">Siap Ditebus</span>'
-                        : ($row->status_terdaftar ?? '-')
+                        : ($row->status_terdaftar === 'selesai'
+                            ? '<span class="badge badge-success">Selesai</span>'
+                            : ($row->status_terdaftar ?? '-')
+                        )
                     )
             )
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
@@ -154,11 +157,11 @@ final class ResepTable extends PowerGridComponent
        return [
             // Hide button edit for ID 1
             Rule::button('cekresepbutton')
-                ->when(fn($row) => $row->status_terdaftar === 'lunas')
+                ->when(fn($row) => $row->status_terdaftar !== 'peresepan')
                 ->hide(),
 
             Rule::button('tebusbutton')
-                ->when(fn($row) => $row->status_terdaftar === 'peresepan')
+                ->when(fn($row) => $row->status_terdaftar !== 'lunas')
                 ->hide(),
         ];
     }

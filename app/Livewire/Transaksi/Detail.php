@@ -88,6 +88,15 @@ class Detail extends Component
         $nonRacikanIds = $this->selectedObat;
         $racikanIds = $this->selectedRacikan;
 
+        dd([
+            "nonracik" => $this->selectedObat,
+            "racikan" => $this->selectedRacikan,
+            "pelayanan" => $this->pelayanan,
+            "treatment" => $this->treatment,
+            "produk" => $this->produk,
+            "bundling" => $this->bundling,
+        ]);
+
         // Update kolom konfirmasi menjadi 'terkonfirmasi'
         if (!empty($nonRacikanIds)) {
             ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
@@ -101,6 +110,11 @@ class Detail extends Component
 
         PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
         
+        $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Transaksi Selesai.'
+        ]);
+
         $this->reset();
 
         return redirect()->route('transaksi.kasir');

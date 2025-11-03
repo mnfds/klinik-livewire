@@ -135,7 +135,9 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <form wire:submit.prevent="create">
+                                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama" required>
+                            </form>
                             <button wire:click.prevent="create" class="btn btn-success w-full mb-1" wire:loading.attr="disabled">
                                 <span wire:loading.remove>Selesai</span>
                                 <span wire:loading.inline>Loading...</span>

@@ -17,6 +17,8 @@ class Tebus extends Component
 
     public $rekammedis_id;
 
+    public $nama;
+
     public function mount($pasien_terdaftar_id = null)
     {
         $this->pasien_terdaftar_id = $pasien_terdaftar_id;
@@ -116,5 +118,19 @@ class Tebus extends Component
     public function render()
     {
         return view('livewire.resep.tebus');
+    }
+
+    public function create()
+    {
+        PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'selesai']);
+        
+        $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Transaksi Selesai.'
+        ]);
+
+        $this->reset();
+        
+        return redirect()->route('resep.data');
     }
 }

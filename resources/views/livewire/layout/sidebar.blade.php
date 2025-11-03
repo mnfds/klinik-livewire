@@ -326,6 +326,13 @@
                                 @endif
                             </x-side-link>
                         </li>
+                        <li>
+                            <x-side-link href="#" 
+                                :active="request()->routeIs('#')"  
+                                wire:navigate>
+                                Tindak Lanjut
+                            </x-side-link>
+                        </li>
                     </ul>
                 </li>
 
