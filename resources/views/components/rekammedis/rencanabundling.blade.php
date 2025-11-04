@@ -151,12 +151,23 @@
                                 <div>
                                     <p class="font-semibold">{{ $bundle['nama'] }}</p>
 
-                                    {{-- Treatment --}}
+                                    {{-- ======================== --}}
+                                    {{-- TREATMENT --}}
+                                    {{-- ======================== --}}
                                     <p class="mt-2 text-sm font-medium">Treatments:</p>
-                                    @if(isset($bundle['treatmentBundlings']) && count($bundle['treatmentBundlings']) > 0)
+                                    @if(!empty($bundle['treatmentBundlings']))
                                         <ul class="space-y-2">
                                             @foreach($bundle['treatmentBundlings'] as $tb)
-                                                <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
+                                                <li 
+                                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
+                                                    x-init="
+                                                        initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
+                                                            idKey: 'treatments_id',
+                                                            idValue: {{ $tb['treatment']['id'] }},
+                                                            perBundle: {{ $tb->jumlah ?? 0 }}
+                                                        });
+                                                    "
+                                                >
                                                     <span class="text-sm">{{ $tb['treatment']['nama_treatment'] ?? '-' }}</span>
 
                                                     <!-- Jumlah Awal -->
@@ -174,11 +185,6 @@
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
                                                                 @click="
-                                                                    initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
-                                                                        idKey: 'treatments_id',
-                                                                        idValue: {{ $tb['treatment']['id'] }},
-                                                                        perBundle: {{ $tb->jumlah ?? 0 }}
-                                                                    });
                                                                     decrementDetail(item, 'treatments', '{{ $tb['id'] }}', index);
                                                                 ">
                                                                 -
@@ -186,16 +192,13 @@
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.treatments['{{ $tb['id'] }}'] ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai : 0"
+                                                                :value="item.details.treatments['{{ $tb['id'] }}']
+                                                                    ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai
+                                                                    : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
                                                                 @click="
-                                                                    initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
-                                                                        idKey: 'treatments_id',
-                                                                        idValue: {{ $tb['treatment']['id'] }},
-                                                                        perBundle: {{ $tb->jumlah ?? 0 }}
-                                                                    });
                                                                     incrementDetail(item, 'treatments', '{{ $tb['id'] }}', index);
                                                                 ">
                                                                 +
@@ -208,7 +211,10 @@
                                                         <label class="block text-xs mb-1">Sisa</label>
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
-                                                            :value="(item.jumlah_bundling * {{ $tb->jumlah ?? 0 }}) - (item.details.treatments['{{ $tb['id'] }}'] ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai : 0)"
+                                                            :value="(item.jumlah_bundling * {{ $tb->jumlah ?? 0 }}) - 
+                                                                (item.details.treatments['{{ $tb['id'] }}']
+                                                                    ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai
+                                                                    : 0)"
                                                             readonly>
                                                     </div>
                                                 </li>
@@ -218,12 +224,24 @@
                                         <p class="text-sm">Tidak Tersedia</p>
                                     @endif
 
-                                    {{-- Pelayanan --}}
+
+                                    {{-- ======================== --}}
+                                    {{-- PELAYANAN --}}
+                                    {{-- ======================== --}}
                                     <p class="mt-2 text-sm font-medium">Pelayanan:</p>
-                                    @if(isset($bundle['pelayananBundlings']) && count($bundle['pelayananBundlings']) > 0)
+                                    @if(!empty($bundle['pelayananBundlings']))
                                         <ul class="space-y-2">
                                             @foreach($bundle['pelayananBundlings'] as $pb)
-                                                <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
+                                                <li 
+                                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
+                                                    x-init="
+                                                        initDetailIfMissing(item, 'pelayanans', '{{ $pb['id'] }}', {
+                                                            idKey: 'pelayanan_id',
+                                                            idValue: {{ $pb['pelayanan_id'] }},
+                                                            perBundle: {{ $pb->jumlah ?? 0 }}
+                                                        });
+                                                    "
+                                                >
                                                     <span class="text-sm">{{ $pb['pelayanan']['nama_pelayanan'] ?? '-' }}</span>
 
                                                     <!-- Jumlah Awal -->
@@ -240,31 +258,19 @@
                                                         <label class="block text-xs mb-1">Dipakai</label>
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
-                                                                @click="
-                                                                    initDetailIfMissing(item, 'pelayanans', '{{ $pb['id'] }}', {
-                                                                        idKey: 'pelayanan_id',
-                                                                        idValue: {{ $pb['pelayanan_id'] }},
-                                                                        perBundle: {{ $pb->jumlah ?? 0 }}
-                                                                    });
-                                                                    decrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index);
-                                                                ">
+                                                                @click="decrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index)">
                                                                 -
                                                             </button>
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.pelayanans['{{ $pb['id'] }}'] ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai : 0"
+                                                                :value="item.details.pelayanans['{{ $pb['id'] }}']
+                                                                    ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai
+                                                                    : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
-                                                                @click="
-                                                                    initDetailIfMissing(item, 'pelayanans', '{{ $pb['id'] }}', {
-                                                                        idKey: 'pelayanan_id',
-                                                                        idValue: {{ $pb['pelayanan_id'] }},
-                                                                        perBundle: {{ $pb->jumlah ?? 0 }}
-                                                                    });
-                                                                    incrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index);
-                                                                ">
+                                                                @click="incrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index)">
                                                                 +
                                                             </button>
                                                         </div>
@@ -275,7 +281,10 @@
                                                         <label class="block text-xs mb-1">Sisa</label>
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
-                                                            :value="(item.jumlah_bundling * {{ $pb->jumlah ?? 0 }}) - (item.details.pelayanans['{{ $pb['id'] }}'] ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai : 0)"
+                                                            :value="(item.jumlah_bundling * {{ $pb->jumlah ?? 0 }}) - 
+                                                                (item.details.pelayanans['{{ $pb['id'] }}']
+                                                                    ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai
+                                                                    : 0)"
                                                             readonly>
                                                     </div>
                                                 </li>
@@ -285,15 +294,25 @@
                                         <p class="text-sm">Tidak Tersedia</p>
                                     @endif
 
-                                    {{-- Produk / Obat --}}
+
+                                    {{-- ======================== --}}
+                                    {{-- PRODUK / OBAT --}}
+                                    {{-- ======================== --}}
                                     <p class="mt-2 text-sm font-medium">Produk / Obat:</p>
-                                    @if(isset($bundle['produkObatBundlings']) && count($bundle['produkObatBundlings']) > 0)
+                                    @if(!empty($bundle['produkObatBundlings']))
                                         <ul class="space-y-2">
                                             @foreach($bundle['produkObatBundlings'] as $prb)
-                                                <li class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2">
-                                                    <span class="text-sm">
-                                                        {{ $prb['produk']['nama_dagang'] ?? '-' }}
-                                                    </span>
+                                                <li 
+                                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
+                                                    x-init="
+                                                        initDetailIfMissing(item, 'produks', '{{ $prb['id'] }}', {
+                                                            idKey: 'produk_obat_id',
+                                                            idValue: {{ $prb['produk_id'] }},
+                                                            perBundle: {{ $prb->jumlah ?? 0 }}
+                                                        });
+                                                    "
+                                                >
+                                                    <span class="text-sm">{{ $prb['produk']['nama_dagang'] ?? '-' }}</span>
 
                                                     <!-- Jumlah Awal -->
                                                     <div>
@@ -309,31 +328,19 @@
                                                         <label class="block text-xs mb-1">Dipakai</label>
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
-                                                                @click="
-                                                                    initDetailIfMissing(item, 'produks', '{{ $prb['id'] }}', {
-                                                                        idKey: 'produk_obat_id',
-                                                                        idValue: {{ $prb['produk_id'] }},
-                                                                        perBundle: {{ $prb->jumlah ?? 0 }}
-                                                                    });
-                                                                    decrementDetail(item, 'produks', '{{ $prb['id'] }}', index);
-                                                                ">
+                                                                @click="decrementDetail(item, 'produks', '{{ $prb['id'] }}', index)">
                                                                 -
                                                             </button>
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.produks['{{ $prb['id'] }}'] ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai : 0"
+                                                                :value="item.details.produks['{{ $prb['id'] }}']
+                                                                    ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai
+                                                                    : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
-                                                                @click="
-                                                                    initDetailIfMissing(item, 'produks', '{{ $prb['id'] }}', {
-                                                                        idKey: 'produk_obat_id',
-                                                                        idValue: {{ $prb['produk_id'] }},
-                                                                        perBundle: {{ $prb->jumlah ?? 0 }}
-                                                                    });
-                                                                    incrementDetail(item, 'produks', '{{ $prb['id'] }}', index);
-                                                                ">
+                                                                @click="incrementDetail(item, 'produks', '{{ $prb['id'] }}', index)">
                                                                 +
                                                             </button>
                                                         </div>
@@ -344,7 +351,10 @@
                                                         <label class="block text-xs mb-1">Sisa</label>
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
-                                                            :value="(item.jumlah_bundling * {{ $prb->jumlah ?? 0 }}) - (item.details.produks['{{ $prb['id'] }}'] ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai : 0)"
+                                                            :value="(item.jumlah_bundling * {{ $prb->jumlah ?? 0 }}) - 
+                                                                (item.details.produks['{{ $prb['id'] }}']
+                                                                    ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai
+                                                                    : 0)"
                                                             readonly>
                                                     </div>
                                                 </li>
@@ -453,18 +463,16 @@
 
             // action helpers for details
             initDetailIfMissing(item, type, key, opts) {
-                // type: 'treatments' | 'pelayanans' | 'produks'
-                // key: the bundling-detail id (string)
-                // opts: { idKey: 'treatment_id'|'pelayanan_id'|'produk_obat_id', idValue, perBundle }
-                if (!item.details[type]) item.details[type] = {};
+                if (!item.details[type] || Array.isArray(item.details[type])) item.details[type] = {};
+
                 if (!item.details[type][key]) {
-                    item.details[type][key] = {};
-                    item.details[type][key][opts.idKey] = opts.idValue;
-                    item.details[type][key].jumlah_per_bundle = Number(opts.perBundle || 0);
-                    item.details[type][key].jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(opts.perBundle || 0);
-                    item.details[type][key].jumlah_terpakai = 0;
+                    item.details[type][key] = {
+                        [opts.idKey]: opts.idValue,
+                        jumlah_per_bundle: Number(opts.perBundle || 0),
+                        jumlah_awal: (Number(item.jumlah_bundling) || 0) * Number(opts.perBundle || 0),
+                        jumlah_terpakai: 0
+                    };
                 } else {
-                    // refresh jumlah_awal in case jumlah_bundling has changed
                     item.details[type][key].jumlah_per_bundle = Number(opts.perBundle || 0);
                     item.details[type][key].jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(opts.perBundle || 0);
                     if (!('jumlah_terpakai' in item.details[type][key])) item.details[type][key].jumlah_terpakai = 0;

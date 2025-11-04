@@ -88,15 +88,6 @@ class Detail extends Component
         $nonRacikanIds = $this->selectedObat;
         $racikanIds = $this->selectedRacikan;
 
-        dd([
-            "nonracik" => $this->selectedObat,
-            "racikan" => $this->selectedRacikan,
-            "pelayanan" => $this->pelayanan,
-            "treatment" => $this->treatment,
-            "produk" => $this->produk,
-            "bundling" => $this->bundling,
-        ]);
-
         // Update kolom konfirmasi menjadi 'terkonfirmasi'
         if (!empty($nonRacikanIds)) {
             ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)

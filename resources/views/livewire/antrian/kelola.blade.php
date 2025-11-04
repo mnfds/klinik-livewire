@@ -66,7 +66,7 @@
                                             Antrian Dipanggil
                                         </h1>
                                     </div>
-                                    <livewire:antriantable.dipanggil />
+                                    <livewire:AntrianTable.Dipanggil />
                                 </div>
                             </div>
                         </div>

@@ -95,17 +95,27 @@ class Tebus extends Component
             ->rekamMedis
             ->rencanaBundlingRM
             ->flatMap(function ($rencanaBundling) {
-                return $rencanaBundling->bundling->produkObatBundlings->map(function ($p) use ($rencanaBundling) {
+                $bundling = $rencanaBundling->bundling;
+
+                return $bundling->produkObatBundlings->map(function ($p) use ($bundling) {
+                    // Cari record produk bundling RM yang cocok (berdasarkan produk_id dan bundling_id)
+                    $produkRM = $bundling->produkObatBundlingRM
+                        ->firstWhere('produk_obat_id', $p->produk_id);
+
                     return [
-                        'bundling_id' => $rencanaBundling->bundling->id,
-                        'nama_bundling' => $rencanaBundling->bundling->nama,
+                        'bundling_id' => $bundling->id,
+                        'nama_bundling' => $bundling->nama,
                         'produk_id' => $p->produk->id ?? null,
                         'nama_produk' => $p->produk->nama_dagang ?? '-',
-                        'jumlah' => $p->jumlah ?? '-',
+                        // Ambil jumlah_terpakai dari ProdukObatBundlingRM jika ada
+                        'jumlah' => ($produkRM && $produkRM->jumlah_terpakai > 0)
+                                    ? $produkRM->jumlah_terpakai
+                                    : 'Tidak Diambil',
                         'satuan' => $p->produk->sediaan ?? '-',
                     ];
                 });
-        })->toArray();
+            })
+        ->toArray();
 
         // dd(
         //     $this->obatNonRacikanItems,
@@ -123,7 +133,7 @@ class Tebus extends Component
     public function create()
     {
         PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'selesai']);
-        
+        // dd([$this->nama]);
         $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Transaksi Selesai.'

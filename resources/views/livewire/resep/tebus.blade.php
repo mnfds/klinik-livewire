@@ -122,7 +122,11 @@
                                                     {{ $b['nama_produk'] }}
                                                     <span class="text-xs text-gray-500 italic">(Bundling: {{ $b['nama_bundling'] }})</span>
                                                 </div>
-                                                <span>{{ $b['jumlah'] }} {{ $b['satuan'] }}</span>
+                                                @if (is_string($b['jumlah']))
+                                                    <span>{{ $b['jumlah'] }}</span>
+                                                @else
+                                                    <span>{{ $b['jumlah'] }} {{ $b['satuan'] }}</span>
+                                                @endif
                                             </div>
                                         @empty
                                             {{-- biarkan kosong --}}
