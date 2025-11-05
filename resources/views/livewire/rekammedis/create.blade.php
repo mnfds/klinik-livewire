@@ -289,12 +289,27 @@
                                 </div>
                             </div>
                             <!-- A: Layanan Tersisa -->
+                            @php
+                                $totalBundlingItems = 0;
+
+                                foreach ($bundlingPasien['treatments'] ?? [] as $t) {
+                                    if (($t->jumlah_awal - $t->jumlah_terpakai) > 0) $totalBundlingItems++;
+                                }
+
+                                foreach ($bundlingPasien['pelayanans'] ?? [] as $p) {
+                                    if (($p->jumlah_awal - $p->jumlah_terpakai) > 0) $totalBundlingItems++;
+                                }
+
+                                foreach ($bundlingPasien['produks'] ?? [] as $pr) {
+                                    if (($pr->jumlah_awal - $pr->jumlah_terpakai) > 0) $totalBundlingItems++;
+                                }
+                            @endphp
                             <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
                                 <input type="radio" name="my_tabs_3" class="hidden" />
                                 <span class="flex items-center gap-2">
                                     <i class="fa-solid fa-hand-holding-heart"></i>
                                     Layanan Tersisa
-                                    <div class="badge badge-sm badge-primary text-base-primary">99</div>
+                                    <div class="badge badge-sm badge-primary text-base-primary">{{ $totalBundlingItems }}</div>
                                 </span>
                             </label>
 
@@ -332,11 +347,39 @@
                                                     <p class="text-sm font-medium mt-2">Treatments</p>
                                                     <ul class="list-disc list-inside text-sm">
                                                         @foreach($bundling['treatments'] as $t)
-                                                            <li>
+                                                            @php
+                                                                $sisatreatment = $t->jumlah_awal - $t->jumlah_terpakai;
+                                                                $sudahDipilihTreatment = false;
+
+                                                                if(isset($layananTerpilih[$t->bundling->nama])) {
+                                                                    foreach($layananTerpilih[$t->bundling->nama] as $item) {
+                                                                        if($item['id'] == $t->id) {
+                                                                            $sudahDipilihTreatment = true;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <li class="pb-1">
                                                                 {{ $t->treatment->nama_treatment }}
-                                                                <span class="badge badge-sm badge-outline ml-2">
-                                                                    Sisa: {{ $t->jumlah_awal - $t->jumlah_terpakai }}
+                                                                <span class="badge border-1 badge-sm ml-2 {{ $sisatreatment > 0 ? 'badge-accent' : 'badge-error' }}">
+                                                                    Sisa: {{ $sisatreatment }}
                                                                 </span>
+                                                                @if ($sisatreatment > 0)
+                                                                    <button
+                                                                        class="btn btn-xs btn-square btn-success {{ $sudahDipilihTreatment && $sisatreatment == 1 ? 'btn-disabled opacity-50 cursor-not-allowed' : '' }}"
+                                                                        wire:click="tambahLayananBundling(
+                                                                            {{ $t->id }},
+                                                                            'treatment',
+                                                                            '{{ addslashes($t->treatment->nama_treatment) }}',
+                                                                            {{ $sisatreatment }},
+                                                                            '{{ addslashes($t->bundling->nama) }}'
+                                                                        )"
+                                                                        @if($sudahDipilihTreatment && $sisatreatment == 1) disabled @endif
+                                                                    >
+                                                                        <i class="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                @endif
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -347,11 +390,41 @@
                                                     <p class="text-sm font-medium mt-2">Pelayanan</p>
                                                     <ul class="list-disc list-inside text-sm">
                                                         @foreach($bundling['pelayanans'] as $p)
+                                                            @php
+                                                                $sisapelayanan = $p->jumlah_awal - $p->jumlah_terpakai;
+                                                                $sudahDipilihPelayanan = false;
+
+                                                                if(isset($layananTerpilih[$p->bundling->nama])) {
+                                                                    foreach($layananTerpilih[$p->bundling->nama] as $item) {
+                                                                        if($item['id'] == $p->id) {
+                                                                            $sudahDipilihPelayanan = true;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            @endphp
                                                             <li>
                                                                 {{ $p->pelayanan->nama_pelayanan }}
-                                                                <span class="badge badge-sm badge-outline ml-2">
-                                                                    Sisa: {{ $p->jumlah_awal - $p->jumlah_terpakai }}
+                                                                <span class="badge border-1 badge-sm ml-2 {{ $sisapelayanan > 0 ? 'badge-accent' : 'badge-error' }}">
+                                                                    Sisa: {{ $sisapelayanan }}
                                                                 </span>
+                                                                @if ($sisapelayanan > 0)
+                                                                <span>
+                                                                    <button
+                                                                        class="btn btn-xs btn-square btn-success {{ $sudahDipilihPelayanan && $sisapelayanan == 1 ? 'btn-disabled opacity-50 cursor-not-allowed' : '' }}"
+                                                                        wire:click="tambahLayananBundling(
+                                                                        {{ $p->id }},
+                                                                        'pelayanan',
+                                                                        '{{ addslashes($p->pelayanan->nama_pelayanan) }}',
+                                                                        {{ $sisapelayanan }},
+                                                                        '{{ addslashes($p->bundling->nama) }}'
+                                                                        )"
+                                                                        @if($sudahDipilihPelayanan && $sisapelayanan == 1) disabled @endif
+                                                                    >
+                                                                        <i class="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                </span>
+                                                                @endif
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -362,11 +435,39 @@
                                                     <p class="text-sm font-medium mt-2">Produk / Obat</p>
                                                     <ul class="list-disc list-inside text-sm">
                                                         @foreach($bundling['produks'] as $pr)
+                                                            @php 
+                                                                $sisaproduk = $pr->jumlah_awal - $pr->jumlah_terpakai;
+                                                                $sudahDipilihProduk = false;
+                                                                if(isset($layananTerpilih[$pr->bundling->nama])) {
+                                                                    foreach($layananTerpilih[$pr->bundling->nama] as $item) {
+                                                                        if($item['id'] == $pr->id) {
+                                                                            $sudahDipilihProduk = true;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            @endphp
                                                             <li>
                                                                 {{ $pr->produk->nama_dagang }}
-                                                                <span class="badge badge-sm badge-outline ml-2">
-                                                                    Sisa: {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}
+                                                                <span class="badge border-1 badge-sm ml-2 {{ $sisaproduk > 0 ? 'badge-accent' : 'badge-error' }} ">
+                                                                    Sisa:{{ $sisaproduk }}
                                                                 </span>
+                                                                @if ($sisaproduk > 0)
+                                                                <span>
+                                                                    <button
+                                                                        class="btn btn-xs btn-square btn-success {{ $sudahDipilihProduk && $sisaproduk == 1 ? 'btn-disabled opacity-50 cursor-not-allowed' : '' }}"
+                                                                        wire:click="tambahLayananBundling(
+                                                                        {{ $pr->id }}, 'produk',
+                                                                        '{{ addslashes($pr->produk->nama_dagang) }}',
+                                                                        {{ $sisaproduk }},
+                                                                        '{{ addslashes($pr->bundling->nama) }}'
+                                                                        )"
+                                                                        @if($sudahDipilihProduk && $sisaproduk == 1) disabled @endif
+                                                                    >
+                                                                        <i class="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                </span>
+                                                                @endif
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -626,6 +727,56 @@
                                                 :layanandanbundling="$layanandanbundling" 
                                                 :rencanaBundling="$rencana_bundling"
                                             />
+                                        </div>
+                                        
+                                        <!--  PENGGUNAAN LAYANAN TERSISA -->
+                                        <div class="bg-base-200 p-4 rounded border border-base-200">
+                                            <div class="divider">Penggunaan Layanan Tersisa</div>
+
+                                            <div class="mt-4 p-4 border rounded-lg bg-base-100 space-y-3">
+                                                <div class="form-control">
+                                                    @if(count($layananTerpilih))
+                                                        <ul class="space-y-4">
+                                                            @foreach($layananTerpilih as $bundlingName => $items)
+                                                                <li class="border border-base-300 rounded-lg p-3 bg-base-100">
+                                                                    <p class="font-semibold text-primary mb-2">{{ $bundlingName }}</p>
+                                                                    <ul class="space-y-2">
+                                                                        @foreach($items as $index => $item)
+                                                                            <li class="p-3 bg-base-200 border rounded flex justify-between items-center">
+                                                                                <div>
+                                                                                    <p class="font-medium">{{ $item['nama'] }}</p>
+                                                                                    <p class="text-xs text-gray-500 capitalize">{{ $item['tipe'] }}</p>
+                                                                                </div>
+
+                                                                                <div class="flex items-center gap-2">
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        max="{{ $item['sisa'] }}"
+                                                                                        wire:model.lazy="layananTerpilih.{{ urlencode($bundlingName) }}.{{ $index }}.dipakai"
+                                                                                        class="input input-xs w-16"
+                                                                                    >
+                                                                                    <span class="text-xs text-gray-500">/ {{ $item['sisa'] }}</span>
+
+                                                                                    <button
+                                                                                        class="btn btn-xs btn-error"
+                                                                                        type="button"
+                                                                                        wire:click="hapusLayanan('{{ $bundlingName }}', {{ $index }})"
+                                                                                    >
+                                                                                        <i class="fa-solid fa-trash"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <p class="text-sm text-gray-500">Belum ada layanan yang dipilih</p>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- PRODUK DAN OBAT ESTETIKA -->

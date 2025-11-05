@@ -10,24 +10,25 @@ use App\Models\Treatment;
 use App\Models\DiagnosaRM;
 use App\Models\KajianAwal;
 use App\Models\RekamMedis;
+use Illuminate\Support\Str;
 use App\Models\TandaVitalRM;
 use App\Models\ObatRacikanRM;
+use App\Models\ProdukDanObat;
 use App\Models\DataEstetikaRM;
 use App\Models\DataKesehatanRM;
 use App\Models\PasienTerdaftar;
+use App\Models\RencanaProdukRM;
 use App\Models\ObatNonRacikanRM;
-use App\Models\PelayananBundlingRM;
 use App\Models\RencanaLayananRM;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
-use App\Models\ProdukDanObat;
-use App\Models\ProdukObatBundlingRM;
 use App\Models\RencanaTreatmentRM;
 use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Compilers\Mount;
+use App\Models\PelayananBundlingRM;
 use App\Models\RencananaBundlingRM;
-use App\Models\RencanaProdukRM;
 use App\Models\TreatmentBundlingRM;
+use App\Models\ProdukObatBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use App\View\Components\rekammedis\rencanalayanan;
 
@@ -49,6 +50,9 @@ class Create extends Component
         'pelayanans' => [],
         'produks' => [],
     ];
+
+    // berisikan data yang akan menampung penggunaan layanan tersisa
+    public $layananTerpilih = []; 
 
     public ?int $pasien_id = null;
     
@@ -187,6 +191,86 @@ class Create extends Component
         ],
     ];
 
+    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $namaBundling)
+    {
+        // Pastikan grup bundling ada
+        if (!isset($this->layananTerpilih[$namaBundling])) {
+            $this->layananTerpilih[$namaBundling] = [];
+        }
+
+        // Cek apakah item sudah ada
+        foreach ($this->layananTerpilih[$namaBundling] as &$item) {
+            if ($item['id'] == $id) {
+                // Pastikan key dipakai ada dan minimal 1
+                if (!isset($item['dipakai']) || $item['dipakai'] < 1) {
+                    $item['dipakai'] = 1;
+                }
+
+                // Tambah dipakai jika masih ada sisa
+                if ($item['dipakai'] < $item['sisa']) {
+                    $item['dipakai']++;
+                }
+
+                // update done, keluar function
+                return;
+            }
+        }
+        unset($item); // safety
+
+        // Kalau belum ada, tambahkan baru dengan dipakai = 1
+        $this->layananTerpilih[$namaBundling][] = [
+            'id' => $id,
+            'tipe' => $tipe,
+            'nama' => $nama,
+            'sisa' => (int) $sisa,
+            'dipakai' => 1, // <- PENTING: inisialisasi default 1
+        ];
+    }
+
+    public function hapusLayanan($bundlingName, $index)
+    {
+        if (isset($this->layananTerpilih[$bundlingName][$index])) {
+            unset($this->layananTerpilih[$bundlingName][$index]);
+        }
+
+        // Re-index agar array tetap rapi (opsional tapi sering membantu)
+        if (isset($this->layananTerpilih[$bundlingName])) {
+            $this->layananTerpilih[$bundlingName] = array_values($this->layananTerpilih[$bundlingName]);
+        }
+
+        // Hapus grup jika kosong
+        if (empty($this->layananTerpilih[$bundlingName])) {
+            unset($this->layananTerpilih[$bundlingName]);
+        }
+    }
+
+    /**
+     * Sanitasi setiap kali properti layananTerpilih berubah (Livewire hook).
+     * key contoh: layananTerpilih.Paket%20Whitening.0.dipakai
+     */
+    public function updatedLayananTerpilih($value, $key)
+    {
+        // Pastikan kita sedang update field dipakai
+        if (Str::endsWith($key, '.dipakai')) {
+            // parse key menjadi parts
+            $parts = explode('.', $key); // ["layananTerpilih", "<bundlingName>", "<index>", "dipakai"]
+            if (count($parts) >= 4) {
+                $bundlingName = $parts[1];
+                $index = (int) $parts[2];
+
+                if (!isset($this->layananTerpilih[$bundlingName][$index])) return;
+
+                // normalize angka
+                $dipakai = (int) $this->layananTerpilih[$bundlingName][$index]['dipakai'];
+                $sisa = (int) $this->layananTerpilih[$bundlingName][$index]['sisa'];
+
+                if ($dipakai < 1) $dipakai = 1;
+                if ($dipakai > $sisa) $dipakai = $sisa;
+
+                $this->layananTerpilih[$bundlingName][$index]['dipakai'] = $dipakai;
+            }
+        }
+    }
 
     public function mount($pasien_terdaftar_id = null)
     {
@@ -303,6 +387,7 @@ class Create extends Component
             // $this->obat_non_racikan,
             // $this->obat_racikan,
             // $this->bahan_racikan,
+            // $this->layananTerpilih,
         // ]);
 
         DB::beginTransaction();
@@ -566,6 +651,57 @@ class Create extends Component
                                     'satuan_obat_racikan' => $bahan['satuan_obat_racikan'] ?? null,
                                 ]);
                             }
+                        }
+                    }
+                }
+
+                // GUNAKAN BUNDLING YANG TERPILIH
+                if (!empty($this->layananTerpilih)) {
+                    $pasienId = $this->pasien_id ?? null;
+
+                    foreach ($this->layananTerpilih as $namaBundling => $items) {
+                        foreach ($items as $item) {
+                            $jumlahDipakai = (int) ($item['dipakai'] ?? 0);
+                            if ($jumlahDipakai <= 0) continue;
+
+                            switch ($item['tipe']) {
+                                case 'treatment':
+                                    $record = \App\Models\TreatmentBundlingRM::where('id', $item['id'])
+                                        ->where('pasien_id', $pasienId)
+                                        ->first();
+                                    break;
+
+                                case 'produk':
+                                    $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
+                                        ->where('pasien_id', $pasienId)
+                                        ->first();
+                                    break;
+
+                                case 'pelayanan':
+                                    $record = \App\Models\PelayananBundlingRM::where('id', $item['id'])
+                                        ->where('pasien_id', $pasienId)
+                                        ->first();
+                                    break;
+
+                                default:
+                                    $record = null;
+                            }
+
+                            if (!$record) {
+                                logger("Record bundling tidak ditemukan", [
+                                    'tipe' => $item['tipe'],
+                                    'id' => $item['id'],
+                                    'pasien' => $pasienId,
+                                ]);
+                                continue;
+                            }
+
+                            $baruTerpakai = min(
+                                $record->jumlah_terpakai + $jumlahDipakai,
+                                $record->jumlah_awal
+                            );
+
+                            $record->update(['jumlah_terpakai' => $baruTerpakai]);
                         }
                     }
                 }
