@@ -353,7 +353,7 @@
 
                                                                 if(isset($layananTerpilih[$t->bundling->nama])) {
                                                                     foreach($layananTerpilih[$t->bundling->nama] as $item) {
-                                                                        if($item['id'] == $t->id) {
+                                                                        if($item['id'] == $t->id && $item['tipe'] == 'treatment') {
                                                                             $sudahDipilihTreatment = true;
                                                                             break;
                                                                         }
@@ -396,7 +396,7 @@
 
                                                                 if(isset($layananTerpilih[$p->bundling->nama])) {
                                                                     foreach($layananTerpilih[$p->bundling->nama] as $item) {
-                                                                        if($item['id'] == $p->id) {
+                                                                        if($item['id'] == $p->id && $item['tipe'] == 'pelayanan') {
                                                                             $sudahDipilihPelayanan = true;
                                                                             break;
                                                                         }
@@ -440,7 +440,7 @@
                                                                 $sudahDipilihProduk = false;
                                                                 if(isset($layananTerpilih[$pr->bundling->nama])) {
                                                                     foreach($layananTerpilih[$pr->bundling->nama] as $item) {
-                                                                        if($item['id'] == $pr->id) {
+                                                                        if($item['id'] == $pr->id && $item['tipe'] == 'produk') {
                                                                             $sudahDipilihProduk = true;
                                                                             break;
                                                                         }
@@ -749,14 +749,29 @@
                                                                                 </div>
 
                                                                                 <div class="flex items-center gap-2">
-                                                                                    <input
-                                                                                        type="number"
-                                                                                        min="1"
-                                                                                        max="{{ $item['sisa'] }}"
-                                                                                        wire:model.lazy="layananTerpilih.{{ urlencode($bundlingName) }}.{{ $index }}.dipakai"
-                                                                                        class="input input-xs w-16"
-                                                                                    >
-                                                                                    <span class="text-xs text-gray-500">/ {{ $item['sisa'] }}</span>
+                                                                                    <span class="text-sm font-medium">
+                                                                                        {{ $item['dipakai'] }} / {{ $item['sisa'] }}
+                                                                                    </span>
+
+                                                                                    <div class="flex items-center gap-1">
+                                                                                        <button
+                                                                                            class="btn btn-xs btn-error"
+                                                                                            type="button"
+                                                                                            wire:click="kurangiLayanan('{{ $bundlingName }}', {{ $index }})"
+                                                                                            @disabled($item['dipakai'] <= 1)
+                                                                                        >
+                                                                                            <i class="fa-solid fa-minus"></i>
+                                                                                        </button>
+
+                                                                                        <button
+                                                                                            class="btn btn-xs btn-success"
+                                                                                            type="button"
+                                                                                            wire:click="tambahLayanan('{{ $bundlingName }}', {{ $index }})"
+                                                                                            @disabled($item['dipakai'] >= $item['sisa'])
+                                                                                        >
+                                                                                            <i class="fa-solid fa-plus"></i>
+                                                                                        </button>
+                                                                                    </div>
 
                                                                                     <button
                                                                                         class="btn btn-xs btn-error"

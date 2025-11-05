@@ -191,40 +191,33 @@ class Create extends Component
         ],
     ];
 
-    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $namaBundling)
+    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName)
     {
-        // Pastikan grup bundling ada
-        if (!isset($this->layananTerpilih[$namaBundling])) {
-            $this->layananTerpilih[$namaBundling] = [];
+        // pastikan bundling sudah ada di array
+        if (!isset($this->layananTerpilih[$bundlingName])) {
+            $this->layananTerpilih[$bundlingName] = [];
         }
 
-        // Cek apakah item sudah ada
-        foreach ($this->layananTerpilih[$namaBundling] as &$item) {
-            if ($item['id'] == $id) {
-                // Pastikan key dipakai ada dan minimal 1
-                if (!isset($item['dipakai']) || $item['dipakai'] < 1) {
-                    $item['dipakai'] = 1;
-                }
+        // cari apakah item ini sudah dipilih sebelumnya
+        $existingIndex = collect($this->layananTerpilih[$bundlingName])
+            ->search(fn($item) => $item['id'] == $id && $item['tipe'] == $tipe);
 
-                // Tambah dipakai jika masih ada sisa
-                if ($item['dipakai'] < $item['sisa']) {
-                    $item['dipakai']++;
-                }
+        if ($existingIndex !== false) {
+            // sudah ada → tambahkan jumlah dipakai (tapi tidak boleh melebihi sisa)
+            $current = $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'];
+            $new = min($current + 1, $sisa);
 
-                // update done, keluar function
-                return;
-            }
+            $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'] = $new;
+        } else {
+            // belum ada → tambahkan baru dengan dipakai = 1
+            $this->layananTerpilih[$bundlingName][] = [
+                'id' => $id,
+                'tipe' => $tipe,
+                'nama' => $nama,
+                'sisa' => $sisa,
+                'dipakai' => 1,
+            ];
         }
-        unset($item); // safety
-
-        // Kalau belum ada, tambahkan baru dengan dipakai = 1
-        $this->layananTerpilih[$namaBundling][] = [
-            'id' => $id,
-            'tipe' => $tipe,
-            'nama' => $nama,
-            'sisa' => (int) $sisa,
-            'dipakai' => 1, // <- PENTING: inisialisasi default 1
-        ];
     }
 
     public function hapusLayanan($bundlingName, $index)
@@ -241,6 +234,22 @@ class Create extends Component
         // Hapus grup jika kosong
         if (empty($this->layananTerpilih[$bundlingName])) {
             unset($this->layananTerpilih[$bundlingName]);
+        }
+    }
+
+    public function tambahLayanan($bundlingName, $index)
+    {
+        $item = &$this->layananTerpilih[$bundlingName][$index];
+        if ($item['dipakai'] < $item['sisa']) {
+            $item['dipakai']++;
+        }
+    }
+
+    public function kurangiLayanan($bundlingName, $index)
+    {
+        $item = &$this->layananTerpilih[$bundlingName][$index];
+        if ($item['dipakai'] > 1) {
+            $item['dipakai']--;
         }
     }
 
