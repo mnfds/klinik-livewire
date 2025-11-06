@@ -41,4 +41,20 @@ class Pasien extends Model
     {
         return $this->hasMany(TransaksiApotik::class, 'pasien_id');
     }
+
+    public function treatmentBundlingUsages()
+    {
+        return $this->hasMany(TreatmentBundlingUsage::class);
+    }
+
+    public function pelayananBundlingUsages()
+    {
+        return $this->hasMany(PelayananBundlingUsage::class);
+    }
+
+    public function produkBundlingUsages()
+    {
+        return $this->hasMany(ProdukBundlingUsage::class);
+    }
+
 }

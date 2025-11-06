@@ -25,6 +25,7 @@ class Detail extends Component
     public $treatment;
     public $produk;
     public $bundling;
+    public $bundlingUsages;
 
     // Obat yang di centang
     public $selectedObat = []; // untuk non racikan
@@ -46,6 +47,8 @@ class Detail extends Component
             'rekamMedis.rencanaBundlingRM.bundling.treatmentBundlings',
             'rekamMedis.rencanaBundlingRM.bundling.pelayananBundlings',
             'rekamMedis.rencanaBundlingRM.bundling.produkObatBundlings',
+            'rekamMedis.produkBundlingUsages.produk',
+            'rekamMedis.produkBundlingUsages.bundling',
         ])->findOrFail($this->pasien_terdaftar_id);
 
         // Simpan data pasien
@@ -77,6 +80,15 @@ class Detail extends Component
         $this->selectedRacikan = $this->obatapoteker
             ->flatMap(fn($final) => $final->obatRacikanFinals->pluck('id'))
             ->toArray();
+        
+        $this->bundlingUsages = collect();
+
+        if ($rekamMedis) {
+            $this->bundlingUsages = collect()
+                ->merge($rekamMedis->produkBundlingUsages ?? [])
+                ->merge($rekamMedis->treatmentBundlingUsages ?? [])
+                ->merge($rekamMedis->pelayananBundlingUsages ?? []);
+        }
     }
 
     public function render()

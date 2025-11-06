@@ -132,8 +132,25 @@
                                             {{-- biarkan kosong --}}
                                         @endforelse
 
+                                        {{-- Produk dari Sisa Bundling Yang Baru Diambil --}}
+                                        @forelse ($produkBundlingUsageItems as $bu)
+                                            <div class="flex justify-between py-1 border-b">
+                                                <div>
+                                                    {{ $bu['nama_produk'] }}
+                                                    <span class="text-xs text-gray-500 italic">(Bundling: {{ $bu['nama_bundling'] }})</span>
+                                                </div>
+                                                @if (is_string($bu['jumlah_dipakai']))
+                                                    <span>{{ $bu['jumlah_dipakai'] }}</span>
+                                                @else
+                                                    <span>{{ $bu['jumlah_dipakai'] }} {{ $bu['satuan'] }}</span>
+                                                @endif
+                                            </div>
+                                        @empty
+                                            {{-- biarkan kosong --}}
+                                        @endforelse
+
                                         {{-- Jika kedua array kosong --}}
-                                        @if (empty($produkRencanaItems) && empty($produkBundlingItems))
+                                        @if (empty($produkRencanaItems) || empty($produkBundlingItems) || empty($produkBundlingUsageItems))
                                             <p class="text-gray-500 italic">Tidak ada produk dibeli.</p>
                                         @endif
                                     </div>

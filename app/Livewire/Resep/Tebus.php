@@ -14,6 +14,7 @@ class Tebus extends Component
     public array $obatRacikanItems = [];
     public array $produkRencanaItems = [];
     public array $produkBundlingItems = [];
+    public array $produkBundlingUsageItems = [];
 
     public $rekammedis_id;
 
@@ -28,6 +29,8 @@ class Tebus extends Component
             'rekamMedis.obatFinal.obatNonRacikanFinals',
             'rekamMedis.obatFinal.obatRacikanFinals.bahanRacikanFinals',
             'rekamMedis.rencanaBundlingRM.bundling.produkObatBundlings.produk',
+            'rekamMedis.produkBundlingUsages.produk',
+            'rekamMedis.produkBundlingUsages.bundling',
         ])->findOrFail($this->pasien_terdaftar_id);
 
         $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
@@ -116,13 +119,27 @@ class Tebus extends Component
                 });
             })
         ->toArray();
-
-        // dd(
-        //     $this->obatNonRacikanItems,
-        //     $this->obatRacikanItems,
-        //     $this->produkRencanaItems,
-        //     $this->produkBundlingItems,
-        // );
+        
+        $this->produkBundlingUsageItems = $this->pasienTerdaftar
+            ->rekamMedis
+            ->produkBundlingUsages
+            ->map(fn($u) => [
+                'bundling_id' => $u->bundling->id ?? null,
+                'nama_bundling' => $u->bundling->nama ?? '-',
+                'produk_id' => $u->produk->id ?? null,
+                'nama_produk' => $u->produk->nama_dagang ?? '-',
+                'jumlah_dipakai' => $u->jumlah_dipakai ?? 0,
+                'satuan' => $u->produk->sediaan ?? '-',
+                'tipe' => 'usage',
+            ])
+            ->toArray();
+            // dd(
+            //     $this->obatNonRacikanItems,
+            //     $this->obatRacikanItems,
+            //     $this->produkRencanaItems,
+            //     $this->produkBundlingItems,
+            //     $this->produkBundlingUsageItems,
+            // );
     }
     
     public function render()

@@ -303,6 +303,30 @@
                                 </div>
                             </div>
                         @endif
+                        
+                        @if($bundlingUsages->where('is_pembelian_baru', false)->isNotEmpty())
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-2 text-base-content">Item Bundling Sebelumnya</h4>
+                                <div class="space-y-3">
+                                    @foreach($bundlingUsages->where('is_pembelian_baru', false) as $usage)
+                                        <div class="bg-base-100 border border-base-300 border-t-3 border-t-warning rounded-lg p-3 shadow-sm hover:shadow transition">
+                                            {{-- Nama item --}}
+                                            <div class="font-semibold text-base-content mb-1">
+                                                {{ $usage->produk->nama_dagang ?? $usage->treatment->nama_treatment ?? $usage->pelayanan->nama_pelayanan ?? '-' }}
+                                                <div class="text-xs text-gray-500 italic">
+                                                    (Bundling: {{ $usage->bundling->nama ?? '-' }})
+                                                </div>
+                                            </div>
+
+                                            {{-- Jumlah yang dipakai --}}
+                                            <div class="text-sm text-base-content/70">
+                                                {{ $usage->jumlah_dipakai }} {{ 'x' . ' ' . $usage->produk?->sediaan ?? 'x' }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         @if ($obatapoteker->isNotEmpty())
                             <form wire:submit.prevent="create" >

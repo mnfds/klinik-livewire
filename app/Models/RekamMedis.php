@@ -89,4 +89,20 @@ class RekamMedis extends Model
         return $this->hasMany(ObatFinal::class);
     }
 
+    // ----- PENGAMBILAN ITEM BUNDLING PERKUNJUNGAN ----- //
+    public function treatmentBundlingUsages()
+    {
+        return $this->hasMany(TreatmentBundlingUsage::class, 'rekam_medis_id');
+    }
+
+    public function pelayananBundlingUsages()
+    {
+        return $this->hasMany(PelayananBundlingUsage::class, 'rekam_medis_id');
+    }
+
+    public function produkBundlingUsages()
+    {
+        return $this->hasMany(ProdukBundlingUsage::class, 'rekam_medis_id');
+    }
+
 }
