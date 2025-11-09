@@ -133,7 +133,10 @@
                                         @endforelse
 
                                         {{-- Produk dari Sisa Bundling Yang Baru Diambil --}}
-                                        @forelse ($produkBundlingUsageItems as $bu)
+                                            @php
+                                                $bundlingLama = collect($produkBundlingUsageItems)->where('is_pembelian_baru', false);
+                                            @endphp
+                                        @forelse ($bundlingLama as $bu)
                                             <div class="flex justify-between py-1 border-b">
                                                 <div>
                                                     {{ $bu['nama_produk'] }}
@@ -150,7 +153,7 @@
                                         @endforelse
 
                                         {{-- Jika kedua array kosong --}}
-                                        @if (empty($produkRencanaItems) || empty($produkBundlingItems) || empty($produkBundlingUsageItems))
+                                        @if (empty($produkRencanaItems) && empty($produkBundlingItems) && empty($produkBundlingUsageItems))
                                             <p class="text-gray-500 italic">Tidak ada produk dibeli.</p>
                                         @endif
                                     </div>

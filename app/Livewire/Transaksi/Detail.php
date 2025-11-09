@@ -3,6 +3,8 @@
 namespace App\Livewire\Transaksi;
 
 use Livewire\Component;
+use App\Models\Bundling;
+use App\Models\ProdukDanObat;
 use App\Models\PasienTerdaftar;
 use App\Models\RencanaProdukRM;
 use App\Models\ObatRacikanFinal;
@@ -112,7 +114,9 @@ class Detail extends Component
         }
 
         PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
-        
+
+        $this->kurangiStokProduk();
+
         $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Transaksi Selesai.'
@@ -122,4 +126,71 @@ class Detail extends Component
 
         return redirect()->route('transaksi.kasir');
     }
+
+    protected function kurangiStokProduk()
+    {
+        // --- Pengurangan Stok Produk Dari Pembelian Produk ---
+        foreach ($this->produk as $item) {
+            if ($item->produk) {
+                $produk = $item->produk; // relasi ke ProdukDanObat
+                $jumlah = $item->jumlah_produk ?? 0;
+                
+                $stokBaru = max($produk->stok - $jumlah, 0);
+                $produk->update(['stok' => $stokBaru]);
+            }
+        }
+
+        // --- Pengurangan Stok Produk Dari Obat Non Racik ---
+        foreach ($this->selectedObat as $obatId) {
+            $nonracik = ObatNonRacikanFinal::with('produk')->find($obatId);
+            if (! $nonracik) continue;
+
+            $produk = $nonracik->produk;
+            $jumlah = (int) ($nonracik->jumlah_obat ?? 0);
+
+            if (! $produk || $jumlah <= 0) continue;
+
+            $stokBaru = max($produk->stok - $jumlah, 0);
+            $produk->update(['stok' => $stokBaru]);
+
+        }
+
+        // --- Pengurangan Stok Produk Dari Obat Non Racik ---
+        foreach ($this->selectedRacikan as $racikId) {
+            // Ambil racikan beserta bahan-bahan yang digunakan
+            $racik = ObatRacikanFinal::with('bahanRacikanFinals.produk')->find($racikId);
+            if (! $racik) continue;
+
+            foreach ($racik->bahanRacikanFinals as $bahan) {
+                $produk = ProdukDanObat::lockForUpdate()->find($bahan->produk_id);
+                if (! $produk) continue;
+
+                $jumlah = (int) ($bahan->jumlah_obat ?? 0);
+                if ($jumlah <= 0) continue;
+
+                $stokBaru = max($produk->stok - $jumlah, 0);
+                $produk->update(['stok' => $stokBaru]);
+            }
+        }
+
+        // --- Pengurangan Stok Produk Dari Produk Bundling ---
+        foreach ($this->bundling as $rencanaBundling) {
+            $rencana = RencananaBundlingRM::with('bundling.produkObatBundlings.produk')->find($rencanaBundling->id);
+            if (! $rencana || ! $rencana->bundling) continue;
+
+            foreach ($rencana->bundling->produkObatBundlings as $item) {
+                $produk = ProdukDanObat::lockForUpdate()->find($item->produk_id);
+                if (! $produk) continue;
+
+                $jumlah = (int) ($item->jumlah ?? 0); // ← ini sudah benar
+                if ($jumlah <= 0) continue;
+
+                $stokBaru = max($produk->stok - $jumlah, 0);
+
+                $produk->update(['stok' => $stokBaru]);
+            }
+        }
+
+    }
+
 }

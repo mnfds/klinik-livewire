@@ -131,6 +131,7 @@ class Tebus extends Component
                 'jumlah_dipakai' => $u->jumlah_dipakai ?? 0,
                 'satuan' => $u->produk->sediaan ?? '-',
                 'tipe' => 'usage',
+                'is_pembelian_baru' => (bool) ($u->is_pembelian_baru ?? false),
             ])
             ->toArray();
             // dd(
