@@ -104,5 +104,10 @@ class RekamMedis extends Model
     {
         return $this->hasMany(ProdukBundlingUsage::class, 'rekam_medis_id');
     }
-
+    
+    // ----- DATA TRANSAKSI PERKUNJUNGAN ----- //
+    public function transaksi()
+    {
+        return $this->hasOne(TransaksiKlinik::class);
+    }
 }

@@ -11,7 +11,11 @@ use App\Models\ObatRacikanFinal;
 use App\Models\RencanaLayananRM;
 use App\Models\RencanaTreatmentRM;
 use App\Models\ObatNonRacikanFinal;
+use App\Models\RekamMedis;
 use App\Models\RencananaBundlingRM;
+use App\Models\RiwayatTransaksiKlinik;
+use App\Models\TransaksiKlinik;
+use Illuminate\Support\Facades\DB;
 
 class Detail extends Component
 {
@@ -98,33 +102,180 @@ class Detail extends Component
         return view('livewire.transaksi.detail');
     }
 
-    public function create(){
-        $nonRacikanIds = $this->selectedObat;
-        $racikanIds = $this->selectedRacikan;
+    // public function create(){
+    //     $nonRacikanIds = $this->selectedObat;
+    //     $racikanIds = $this->selectedRacikan;
 
-        // Update kolom konfirmasi menjadi 'terkonfirmasi'
-        if (!empty($nonRacikanIds)) {
-            ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
-                ->update(['konfirmasi' => 'terkonfirmasi']);
-        }
+    //     // Update kolom konfirmasi menjadi 'terkonfirmasi'
+    //     if (!empty($nonRacikanIds)) {
+    //         ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
+    //             ->update(['konfirmasi' => 'terkonfirmasi']);
+    //     }
 
-        if (!empty($racikanIds)) {
-            ObatRacikanFinal::whereIn('id', $racikanIds)
-                ->update(['konfirmasi' => 'terkonfirmasi']);
-        }
+    //     if (!empty($racikanIds)) {
+    //         ObatRacikanFinal::whereIn('id', $racikanIds)
+    //             ->update(['konfirmasi' => 'terkonfirmasi']);
+    //     }
 
-        PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
+    //     PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
 
-        $this->kurangiStokProduk();
+    //     $this->kurangiStokProduk();
 
-        $this->dispatch('toast', [
+    //     $this->dispatch('toast', [
+    //             'type' => 'success',
+    //             'message' => 'Transaksi Selesai.'
+    //     ]);
+
+    //     $this->reset();
+
+    //     return redirect()->route('transaksi.kasir');
+    // }
+
+    public function create()
+    {
+        DB::beginTransaction();
+
+        try {
+            $nonRacikanIds = $this->selectedObat;
+            $racikanIds = $this->selectedRacikan;
+
+            // Update konfirmasi obat
+            if (!empty($nonRacikanIds)) {
+                ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
+                    ->update(['konfirmasi' => 'terkonfirmasi']);
+            }
+
+            if (!empty($racikanIds)) {
+                ObatRacikanFinal::whereIn('id', $racikanIds)
+                    ->update(['konfirmasi' => 'terkonfirmasi']);
+            }
+
+            // ✅ 1. Buat Transaksi Klinik
+            $rekamMedis = RekamMedis::findOrFail($this->rekammedis_id);
+
+            $transaksi = TransaksiKlinik::create([
+                'rekam_medis_id' => $rekamMedis->id,
+                'no_transaksi' => 'TRX-' . now()->format('YmdHis'),
+                'tanggal_transaksi' => now(),
+                'total_tagihan' => 0, // akan di-update setelah item disimpan
+                'status' => 'belum_bayar',
+            ]);
+
+            $totalTagihan = 0;
+
+            // ✅ 2. Simpan semua item ke riwayat transaksi
+
+            // --- Pelayanan ---
+            foreach ($this->pelayanan as $item) {
+                $harga = (int) ($item->pelayanan->harga_bersih ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'pelayanan',
+                    'nama_item' => $item->pelayanan->nama_pelayanan ?? '-',
+                    'qty' => $item->jumlah_pelayanan,
+                    'harga' => $harga,
+                    'subtotal' => $harga,
+                ]);
+                $totalTagihan += $harga;
+            }
+
+            // --- Treatment ---
+            foreach ($this->treatment as $item) {
+                $subtotaltreatment = (int) ($item->subtotal ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'treatment',
+                    'nama_item' => $item->treatment->nama_treatment ?? '-',
+                    'qty' => $item->jumlah_treatment,
+                    'harga' => $item->treatment->harga_bersih,
+                    'subtotal' => $item->subtotal,
+                ]);
+                $totalTagihan += $subtotaltreatment;
+            }
+
+            // --- Produk ---
+            foreach ($this->produk as $item) {
+                $subtotalproduk = (int) ($item->subtotal ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'produk',
+                    'nama_item' => $item->produk->nama_dagang ?? '-',
+                    'qty' => $item->jumlah_produk,
+                    'harga' => $item->produk->harga_bersih,
+                    'subtotal' => $subtotalproduk,
+                ]);
+                $totalTagihan += $subtotalproduk;
+            }
+
+            // --- Bundling ---
+            foreach ($this->bundling as $item) {
+                $subtotalbundling = (int) ($item->subtotal ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'bundling',
+                    'nama_item' => $item->bundling->nama ?? '-',
+                    'qty' => $item->jumlah_bundling,
+                    'harga' => $item->bundling->harga_bersih,
+                    'subtotal' => $subtotalbundling,
+                ]);
+                $totalTagihan += $subtotalbundling;
+            }
+
+            // --- Obat Non Racik ---
+            foreach ($this->selectedObat as $item) {
+                $subtotalnonracik = (int) ($item->total_obat ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'obat_non_racik',
+                    'nama_item' => $item->produk->nama_dagang ?? '-',
+                    'qty' => $item->jumlah_obat,
+                    'harga' => $item->harga_obat,
+                    'subtotal' => $subtotalnonracik,
+                ]);
+                $totalTagihan += $subtotalnonracik;
+            }
+
+            // --- Obat Racik ---
+            foreach ($this->selectedObat as $item) {
+                $subtotalracik = (int) ($item->total_racikan ?? 0);
+                RiwayatTransaksiKlinik::create([
+                    'transaksi_klinik_id' => $transaksi->id,
+                    'jenis_item' => 'obat_racik',
+                    'nama_item' => $item->bahanRacikanFinals->produk->nama_dagang ?? '-',
+                    'qty' => $item->jumlah_racikan,
+                    'harga' => $subtotalracik,
+                    'subtotal' => $subtotalracik,
+                ]);
+                $totalTagihan += $subtotalracik;
+            }
+
+            // ✅ 3. Update total tagihan transaksi
+            $transaksi->update([
+                'total_tagihan' => $totalTagihan,
+                'status' => 'lunas',
+            ]);
+
+            // ✅ 4. Update status pasien + kurangi stok
+            PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
+            $this->kurangiStokProduk();
+
+            DB::commit();
+
+            $this->dispatch('toast', [
                 'type' => 'success',
-                'message' => 'Transaksi Selesai.'
-        ]);
+                'message' => 'Transaksi berhasil disimpan'
+            ]);
 
-        $this->reset();
+            $this->reset();
+            return redirect()->route('transaksi.kasir');
 
-        return redirect()->route('transaksi.kasir');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $th->getMessage()
+            ]);
+        }
     }
 
     protected function kurangiStokProduk()
