@@ -327,8 +327,8 @@
                             </x-side-link>
                         </li>
                         <li>
-                            <x-side-link href="#" 
-                                :active="request()->routeIs('#')"  
+                            <x-side-link href="{{ route('tindaklanjut.data') }}" 
+                                :active="request()->routeIs('tindaklanjut*')"  
                                 wire:navigate>
                                 Tindak Lanjut
                             </x-side-link>

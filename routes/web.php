@@ -314,6 +314,11 @@ Route::middleware(['auth'])->group(function () {
     // ====== RESERVASI ====== //
     Route::view('/reservasi', 'reservasi.data')->name('reservasi.data');
     // ====== RESERVASI ====== //
+
+    // ====== RESERVASI ====== //
+    Route::view('/tindak-lanjut', 'tindaklanjut.data')->name('tindaklanjut.data');
+    Route::view('/tindak-lanjut/detail', 'tindaklanjut.detail')->name('tindaklanjut.detail');
+    // ====== RESERVASI ====== //
 });
 
 
