@@ -110,79 +110,103 @@
                                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" style="background-image: none;" aria-label="Layanan Tersisa" />
                                 <div class="tab-content bg-base-100 border-base-300 p-6">
                                     <div class="text-lg font-bold border-b pb-2">Layanan / Tindakan Tersisa</div>
-
                                     @php
                                         $grouped = [];
-                                        foreach ($bundlingPasien['treatments'] as $t) {
-                                            $grouped[$t->bundling_id]['nama'] = $t->bundling->nama;
-                                            $grouped[$t->bundling_id]['treatments'][] = $t;
-                                        }
-                                        foreach ($bundlingPasien['pelayanans'] as $p) {
-                                            $grouped[$p->bundling_id]['nama'] = $p->bundling->nama;
-                                            $grouped[$p->bundling_id]['pelayanans'][] = $p;
-                                        }
-                                        foreach ($bundlingPasien['produks'] as $pr) {
-                                            $grouped[$pr->bundling_id]['nama'] = $pr->bundling->nama;
-                                            $grouped[$pr->bundling_id]['produks'][] = $pr;
+
+                                        // Gabungkan semua data menjadi satu array besar agar mudah dikelompokkan
+                                        $allItems = collect()
+                                            ->merge($bundlingPasien['treatments'])
+                                            ->merge($bundlingPasien['pelayanans'])
+                                            ->merge($bundlingPasien['produks']);
+
+                                        foreach ($allItems as $item) {
+                                            $groupKey = $item->group_bundling ?? 'Tanpa Group';
+                                            $bundlingKey = $item->bundling_id;
+                                            $bundlingNama = optional($item->bundling)->nama ?? '-';
+
+                                            // Buat struktur dasar group_bundling
+                                            if (!isset($grouped[$groupKey])) {
+                                                $grouped[$groupKey] = [
+                                                    'bundlings' => []
+                                                ];
+                                            }
+
+                                            // Buat struktur dasar bundling di dalam group
+                                            if (!isset($grouped[$groupKey]['bundlings'][$bundlingKey])) {
+                                                $grouped[$groupKey]['bundlings'][$bundlingKey] = [
+                                                    'nama' => $bundlingNama,
+                                                    'treatments' => [],
+                                                    'pelayanans' => [],
+                                                    'produks' => [],
+                                                ];
+                                            }
+
+                                            // Klasifikasi berdasarkan tipe model
+                                            if ($item instanceof \App\Models\TreatmentBundlingRM) {
+                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['treatments'][] = $item;
+                                            } elseif ($item instanceof \App\Models\PelayananBundlingRM) {
+                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['pelayanans'][] = $item;
+                                            } elseif ($item instanceof \App\Models\ProdukObatBundlingRM) {
+                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['produks'][] = $item;
+                                            }
                                         }
                                     @endphp
-
                                     @if(count($grouped))
-                                        <div class="space-y-6">
-                                            @foreach($grouped as $bundling)
-                                                <div>
-                                                    <p class="font-semibold text-sm mb-3">{{ $bundling['nama'] }}</p>
+                                        <div class="space-y-8">
+                                            @foreach($grouped as $groupName => $groupData)
+                                                <div class="p-3 border rounded bg-base-200 mb-3">
+                                                    {{-- <p class="text-md font-bold mb-3">{{ $groupName }}</p> --}}
 
-                                                    {{-- Treatments --}}
-                                                    @if(!empty($bundling['treatments']))
-                                                        <div class="mb-2">
-                                                            <p class="font-medium text-xs text-gray-500 mb-1">Treatment</p>
-                                                            <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                @foreach($bundling['treatments'] as $t)
-                                                                    <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                        <span>{{ optional($t->treatment)->nama_treatment ?? '-' }}</span>
-                                                                        <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                            {{ $t->sisa ?? ($t->jumlah_awal - $t->jumlah_terpakai) }}x
-                                                                        </span>
-                                                                    </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    @endif
+                                                    @foreach($groupData['bundlings'] as $bundling)
+                                                        <div class="mb-5 ml-3">
+                                                            <p class="text-md font-bold mb-3">{{ $bundling['nama'] }}</p>
 
-                                                    {{-- Pelayanan --}}
-                                                    @if(!empty($bundling['pelayanans']))
-                                                        <div class="mb-2">
-                                                            <p class="font-medium text-xs text-gray-500 mb-1">Pelayanan</p>
-                                                            <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                @foreach($bundling['pelayanans'] as $p)
-                                                                    <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                        <span>{{ optional($p->pelayanan)->nama_pelayanan ?? '-' }}</span>
-                                                                        <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                            {{ $p->jumlah_awal - $p->jumlah_terpakai }}x
-                                                                        </span>
-                                                                    </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    @endif
+                                                            {{-- Treatments --}}
+                                                            @if(!empty($bundling['treatments']))
+                                                                <p class="font-medium text-xs text-gray-500 mb-1">Treatment</p>
+                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                    @foreach($bundling['treatments'] as $t)
+                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                            <span>{{ optional($t->treatment)->nama_treatment ?? '-' }}</span>
+                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                {{ $t->sisa ?? ($t->jumlah_awal - $t->jumlah_terpakai) }}x
+                                                                            </span>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @endif
 
-                                                    {{-- Produk --}}
-                                                    @if(!empty($bundling['produks']))
-                                                        <div>
-                                                            <p class="font-medium text-xs text-gray-500 mb-1">Produk Obat</p>
-                                                            <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                @foreach($bundling['produks'] as $pr)
-                                                                    <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                        <span>{{ optional($pr->produk)->nama_dagang ?? '-' }}</span>
-                                                                        <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                            {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}x
-                                                                        </span>
-                                                                    </li>
-                                                                @endforeach
-                                                            </ul>
+                                                            {{-- Pelayanan --}}
+                                                            @if(!empty($bundling['pelayanans']))
+                                                                <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Pelayanan</p>
+                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                    @foreach($bundling['pelayanans'] as $p)
+                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                            <span>{{ optional($p->pelayanan)->nama_pelayanan ?? '-' }}</span>
+                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                {{ $p->jumlah_awal - $p->jumlah_terpakai }}x
+                                                                            </span>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @endif
+
+                                                            {{-- Produk --}}
+                                                            @if(!empty($bundling['produks']))
+                                                                <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Produk Obat</p>
+                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                    @foreach($bundling['produks'] as $pr)
+                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                            <span>{{ optional($pr->produk)->nama_dagang ?? '-' }}</span>
+                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}x
+                                                                            </span>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @endif
                                                         </div>
-                                                    @endif
+                                                    @endforeach
                                                 </div>
                                             @endforeach
                                         </div>

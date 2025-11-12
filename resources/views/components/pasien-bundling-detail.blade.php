@@ -4,38 +4,54 @@
     </h3>
 
     @php
-        $groupedBundlings = collect()
+        // Gabungkan semua item dari 3 jenis
+        $semuaBundlings = collect()
             ->merge($row->pelayananBundlings ?? collect())
             ->merge($row->produkObatBundlings ?? collect())
             ->merge($row->treatmentBundlings ?? collect())
-            ->filter(fn($item) => ($item->jumlah_awal ?? 0) > ($item->jumlah_terpakai ?? 0))
-            ->groupBy(fn($item) => $item->bundling->nama ?? 'Tanpa Nama');
+            ->groupBy('group_bundling'); // 🔸 grupkan per group_bundling
+
+        $groupedBundlings = $semuaBundlings->map(function ($group) {
+            $isAktif = $group->contains(fn($i) => $i->jumlah_terpakai < $i->jumlah_awal);
+            return [
+                'status' => $isAktif ? 'aktif' : 'selesai',
+                'nama' => $group->first()->bundling->nama ?? 'Tanpa Nama',
+                'items' => $group,
+            ];
+        });
     @endphp
 
-    @forelse ($groupedBundlings as $bundleName => $items)
-        <div class="bg-white shadow-sm rounded-lg p-3 mb-3">
-            <p class="font-medium text-primary mb-1">{{ $bundleName }}</p>
-            <ul class="list-disc list-inside text-sm space-y-1">
-                @foreach ($items as $item)
+    @forelse ($groupedBundlings as $bundle)
+        <div class="bg-white shadow-sm rounded-lg p-3 mb-3 border-l-4 {{ $bundle['status'] === 'aktif' ? 'border-l-blue-500' : 'border-l-green-500' }}">
+            <div class="flex justify-between items-center">
+                <p class="font-medium text-primary">{{ $bundle['nama'] }}</p>
+                <span class="text-xs px-2 py-0.5 rounded-md {{ $bundle['status'] === 'aktif' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' }}">
+                    {{ ucfirst($bundle['status']) }}
+                </span>
+            </div>
+
+            <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+                @foreach ($bundle['items'] as $item)
                     @php
-                        $sisa = $item->jumlah_terpakai ?? 0;
+                        $terpakai = $item->jumlah_terpakai ?? 0;
                         $total = $item->jumlah_awal ?? 0;
+                        $sisa = max(0, $total - $terpakai);
                     @endphp
 
                     @if(isset($item->pelayanan))
-                        <li>
-                            Pelayanan: {{ $item->pelayanan->nama_pelayanan }}
-                            <span class="text-xs text-gray-500 ml-2">({{ $sisa }} / {{ $total }})</span>
+                        <li>Pelayanan: {{ $item->pelayanan->nama_pelayanan }}
+                            <span class="text-xs text-gray-500 ml-2">(Tersisa : {{ $sisa }})</span>
+                            {{-- <span class="text-xs text-gray-500 ml-2">({{ $terpakai }} / {{ $total }})</span> --}}
                         </li>
                     @elseif(isset($item->produk))
-                        <li>
-                            Produk: {{ $item->produk->nama_dagang }}
-                            <span class="text-xs text-gray-500 ml-2">({{ $sisa }} / {{ $total }})</span>
+                        <li>Produk: {{ $item->produk->nama_dagang }}
+                            <span class="text-xs text-gray-500 ml-2">(Tersisa : {{ $sisa }})</span>
+                            {{-- <span class="text-xs text-gray-500 ml-2">({{ $terpakai }} / {{ $total }})</span> --}}
                         </li>
                     @elseif(isset($item->treatment))
-                        <li>
-                            Treatment: {{ $item->treatment->nama_treatment }}
-                            <span class="text-xs text-gray-500 ml-2">({{ $sisa }} / {{ $total }})</span>
+                        <li>Treatment: {{ $item->treatment->nama_treatment }}
+                            <span class="text-xs text-gray-500 ml-2">(Tersisa : {{ $sisa }})</span>
+                            {{-- <span class="text-xs text-gray-500 ml-2">({{ $terpakai }} / {{ $total }})</span> --}}
                         </li>
                     @endif
                 @endforeach

@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Tindaklanjut;
 
+use App\Models\Pasien;
 use Livewire\Component;
 use App\Models\Bundling;
-use App\Models\Pasien;
+use Illuminate\Support\Str;
 use App\Models\PelayananBundlingRM;
-use App\Models\ProdukObatBundlingRM;
 use App\Models\TreatmentBundlingRM;
+use App\Models\ProdukObatBundlingRM;
 
 class Store extends Component
 {
@@ -73,6 +74,7 @@ class Store extends Component
         ]);
 
         $pasien = Pasien::findOrFail($this->pasien_id);
+        $group_bundling = 'GB-' . Str::random(4);
         $bundling = Bundling::with([
             'pelayananBundlings.pelayanan',
             'produkObatBundlings.produk',
@@ -88,6 +90,7 @@ class Store extends Component
                     'pelayanan_id'     => $p['id'],
                     'jumlah_awal'      => ($p['jumlah'] ?? 1) * $this->jumlah_bundling,
                     'jumlah_terpakai'  => $p['terpakai'] ?? 0,
+                    'group_bundling'   => $group_bundling,
                 ]);
             }
         }
@@ -101,6 +104,7 @@ class Store extends Component
                     'produk_obat_id'   => $p['id'],
                     'jumlah_awal'      => ($p['jumlah'] ?? 1) * $this->jumlah_bundling,
                     'jumlah_terpakai'  => $p['terpakai'] ?? 0,
+                    'group_bundling'   => $group_bundling,
                 ]);
             }
         }
@@ -114,6 +118,7 @@ class Store extends Component
                     'treatments_id'    => $t['id'],
                     'jumlah_awal'      => ($t['jumlah'] ?? 1) * $this->jumlah_bundling,
                     'jumlah_terpakai'  => $t['terpakai'] ?? 0,
+                    'group_bundling'   => $group_bundling,
                 ]);
             }
         }

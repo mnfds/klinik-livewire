@@ -37,34 +37,41 @@
                                 Bundling Belum Selesai — {{ $pasien->nama }}
                             </h2>
 
-                            @forelse ($bundlingAktif as $bundleName => $items)
+                            @forelse ($bundlingAktif as $groupName => $items)
                                 <div class="bg-base-300 shadow-sm rounded-lg p-4 mb-4">
-                                    <p class="font-semibold text-primary mb-2">
-                                        {{ $bundleName }}
-                                    </p>
+                                    {{-- Sekarang kita grup ulang item berdasarkan nama bundling di dalam group --}}
+                                    @php
+                                        $byBundling = collect($items)->groupBy('bundling');
+                                    @endphp
 
-                                    <table class="table-auto w-full text-sm border-collapse">
-                                        <thead>
-                                            <tr class="border-b border-base-200">
-                                                <th class="py-1 text-left">Tipe</th>
-                                                <th class="py-1 text-left">Nama Item</th>
-                                                <th class="py-1 text-center">Total</th>
-                                                <th class="py-1 text-center">Terpakai</th>
-                                                <th class="py-1 text-center">Sisa</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($items as $item)
-                                                <tr class="border-b border-base-200">
-                                                    <td class="py-1 text-left">{{ $item['tipe'] }}</td>
-                                                    <td class="py-1 text-left">{{ $item['nama_item'] }}</td>
-                                                    <td class="py-1 text-center">{{ $item['jumlah_awal'] }}</td>
-                                                    <td class="py-1 text-center">{{ $item['jumlah_terpakai'] }}</td>
-                                                    <td class="py-1 font-medium text-success text-center">{{ $item['sisa'] }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                    @foreach ($byBundling as $bundlingName => $bundlingItems)
+                                        <div class="bg-base-300 rounded-lg p-3 mb-3">
+                                            <p class="font-semibold mb-2">{{ $bundlingName }}</p>
+
+                                            <table class="table-auto w-full text-sm border-collapse">
+                                                <thead>
+                                                    <tr class="border-b border-base-200">
+                                                        <th class="py-1 text-left">Tipe</th>
+                                                        <th class="py-1 text-left">Nama Item</th>
+                                                        <th class="py-1 text-center">Total</th>
+                                                        <th class="py-1 text-center">Terpakai</th>
+                                                        <th class="py-1 text-center">Sisa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($bundlingItems as $item)
+                                                        <tr class="border-b border-base-200">
+                                                            <td class="py-1 text-left">{{ $item['tipe'] }}</td>
+                                                            <td class="py-1 text-left">{{ $item['nama_item'] }}</td>
+                                                            <td class="py-1 text-center">{{ $item['jumlah_awal'] }}</td>
+                                                            <td class="py-1 text-center">{{ $item['jumlah_terpakai'] }}</td>
+                                                            <td class="py-1 font-medium text-success text-center">{{ $item['sisa'] }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endforeach
                                 </div>
                             @empty
                                 <p class="italic text-base-200">Tidak ada bundling aktif untuk pasien ini.</p>
@@ -78,37 +85,44 @@
                                 Bundling Selesai
                             </h2>
 
-                            @forelse ($bundlingSelesai as $bundleName => $items)
-                                <div class="bg-white shadow-sm rounded-lg p-4 mb-4 opacity-70">
-                                    <p class="font-semibold text-gray-600 mb-2">
-                                        {{ $bundleName }}
-                                    </p>
+                            @forelse ($bundlingSelesai as $groupName => $items)
+                                <div class="bg-base-300 shadow-sm rounded-lg p-4 mb-4">
+                                    {{-- Sekarang kita grup ulang item berdasarkan nama bundling di dalam group --}}
+                                    @php
+                                        $byBundling = collect($items)->groupBy('bundling');
+                                    @endphp
 
-                                    <table class="table-auto w-full text-sm border-collapse">
-                                        <thead>
-                                            <tr class="text-left border-b border-gray-300">
-                                                <th class="py-1">Tipe</th>
-                                                <th class="py-1">Nama Item</th>
-                                                <th class="py-1">Total</th>
-                                                <th class="py-1">Terpakai</th>
-                                                <th class="py-1">Sisa</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($items as $item)
-                                                <tr class="border-b border-gray-200 text-gray-500">
-                                                    <td class="py-1">{{ $item['tipe'] }}</td>
-                                                    <td class="py-1">{{ $item['nama_item'] }}</td>
-                                                    <td class="py-1">{{ $item['jumlah_awal'] }}</td>
-                                                    <td class="py-1">{{ $item['jumlah_terpakai'] }}</td>
-                                                    <td class="py-1 text-red-600 font-medium">{{ $item['sisa'] }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                    @foreach ($byBundling as $bundlingName => $bundlingItems)
+                                        <div class="bg-base-300 rounded-lg p-3 mb-3">
+                                            <p class="font-semibold mb-2">{{ $bundlingName }}</p>
+
+                                            <table class="table-auto w-full text-sm border-collapse">
+                                                <thead>
+                                                    <tr class="border-b border-base-200">
+                                                        <th class="py-1 text-left">Tipe</th>
+                                                        <th class="py-1 text-left">Nama Item</th>
+                                                        <th class="py-1 text-center">Total</th>
+                                                        <th class="py-1 text-center">Terpakai</th>
+                                                        <th class="py-1 text-center">Sisa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($bundlingItems as $item)
+                                                        <tr class="border-b border-base-200">
+                                                            <td class="py-1 text-left">{{ $item['tipe'] }}</td>
+                                                            <td class="py-1 text-left">{{ $item['nama_item'] }}</td>
+                                                            <td class="py-1 text-center">{{ $item['jumlah_awal'] }}</td>
+                                                            <td class="py-1 text-center">{{ $item['jumlah_terpakai'] }}</td>
+                                                            <td class="py-1 font-medium text-success text-center">{{ $item['sisa'] }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endforeach
                                 </div>
                             @empty
-                                <p class="italic text-gray-500">Tidak ada bundling yang sudah selesai.</p>
+                                <p class="italic text-base-200">Tidak ada bundling aktif untuk pasien ini.</p>
                             @endforelse
                         </div>
                     @else

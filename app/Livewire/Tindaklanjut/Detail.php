@@ -17,100 +17,49 @@ class Detail extends Component
     {
         $this->pasien_id = $pasien_id;
         
-        if ($this->pasien_id) {
-            $this->pasien = Pasien::with([
-                'pelayananBundlings.pelayanan',
-                'pelayananBundlings.bundling',
-                'produkObatBundlings.produk',
-                'produkObatBundlings.bundling',
-                'treatmentBundlings.treatment',
-                'treatmentBundlings.bundling',
-            ])->find($this->pasien_id);
+        if (!$this->pasien_id) return;
 
-            if ($this->pasien) {
+        $this->pasien = Pasien::with([
+            'pelayananBundlings.pelayanan',
+            'pelayananBundlings.bundling',
+            'produkObatBundlings.produk',
+            'produkObatBundlings.bundling',
+            'treatmentBundlings.treatment',
+            'treatmentBundlings.bundling',
+        ])->find($this->pasien_id);
 
-                // --- Ambil semua bundling aktif (masih ada sisa) ---
-                $pelayananAktif = collect($this->pasien->pelayananBundlings)
-                    ->filter(fn($p) => $p->jumlah_terpakai < $p->jumlah_awal)
-                    ->map(fn($p) => [
-                        'tipe' => 'Pelayanan',
-                        'bundling' => $p->bundling->nama ?? '-',
-                        'nama_item' => $p->pelayanan->nama_pelayanan ?? '-',
-                        'jumlah_awal' => $p->jumlah_awal,
-                        'jumlah_terpakai' => $p->jumlah_terpakai,
-                        'sisa' => $p->jumlah_awal - $p->jumlah_terpakai,
-                    ]);
+        if (!$this->pasien) return;
 
-                $produkAktif = collect($this->pasien->produkObatBundlings)
-                    ->filter(fn($p) => $p->jumlah_terpakai < $p->jumlah_awal)
-                    ->map(fn($p) => [
-                        'tipe' => 'Produk',
-                        'bundling' => $p->bundling->nama ?? '-',
-                        'nama_item' => $p->produk->nama_dagang ?? '-',
-                        'jumlah_awal' => $p->jumlah_awal,
-                        'jumlah_terpakai' => $p->jumlah_terpakai,
-                        'sisa' => $p->jumlah_awal - $p->jumlah_terpakai,
-                    ]);
+        // 🔹 Satukan semua item bundling dari berbagai tabel
+        $semuaItem = collect()
+            ->merge($this->pasien->pelayananBundlings)
+            ->merge($this->pasien->produkObatBundlings)
+            ->merge($this->pasien->treatmentBundlings)
+            ->map(function ($item) {
+                return [
+                    'group_bundling'   => $item->group_bundling,
+                    'bundling'         => $item->bundling->nama ?? '-',
+                    'tipe'             => $item instanceof \App\Models\PelayananBundlingRM ? 'Pelayanan' :
+                                        ($item instanceof \App\Models\ProdukObatBundlingRM ? 'Produk' : 'Treatment'),
+                    'nama_item'        => $item->pelayanan->nama_pelayanan
+                                        ?? $item->produk->nama_dagang
+                                        ?? $item->treatment->nama_treatment
+                                        ?? '-',
+                    'jumlah_awal'      => $item->jumlah_awal,
+                    'jumlah_terpakai'  => $item->jumlah_terpakai,
+                    'sisa'             => max(0, $item->jumlah_awal - $item->jumlah_terpakai),
+                ];
+            })
+            ->groupBy('group_bundling');
 
-                $treatmentAktif = collect($this->pasien->treatmentBundlings)
-                    ->filter(fn($t) => $t->jumlah_terpakai < $t->jumlah_awal)
-                    ->map(fn($t) => [
-                        'tipe' => 'Treatment',
-                        'bundling' => $t->bundling->nama ?? '-',
-                        'nama_item' => $t->treatment->nama_treatment ?? '-',
-                        'jumlah_awal' => $t->jumlah_awal,
-                        'jumlah_terpakai' => $t->jumlah_terpakai,
-                        'sisa' => $t->jumlah_awal - $t->jumlah_terpakai,
-                    ]);
+        // 🔸 Pisahkan antara aktif dan selesai berdasarkan status per group
+        $this->bundlingAktif = $semuaItem
+            ->filter(fn($items) => $items->contains(fn($i) => $i['jumlah_terpakai'] < $i['jumlah_awal']))
+            ->toArray();
 
-                $this->bundlingAktif = $pelayananAktif
-                    ->merge($produkAktif)
-                    ->merge($treatmentAktif)
-                    ->groupBy('bundling')
-                ->toArray();
-
-                // --- Ambil bundling yang sudah selesai ---
-                $pelayananSelesai = collect($this->pasien->pelayananBundlings)
-                    ->filter(fn($p) => $p->jumlah_terpakai >= $p->jumlah_awal)
-                    ->map(fn($p) => [
-                        'tipe' => 'Pelayanan',
-                        'bundling' => $p->bundling->nama ?? '-',
-                        'nama_item' => $p->pelayanan->nama_pelayanan ?? '-',
-                        'jumlah_awal' => $p->jumlah_awal,
-                        'jumlah_terpakai' => $p->jumlah_terpakai,
-                        'sisa' => 0,
-                    ]);
-
-                $produkSelesai = collect($this->pasien->produkObatBundlings)
-                    ->filter(fn($p) => $p->jumlah_terpakai >= $p->jumlah_awal)
-                    ->map(fn($p) => [
-                        'tipe' => 'Produk',
-                        'bundling' => $p->bundling->nama ?? '-',
-                        'nama_item' => $p->produk->nama_dagang ?? '-',
-                        'jumlah_awal' => $p->jumlah_awal,
-                        'jumlah_terpakai' => $p->jumlah_terpakai,
-                        'sisa' => 0,
-                    ]);
-
-                $treatmentSelesai = collect($this->pasien->treatmentBundlings)
-                    ->filter(fn($t) => $t->jumlah_terpakai >= $t->jumlah_awal)
-                    ->map(fn($t) => [
-                        'tipe' => 'Treatment',
-                        'bundling' => $t->bundling->nama ?? '-',
-                        'nama_item' => $t->treatment->nama_treatment ?? '-',
-                        'jumlah_awal' => $t->jumlah_awal,
-                        'jumlah_terpakai' => $t->jumlah_terpakai,
-                        'sisa' => 0,
-                    ]);
-
-                $this->bundlingSelesai = $pelayananSelesai
-                    ->merge($produkSelesai)
-                    ->merge($treatmentSelesai)
-                    ->groupBy('bundling')
-                    ->toArray();
-
-            }
-        }
+        $this->bundlingSelesai = $semuaItem
+            ->filter(fn($items) => $items->every(fn($i) => $i['jumlah_terpakai'] >= $i['jumlah_awal']))
+            ->toArray();
     }
 
     public function render()

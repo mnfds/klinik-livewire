@@ -41,17 +41,14 @@ final class LayanantersisaTable extends PowerGridComponent
             'pelayananBundlings.pelayanan',
             'produkObatBundlings.produk',
             'treatmentBundlings.treatment',
+            'pelayananBundlings.bundling',
+            'produkObatBundlings.bundling',
+            'treatmentBundlings.bundling',
         ])
         ->where(function ($query) {
-            $query->whereHas('pelayananBundlings', function ($q) {
-                $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal');
-            })
-            ->orWhereHas('produkObatBundlings', function ($q) {
-                $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal');
-            })
-            ->orWhereHas('treatmentBundlings', function ($q) {
-                $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal');
-            });
+            $query->whereHas('pelayananBundlings', fn($q) => $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal'))
+                ->orWhereHas('produkObatBundlings', fn($q) => $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal'))
+                ->orWhereHas('treatmentBundlings', fn($q) => $q->whereColumn('jumlah_terpakai', '<', 'jumlah_awal'));
         });
     }
 
@@ -81,6 +78,15 @@ final class LayanantersisaTable extends PowerGridComponent
                     ->count();
 
                 return $jumlah . ' Bundling';
+            })
+            ->add('jumlah_group_aktif', function ($pasien) {
+                return collect()
+                    ->merge($pasien->pelayananBundlings ?? collect())
+                    ->merge($pasien->produkObatBundlings ?? collect())
+                    ->merge($pasien->treatmentBundlings ?? collect())
+                    ->groupBy('group_bundling')
+                    ->filter(fn($group) => $group->contains(fn($i) => $i->jumlah_terpakai < $i->jumlah_awal))
+                    ->count();
             })
             ->add('isi_paket', function ($pasien) {
                 $bundlings = collect();
@@ -131,7 +137,8 @@ final class LayanantersisaTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
             Column::make('Nama Pasien', 'nama')->sortable()->searchable(),
-            Column::make('Bundling Aktif', 'jumlah_bundling')->sortable(),
+            Column::make('Bundling Aktif', 'jumlah_group_aktif')->sortable(),
+            // Column::make('Bundling Aktif', 'jumlah_bundling')->sortable(),
             // Column::make('Isi Paket Bundling', 'isi_paket')->searchable(),
             // Column::make('Dibuat pada', 'created_at_formatted', 'created_at')->sortable(),
             Column::action('Action'),

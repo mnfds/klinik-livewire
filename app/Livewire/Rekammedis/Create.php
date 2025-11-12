@@ -641,7 +641,7 @@ class Create extends Component
                         
                         // Ambil pasien_id
                         $pasienId = $this->pasien_id;
-
+                        $group_bundling = 'GB-' . Str::random(4);
                         /**
                          * ==========================
                          * SIMPAN DETAIL TREATMENT
@@ -655,6 +655,7 @@ class Create extends Component
                                     'treatments_id'   => $t['treatments_id'],
                                     'jumlah_awal'     => $t['jumlah_awal'],
                                     'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    'group_bundling'   => $group_bundling,
                                 ]);
 
                                 // Jika ada jumlah_terpakai > 0 → simpan usage awal
@@ -685,6 +686,7 @@ class Create extends Component
                                     'pelayanan_id'    => $t['pelayanan_id'],
                                     'jumlah_awal'     => $t['jumlah_awal'],
                                     'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    'group_bundling'   => $group_bundling,
                                 ]);
 
                                 if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
@@ -714,6 +716,7 @@ class Create extends Component
                                     'produk_obat_id'  => $t['produk_obat_id'],
                                     'jumlah_awal'     => $t['jumlah_awal'],
                                     'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    'group_bundling'   => $group_bundling,
                                 ]);
 
                                 if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {

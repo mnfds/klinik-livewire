@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('pelayanan_id')->constrained('pelayanans')->onDelete('cascade');
             $table->integer('jumlah_awal')->default(0);
             $table->integer('jumlah_terpakai')->default(0);
+            $table->string('group_bundling')->nullable()->index();
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('produk_obat_id')->constrained('produk_dan_obats')->onDelete('cascade');
             $table->integer('jumlah_awal')->default(0);
             $table->integer('jumlah_terpakai')->default(0);
-
+            $table->string('group_bundling')->nullable()->index();
             $table->timestamps();
         });
     }
