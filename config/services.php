@@ -34,5 +34,12 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'satusehat' => [
+        'auth_url' => env('SATUSEHAT_AUTH_URL'),
+        'base_url' => env('SATUSEHAT_BASE_URL'),
+        'consent_url' => env('SATUSEHAT_CONSENT_URL'),
+        'client_id' => env('SATUSEHAT_CLIENT_ID'),
+        'client_secret' => env('SATUSEHAT_CLIENT_SECRET'),
+        'org_id' => env('SATUSEHAT_ORG_ID'),
+    ],
 ];

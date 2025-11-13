@@ -42,7 +42,7 @@
                     <div class="tabs tabs-lift">
 
                         {{-- Tab Create SatuSehat (NIK) --}}
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="satuSehat (NIK)" />
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="satuSehat (NIK)" checked="checked" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <h1 class="text-md font-bold text-base-content">
                                 Tambah pasien dengan NIK
@@ -60,7 +60,7 @@
                         </div>
 
                         {{-- Tab Create Non Satu Sehat --}}
-                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Non SatuSehat" checked="checked" />
+                        <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content/70" aria-label="Non SatuSehat" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <h1 class="text-md font-bold text-base-content">
                                 Tambah pasien tanpa SatuSehat
