@@ -9,6 +9,7 @@
                         placeholder="Masukkan Huruf Awal dan klik Generate"
                         class="input input-bordered w-full" maxlength="10" required />
                     <button type="button" wire:click="generateNoRegister" class="btn btn-neutral">
+                        <i class="fa-solid fa-gears"></i>
                         Generate
                     </button>
                 </div>
@@ -22,7 +23,8 @@
                     <input type="number" wire:model="nik"
                         placeholder="Masukkan NIK Untuk Mencari Pasien"
                         class="input input-bordered w-full" maxlength="20" required />
-                    <button type="button" wire:click="searchNIK" class="btn btn-neutral">
+                    <button type="button" wire:click="searchNIK" class="btn btn-primary">
+                        <i class="fa-solid fa-magnifying-glass"></i>
                         Cari
                     </button>
                 </div>

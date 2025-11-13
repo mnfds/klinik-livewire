@@ -9,6 +9,7 @@
                         placeholder="Masukkan Huruf Awal dan klik Generate"
                         class="input input-bordered w-full" maxlength="10" required />
                     <button type="button" wire:click="generateNoRegister" class="btn btn-neutral">
+                        <i class="fa-solid fa-gears"></i>
                         Generate
                     </button>
                 </div>
