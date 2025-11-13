@@ -48,6 +48,24 @@
                 <x-input-error :messages="$errors->get('nama')" class="text-error text-sm mt-1" />
             </div>
 
+            {{-- Tanggal Lahir --}}
+            <div class="form-control">
+                <label class="label"><span class="label-text">Tanggal Lahir</span></label>
+                <input wire:model.defer="tanggal_lahir" type="date" class="input input-bordered w-full" />
+                <x-input-error :messages="$errors->get('tanggal_lahir')" class="text-error text-sm mt-1" />
+            </div>
+
+            {{-- Jenis Kelamin --}}
+            <div class="form-control">
+                <label class="label"><span class="label-text">Jenis Kelamin<span class="text-error">*</span></span></label>
+                <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full" required>
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Wanita">Wanita</option>
+                </select>
+                <x-input-error :messages="$errors->get('jenis_kelamin')" class="text-error text-sm mt-1" />
+            </div>
+
             {{-- Alamat --}}
             <div class="form-control">
                 <label class="label"><span class="label-text">Alamat</span></label>
@@ -61,17 +79,6 @@
                 <input wire:model.defer="no_telp" type="number" inputmode="numeric" pattern="[0-9]*"
                     class="input input-bordered w-full" />
                 <x-input-error :messages="$errors->get('no_telp')" class="text-error text-sm mt-1" />
-            </div>
-
-            {{-- Jenis Kelamin --}}
-            <div class="form-control">
-                <label class="label"><span class="label-text">Jenis Kelamin<span class="text-error">*</span></span></label>
-                <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full" required>
-                    <option value="">Pilih Jenis Kelamin</option>
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Wanita">Wanita</option>
-                </select>
-                <x-input-error :messages="$errors->get('jenis_kelamin')" class="text-error text-sm mt-1" />
             </div>
 
             {{-- Agama --}}
@@ -107,13 +114,6 @@
                 <x-input-error :messages="$errors->get('profesi')" class="text-error text-sm mt-1" />
             </div>
 
-            {{-- Tanggal Lahir --}}
-            <div class="form-control">
-                <label class="label"><span class="label-text">Tanggal Lahir</span></label>
-                <input wire:model.defer="tanggal_lahir" type="date" class="input input-bordered w-full" />
-                <x-input-error :messages="$errors->get('tanggal_lahir')" class="text-error text-sm mt-1" />
-            </div>
-
             {{-- Status --}}
             <div class="form-control">
                 <label class="label"><span class="label-text">Status</span></label>
@@ -125,7 +125,6 @@
                 </select>
                 <x-input-error :messages="$errors->get('status')" class="text-error text-sm mt-1" />
             </div>
-
 
             {{-- Upload Foto --}}
             <div class="form-control">

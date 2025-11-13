@@ -124,7 +124,6 @@
                 <x-input-error :messages="$errors->get('status')" class="text-error text-sm mt-1" />
             </div>
 
-
             {{-- Upload Foto --}}
             <div class="form-control">
                 <label class="label"><span class="label-text">Unggah Foto Pasien</span></label>
