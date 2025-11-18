@@ -360,6 +360,52 @@
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>
                 </li>
+                <li x-data="{ open: {{ request()->routeIs(
+                        'satusehat.praktisi*',
+                        'satusehat.lokasi*',
+                        'satusehat.organisasi*'
+                    ) ? 'true' : 'false' }} }">
+
+                    <x-side-link 
+                        @click.prevent="open = !open" 
+                        class="cursor-pointer"
+                        :active="request()->routeIs(
+                            'satusehat.praktisi*',
+                            'satusehat.lokasi*',
+                            'satusehat.organisasi*'
+                        )">
+
+                        <i class="fa-solid fa-book-medical"></i>
+                        <span class="flex-1 ml-3 text-left">Satu Sehat</span>
+                        <i class="fa-solid fa-chevron-right transition-transform duration-200" 
+                            :class="open ? 'rotate-90' : ''">
+                        </i>
+                    </x-side-link>
+
+                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        <li>
+                            <x-side-link href="{{ route('satusehat.praktisi.data') }}"
+                                :active="request()->routeIs('satusehat.praktisi*')" 
+                                wire:navigate>
+                                Praktisi
+                            </x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="{{ route('satusehat.lokasi.data') }}"
+                                :active="request()->routeIs('satusehat.lokasi*')" 
+                                wire:navigate>
+                                Lokasi
+                            </x-side-link>
+                        </li>
+                        <li>
+                            <x-side-link href="{{ route('satusehat.organisasi.data') }}"
+                                :active="request()->routeIs('satusehat.organisasi*')" 
+                                wire:navigate>
+                                Organisasi
+                            </x-side-link>
+                        </li>
+                    </ul>
+                </li>
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-circle-info"></i>

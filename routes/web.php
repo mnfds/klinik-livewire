@@ -319,6 +319,12 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/tindak-lanjut', 'tindaklanjut.data')->name('tindaklanjut.data');
     Route::view('/tindak-lanjut/detail', 'tindaklanjut.detail')->name('tindaklanjut.detail');
     // ====== RESERVASI ====== //
+
+    // ====== SATU SEHAT CONFIGURATION ====== //
+    Route::view('/satusehat/praktisi', 'satusehat.praktisi.data')->name('satusehat.praktisi.data');
+    Route::view('/satusehat/lokasi', 'satusehat.lokasi.data')->name('satusehat.lokasi.data');
+    Route::view('/satusehat/organisasi', 'satusehat.organisasi.data')->name('satusehat.organisasi.data');
+    // ====== SATU SEHAT CONFIGURATION ====== //
 });
 
 
