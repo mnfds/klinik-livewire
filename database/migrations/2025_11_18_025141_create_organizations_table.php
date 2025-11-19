@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('kode_pos')->nullable();
             $table->string('no_telp')->nullable();
             $table->string('email')->nullable();
+            $table->string('web')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
         });
