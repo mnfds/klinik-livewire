@@ -62,6 +62,7 @@ class GetOrganization
                     'telecom' => [
                         'phone' => $org['telecom'][0]['value'] ?? null,
                         'email' => $org['telecom'][1]['value'] ?? null,
+                        'url' => $org['telecom'][2]['value'] ?? null,
                     ],
                     'active' => $org['active'] ?? null,
                     'raw' => $org, // opsional untuk debugging

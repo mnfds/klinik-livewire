@@ -69,7 +69,7 @@
                             <div class="flex justify-between items-center mb-4">
                                 {{-- <button onclick="document.getElementById('storeModalPelayananEstetika').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Estetika</button> --}}
                             </div>
-                            {{-- <livewire:treatment-table/> --}}
+                             <livewire:Satusehat.Organisasi.Data-Table/>
                         </div>
                     </div>
                 </div>

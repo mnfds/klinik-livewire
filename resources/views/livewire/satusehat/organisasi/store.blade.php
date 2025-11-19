@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        {{-- Email + Status --}}
+        {{-- Email + Url Web + Status --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
                 <label class="label font-semibold">Email</label>
@@ -39,13 +39,18 @@
             </div>
 
             <div class="form-control">
+                <label class="label font-semibold">Web</label>
+                <input type="string" class="input input-bordered w-full" wire:model.lazy="web">
+            </div>
+
+            {{-- <div class="form-control">
                 <label class="label font-semibold">Status</label>
                 <select class="select select-bordered w-full" wire:model.lazy="status">
                     <option value="">-- Pilih Status --</option>
                     <option value="aktif">Aktif</option>
                     <option value="nonaktif">Nonaktif</option>
                 </select>
-            </div>
+            </div> --}}
         </div>
 
         {{-- Tombol --}}

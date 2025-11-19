@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class Store extends Component
 {
-    public $departemen,$kota,$alamat,$kode_pos,$no_telp,$email,$status;
+    public $departemen,$kota,$alamat,$kode_pos,$no_telp,$email,$web,$status;
     public $id_satusehat;
     public $id_organization;
     
@@ -63,7 +63,7 @@ class Store extends Component
                     ],
                     [
                         "system" => "url",
-                        "value" => "www." . $this->email,
+                        "value" => $this->web,
                         "use" => "work"
                     ],
                 ],

@@ -2,8 +2,8 @@
 
     {{-- Input Pencarian --}}
     <div class="form-control">
-        <label class="label font-semibold">Cari Organization Berdasarkan ID</label>
-        <input type="text" wire:model="partof" class="input input-bordered w-full" placeholder="Masukkan PartOf ID">
+        <label class="label font-semibold">Cari Organization Pada Satu Sehat</label>
+        <input type="text" wire:model="partof" class="input input-bordered w-full" placeholder="Masukkan Organization ID">
     </div>
 
     <button wire:click="search"
@@ -13,8 +13,8 @@
     </button>
 
     {{-- Loading --}}
-    <div wire:loading class="text-blue-500">
-        Mengambil data...
+    <div wire:loading class="text-primary">
+        <span class="loading loading-spinner loading-md"></span>
     </div>
 
     {{-- Hasil --}}
