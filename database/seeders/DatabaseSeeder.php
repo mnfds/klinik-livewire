@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             DokterSeeder::class,
             DokterPoliSeeder::class,
             PasienSeeder::class,
+            IndoRegionSeeder::class,
         ]);
     }
 }

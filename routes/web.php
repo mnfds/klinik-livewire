@@ -325,6 +325,20 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/satusehat/lokasi', 'satusehat.lokasi.data')->name('satusehat.lokasi.data');
     Route::view('/satusehat/organisasi', 'satusehat.organisasi.data')->name('satusehat.organisasi.data');
     // ====== SATU SEHAT CONFIGURATION ====== //
+
+    // ====== AJAX INDONESIA REGION ========= //
+    Route::get('/wilayah/kabupaten/{prov}', function ($prov) {
+        return App\Models\Regency::where('province_id', $prov)->get();
+    });
+
+    Route::get('/wilayah/kecamatan/{kab}', function ($kab) {
+        return App\Models\District::where('regency_id', $kab)->get();
+    });
+
+    Route::get('/wilayah/kelurahan/{kec}', function ($kec) {
+        return App\Models\Village::where('district_id', $kec)->get();
+    });
+
 });
 
 

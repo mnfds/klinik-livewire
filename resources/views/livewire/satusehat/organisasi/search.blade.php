@@ -59,7 +59,6 @@
                                 <td>
                                     <button class="btn btn-success" wire:click="saved('{{ $org['id'] }}')">
                                         <i class="fa-solid fa-plus"></i>
-                                        Simpan
                                     </button>
                                 </td>
                             </tr>
