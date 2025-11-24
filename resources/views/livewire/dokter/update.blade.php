@@ -59,6 +59,20 @@
                             <x-input-error :messages="$errors->get('nama_dokter')" class="text-error text-sm mt-1" />
                         </div>
 
+                        {{-- NIK --}}
+                        <div class="form-control">
+                            <label class="label"><span class="label-text">NIK</span></label>
+                            <input wire:model.defer="nik" type="text" class="input input-bordered w-full" />
+                            <x-input-error :messages="$errors->get('nik')" class="text-error text-sm mt-1" />
+                        </div>
+
+                        {{-- IHS --}}
+                        <div class="form-control">
+                            <label class="label"><span class="label-text">IHS</span></label>
+                            <input wire:model.defer="ihs" type="text" class="input input-bordered w-full" />
+                            <x-input-error :messages="$errors->get('ihs')" class="text-error text-sm mt-1" />
+                        </div>
+
                         {{-- Alamat --}}
                         <div class="form-control">
                             <label class="label"><span class="label-text">Alamat</span></label>

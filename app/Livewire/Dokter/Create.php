@@ -31,6 +31,7 @@ class Create extends Component
 
     // Biodata Dokter
     public $nama_dokter;
+    public $nik;
     public $alamat_dokter;
     public $telepon;
     public $jenis_kelamin;
@@ -39,6 +40,7 @@ class Create extends Component
     public $institusi;
     public $tahun_kelulusan;
 
+    public $ihs;
     public $no_str;
     public $surat_izin_pratik;
     public $masa_berlaku_sip;
@@ -58,6 +60,7 @@ class Create extends Component
 
             // Dokter
             'nama_dokter' => 'required|string|max:255',
+            'nik' => 'nullable|string|max:255',
             'alamat_dokter' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',
@@ -66,6 +69,7 @@ class Create extends Component
             'institusi' => 'nullable',
             'tahun_kelulusan' => 'nullable',
 
+            'ihs' => 'nullable',
             'no_str' => 'nullable',
             'surat_izin_pratik' => 'nullable',
             'masa_berlaku_sip' => 'nullable|date',
@@ -98,6 +102,8 @@ class Create extends Component
         $dokter = Dokter::create([
             'user_id' => $user->id,
             'nama_dokter' => $this->nama_dokter,
+            'nik' => $this->nik,
+            'ihs' => $this->ihs,
             'alamat_dokter' => $this->alamat_dokter,
             'telepon' => $this->telepon,
             'jenis_kelamin' => $this->jenis_kelamin,
@@ -130,9 +136,9 @@ class Create extends Component
     {
         $this->reset([
             'name', 'email', 'password', 'id_poli',
-            'nama_dokter', 'telepon', 'alamat_dokter','jenis_kelamin',
+            'nama_dokter', 'nik', 'telepon', 'alamat_dokter','jenis_kelamin',
             'tingkat_pendidikan', 'institusi', 'tahun_kelulusan',
-            'no_str', 'surat_izin_pratik', 'masa_berlaku_sip',
+            'no_str', 'ihs', 'surat_izin_pratik', 'masa_berlaku_sip',
             'foto_wajah', 'foto_wajah_preview',
             'ttd_digital', 'ttd_digital_preview',
         ]);

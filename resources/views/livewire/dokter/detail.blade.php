@@ -49,6 +49,7 @@
                         </div>
 
                         <div>
+                            <p><strong>NIK:</strong> {{ $dokter->nik ?? '-' }}</p>
                             <p><strong>Tingkat Pendidikan:</strong> {{ $dokter->tingkat_pendidikan ?? '-' }}</p>
                             <p><strong>Institusi:</strong> {{ $dokter->institusi ?? '-' }}</p>
                             <p><strong>Tahun Kelulusan:</strong> 
@@ -57,6 +58,7 @@
                         </div>
 
                         <div>
+                            <p><strong>Nomor IHS:</strong> {{ $dokter->ihs ?? '-' }}</p>
                             <p><strong>Nomor STR:</strong> {{ $dokter->no_str ?? '-' }}</p>
                             <p><strong>Surat Izin Praktik:</strong> {{ $dokter->surat_izin_pratik ?? '-' }}</p>
                             <p><strong>Masa Berlaku SIP:</strong> 

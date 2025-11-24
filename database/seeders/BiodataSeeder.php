@@ -16,6 +16,8 @@ class BiodataSeeder extends Seeder
         DB::table('biodatas')->insert([
             'user_id' => 1,
             'nama_lengkap' => 'Admin Klinik',
+            'nik' => null,
+            'ihs' => null,
             'alamat' => 'Jl. Utama No. 1',
             'tempat_lahir' => 'Bandung',
             'tanggal_lahir' => '1990-01-01',
@@ -30,7 +32,9 @@ class BiodataSeeder extends Seeder
         // Biodata Perawat
         DB::table('biodatas')->insert([
             'user_id' => 4,
-            'nama_lengkap' => 'Sinta Wijaya, S.Kep',
+            'nama_lengkap' => 'Sheila Annisa S.Kep',
+            'nik' => 3313096403900009,
+            'ihs'  => null,
             'alamat' => 'Jl. Sehat No. 2',
             'tempat_lahir' => 'Jakarta',
             'tanggal_lahir' => '2002-05-15',
@@ -44,7 +48,9 @@ class BiodataSeeder extends Seeder
 
         DB::table('biodatas')->insert([
             'user_id' => 5,
-            'nama_lengkap' => 'Anita Lestari, S.Kep., Ns.',
+            'nama_lengkap' => 'apt. Aditya Pradhana, S.Farm.',
+            'nik' => 3578083008700010,
+            'ihs' => null,
             'alamat' => 'Jl. Kesehatan No. 3',
             'tempat_lahir' => 'Surabaya',
             'tanggal_lahir' => '2002-07-20',

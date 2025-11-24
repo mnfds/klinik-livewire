@@ -12,9 +12,9 @@ class Dokter extends Component
 
     use WithFileUploads;
 
-    public $nama_dokter, $alamat_dokter, $jenis_kelamin, $telepon;
+    public $nama_dokter, $nik, $alamat_dokter, $jenis_kelamin, $telepon;
     public $tingkat_pendidikan, $institusi, $tahun_kelulusan;
-    public $no_str, $surat_izin_pratik, $masa_berlaku_sip;
+    public $no_str, $ihs, $surat_izin_pratik, $masa_berlaku_sip;
     public $ttd_digital, $foto_wajah;
     public $ttd_digital_preview, $foto_wajah_preview;
 
@@ -24,6 +24,7 @@ class Dokter extends Component
 
         if ($dokter) {
             $this->nama_dokter = $dokter->nama_dokter;
+            $this->nik = $dokter->nik;
             $this->alamat_dokter = $dokter->alamat_dokter;
             $this->telepon = $dokter->telepon;
             $this->jenis_kelamin = $dokter->jenis_kelamin;
@@ -32,6 +33,7 @@ class Dokter extends Component
             $this->institusi = $dokter->institusi;
             $this->tahun_kelulusan = $dokter->tahun_kellulusan;
 
+            $this->ihs = $dokter->ihs;
             $this->no_str = $dokter->no_str;
             $this->surat_izin_pratik = $dokter->surat_izin_pratik;
             $this->masa_berlaku_sip = $dokter->masa_berlaku_sip;
@@ -45,6 +47,7 @@ class Dokter extends Component
     {
         $this->validate([
             'nama_dokter' => 'required|string|max:255',
+            'nik' => 'required|numeric',
             'alamat_dokter' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',
@@ -53,6 +56,7 @@ class Dokter extends Component
             'institusi' => 'nullable|string',
             'tahun_kelulusan' => 'nullable|date',
 
+            'ihs' => 'nullable|string',
             'no_str' => 'nullable|string',
             'surat_izin_pratik' => 'nullable|string',
             'masa_berlaku_sip' => 'nullable|date',
@@ -67,6 +71,7 @@ class Dokter extends Component
 
         $data = [
             'nama_dokter'   => $this->nama_dokter,
+            'nik'         => $this->nik,
             'alamat_dokter'         => $this->alamat_dokter,
             'telepon'        => $this->telepon,
             'jenis_kelamin'  => $this->jenis_kelamin,
@@ -75,6 +80,7 @@ class Dokter extends Component
             'institusi'  => $this->institusi,
             'tahun_kelulusan'  => $this->tahun_kelulusan,
 
+            'ihs' => $this->ihs,
             'no_str' => $this->no_str,
             'surat_izin_pratik' => $this->surat_izin_pratik,
             'masa_berlaku_sip' => $this->masa_berlaku_sip,

@@ -16,7 +16,9 @@ class DokterSeeder extends Seeder
 
         DB::table('dokters')->insert([
             'user_id' => 2,
-            'nama_dokter' => 'dr. Siti Nirmala',
+            'nama_dokter' => 'dr. Olivia Kirana, Sp.OG',
+            'nik' => 3217040109800006,
+            'ihs' => null,
             'alamat_dokter' => 'Jl. Merdeka No. 10',
             'jenis_kelamin' => 'P',
             'telepon' => '08123456789',
@@ -31,7 +33,9 @@ class DokterSeeder extends Seeder
         ]);
         DB::table('dokters')->insert([
             'user_id' => 3,
-            'nama_dokter' => 'dr. Farhan',
+            'nama_dokter' => 'dr. Yoga Yandika, Sp.A',
+            'nik' => 3322071302900002,
+            'ihs' => null,
             'alamat_dokter' => 'Jl. perintis No. 49',
             'jenis_kelamin' => 'L',
             'telepon' => '08918273645',

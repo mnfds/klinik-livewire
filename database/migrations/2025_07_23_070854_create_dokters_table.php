@@ -18,6 +18,8 @@ return new class extends Migration
                 ->unique()      // menjamin satu user hanya punya satu biodata
                 ->onDelete('cascade'); // jika user dihapus, biodata ikut terhapus
 
+            $table->string('nik')->nullable();
+            $table->string('ihs')->nullable();
             $table->string('nama_dokter');
             $table->string('alamat_dokter')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P']);

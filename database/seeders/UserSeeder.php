@@ -58,11 +58,11 @@ class UserSeeder extends Seeder
         ]);
 
         DB::table('users')->insert([
-            'name' => 'perawat321',
-            'email' => 'perawat321@gmail.com',
+            'name' => 'apotek123',
+            'email' => 'apotek@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('perawat321'),
-            'role_id' => 3,
+            'password' => Hash::make('apotek123'),
+            'role_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -19,7 +19,7 @@ class StoreUsers extends Component
     public $name, $email, $password, $role_id;
 
     // Untuk tabel biodata
-    public $nama_lengkap, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
+    public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
 
     // Foto
     public $foto_wajah;
@@ -58,6 +58,8 @@ class StoreUsers extends Component
             'role_id'        => ['nullable'],
 
             'nama_lengkap'   => ['required', 'string', 'max:255'],
+            'nik'            => ['nullable', 'string'],
+            'ihs'            => ['nullable', 'string', 'max:255'],
             'telepon'        => ['nullable', 'string', 'max:20'],
             'alamat'         => ['nullable', 'string'],
             'tempat_lahir'   => ['nullable', 'string'],
@@ -86,6 +88,8 @@ class StoreUsers extends Component
         // Buat biodata
         $user->biodata()->create([
             'nama_lengkap'  => $this->nama_lengkap,
+            'nik'           => $this->nik,
+            'ihs'           => $this->ihs,
             'telepon'       => $this->telepon,
             'alamat'        => $this->alamat,
             'tempat_lahir'  => $this->tempat_lahir,
@@ -114,6 +118,7 @@ class StoreUsers extends Component
             'nama_lengkap', 'telepon', 'alamat', 'tempat_lahir', 'tanggal_lahir',
             'jenis_kelamin', 'mulai_bekerja',
             'foto_wajah', 'foto_wajah_preview',
+            'nik', 'ihs',
         ]);
     }
 }

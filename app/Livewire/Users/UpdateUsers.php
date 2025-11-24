@@ -18,7 +18,7 @@ class UpdateUsers extends Component
 
     // $name -> username
     public $name, $email, $password, $role_id;
-    public $nama_lengkap, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
+    public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
     public $foto_wajah, $foto_wajah_preview;
     public $roles = [];
 
@@ -31,6 +31,8 @@ class UpdateUsers extends Component
         $this->role_id = $user->role_id;
         $biodata = $user->biodata;
         $this->nama_lengkap = $biodata->nama_lengkap ?? '';
+        $this->nik = $biodata->nik ?? '';
+        $this->ihs = $biodata->ihs ?? '';
         $this->telepon = $biodata->telepon ?? '';
         $this->alamat = $biodata->alamat ?? '';
         $this->tempat_lahir = $biodata->tempat_lahir ?? '';
@@ -55,6 +57,8 @@ class UpdateUsers extends Component
             'email' => 'required|email|unique:users,email,' . $this->user->id,
             'role_id' => 'required|exists:roles,id',
             'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'nullable',
+            'ihs' => 'nullable',
             'telepon' => 'nullable|string|max:20',
             'alamat' => 'nullable|string|max:255',
             'tempat_lahir' => 'nullable|string|max:255',
@@ -89,6 +93,8 @@ class UpdateUsers extends Component
 
         $this->user->biodata()->updateOrCreate([], [
             'nama_lengkap'   => $this->nama_lengkap,
+            'nik'            => $this->nik,
+            'ihs'            => $this->ihs,
             'telepon'        => $this->telepon,
             'alamat'         => $this->alamat,
             'tempat_lahir'   => $this->tempat_lahir,

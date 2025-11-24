@@ -13,7 +13,7 @@ class ManageBiodata extends Component
 {
     use WithFileUploads;
 
-    public $nama_lengkap, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $telepon, $mulai_bekerja;
+    public $nama_lengkap, $nik, $ihs, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $telepon, $mulai_bekerja;
 
     public $foto_wajah; // untuk file upload baru
     public $foto_wajah_preview; // untuk tampilan foto lama
@@ -24,6 +24,8 @@ class ManageBiodata extends Component
 
         if ($biodata) {
             $this->nama_lengkap = $biodata->nama_lengkap;
+            $this->nik = $biodata->nik;
+            $this->ihs = $biodata->ihs;
             $this->alamat = $biodata->alamat;
             $this->tempat_lahir = $biodata->tempat_lahir;
             $this->tanggal_lahir = $biodata->tanggal_lahir;
@@ -38,6 +40,8 @@ class ManageBiodata extends Component
     {
         $this->validate([
             'nama_lengkap'   => 'required|string|max:255',
+            'nik'            => 'nullable|string',
+            'ihs'            => 'nullable|string',
             'alamat'         => 'nullable|string|max:255',
             'tempat_lahir'   => 'nullable|string|max:255',
             'tanggal_lahir'  => 'nullable|date',
@@ -52,6 +56,8 @@ class ManageBiodata extends Component
 
         $data = [
             'nama_lengkap'   => $this->nama_lengkap,
+            'nik'            => $this->nik,
+            'ihs'            => $this->ihs,
             'alamat'         => $this->alamat,
             'tempat_lahir'   => $this->tempat_lahir,
             'tanggal_lahir'  => $this->tanggal_lahir,
