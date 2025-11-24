@@ -54,6 +54,7 @@ class Store extends Component
     public function store(StoreLocation $orgService)
     {
         try {
+            $this->kota = Regency::where('id', $this->city_code)->value('name');
             // ======== PAYLOAD ==========
             $payload = [
                 "resourceType" => "Location",
@@ -67,7 +68,6 @@ class Store extends Component
                 "status" => "active",
                 "name" => $this->name,
                 "description" => $this->description,
-                "description" => "instance",
                 "telecom" => [
                     [
                         "system" => "phone",

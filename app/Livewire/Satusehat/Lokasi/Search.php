@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Satusehat\Lokasi;
 
+use App\Models\Locations;
 use Livewire\Component;
 use App\Services\GetLocation;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,60 @@ class Search extends Component
             $this->loading = false;
         }
         // dd($this->dataLocation);
+    }
+
+    public function saveLocation($org_id)
+    {
+        try {
+            // Cari data org berdasarkan ID
+            $org = collect($this->dataLocation)->firstWhere('id', $org_id);
+            // dd($org);
+            if (!$org) {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'message' => 'Data Location Tidak Ditemukan.'
+                ]);
+                return;
+            }
+            Locations::updateOrCreate(
+                [
+                    'id_satusehat'  => $org['id'],
+                    'name'          => $org['name'],
+                    'description'   => $org['description'],
+
+                    'alamat'        => $org['address'],
+                    'kota'          => $org['city'],
+                    'kode_pos'      => $org['postalCode'],
+                    'province_code' => $org['province_code'],
+                    'city_code'     => $org['city_code'],
+                    'district_code' => $org['district_code'],
+                    'village_code'  => $org['village_code'],
+                    'rt'            => $org['rt'],
+                    'rw'            => $org['rw'],
+                    
+                    'no_telp'       => $org['phone'] ?? null,
+                    'email'         => $org['email'] ?? null,
+                    'web'           => $org['website'] ?? null,
+
+                    'longitude'     => $org['longitude'],
+                    'latitude'      => $org['latitude'],
+                    'altitude'      => $org['altitude'],
+                ]
+            );
+    
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Berhasil Disimpan Ke Database Lokal!'
+            ]);
+        } catch (\Throwable $b) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Gagal Disimpan Ke Database Lokal'
+            ]);
+            Log::error('Gagal Disimpan Ke Database Lokal', [
+                'message' => $b->getMessage(),
+            ]);
+        }
     }
 
     public function render()

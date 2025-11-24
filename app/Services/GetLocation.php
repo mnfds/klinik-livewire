@@ -63,18 +63,34 @@ class GetLocation
                 return [
                     'id'            => $loc['id'] ?? null,
                     'name'          => $loc['name'] ?? null,
-                    'status'        => $loc['status'] ?? null,
                     'description'   => $loc['description'] ?? null,
 
-                    'type'          => $loc['physicalType']['text'] ?? null,
                     'organization'  => $loc['managingOrganization']['reference'] ?? null,
-                    'partOf'        => $loc['partOf']['reference'] ?? null,
+                    // 'partOf'        => $loc['partOf']['reference'] ?? null,
 
                     'longitude'     => $loc['position']['longitude'] ?? null,
                     'latitude'      => $loc['position']['latitude'] ?? null,
+                    'altitude'      => $loc['position']['altitude'] ?? null,
 
                     'address'       => $loc['address']['line'][0] ?? null,
                     'city'          => $loc['address']['city'] ?? null,
+                    'postalCode'    => $loc['address']['postalCode'] ?? null,
+                    'country'       => $loc['address']['country'] ?? null,
+                    'address_use'   => $loc['address']['use'] ?? null,
+
+                    'province_code' => $loc['address']['extension'][0]['extension'][0]['valueCode'] ?? null,
+                    'city_code'     => $loc['address']['extension'][0]['extension'][1]['valueCode'] ?? null,
+                    'district_code' => $loc['address']['extension'][0]['extension'][2]['valueCode'] ?? null,
+                    'village_code'  => $loc['address']['extension'][0]['extension'][3]['valueCode'] ?? null,
+                    'rt'            => $loc['address']['extension'][0]['extension'][4]['valueCode'] ?? null,
+                    'rw'            => $loc['address']['extension'][0]['extension'][5]['valueCode'] ?? null,
+
+                    'phone'         => collect($loc['telecom'] ?? [])
+                                        ->firstWhere('system', 'phone')['value'] ?? null,
+                    'email'         => collect($loc['telecom'] ?? [])
+                                        ->firstWhere('system', 'email')['value'] ?? null,
+                    'website'       => collect($loc['telecom'] ?? [])
+                                        ->firstWhere('system', 'url')['value'] ?? null,
 
                     'raw'           => $loc,
                 ];

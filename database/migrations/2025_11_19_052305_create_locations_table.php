@@ -13,26 +13,27 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->string('id_lokasi')->nullable();
-            $table->string('nama_lokasi')->nullable();
-            $table->string('deskripsi')->nullable();
+            $table->string('id_satusehat')->nullable();
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+            //full alamat
+            $table->string('alamat')->nullable();
+            $table->string('kota')->nullable();
+            $table->string('kode_pos')->nullable();
+            $table->string('province_code')->nullable();
+            $table->string('city_code')->nullable();
+            $table->string('district_code')->nullable();
+            $table->string('village_code')->nullable();
+            $table->string('rt')->nullable();
+            $table->string('rw')->nullable();
             //kontak
             $table->string('no_telp')->nullable();
             $table->string('email')->nullable();
             $table->string('web')->nullable();
-            //full alamat
-            $table->string('alamat')->nullable();
-            $table->string('provinsi')->nullable();
-            $table->string('kota')->nullable();
-            $table->string('kecamatan')->nullable();
-            $table->string('kelurahan')->nullable();
-            $table->string('rt')->nullable();
-            $table->string('rw')->nullable();
-            $table->string('kode_pos')->nullable();
             // koordinat
-            $table->decimal('latitude')->nullable();
-            $table->decimal('longitude')->nullable();
-            $table->decimal('altitude')->nullable();
+            $table->decimal('latitude', 12, 8)->nullable();
+            $table->decimal('longitude', 12, 8)->nullable();
+            $table->decimal('altitude', 12, 8)->nullable();
             $table->timestamps();
         });
     }

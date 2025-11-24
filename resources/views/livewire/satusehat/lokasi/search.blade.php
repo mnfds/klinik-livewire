@@ -137,14 +137,21 @@
                                 {{-- <td>{{ $type }}</td> --}}
                                 {{-- <td>{{ $orgRef ?? '-' }}</td> --}}
                                 <td>
+                                    @php
+                                        $provName = optional(App\Models\Province::find($prov))->name;
+                                        $cityName = optional(App\Models\Regency::find($city))->name;
+                                        $kecName  = optional(App\Models\District::find($kec))->name;
+                                        $kelName  = optional(App\Models\Village::find($kel))->name;
+                                    @endphp
+
                                     {{
                                         collect([
                                             $addressLine ?? null,
-                                            $kel ? 'Kel. ' . $kel : null,
-                                            $kec ? 'Kec. ' . $kec : null,
-                                            $city ?? null,
-                                            $prov ?? null,
-                                            ($rt || $rw) ? 'RT ' . ($rt ?? '-') . ' / RW ' . ($rw ?? '-') : null,
+                                            $kelName ? 'Kel. ' . $kelName : null,
+                                            $kecName ? 'Kec. ' . $kecName : null,
+                                            $cityName ?? null,
+                                            $provName ?? null,
+                                            ($rt || $rw) ? 'RT ' . ($rt ?? '-') . '/RW ' . ($rw ?? '-') : null,
                                             $postal ?? null,
                                         ])->filter()->join(', ') ?: '-'
                                     }}
