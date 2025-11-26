@@ -61,8 +61,13 @@ class GetPractitionerByNik
 
             // Jika masih kosong, fallback ke UUID (resource.id)
             $ihs = $ihs ?: ($resource['id'] ?? null);
-
             $nama = $resource['name'][0]['text'] ?? null;
+            $gender = $resource['gender'] ?? null;
+            $birthdate = $resource['birthDate'] ?? null;
+            $id_satusehat = $resource['id'] ?? null;
+            $address    = $resource['address'][0] ?? [];
+            $city = $address['city'] ?? null;
+            $address_line = $address['line'][0] ?? null;
 
             Log::info('Berhasil GET Praktisi Dari SATUSEHAT', [
                 'nik'    => $nik,
@@ -73,6 +78,11 @@ class GetPractitionerByNik
             return [
                 'no_ihs' => $ihs,
                 'nama'   => $nama,
+                'gender'   => $gender,
+                'birthdate'   => $birthdate,
+                'id_satusehat'   => $id_satusehat,
+                'city'   => $city,
+                'address_line'   => $address_line,
                 'raw'    => $resource,
             ];
 

@@ -43,7 +43,6 @@
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
                             <div class="flex justify-between items-center mb-4">
-                                {{-- <button onclick="document.getElementById('storeModalPelayanan').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Medis</button> --}}
                             </div>
                             <livewire:Satusehat.Praktisi.Search />
                         </div>
@@ -55,9 +54,8 @@
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
                             <div class="flex justify-between items-center mb-4">
-                                {{-- <button onclick="document.getElementById('storeModalPelayananEstetika').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Estetika</button> --}}
                             </div>
-                             {{-- <livewire:Satusehat.Praktisi.Data-Table/> --}}
+                             <livewire:Satusehat.Praktisi.Data-Table/>
                         </div>
                     </div>
                 </div>

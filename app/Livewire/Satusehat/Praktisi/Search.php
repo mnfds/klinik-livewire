@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Satusehat\Praktisi;
 
+use App\Models\Practitioner;
 use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,7 @@ class Search extends Component
     public $praktisi = [];
 
     public $name, $no_ihs, $nik;
+    public $nama_lengkap;
     public function mount()
     {
         // Load users beserta relasi dokter dan biodata
@@ -29,6 +31,7 @@ class Search extends Component
         $this->nik = $user->dokter->nik 
             ?? $user->biodata->nik 
             ?? '-';
+        $this->nama_lengkap = $user->dokter->nama_dokter ?? $user->biodata->nama_lengkap ?? '-';
 
         try {
             $practitioner = $practitionerService->handle($this->nik);
@@ -77,11 +80,31 @@ class Search extends Component
                 ]);
             }
 
-            $this->dispatch('toast', [
-                'type' => 'success',
-                'message' => 'No IHS berhasil disimpan!'
-            ]);
-
+            if (
+                !empty($this->praktisi['no_ihs']) &&
+                !empty($this->praktisi['nama'])
+            ) {
+                Practitioner::create([
+                    'name'         => $this->nama_lengkap,
+                    'gender'       => $this->praktisi['gender'],
+                    'birthdate'    => $this->praktisi['birthdate'],
+                    'id_satusehat' => $this->praktisi['id_satusehat'],
+                    'nik'          => $this->nik ?? "-",
+                    'ihs'          => $this->praktisi['no_ihs'],
+                    'city'         => $this->praktisi['city'],
+                    'address_line' => $this->praktisi['address_line'],
+                ]);
+                
+                $this->dispatch('toast', [
+                    'type' => 'success',
+                    'message' => 'No IHS Berserta Data lainnya Berhasil Disimpan!'
+                ]);
+            } else {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'message' => 'Data Praktisi Tidak Lengkap. Tidak Bisa Disimpan.'
+                ]);
+            }
         } catch (\Throwable $e) {
             Log::error('Gagal menyimpan IHS', [
                 'error' => $e->getMessage(),
