@@ -3,12 +3,14 @@
 namespace App\Livewire\Pendaftaran;
 
 use App\Models\Dokter;
-use App\Models\NomorAntrian;
 use App\Models\Pasien;
-use App\Models\PasienTerdaftar;
-use App\Models\PoliKlinik;
 use Livewire\Component;
+use App\Models\PoliKlinik;
+use App\Models\NomorAntrian;
 use Livewire\WithFileUploads;
+use App\Models\PasienTerdaftar;
+use App\Services\StoreEncounter;
+use Illuminate\Support\Facades\Log;
 
 class Create extends Component
 {
@@ -20,6 +22,9 @@ class Create extends Component
     public $antrian;
     public $poli;
     public $dokter;
+
+    public $dokter_satusehat;
+    public $pasien_satusehat;
 
     // Properti untuk input form
     public $no_register, $nik, $no_ihs, $nama, $alamat, $no_telp;
@@ -67,7 +72,7 @@ class Create extends Component
         }
     }
 
-    public function submit()
+    public function submit(StoreEncounter $encounterService)
     {
         $validatedData = $this->validate([
             'pasien_id'         => 'required',
@@ -77,6 +82,15 @@ class Create extends Component
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
 
+        $pasien_satusehat = Pasien::findOrFail($this->pasien_id);
+        $dokter_satusehat = Dokter::findOrFail($this->dokter_id);
+        
+        $encounterId = $this->encounterService->handle(
+            $pasien_satusehat,
+            $dokter_satusehat,
+            $this->tanggal_kunjungan
+        );
+
         $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,
@@ -84,6 +98,7 @@ class Create extends Component
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
             'status_terdaftar'   => 'terdaftar',
+            'encounter_id'      => $encounterId,
         ]);
 
         if ($success && $this->antrian) {
