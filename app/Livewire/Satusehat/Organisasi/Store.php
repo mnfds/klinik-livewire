@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Satusehat\Organisasi;
 
+use App\Models\PoliKlinik;
 use Livewire\Component;
 use Livewire\Volt\Compilers\Mount;
 use App\Services\StoreOrganization;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class Store extends Component
 {
+    public $poli;
     public $departemen,$kota,$alamat,$kode_pos,$no_telp,$email,$web,$status;
     public $id_satusehat;
     public $id_organization;
@@ -16,6 +18,7 @@ class Store extends Component
     
     public function mount()
     {
+        $this->poli = PoliKlinik::where('status', true)->get();
         $this->id_organization = config('services.satusehat.org_id');  
     }
 

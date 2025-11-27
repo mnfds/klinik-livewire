@@ -30,4 +30,14 @@ class PoliKlinik extends Model
     {
         return $this->hasMany(Reservasi::class, 'poli_id');
     }
+    
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Locations::class, 'location_id');
+    }
 }

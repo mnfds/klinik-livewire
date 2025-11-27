@@ -3,8 +3,14 @@
         {{-- Departemen + Kota --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
-                <label class="label font-semibold">Departemen</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="departemen">
+                <label class="label font-semibold">Organisasi</label>
+                <select wire:model.lazy="departemen" class="select select-bordered">
+                    <option value="">Pilih Organisasi</option>
+                    @foreach ($poli as $p)
+                        <option value="{{ $p->nama_poli }}">{{ $p->nama_poli }}</option>
+                    @endforeach
+                </select>
+                @error('departemen') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
             <div class="form-control">
                 <label class="label font-semibold">Kota</label>

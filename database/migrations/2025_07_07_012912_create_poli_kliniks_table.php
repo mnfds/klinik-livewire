@@ -15,6 +15,19 @@ return new class extends Migration
             $table->id();
             $table->string('nama_poli');
             $table->string('kode')->nullable();
+
+            $table->unsignedBigInteger('organization_id')->nullable();
+            $table->foreign('organization_id')
+                ->references('id')
+                ->on('organizations')
+                ->onDelete('set null');
+
+            $table->unsignedBigInteger('location_id')->nullable();
+            $table->foreign('location_id')
+                ->references('id')
+                ->on('locations')
+                ->onDelete('set null');
+                
             $table->boolean('status')->default(true);
             $table->timestamps();
         });

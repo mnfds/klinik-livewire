@@ -3,6 +3,7 @@
 namespace App\Livewire\Satusehat\Organisasi;
 
 use App\Models\Organization;
+use App\Models\PoliKlinik;
 use Livewire\Component;
 use App\Services\GetOrganization;
 use Illuminate\Support\Facades\Log;
@@ -57,7 +58,7 @@ class Search extends Component
                 ]);
                 return;
             }
-            Organization::updateOrCreate(
+            $organization = Organization::updateOrCreate(
                 [
                     'id_satusehat'  => $org['id'],
                     'departemen'    => $org['name'],
@@ -70,6 +71,14 @@ class Search extends Component
                     'status'        => $org['active'],
                 ]
             );
+
+            $poli = PoliKlinik::where('nama_poli',$org['name'])->first();
+
+            if($poli){
+                $poli->update([
+                    'organization_id' => $organization->id,
+                ]);
+            }
     
             $this->dispatch('toast', [
                 'type' => 'success',

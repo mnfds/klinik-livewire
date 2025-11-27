@@ -83,14 +83,30 @@ class Create extends Component
         ]);
 
         $pasien_satusehat = Pasien::findOrFail($this->pasien_id);
+
         $dokter_satusehat = Dokter::findOrFail($this->dokter_id);
-        
-        $encounterId = $this->encounterService->handle(
+
+        $poli = PoliKlinik::findOrFail($this->poli_id);
+        if (!$poli->organization) {
+            throw new \Exception("Poli belum memiliki organization_id.");
+        }
+        if (!$poli->location) {
+            throw new \Exception("Poli belum memiliki location_id.");
+        }
+        $organisasi_satusehat = $poli->organization->id_satusehat;
+        $location_satusehat = $poli->location->id_satusehat;
+        $tanggal_kunjungan = $this->tanggal_kunjungan;
+
+        $encounterService = app(StoreEncounter::class);
+
+        $encounterId = $encounterService->handle(
             $pasien_satusehat,
             $dokter_satusehat,
-            $this->tanggal_kunjungan
+            $organisasi_satusehat,
+            $location_satusehat,
+            $tanggal_kunjungan
         );
-
+        // dd($encounterId);
         $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,

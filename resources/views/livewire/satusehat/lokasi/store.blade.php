@@ -5,9 +5,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
                 <label class="label font-semibold">Nama Lokasi</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="name">
+                <select wire:model.lazy="name" class="select select-bordered">
+                    <option value="">Pilih Poli</option>
+                    @foreach ($poli as $p)
+                        <option value="{{ $p->nama_poli }}">{{ $p->nama_poli }}</option>
+                    @endforeach
+                </select>
+                @error('name') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
             </div>
-
             <div class="form-control">
                 <label class="label font-semibold">Deskripsi</label>
                 <input type="text" class="input input-bordered w-full" wire:model.lazy="description">

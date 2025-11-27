@@ -20,13 +20,20 @@ class StoreEncounter
     /**
      * POST Encounter ke Satu Sehat
      */
-    public function handle($pasien_satusehat, $dokter_satusehat, string $tanggal_kunjungan): string
+    public function handle($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, string $tanggal_kunjungan): string
     {
         try {
             $token = $this->tokenService->getAccessToken();
 
-            $payload = $this->buildEncounterPayload($pasien_satusehat, $dokter_satusehat, $tanggal_kunjungan);
+            $payload = $this->buildEncounterPayload(
+                $pasien_satusehat,
+                $dokter_satusehat,
+                $organisasi_satusehat,
+                $location_satusehat,
+                $tanggal_kunjungan,
+            );
 
+            // dd($payload);
             Log::info('SATUSEHAT Encounter Payload', $payload);
 
             $response = Http::withToken($token)
@@ -38,7 +45,6 @@ class StoreEncounter
             }
 
             $result = $response->json();
-            dd($result);
 
             Log::info('Encounter berhasil dibuat', [
                 'encounter_id' => $result['id'] ?? null
@@ -56,7 +62,7 @@ class StoreEncounter
     /**
      * BUILD PAYLOAD ENCOUNTER
      */
-    private function buildEncounterPayload($pasien_satusehat, $dokter_satusehat, $tanggal_kunjungan)
+    private function buildEncounterPayload($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, $tanggal_kunjungan)
     {
         return [
             "resourceType" => "Encounter",
@@ -90,7 +96,7 @@ class StoreEncounter
                         ]
                     ],
                     "individual" => [
-                        "reference" => "Practitioner/{$dokter_satusehat->id_satusehat}",
+                        "reference" => "Practitioner/{$dokter_satusehat->ihs}",
                         "display"   => $dokter_satusehat->nama_dokter,
                     ],
                 ],
@@ -105,7 +111,7 @@ class StoreEncounter
             "location" => [
                 [
                     "location" => [
-                        "reference" => "Location/" . config('services.satusehat.location_id'),
+                        "reference" => "Location/" . $location_satusehat,
                         "display"   => "Poliklinik Umum"
                     ]
                 ]
@@ -123,6 +129,7 @@ class StoreEncounter
 
             // ---- Organization ----
             "serviceProvider" => [
+                // "reference" => "Organization/" . $organisasi_satusehat,
                 "reference" => "Organization/" . config('services.satusehat.org_id'),
             ],
 

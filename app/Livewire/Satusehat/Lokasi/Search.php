@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Satusehat\Lokasi;
 
-use App\Models\Locations;
 use Livewire\Component;
+use App\Models\Locations;
+use App\Models\PoliKlinik;
 use App\Services\GetLocation;
 use Illuminate\Support\Facades\Log;
 
@@ -59,7 +60,7 @@ class Search extends Component
                 ]);
                 return;
             }
-            Locations::updateOrCreate(
+            $locations = Locations::updateOrCreate(
                 [
                     'id_satusehat'  => $org['id'],
                     'name'          => $org['name'],
@@ -85,6 +86,14 @@ class Search extends Component
                 ]
             );
     
+            $poli = PoliKlinik::where('nama_poli',$org['name'])->first();
+
+            if($poli){
+                $poli->update([
+                    'location_id' => $locations->id,
+                ]);
+            }
+            
             $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Berhasil Disimpan Ke Database Lokal!'

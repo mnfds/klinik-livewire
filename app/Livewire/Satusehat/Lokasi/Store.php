@@ -3,6 +3,7 @@
 namespace App\Livewire\Satusehat\Lokasi;
 
 use App\Models\District;
+use App\Models\PoliKlinik;
 use App\Models\Province;
 use App\Models\Regency;
 use App\Models\Village;
@@ -19,31 +20,14 @@ class Store extends Component
 
     public $id_organization; // id organization dari satu sehat
     public $provinsi;
+    public $poli;
 
     public function mount()
     {
         $this->provinsi = Province::all();
         $this->id_organization = config('services.satusehat.org_id');  
-        // $this->name = "dummy location";
-        // $this->description = "description dummy post";
+        $this->poli = PoliKlinik::where('status', true)->get();
 
-        // $this->no_telp = "098765456789";
-        // $this->email = "dumb@gmail.com";
-        // $this->web = "demo.klinikdokterl.com";
-
-        // $this->alamat = "jl. dummy no 0 ";
-        // $this->kota = "Banjarmasin";
-        // $this->kode_pos = "70236";
-        // $this->province_code = "63";
-        // $this->city_code = "6371";
-        // $this->district_code = "6371020";
-        // $this->village_code = "6371020005";
-        // $this->rt = "29";
-        // $this->rw = "2";
-
-        // $this->longitude = -3.326923;
-        // $this->latitude = 114.616957;
-        // $this->altitude = 12.00;
     }
 
     public function render()
