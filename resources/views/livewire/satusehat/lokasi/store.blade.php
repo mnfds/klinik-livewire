@@ -5,7 +5,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-control">
                 <label class="label font-semibold">Nama Lokasi</label>
-                <select wire:model.lazy="name" class="select select-bordered">
+                <select wire:model.lazy="name" class="select select-bordered w-full">
                     <option value="">Pilih Poli</option>
                     @foreach ($poli as $p)
                         <option value="{{ $p->nama_poli }}">{{ $p->nama_poli }}</option>

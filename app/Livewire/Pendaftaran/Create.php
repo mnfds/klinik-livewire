@@ -77,56 +77,88 @@ class Create extends Component
         $validatedData = $this->validate([
             'pasien_id'         => 'required',
             'poli_id'           => 'required',
-            'dokter_id'           => 'required',
+            'dokter_id'         => 'required',
             'tanggal_kunjungan' => 'required|date',
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
 
         $pasien_satusehat = Pasien::findOrFail($this->pasien_id);
-
         $dokter_satusehat = Dokter::findOrFail($this->dokter_id);
-
         $poli = PoliKlinik::findOrFail($this->poli_id);
+
+        // Cek relasi organization & location tetap wajib
         if (!$poli->organization) {
             throw new \Exception("Poli belum memiliki organization_id.");
         }
         if (!$poli->location) {
             throw new \Exception("Poli belum memiliki location_id.");
         }
+
         $organisasi_satusehat = $poli->organization->id_satusehat;
         $location_satusehat = $poli->location->id_satusehat;
         $tanggal_kunjungan = $this->tanggal_kunjungan;
 
-        $encounterService = app(StoreEncounter::class);
+        $encounterId = null; // default (tidak kirim ke API)
 
-        $encounterId = $encounterService->handle(
-            $pasien_satusehat,
-            $dokter_satusehat,
-            $organisasi_satusehat,
-            $location_satusehat,
-            $tanggal_kunjungan
-        );
-        // dd($encounterId);
+        // Kirim ke API HANYA jika punya IHS (pasien,dokter) ID SATUSEHAT (organization, location)
+        $kirimDataKeSatusehat = 
+            !empty($pasien_satusehat->no_ihs) &&
+            !empty($dokter_satusehat->ihs) &&
+            !empty($organisasi_satusehat) &&
+            !empty($location_satusehat);
+
+        if ($kirimDataKeSatusehat) {
+
+            // Semua IHS tersedia → kirim Encounter ke API
+            $encounterService = app(StoreEncounter::class);
+
+            $encounterId = $encounterService->handle(
+                $pasien_satusehat,
+                $dokter_satusehat,
+                $organisasi_satusehat,
+                $location_satusehat,
+                $tanggal_kunjungan
+            );
+
+        } else {
+
+            // Jika tidak memenuhi, hanya beri info saja
+            Log::info('Encounter tidak dikirim ke API karena IHS tidak lengkap.', [
+                'pasien_ihs' => $pasien_satusehat->no_ihs,
+                'dokter_ihs' => $dokter_satusehat->ihs,
+                'org_ihs'    => $organisasi_satusehat,
+                'loc_ihs'    => $location_satusehat,
+            ]);
+        }
+
+        //  SIMPAN DATA LOKAL
         $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
             'poli_id'           => $this->poli_id,
-            'dokter_id'           => $this->dokter_id,
+            'dokter_id'         => $this->dokter_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
-            'status_terdaftar'   => 'terdaftar',
-            'encounter_id'      => $encounterId,
+            'status_terdaftar'  => 'terdaftar',
+            'encounter_id'      => $encounterId, // null kalau tidak dikirim ke satusehat
         ]);
 
         if ($success && $this->antrian) {
             NomorAntrian::findOrFail($this->antrian->id)->update(['status' => 'nonaktif']);
         }
 
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Pasien berhasil terdaftar.'
-        ]);
+        if($kirimDataKeSatusehat){
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Pasien Terdaftar Dan Kirim Satu Sehat'
+            ]);
+        }else{
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Pasien Terdaftar'
+            ]);
+        }
 
-        return redirect()->route('pendaftaran.data'); // atau ke route tujuanmu
+        return redirect()->route('pendaftaran.data');
     }
 
     public function render()

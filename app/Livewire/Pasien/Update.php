@@ -15,6 +15,7 @@ class Update extends Component
 
     public $no_register, $nik, $no_ihs, $nama, $alamat, $no_telp;
     public $jenis_kelamin, $agama, $profesi, $tanggal_lahir, $status;
+    public $foto_pasien;    // path / file foto lama
     public $new_foto_pasien;         // file baru (upload)
     public $foto_pasien_preview;     // untuk preview
     public $deskripsi;
