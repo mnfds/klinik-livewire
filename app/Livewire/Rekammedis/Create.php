@@ -34,6 +34,7 @@ use App\Models\ProdukObatBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PelayananBundlingUsage;
 use App\Models\TreatmentBundlingUsage;
+use App\Services\PutInProgressEncounter;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -48,6 +49,8 @@ class Create extends Component
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
 
+    public $encounter_id;
+    
     // berisikan data bundling beserta isinya yang pernah dibeli oleh pasien
     public $bundlingPasien = [
         'treatments' => [],
@@ -71,129 +74,130 @@ class Create extends Component
     public array $selected_forms_objective = [];
     public array $selected_forms_assessment = [];
     public array $selected_forms_plan = [];
-    
-
-    // OBJECTIVE
-
-    public $pemeriksaan_fisik = [
-        'tinggi_badan' => null,
-        'berat_badan' => null,
-        'imt' => null,
-    ];
-    public $pemeriksaan_estetika = [
-        'warna_kulit' => null,
-        'ketebalan_kulit' => null,
-        'kadar_minyak' => null,
-        'kerapuhan_kulit' => null,
-        'kekencangan_kulit' => null,
-        'melasma' => null,
-        'acne' => [],
-        'lesions' => [],
-    ];
-
-    public $tanda_vital = [
-        'suhu_tubuh' => null,
-        'nadi' => null,
-        'sistole' => null,
-        'diastole' => null,
-        'frekuensi_pernapasan' => null,
-    ];
 
     //SUBJECTIVE
-    public $data_kesehatan = [
-        'status_perokok' => null,
-        'riwayat_penyakit' => null,
-        'riwayat_alergi_obat' => null,
-        'obat_sedang_dikonsumsi' => null,
-        'riwayat_alergi_lainnya' => null,
-    ];
+        public $data_kesehatan = [
+            'status_perokok' => null,
+            'riwayat_penyakit' => null,
+            'riwayat_alergi_obat' => null,
+            'obat_sedang_dikonsumsi' => null,
+            'riwayat_alergi_lainnya' => null,
+        ];
 
-    public $data_estetika = [
-        'problem_dihadapi' => [],
-        'lama_problem' => null,
-        'tindakan_sebelumnya' => [],
-        'penyakit_dialami' => null,
-        'alergi_kosmetik' => null,
-        'sedang_hamil' => null,
-        'usia_kehamilan' => null,
-        'metode_kb' => null,
-        'pengobatan_saat_ini' => null,
-        'produk_kosmetik' => null,
-    ];
+        public $data_estetika = [
+            'problem_dihadapi' => [],
+            'lama_problem' => null,
+            'tindakan_sebelumnya' => [],
+            'penyakit_dialami' => null,
+            'alergi_kosmetik' => null,
+            'sedang_hamil' => null,
+            'usia_kehamilan' => null,
+            'metode_kb' => null,
+            'pengobatan_saat_ini' => null,
+            'produk_kosmetik' => null,
+        ];
+    //SUBJECTIVE
+    
+    //OBJECTIVE
+        public $pemeriksaan_fisik = [
+            'tinggi_badan' => null,
+            'berat_badan' => null,
+            'imt' => null,
+        ];
+        public $pemeriksaan_estetika = [
+            'warna_kulit' => null,
+            'ketebalan_kulit' => null,
+            'kadar_minyak' => null,
+            'kerapuhan_kulit' => null,
+            'kekencangan_kulit' => null,
+            'melasma' => null,
+            'acne' => [],
+            'lesions' => [],
+        ];
+        public $tanda_vital = [
+            'suhu_tubuh' => null,
+            'nadi' => null,
+            'sistole' => null,
+            'diastole' => null,
+            'frekuensi_pernapasan' => null,
+        ];
+    //OBJECTIVE
 
     //ASSESSMENT
-    public $diagnosa;
-    public $icd10 = [];
+        public $diagnosa;
+        public $icd10 = [];
+    //ASSESSMENT
 
     //PLAN
-    public $rencana_layanan = [
-        'pelayanan_id' => [],
-        'jumlah_pelayanan' => [],
-    ];
+        public $rencana_layanan = [
+            'pelayanan_id' => [],
+            'jumlah_pelayanan' => [],
+        ];
 
-    public $rencana_estetika = [
-        'treatments_id' => [],
-        'jumlah_treatment' => [],
-        'potongan' => [],
-        'diskon' => [],
-        'subtotal' => [],
-    ];
+        public $rencana_estetika = [
+            'treatments_id' => [],
+            'jumlah_treatment' => [],
+            'potongan' => [],
+            'diskon' => [],
+            'subtotal' => [],
+        ];
 
-    public $obat_estetika = [
-        'produk_id' => [],
-        'jumlah_produk' => [],
-        'potongan' => [],
-        'diskon' => [],
-        'subtotal' => [],
-    ];
+        public $obat_estetika = [
+            'produk_id' => [],
+            'jumlah_produk' => [],
+            'potongan' => [],
+            'diskon' => [],
+            'subtotal' => [],
+        ];
 
-    public $rencana_bundling = [
-        'bundling_id' => [],
-        'jumlah_bundling' => [],
-        'potongan' => [],
-        'diskon' => [],
-        'subtotal' => [],
-        'details' => [
-            'treatments' => [],
-            'pelayanans' => [],
-            'produks' => [],
-        ]
-    ];
+        public $rencana_bundling = [
+            'bundling_id' => [],
+            'jumlah_bundling' => [],
+            'potongan' => [],
+            'diskon' => [],
+            'subtotal' => [],
+            'details' => [
+                'treatments' => [],
+                'pelayanans' => [],
+                'produks' => [],
+            ]
+        ];
 
-    public $layanandanbundling = [
-        'layanan' => [],
-        'treatment' => [],
-        'bundling' => [],
-        'skincare' => [],
-    ];
+        public $layanandanbundling = [
+            'layanan' => [],
+            'treatment' => [],
+            'bundling' => [],
+            'skincare' => [],
+        ];
 
-    public $obat_non_racikan = [
-        'nama_obat_non_racikan' => [],
-        'jumlah_obat_non_racikan'=> [],
-        'satuan_obat_non_racikan'=> [],
-        'dosis_obat_non_racikan'=> [],
-        'hari_obat_non_racikan'=> [],
-        'aturan_pakai_obat_non_racikan'=> [],
-    ];
+        public $obat_non_racikan = [
+            'nama_obat_non_racikan' => [],
+            'jumlah_obat_non_racikan'=> [],
+            'satuan_obat_non_racikan'=> [],
+            'dosis_obat_non_racikan'=> [],
+            'hari_obat_non_racikan'=> [],
+            'aturan_pakai_obat_non_racikan'=> [],
+        ];
 
-    public $racikanItems = [
-        [
-            'nama_racikan' => '',
-            'jumlah_racikan' => '',
-            'satuan_racikan' => '',
-            'dosis_obat_racikan' => '',
-            'hari_obat_racikan' => '',
-            'aturan_pakai_racikan' => '',
-            'metode_racikan' => '',
-            'bahan' => [
-                [
-                    'nama_obat_racikan' => '',
-                    'jumlah_obat_racikan' => '',
-                    'satuan_obat_racikan' => '',
-                ]
+        public $racikanItems = [
+            [
+                'nama_racikan' => '',
+                'jumlah_racikan' => '',
+                'satuan_racikan' => '',
+                'dosis_obat_racikan' => '',
+                'hari_obat_racikan' => '',
+                'aturan_pakai_racikan' => '',
+                'metode_racikan' => '',
+                'bahan' => [
+                    [
+                        'nama_obat_racikan' => '',
+                        'jumlah_obat_racikan' => '',
+                        'satuan_obat_racikan' => '',
+                    ]
+                ],
             ],
-        ],
-    ];
+        ];
+    //PLAN
 
     public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName)
     {
@@ -412,8 +416,22 @@ class Create extends Component
                     'keluhan_utama' => $this->keluhan_utama,
                     'tingkat_kesadaran' => $this->tingkat_kesadaran,
                 ]);
+                //put encounter
+                $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
 
-
+                // Encounter ID yang sudah dibuat saat POST Encounter
+                $encounterId = $pt->encounter_id;
+                // 🔥 2. Panggil PUT Encounter
+                $putEncounter = app(PutInProgressEncounter::class);
+                $putEncounter->handle(
+                    encounterId: $encounterId,
+                    waktuTiba: $pt->created_at,
+                    pasienNama: $pt->pasien->nama,
+                    pasienIhs: $pt->pasien->no_ihs,
+                    dokterNama: $pt->dokter->nama_dokter,
+                    dokterIhs: $pt->dokter->ihs,
+                    location: $pt->poliklinik->location->id_satusehat,
+                );
 
                 $status = 'pembayaran';
                 if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
