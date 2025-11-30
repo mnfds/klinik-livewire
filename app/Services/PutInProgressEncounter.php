@@ -20,18 +20,10 @@ class PutInProgressEncounter
     /**
      * POST Encounter ke Satu Sehat
      */
-    public function handle($encounterId, $waktuTiba, $pasienNama, $pasienIhs, $dokterNama, $dokterIhs, $location)
+    public function handle($encounterId, $waktuTiba, $WaktuDiperiksa, $pasienNama, $pasienIhs, $dokterNama, $dokterIhs, $location)
     {
         try {
             $token = $this->tokenService->getAccessToken();
-
-            // Waktu sekarang UTC
-            $nowUtc = now('Asia/Makassar')->setTimezone('UTC')->format('Y-m-d\TH:i:s+00:00');
-
-            // Waktu tiba → convert to UTC
-            $tibaUtc = \Carbon\Carbon::parse($waktuTiba, 'Asia/Makassar')
-                ->setTimezone('UTC')
-                ->format('Y-m-d\TH:i:s+00:00');
 
             $payload = [
                 "resourceType" => "Encounter",
@@ -78,35 +70,15 @@ class PutInProgressEncounter
                 ],
 
                 "period" => [
-                    "start" => $tibaUtc
+                    "start" => $waktuTiba
                 ],
 
                 "location" => [
                     [
                         "location" => [
-                            "reference" => "Location/" . $location, // ID lokasi dalam sistem
-                            "display" => "Poliklinik Umum" // Nama lokasi pelayanan
+                            "reference" => "Location/" . $location->id_satusehat, // ID lokasi dalam sistem
+                            "display" => $location->name // Nama lokasi pelayanan
                         ],
-                        // Ekstensi tambahan untuk menentukan kelas layanan
-                        "extension" => [
-                            [
-                                "url" => "https://fhir.kemkes.go.id/r4/StructureDefinition/ServiceClass",
-                                "extension" => [
-                                    [
-                                        "url" => "value",
-                                        "valueCodeableConcept" => [
-                                            "coding" => [
-                                                [
-                                                    "system" => "http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Outpatient",
-                                                    "code" => "reguler", // Kode kelas layanan
-                                                    "display" => "Kelas Reguler" // Deskripsi kelas layanan
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
                     ]
                 ],
 
@@ -114,14 +86,14 @@ class PutInProgressEncounter
                     [
                         "status" => "arrived",
                         "period" => [
-                            "start" => $tibaUtc,
-                            "end"   => $nowUtc
+                            "start" => $waktuTiba,
+                            "end"   => $WaktuDiperiksa
                         ]
                     ],
                     [
                         "status" => "in-progress",
                         "period" => [
-                            "start" => $nowUtc
+                            "start" => $WaktuDiperiksa
                         ]
                     ]
                 ],

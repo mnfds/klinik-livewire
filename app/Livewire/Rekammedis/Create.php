@@ -15,6 +15,7 @@ use App\Models\TandaVitalRM;
 use App\Models\ObatRacikanRM;
 use App\Models\ProdukDanObat;
 use App\Models\DataEstetikaRM;
+use Illuminate\Support\Carbon;
 use App\Models\DataKesehatanRM;
 use App\Models\PasienTerdaftar;
 use App\Models\RencanaProdukRM;
@@ -419,18 +420,22 @@ class Create extends Component
                 //put encounter
                 $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
 
+                // ambil waktu diperiksa
+                $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->toIso8601String();
+                
                 // Encounter ID yang sudah dibuat saat POST Encounter
                 $encounterId = $pt->encounter_id;
                 // 🔥 2. Panggil PUT Encounter
                 $putEncounter = app(PutInProgressEncounter::class);
                 $putEncounter->handle(
                     encounterId: $encounterId,
-                    waktuTiba: $pt->created_at,
+                    waktuTiba: $pt->waktu_tiba,
+                    WaktuDiperiksa: $waktu_diperiksa,
                     pasienNama: $pt->pasien->nama,
                     pasienIhs: $pt->pasien->no_ihs,
                     dokterNama: $pt->dokter->nama_dokter,
                     dokterIhs: $pt->dokter->ihs,
-                    location: $pt->poliklinik->location->id_satusehat,
+                    location: $pt->poliklinik->location,
                 );
 
                 $status = 'pembayaran';
@@ -443,7 +448,10 @@ class Create extends Component
                 }
                 
                 PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                    ->update(['status_terdaftar' => $status]);
+                    ->update([
+                        'status_terdaftar' => $status,
+                        'waktu_diperiksa' => $waktu_diperiksa
+                    ]);
 
                 // PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
                 //     ->update(['status_terdaftar' => 'peresepan']);
@@ -526,6 +534,7 @@ class Create extends Component
 
                 // SIMPAN DATA DIAGNOSA REKAM MEDIS
                 // if (in_array('diagnosa', $this->selected_forms_assessment)) {
+                    // Kirim Data ICD ke Satu Sehat
                     DiagnosaRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'diagnosa' => $this->diagnosa,

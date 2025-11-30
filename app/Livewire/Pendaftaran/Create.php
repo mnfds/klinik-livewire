@@ -10,6 +10,7 @@ use App\Models\NomorAntrian;
 use Livewire\WithFileUploads;
 use App\Models\PasienTerdaftar;
 use App\Services\StoreEncounter;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class Create extends Component
@@ -30,6 +31,7 @@ class Create extends Component
     public $no_register, $nik, $no_ihs, $nama, $alamat, $no_telp;
     public $jenis_kelamin, $agama, $profesi, $tanggal_lahir;
     public $status, $foto_pasien, $deskripsi;
+    public $waktu_tiba;
 
     public $jenis_kunjungan, $tanggal_kunjungan, $status_terdaftar;
     public $poli_id, $dokter_id;
@@ -82,6 +84,7 @@ class Create extends Component
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
 
+        $this->waktu_tiba = Carbon::now('Asia/Makassar')->toIso8601String();
         $pasien_satusehat = Pasien::findOrFail($this->pasien_id);
         $dokter_satusehat = Dokter::findOrFail($this->dokter_id);
         $poli = PoliKlinik::findOrFail($this->poli_id);
@@ -95,8 +98,9 @@ class Create extends Component
         }
 
         $organisasi_satusehat = $poli->organization->id_satusehat;
-        $location_satusehat = $poli->location->id_satusehat;
+        $location_satusehat = $poli->location;
         $tanggal_kunjungan = $this->tanggal_kunjungan;
+        $waktu_tiba = $this->waktu_tiba;
 
         $encounterId = null; // default (tidak kirim ke API)
 
@@ -117,7 +121,8 @@ class Create extends Component
                 $dokter_satusehat,
                 $organisasi_satusehat,
                 $location_satusehat,
-                $tanggal_kunjungan
+                $tanggal_kunjungan,
+                $waktu_tiba,
             );
 
         } else {
@@ -137,6 +142,7 @@ class Create extends Component
             'poli_id'           => $this->poli_id,
             'dokter_id'         => $this->dokter_id,
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
+            'waktu_tiba'        => $this->waktu_tiba,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
             'status_terdaftar'  => 'terdaftar',
             'encounter_id'      => $encounterId, // null kalau tidak dikirim ke satusehat

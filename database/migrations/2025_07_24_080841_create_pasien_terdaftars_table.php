@@ -17,10 +17,13 @@ return new class extends Migration
             $table->foreignId('pasien_id')->constrained('pasiens')->onDelete('cascade');
             $table->foreignId('poli_id')->constrained('poli_kliniks')->onDelete('cascade');
             $table->foreignId('dokter_id')->constrained('dokters')->onDelete('cascade');
-            $table->foreignId('encounter_id')->nullable();
+            $table->string('encounter_id')->nullable();
 
             $table->string('jenis_kunjungan');
             $table->date('tanggal_kunjungan');
+            $table->string('waktu_tiba');
+            $table->string('waktu_diperiksa')->nullable();
+            $table->string('waktu_pulang')->nullable();
             $table->enum('status_terdaftar', 
             [
                 'terdaftar',    // muncul untuk perawat mengisi KAJIAN AWAL

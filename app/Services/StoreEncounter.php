@@ -20,7 +20,7 @@ class StoreEncounter
     /**
      * POST Encounter ke Satu Sehat
      */
-    public function handle($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, string $tanggal_kunjungan): string
+    public function handle($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, string $tanggal_kunjungan, $waktu_tiba): string
     {
         try {
             $token = $this->tokenService->getAccessToken();
@@ -31,6 +31,7 @@ class StoreEncounter
                 $organisasi_satusehat,
                 $location_satusehat,
                 $tanggal_kunjungan,
+                $waktu_tiba,
             );
 
             // dd($payload);
@@ -62,7 +63,7 @@ class StoreEncounter
     /**
      * BUILD PAYLOAD ENCOUNTER
      */
-    private function buildEncounterPayload($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, $tanggal_kunjungan)
+    private function buildEncounterPayload($pasien_satusehat, $dokter_satusehat, $organisasi_satusehat, $location_satusehat, $tanggal_kunjungan, $waktu_tiba)
     {
         return [
             "resourceType" => "Encounter",
@@ -104,15 +105,15 @@ class StoreEncounter
 
             // ---- Period ----
             "period" => [
-                "start" => $tanggal_kunjungan . "T08:00:00+08:00"
+                "start" => $waktu_tiba
             ],
 
             // ---- Lokasi ----
             "location" => [
                 [
                     "location" => [
-                        "reference" => "Location/" . $location_satusehat,
-                        "display"   => "Poliklinik Umum"
+                        "reference" => "Location/" . $location_satusehat->id_satusehat,
+                        "display"   => $location_satusehat->name,
                     ]
                 ]
             ],
@@ -122,7 +123,7 @@ class StoreEncounter
                 [
                     "status" => "arrived",
                     "period" => [
-                        "start" => $tanggal_kunjungan . "T08:00:00+08:00"
+                        "start" => $waktu_tiba
                     ]
                 ]
             ],
