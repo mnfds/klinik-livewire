@@ -4,18 +4,20 @@ namespace App\Livewire\Transaksi;
 
 use Livewire\Component;
 use App\Models\Bundling;
+use App\Models\RekamMedis;
 use App\Models\ProdukDanObat;
+use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
 use App\Models\RencanaProdukRM;
+use App\Models\TransaksiKlinik;
 use App\Models\ObatRacikanFinal;
 use App\Models\RencanaLayananRM;
 use App\Models\RencanaTreatmentRM;
+use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
-use App\Models\RekamMedis;
 use App\Models\RencananaBundlingRM;
 use App\Models\RiwayatTransaksiKlinik;
-use App\Models\TransaksiKlinik;
-use Illuminate\Support\Facades\DB;
+use App\Services\PutInFinishedEncounter;
 
 class Detail extends Component
 {
@@ -152,6 +154,62 @@ class Detail extends Component
 
             // ✅ 1. Buat Transaksi Klinik
             $rekamMedis = RekamMedis::findOrFail($this->rekammedis_id);
+            
+            $pt = $this->pasienTerdaftar;
+            // ambil waktu diperiksa
+            $waktu_pulang = $pt->waktu_pulang ?? Carbon::now('Asia/Makassar')->toIso8601String();
+            
+            //put encounter
+            $kirimsatusehat = $pt->encounter_id;
+            if($kirimsatusehat){               
+                
+                // Encounter ID yang sudah dibuat saat POST Encounter
+                $encounterId = $pt->encounter_id;
+                $diagnosis = $pt->rekamMedis->icdRM ?? [];
+                // perulangan diagnosis jika ada lebih dari 1 kode ICD
+                $diagnosisData = []; //init diagnosis untuk simpan data dengan struktur FHIR
+                $rank = 1;
+                foreach ($diagnosis as $icd) {
+                    if (!$icd || !$icd->code) {
+                        continue; // Lewati jika tidak ada
+                    }
+                    if (!$icd->condition_id) {
+                        continue; // aman
+                    }
+
+                    $diagnosisData[] = [
+                        "condition" => [
+                            "reference" => "Condition/" . $icd->condition_id,
+                            "display" => $icd->name_id
+                        ],
+                        "use" => [
+                            "coding" => [
+                                [
+                                    "system" => "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                                    "code" => "DD",
+                                    "display" => "Discharge diagnosis"
+                                ]
+                            ]
+                        ],
+                        "rank" => $rank++   // auto increment
+                    ];
+                }
+
+                // Panggil PUT Encounter
+                $putEncounter = app(PutInFinishedEncounter::class);
+                $putEncounter->handle(
+                    encounterId: $encounterId,
+                    waktuTiba: $pt->waktu_tiba,
+                    WaktuDiperiksa: $pt->waktu_diperiksa,
+                    WaktuPulang: $waktu_pulang,
+                    pasienNama: $pt->pasien->nama,
+                    pasienIhs: $pt->pasien->no_ihs,
+                    dokterNama: $pt->dokter->nama_dokter,
+                    dokterIhs: $pt->dokter->ihs,
+                    location: $pt->poliklinik->location,
+                    diagnosisData: $diagnosisData,
+                );
+            }
 
             $transaksi = TransaksiKlinik::create([
                 'rekam_medis_id' => $rekamMedis->id,
@@ -260,11 +318,17 @@ class Detail extends Component
             $this->kurangiStokProduk();
 
             DB::commit();
-
-            $this->dispatch('toast', [
-                'type' => 'success',
-                'message' => 'Transaksi berhasil disimpan'
-            ]);
+            if($kirimsatusehat){
+                $this->dispatch('toast', [
+                    'type' => 'success',
+                    'message' => 'Transaksi berhasil disimpan Dan Kirim Satu Sehat'
+                ]);
+            }else{
+                $this->dispatch('toast', [
+                    'type' => 'success',
+                    'message' => 'Transaksi berhasil disimpan'
+                ]);
+            }
 
             $this->reset();
             return redirect()->route('transaksi.kasir');

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
+            $table->string('condition_id')->nullable();
             $table->string('code');
             $table->text('name_en');
             $table->text('name_id');
