@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PelayananBundlingUsage;
 use App\Models\TreatmentBundlingUsage;
 use App\Services\PutInProgressEncounter;
+use App\Services\StoreCondition;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -417,26 +418,30 @@ class Create extends Component
                     'keluhan_utama' => $this->keluhan_utama,
                     'tingkat_kesadaran' => $this->tingkat_kesadaran,
                 ]);
-                //put encounter
+                
                 $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
-
                 // ambil waktu diperiksa
                 $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->toIso8601String();
                 
-                // Encounter ID yang sudah dibuat saat POST Encounter
-                $encounterId = $pt->encounter_id;
-                // 🔥 2. Panggil PUT Encounter
-                $putEncounter = app(PutInProgressEncounter::class);
-                $putEncounter->handle(
-                    encounterId: $encounterId,
-                    waktuTiba: $pt->waktu_tiba,
-                    WaktuDiperiksa: $waktu_diperiksa,
-                    pasienNama: $pt->pasien->nama,
-                    pasienIhs: $pt->pasien->no_ihs,
-                    dokterNama: $pt->dokter->nama_dokter,
-                    dokterIhs: $pt->dokter->ihs,
-                    location: $pt->poliklinik->location,
-                );
+                //put encounter
+                $kirimsatusehat = $pt->encounter_id;
+                if($kirimsatusehat){               
+                    
+                    // Encounter ID yang sudah dibuat saat POST Encounter
+                    $encounterId = $pt->encounter_id;
+                    // Panggil PUT Encounter
+                    $putEncounter = app(PutInProgressEncounter::class);
+                    $putEncounter->handle(
+                        encounterId: $encounterId,
+                        waktuTiba: $pt->waktu_tiba,
+                        WaktuDiperiksa: $waktu_diperiksa,
+                        pasienNama: $pt->pasien->nama,
+                        pasienIhs: $pt->pasien->no_ihs,
+                        dokterNama: $pt->dokter->nama_dokter,
+                        dokterIhs: $pt->dokter->ihs,
+                        location: $pt->poliklinik->location,
+                    );
+                }
 
                 $status = 'pembayaran';
                 if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
@@ -534,7 +539,6 @@ class Create extends Component
 
                 // SIMPAN DATA DIAGNOSA REKAM MEDIS
                 // if (in_array('diagnosa', $this->selected_forms_assessment)) {
-                    // Kirim Data ICD ke Satu Sehat
                     DiagnosaRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'diagnosa' => $this->diagnosa,
@@ -544,6 +548,20 @@ class Create extends Component
                 // SIMPAN DATA ICD 10 REKAM MEDIS
                 // if (in_array('icd_10', $this->selected_forms_assessment)) {
                     foreach ($this->icd10 as $item) {
+                        // Kirim Data ICD ke Satu Sehat
+                        if($kirimsatusehat){
+                            $encounterId = $pt->encounter_id;
+                            
+                            // Panggil PostCondition
+                            $PostCondition = app(StoreCondition::class);
+                            $PostCondition->handle(
+                                encounterId: $encounterId,
+                                pasienNama: $pt->pasien->nama,
+                                pasienIhs: $pt->pasien->no_ihs,
+                                icdCode: $item['code'],
+                                icdName: $item['name_en'],
+                            );
+                        }
                         if (!empty($item['code'])) {
                             IcdRM::create([
                                 'rekam_medis_id' => $rekammedis->id,
@@ -911,11 +929,17 @@ class Create extends Component
             // ----- PLAN ----- //
 
                 DB::commit();
-                
-                $this->dispatch('toast', [
-                    'type' => 'success',
-                    'message' => 'Rekam Medis Berhasil Ditambahkan.'
-                ]);
+                if($kirimsatusehat){
+                    $this->dispatch('toast', [
+                        'type' => 'success',
+                        'message' => 'Rekam Medis Berhasil Ditambahkan Dan Kirim Satu Sehat'
+                    ]);
+                }else{
+                    $this->dispatch('toast', [
+                        'type' => 'success',
+                        'message' => 'Rekam Medis Berhasil Ditambahkan.'
+                    ]);
+                }
 
                 $this->dispatch('closeStoreModal');
 
