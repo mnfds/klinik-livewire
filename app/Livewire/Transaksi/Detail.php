@@ -156,9 +156,16 @@ class Detail extends Component
             $rekamMedis = RekamMedis::findOrFail($this->rekammedis_id);
             
             $pt = $this->pasienTerdaftar;
-            // ambil waktu diperiksa
-            $waktu_pulang = $pt->waktu_pulang ?? Carbon::now('Asia/Makassar')->toIso8601String();
-            
+
+            // Jika tidak ada waktu_pulang, update dengan Carbon::now
+            if (!$pt->waktu_pulang) {
+                $pt->update([
+                    'waktu_pulang' => Carbon::now('Asia/Makassar')->toIso8601String()
+                ]);
+            }
+
+            // Setelah itu ambil ulang nilai waktu_pulang yang sudah pasti ada
+            $waktu_pulang = $pt->waktu_pulang;
             //put encounter
             $kirimsatusehat = $pt->encounter_id;
             if($kirimsatusehat){               
