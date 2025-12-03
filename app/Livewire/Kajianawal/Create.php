@@ -14,6 +14,7 @@ use App\Models\PemeriksaanFisik;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\PutInProgressEncounter;
+use App\Services\StorePemeriksaanFisik;
 use App\Services\StoreVitalSign;
 
 class Create extends Component
@@ -155,6 +156,20 @@ class Create extends Component
 
             // Simpan data pemeriksaan fisik
             if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
+                if($kirimsatusehat){
+                    
+                    $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
+                    $observationFisik = $PostPemeriksaanFisik->handle(
+                        encounterId: $encounterId,
+                        pasienNama: $pt->pasien->nama,
+                        pasienIhs: $pt->pasien->no_ihs,
+                        dokterNama: $pt->dokter->nama_dokter,
+                        dokterIhs: $pt->dokter->ihs,
+                        waktuTiba: $pt->waktu_tiba,
+                        tinggiBadan: $this->tinggi_badan,
+                        beratBadan: $this->berat_badan,
+                    );
+                }
                 PemeriksaanFisik::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'tinggi_badan' => $this->tinggi_badan,
