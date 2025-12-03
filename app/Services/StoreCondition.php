@@ -73,8 +73,9 @@ class StoreCondition
                 Log::error("Error POST Condition", ['body' => $response->body()]);
                 throw new Exception("Gagal POST Condition: " . $response->body());
             }
-
-            return true;
+            
+            return $response->json('id');
+            // return true;
 
         } catch (\Exception $e) {
             Log::error("StoreCondition Error: " . $e->getMessage());

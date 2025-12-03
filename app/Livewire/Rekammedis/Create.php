@@ -421,7 +421,7 @@ class Create extends Component
                 
                 $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
                 // ambil waktu diperiksa
-                $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->toIso8601String();
+                $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
                 
                 //put encounter
                 $kirimsatusehat = $pt->encounter_id;
@@ -546,15 +546,16 @@ class Create extends Component
                 // }
 
                 // SIMPAN DATA ICD 10 REKAM MEDIS
+                    $condition_id = null;
+                    $encounterId = $pt->encounter_id;
                 // if (in_array('icd_10', $this->selected_forms_assessment)) {
                     foreach ($this->icd10 as $item) {
                         // Kirim Data ICD ke Satu Sehat
                         if($kirimsatusehat){
-                            $encounterId = $pt->encounter_id;
                             
                             // Panggil PostCondition
                             $PostCondition = app(StoreCondition::class);
-                            $PostCondition->handle(
+                            $condition_id = $PostCondition->handle(
                                 encounterId: $encounterId,
                                 pasienNama: $pt->pasien->nama,
                                 pasienIhs: $pt->pasien->no_ihs,
@@ -562,9 +563,11 @@ class Create extends Component
                                 icdName: $item['name_en'],
                             );
                         }
+                        // dd($condition_id);
                         if (!empty($item['code'])) {
                             IcdRM::create([
                                 'rekam_medis_id' => $rekammedis->id,
+                                'condition_id'   => $condition_id,
                                 'code'           => $item['code'],
                                 'name_id'        => $item['name_id'],
                                 'name_en'        => $item['name_en'],

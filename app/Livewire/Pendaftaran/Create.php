@@ -84,7 +84,7 @@ class Create extends Component
             'jenis_kunjungan'   => 'required|in:sehat,sakit',
         ]);
 
-        $this->waktu_tiba = Carbon::now('Asia/Makassar')->toIso8601String();
+        $this->waktu_tiba = Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
         $pasien_satusehat = Pasien::findOrFail($this->pasien_id);
         $dokter_satusehat = Dokter::findOrFail($this->dokter_id);
         $poli = PoliKlinik::findOrFail($this->poli_id);

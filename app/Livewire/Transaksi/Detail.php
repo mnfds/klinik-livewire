@@ -160,7 +160,7 @@ class Detail extends Component
             // Jika tidak ada waktu_pulang, update dengan Carbon::now
             if (!$pt->waktu_pulang) {
                 $pt->update([
-                    'waktu_pulang' => Carbon::now('Asia/Makassar')->toIso8601String()
+                    'waktu_pulang' => Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String()
                 ]);
             }
 
