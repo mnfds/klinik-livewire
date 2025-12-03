@@ -86,13 +86,13 @@ class Search extends Component
             ) {
                 Practitioner::create([
                     'name'         => $this->nama_lengkap,
-                    'gender'       => $this->praktisi['gender'],
-                    'birthdate'    => $this->praktisi['birthdate'],
+                    'gender'       => $this->praktisi['gender'] ?? null,
+                    'birthdate'    => $this->praktisi['birthdate'] ?? null,
                     'id_satusehat' => $this->praktisi['id_satusehat'],
                     'nik'          => $this->nik ?? "-",
                     'ihs'          => $this->praktisi['no_ihs'],
-                    'city'         => $this->praktisi['city'],
-                    'address_line' => $this->praktisi['address_line'],
+                    'city'         => $this->praktisi['city'] ?? null,
+                    'address_line' => $this->praktisi['address_line'] ?? null,
                 ]);
                 
                 $this->dispatch('toast', [
