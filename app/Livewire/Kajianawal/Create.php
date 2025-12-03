@@ -2,21 +2,27 @@
 
 namespace App\Livewire\Kajianawal;
 
-use App\Models\DataEstetika;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\KajianAwal;
 use App\Models\TandaVital;
+use App\Models\DataEstetika;
 use App\Models\DataKesehatan;
+use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
 use App\Models\PemeriksaanFisik;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\PutInProgressEncounter;
+use App\Services\StoreVitalSign;
 
 class Create extends Component
 {
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
+    
+    // ENCOUNTER ID DARI SATUSEHAT
+    public $encounter_id;
 
     // KAJIAN AWAL //
     public $nama_pengkaji, $id_pasien_terdaftar;
@@ -94,10 +100,49 @@ class Create extends Component
             ]);
 
             PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                ->update(['status_terdaftar' => 'konsultasi']);
+            ->update(['status_terdaftar' => 'konsultasi']);
+            
+            $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
+            // ambil waktu diperiksa
+            $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
+            //put encounter
+            $kirimsatusehat = $pt->encounter_id;
+            if($kirimsatusehat){               
+                // Encounter ID yang sudah dibuat saat POST Encounter
+                $encounterId = $pt->encounter_id;
+                // Panggil PUT Encounter
+                $putEncounter = app(PutInProgressEncounter::class);
+                $putEncounter->handle(
+                    encounterId: $encounterId,
+                    waktuTiba: $pt->waktu_tiba,
+                    WaktuDiperiksa: $waktu_diperiksa,
+                    pasienNama: $pt->pasien->nama,
+                    pasienIhs: $pt->pasien->no_ihs,
+                    dokterNama: $pt->dokter->nama_dokter,
+                    dokterIhs: $pt->dokter->ihs,
+                    location: $pt->poliklinik->location,
+                );
+            }
 
             // Simpan data tanda vital
             if (in_array('tanda-vital', $this->selected_forms)) {
+                if($kirimsatusehat){
+                    
+                    $PostVitalSign = app(StoreVitalSign::class);
+                    $observation = $PostVitalSign->handle(
+                        encounterId: $encounterId,
+                        pasienNama: $pt->pasien->nama,
+                        pasienIhs: $pt->pasien->no_ihs,
+                        dokterNama: $pt->dokter->nama_dokter,
+                        dokterIhs: $pt->dokter->ihs,
+                        waktuTiba: $pt->waktu_tiba,
+                        sistole: $this->sistole,
+                        diastole: $this->diastole,
+                        suhu_tubuh: $this->suhu_tubuh,
+                        nadi: $this->nadi,
+                        pernapasan: $this->frekuensi_pernapasan,
+                    );
+                }
                 TandaVital::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'suhu_tubuh' => $this->suhu_tubuh,
@@ -149,11 +194,17 @@ class Create extends Component
             }
 
             DB::commit();
-            
-            $this->dispatch('toast', [
-                'type' => 'success',
-                'message' => 'Pelayanan berhasil ditambahkan.'
-            ]);
+            if($kirimsatusehat){
+                $this->dispatch('toast', [
+                    'type' => 'success',
+                    'message' => 'Data Medis Berhasil tersimpan Dan Kirim Satu Sehat'
+                ]);
+            }else{
+                $this->dispatch('toast', [
+                    'type' => 'success',
+                    'message' => 'Data Medis Berhasil Tersimpan'
+                ]);
+            }
 
             $this->dispatch('closeStoreModal');
 
