@@ -184,7 +184,7 @@ Route::middleware(['auth'])->group(function () {
             ->get()
             ->map(fn ($obat) => [
                 'id' => 'kfa_' . $obat->id, // prefix biar unik
-                'text' => $obat->nama_obat_aktual . ' - ' . $obat->bentuk_sediaan ,
+                'text' => $obat->nama_obat_aktual,
                 'source' => 'KFA'
             ]);
 
