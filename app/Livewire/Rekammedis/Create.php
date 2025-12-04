@@ -17,6 +17,7 @@ use App\Models\ProdukDanObat;
 use App\Models\DataEstetikaRM;
 use Illuminate\Support\Carbon;
 use App\Models\DataKesehatanRM;
+use App\Models\Icd;
 use App\Models\PasienTerdaftar;
 use App\Models\RencanaProdukRM;
 use App\Models\ObatNonRacikanRM;
@@ -40,6 +41,7 @@ use App\Models\TreatmentBundlingUsage;
 use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
 use App\Services\StoreKeluhanUtama;
+use App\Services\StoreRiwayatPenyakit;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -479,6 +481,41 @@ class Create extends Component
 
                 // SIMPAN DATA KESEHATAN REKAM MEDIS
                 if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
+                    if ($kirimsatusehat) {
+
+                        // Encounter ID yang sudah dibuat saat POST Encounter
+                        $encounterId = $pt->encounter_id;
+                        // Ambil data riwayat penyakit (berisi name_id saja)
+                        $icds = json_decode($this->kajian->dataKesehatan->riwayat_penyakit, true);
+                        // Inisialisasi collection default
+                        $riwayatPenyakits = collect();
+                        // Jika array tidak kosong → ambil ICD dari DB berdasarkan name_id
+                        if ($icds && is_array($icds)) {
+                            $riwayatPenyakits = Icd::whereIn('name_id', $icds)
+                                ->get(['code', 'name_en', 'name_id']);
+                        }
+                        // Format untuk dikirim ke service
+                        $payloadICD = $riwayatPenyakits->map(function ($i) {
+                            return [
+                                'code'    => $i->code,
+                                'name_en' => $i->name_en,
+                                'name_id' => $i->name_id,
+                            ];
+                        })->toArray();
+                        // dd($payloadICD);
+                        // Panggil service StoreRiwayatPenyakit
+                        $PostRiwayatPenyakit = app(StoreRiwayatPenyakit::class);
+
+                        $PostRiwayatPenyakit->handle(
+                            encounterId: $encounterId,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            icdList: $payloadICD  // ← kirim array ICD lengkap
+                        );
+                    }
                     DataKesehatanRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'status_perokok' => $this->data_kesehatan['status_perokok'],

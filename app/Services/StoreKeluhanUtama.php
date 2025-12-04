@@ -30,6 +30,15 @@ class StoreKeluhanUtama
             $token = $this->tokenService->getAccessToken();
             $payload = [
                 "resourceType" => "Condition",
+                "clinicalStatus" => [
+                    "coding" => [
+                        [
+                            "system" => "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code" => "active",
+                            "display" => "Active"
+                        ]
+                    ]
+                ],
                 "category" => [
                     [
                         "coding" => [

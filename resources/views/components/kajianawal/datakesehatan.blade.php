@@ -18,35 +18,13 @@
             </select>
         </div>
         
-        @php
-            $listPenyakit = [
-                'Alergi Panadol','Anemia','Appendicitis','Arthritis','Asma',
-                'Asma (Terkontrol)','Asam Urat','Ayan','Batuk','Batuk, Gatal Tenggorok','Batuk, Pilek',
-                'Batu Ginjal','Batu Ginjal Tahun 2020','Cancer Payudara Post Operasi Pengangkatan 1 Thn',
-                'Cacar Air','Caries Molar 3','Cemas','Cervicalgia','Cholesterol','Alergi Amoxilin','Covid',
-                'Diabetes Melitus','Diabetes Melitus Type 2','Diabetes','Diare','Dislipidemia','Dm',
-                'Dyspepsia','Dyspesia','Flu','Gangangguan Pencernaan (Maag)','Gatak','Genitic','Glukosa',
-                'Hemoroid','Hepatitis','Hiperkolesterolemia','Hipertensi','Hypertensi','Hypertention',
-                'Hypotensi','Isk','Ischaemia Heart Disease','Jantung','Kanker','Kanker Usus Besar',
-                'Keloid','Kencing Manis','Kista Indung Telur','Kolesterol','Maag,','Meriang','Migrain',
-                'Neuritis','Nefrolithiasis','Obesitas','Operasi 1X Di Rs','Osteoarthritis',
-                'Oesteoartritis','Parkinson','Pemasangan Ring Jantung','Pembengkakan Jantung',
-                'Pjk','Post Amputasi','Post Debridement','Post Operasi Acl','Pusing Baru',
-                'Readang Paru','Rematoid Artritis','Rhinitis','Sakit Gigi Terus Menerus Akibat Tidak Gosok Gigi',
-                'Sakit Maag','Sakit Ulu Hati','Sinusitis','Skizofrenia','Stroke','Suspect Virus',
-                'Tbc Kelenjar Tahun 2009 Dan 2017','Tb Paru','Talasemia','Thalasemia','Tifoid',
-                'Tifus','Tinea','Tipes','Tonsilitis','Tuberculosis','Vertigo',
-            ];
-        @endphp
         <!-- Riwayat Penyakit -->
         <div class="form-control" x-data="multiSelect()" x-init="init()">
-            <label class="label">
-                Riwayat Penyakit
-            </label>
+            <label class="label">Riwayat Penyakit</label>
             <!-- Input Area -->
             <div class="relative ">
                 <div
-                    class="w-full border border-gray-300 bg-base-100 text-base-primary rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition" :class="{ 'ring-2 ring-black': open }" @click="setTimeout(() => open = true, 10)">
+                    class="w-full border border-gray-300 bg-base-100 text-base-primary rounded-2xl p-1 flex flex-wrap items-center gap-2 min-h-[2.5rem] focus-within:ring-2 focus-within:ring-black transition" :class="{ 'ring-2 ring-black': open }" @click="open = true">
                     <!-- Selected tags -->
                     <template x-for="(tag, index) in selected" :key="index">
                         <span class="bg-primary text-sm rounded-full px-3 py-1 flex items-center gap-1">
@@ -56,25 +34,28 @@
                     </template>
 
                     <!-- Input for search -->
-                    <input type="text" class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100" placeholder="Cari riwayat penyakit..." x-model="search" @focus="open = true" @input="open = true" />
+                    <input type="text" class="flex-grow min-w-[8ch] text-sm border-none rounded-xl bg-base-100" placeholder="Cari riwayat penyakit..." x-model="search" @input.debounce.300ms="fetchOptions(); open = true"/>
                 </div>
 
                 <!-- Dropdown Menu -->
                 <div x-show="open" @click.outside="open = false" class="absolute z-10 mt-1 w-full bg-base-200 border border-gray-500 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                    
+                    <!-- Loading -->
+                    <div x-show="loading" class="px-3 py-2 text-sm">Mencari...</div>
+
                     <!-- Jika ada hasil -->
-                    <template x-if="filteredOptions.length > 0">
-                        <template x-for="(item, index) in filteredOptions" :key="index">
-                            <div
-                                @click="toggle(item)" class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer  text-sm m-1" :class="selected.includes(item) ? 'bg-primary rounded-2xl font-semibold' : ''">
-                                <span x-text="item"></span>
-                            </div>
-                        </template>
+                    <template x-for="item in filteredOptions" :key="item.name">
+                        <div @click="toggle(item)"
+                            class="px-3 py-2 hover:bg-primary/50 rounded-2xl cursor-pointer text-sm m-1">
+                            <span x-text="item.label"></span>
+                        </div>
                     </template>
 
                     <!-- Jika tidak ada hasil -->
-                    <div x-show="filteredOptions.length === 0" class="px-3 py-2 text-sm text-base-content bg-base-200 border-gray-500">
+                    <div x-show="!loading &&filteredOptions.length === 0" class="px-3 py-2 text-sm text-base-content bg-base-200 border-gray-500">
                         Tidak ada hasil.
                     </div>
+                    
                 </div>
             </div>
 
@@ -248,13 +229,40 @@
         return {
             open: false,
             selected: @entangle('riwayat_penyakit'),
-            options: @js($listPenyakit),
+
             search: '',
+            options: [],     // hasil dari ajax
+            loading: false,
+            lastQuery: '',
+
+            async fetchOptions() {
+                if (this.search.length < 2) {
+                    this.options = [];
+                    return;
+                }
+
+                if (this.search === this.lastQuery) return; // hindari duplicate request
+
+                this.lastQuery = this.search;
+                this.loading = true;
+
+                try {
+                    const res = await fetch(`/ajax/icd_10?q=${encodeURIComponent(this.search)}`);
+                    let data = await res.json();
+
+                    // Format tampilan: A00 - Kolera
+                    this.options = data.map(i => ({
+                        label: `${i.code} - ${i.name_id}`,
+                        name: i.name_id,
+                    }));
+                } finally {
+                    this.loading = false;
+                }
+            },
 
             get filteredOptions() {
-                if (this.search === '') return this.options;
-                return this.options.filter(item =>
-                    item.toLowerCase().includes(this.search.toLowerCase())
+                return this.options.filter(
+                    item => !this.selected.includes(item.name)
                 );
             },
 
@@ -265,20 +273,19 @@
             },
 
             toggle(item) {
-                const index = this.selected.indexOf(item);
-                if (index === -1) {
-                    this.selected.push(item);
+                if (!this.selected.includes(item.name)) {
+                    this.selected.push(item.name);
                 } else {
-                    this.selected.splice(index, 1);
+                    this.selected = this.selected.filter(i => i !== item.name);
                 }
-                this.search = ''; // reset setelah pilih
+
+                // reset UI
+                this.search = '';
+                this.options = [];
             },
 
             remove(item) {
-                const index = this.selected.indexOf(item);
-                if (index !== -1) {
-                    this.selected.splice(index, 1);
-                }
+                this.selected = this.selected.filter(i => i !== item);
             }
         }
     }
