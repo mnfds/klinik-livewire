@@ -21,6 +21,8 @@ use App\Models\PasienTerdaftar;
 use App\Models\RencanaProdukRM;
 use App\Models\ObatNonRacikanRM;
 use App\Models\RencanaLayananRM;
+use App\Services\StoreCondition;
+use App\Services\StoreVitalSign;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
 use App\Models\RencanaTreatmentRM;
@@ -35,8 +37,9 @@ use App\Models\ProdukObatBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PelayananBundlingUsage;
 use App\Models\TreatmentBundlingUsage;
+use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
-use App\Services\StoreCondition;
+use App\Services\StoreKeluhanUtama;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -441,6 +444,17 @@ class Create extends Component
                         dokterIhs: $pt->dokter->ihs,
                         location: $pt->poliklinik->location,
                     );
+                    
+                    $PostKeluhanUtama = app(StoreKeluhanUtama::class);
+                    $PostKeluhanUtama->handle(
+                        encounterId: $encounterId,
+                        WaktuDiperiksa: $waktu_diperiksa,
+                        pasienNama: $pt->pasien->nama,
+                        pasienIhs: $pt->pasien->no_ihs,
+                        dokterNama: $pt->dokter->nama_dokter,
+                        dokterIhs: $pt->dokter->ihs,
+                        keluhanUtama: $rekammedis->keluhan_utama,
+                    );
                 }
 
                 $status = 'pembayaran';
@@ -498,6 +512,26 @@ class Create extends Component
 
                 // SIMPAN DATA TANDA VITAL REKAM MEDIS
                 if (in_array('tanda-vital', $this->selected_forms_objective)) {
+                    if($kirimsatusehat){
+                        
+                        // Encounter ID yang sudah dibuat saat POST Encounter
+                        $encounterId = $pt->encounter_id;
+                        
+                        $PostVitalSign = app(StoreVitalSign::class);
+                        $observation = $PostVitalSign->handle(
+                            encounterId: $encounterId,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            waktuTiba: $pt->waktu_tiba,
+                            sistole: $this->tanda_vital['sistole'],
+                            diastole: $this->tanda_vital['diastole'],
+                            suhu_tubuh: $this->tanda_vital['suhu_tubuh'],
+                            nadi: $this->tanda_vital['nadi'],
+                            pernapasan: $this->tanda_vital['frekuensi_pernapasan'],
+                        );
+                    }
                     TandaVitalRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'suhu_tubuh' => $this->tanda_vital['suhu_tubuh'],
@@ -510,6 +544,23 @@ class Create extends Component
 
                 // SIMPAN DATA PEMERIKSAAN FISIK REKAM MEDIS
                 if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
+                    if($kirimsatusehat){
+                        
+                        // Encounter ID yang sudah dibuat saat POST Encounter
+                        $encounterId = $pt->encounter_id;
+                        
+                        $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
+                        $observationFisik = $PostPemeriksaanFisik->handle(
+                            encounterId: $encounterId,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            waktuTiba: $pt->waktu_tiba,
+                            tinggiBadan: $this->pemeriksaan_fisik['tinggi_badan'],
+                            beratBadan: $this->pemeriksaan_fisik['berat_badan'],
+                        );
+                    }
                     PemeriksaanFisikRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'tinggi_badan' => $this->pemeriksaan_fisik['tinggi_badan'],

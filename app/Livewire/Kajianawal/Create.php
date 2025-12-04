@@ -127,23 +127,23 @@ class Create extends Component
 
             // Simpan data tanda vital
             if (in_array('tanda-vital', $this->selected_forms)) {
-                if($kirimsatusehat){
+                // if($kirimsatusehat){
                     
-                    $PostVitalSign = app(StoreVitalSign::class);
-                    $observation = $PostVitalSign->handle(
-                        encounterId: $encounterId,
-                        pasienNama: $pt->pasien->nama,
-                        pasienIhs: $pt->pasien->no_ihs,
-                        dokterNama: $pt->dokter->nama_dokter,
-                        dokterIhs: $pt->dokter->ihs,
-                        waktuTiba: $pt->waktu_tiba,
-                        sistole: $this->sistole,
-                        diastole: $this->diastole,
-                        suhu_tubuh: $this->suhu_tubuh,
-                        nadi: $this->nadi,
-                        pernapasan: $this->frekuensi_pernapasan,
-                    );
-                }
+                //     $PostVitalSign = app(StoreVitalSign::class);
+                //     $observation = $PostVitalSign->handle(
+                //         encounterId: $encounterId,
+                //         pasienNama: $pt->pasien->nama,
+                //         pasienIhs: $pt->pasien->no_ihs,
+                //         dokterNama: $pt->dokter->nama_dokter,
+                //         dokterIhs: $pt->dokter->ihs,
+                //         waktuTiba: $pt->waktu_tiba,
+                //         sistole: $this->sistole,
+                //         diastole: $this->diastole,
+                //         suhu_tubuh: $this->suhu_tubuh,
+                //         nadi: $this->nadi,
+                //         pernapasan: $this->frekuensi_pernapasan,
+                //     );
+                // }
                 TandaVital::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'suhu_tubuh' => $this->suhu_tubuh,
@@ -156,20 +156,20 @@ class Create extends Component
 
             // Simpan data pemeriksaan fisik
             if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
-                if($kirimsatusehat){
+                // if($kirimsatusehat){
                     
-                    $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
-                    $observationFisik = $PostPemeriksaanFisik->handle(
-                        encounterId: $encounterId,
-                        pasienNama: $pt->pasien->nama,
-                        pasienIhs: $pt->pasien->no_ihs,
-                        dokterNama: $pt->dokter->nama_dokter,
-                        dokterIhs: $pt->dokter->ihs,
-                        waktuTiba: $pt->waktu_tiba,
-                        tinggiBadan: $this->tinggi_badan,
-                        beratBadan: $this->berat_badan,
-                    );
-                }
+                //     $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
+                //     $observationFisik = $PostPemeriksaanFisik->handle(
+                //         encounterId: $encounterId,
+                //         pasienNama: $pt->pasien->nama,
+                //         pasienIhs: $pt->pasien->no_ihs,
+                //         dokterNama: $pt->dokter->nama_dokter,
+                //         dokterIhs: $pt->dokter->ihs,
+                //         waktuTiba: $pt->waktu_tiba,
+                //         tinggiBadan: $this->tinggi_badan,
+                //         beratBadan: $this->berat_badan,
+                //     );
+                // }
                 PemeriksaanFisik::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'tinggi_badan' => $this->tinggi_badan,
