@@ -45,6 +45,8 @@ use App\Services\StoreRiwayatPenyakit;
 use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
 use App\Services\StoreAlergiObat;
+use App\Services\StoreKonselingProcedure;
+use App\Services\StoreKonselingService;
 use App\Services\StoreTingkatKesadaran;
 use App\View\Components\rekammedis\rencanalayanan;
 
@@ -603,7 +605,6 @@ class Create extends Component
 
             // ----- SUBJECTIVE ----- //
 
-
             // ----- OBJECTIVE ----- //
 
                 // SIMPAN DATA TANDA VITAL REKAM MEDIS
@@ -1078,6 +1079,47 @@ class Create extends Component
 
             // ----- PLAN ----- //
 
+                if($kirimsatusehat){
+                    $reasonIcd = null;
+                    foreach ($this->icd10 as $item) {
+                        if (!empty($item['code'])) {
+                            $reasonIcd = [
+                                'code'    => $item['code'],
+                                'display' => $item['name_en'],   // tetap pakai milikmu
+                                'name_id' => $item['name_id'],   // tetap pakai milikmu
+                            ];
+                            break;
+                        }
+                    }
+                    $encounterId = $pt->encounter_id;
+                    $serviceId   = null;
+                    if($reasonIcd){
+                        $PostKonselingService = app(StoreKonselingService::class);
+                        $serviceId = $PostKonselingService->handle(
+                            encounterId: $encounterId,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            reasonIcd: $reasonIcd
+                        );
+                    }
+                    
+                    if($serviceId){
+                        $PostKonselingProcedure = app(StoreKonselingProcedure::class);
+                        $PostKonselingProcedure->handle(
+                            encounterId: $encounterId,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            reasonIcd: $reasonIcd,
+                            serviceId: $serviceId,
+                        );
+                    }   
+                }
+                
                 DB::commit();
                 if($kirimsatusehat){
                     $this->dispatch('toast', [
