@@ -572,7 +572,7 @@
                                                 <option value="Hanya berespons jika dirangsang nyeri"> Hanya berespons jika dirangsang nyeri</option>
                                                 <option value="Pasien tidak sadar">Pasien tidak sadar</option>
                                                 <option value="Gelisah atau bingung">Gelisah atau bingung</option>
-                                                <option value="Acute Confusional States ">Acute Confusional States </option>
+                                                <option value="Acute Confusional States">Acute Confusional States</option>
                                             </select>
                                         </div>
                                         <!-- Tanda Vital -->

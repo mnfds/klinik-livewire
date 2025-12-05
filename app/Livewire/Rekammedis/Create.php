@@ -45,6 +45,7 @@ use App\Services\StoreRiwayatPenyakit;
 use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
 use App\Services\StoreAlergiObat;
+use App\Services\StoreTingkatKesadaran;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -450,16 +451,31 @@ class Create extends Component
                         location: $pt->poliklinik->location,
                     );
                     
-                    $PostKeluhanUtama = app(StoreKeluhanUtama::class);
-                    $PostKeluhanUtama->handle(
-                        encounterId: $encounterId,
-                        WaktuDiperiksa: $waktu_diperiksa,
-                        pasienNama: $pt->pasien->nama,
-                        pasienIhs: $pt->pasien->no_ihs,
-                        dokterNama: $pt->dokter->nama_dokter,
-                        dokterIhs: $pt->dokter->ihs,
-                        keluhanUtama: $rekammedis->keluhan_utama,
-                    );
+                    if($rekammedis->keluhan_utama){
+                        $PostKeluhanUtama = app(StoreKeluhanUtama::class);
+                        $PostKeluhanUtama->handle(
+                            encounterId: $encounterId,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            keluhanUtama: $rekammedis->keluhan_utama,
+                        );
+                    }
+
+                    if($rekammedis->tingkat_kesadaran){
+                        $PostTingkatKesadaran = app(StoreTingkatKesadaran::class);
+                        $PostTingkatKesadaran->handle(
+                            encounterId: $encounterId,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            pasienNama: $pt->pasien->nama,
+                            pasienIhs: $pt->pasien->no_ihs,
+                            dokterNama: $pt->dokter->nama_dokter,
+                            dokterIhs: $pt->dokter->ihs,
+                            tingkatKesadaran: $rekammedis->tingkat_kesadaran,
+                        );
+                    }
                 }
 
                 $status = 'pembayaran';
