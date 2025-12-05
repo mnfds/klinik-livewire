@@ -620,7 +620,8 @@ class Create extends Component
                             pasienIhs: $pt->pasien->no_ihs,
                             dokterNama: $pt->dokter->nama_dokter,
                             dokterIhs: $pt->dokter->ihs,
-                            waktuTiba: $pt->waktu_tiba,
+                            WaktuDiperiksa: $waktu_diperiksa,
+                            // WaktuDiperiksa: $pt->waktu_diperiksa,
                             sistole: $this->tanda_vital['sistole'],
                             diastole: $this->tanda_vital['diastole'],
                             suhu_tubuh: $this->tanda_vital['suhu_tubuh'],
@@ -652,7 +653,7 @@ class Create extends Component
                             pasienIhs: $pt->pasien->no_ihs,
                             dokterNama: $pt->dokter->nama_dokter,
                             dokterIhs: $pt->dokter->ihs,
-                            waktuTiba: $pt->waktu_tiba,
+                            WaktuDiperiksa: $waktu_diperiksa,
                             tinggiBadan: $this->pemeriksaan_fisik['tinggi_badan'],
                             beratBadan: $this->pemeriksaan_fisik['berat_badan'],
                         );

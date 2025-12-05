@@ -22,7 +22,7 @@ class StorePemeriksaanFisik
      */
     public function handle(
         $encounterId, $pasienNama, $pasienIhs,
-        $dokterNama, $dokterIhs, $waktuTiba, 
+        $dokterNama, $dokterIhs, $WaktuDiperiksa, 
         $tinggiBadan, $beratBadan,
         )
     {
@@ -59,8 +59,8 @@ class StorePemeriksaanFisik
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
@@ -119,8 +119,8 @@ class StorePemeriksaanFisik
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,

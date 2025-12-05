@@ -22,7 +22,7 @@ class StoreVitalSign
      */
     public function handle(
         $encounterId, $pasienNama, $pasienIhs,
-        $dokterNama, $dokterIhs, $waktuTiba, 
+        $dokterNama, $dokterIhs, $WaktuDiperiksa, 
         $sistole, $diastole, $suhu_tubuh,
         $nadi, $pernapasan
         )
@@ -60,8 +60,8 @@ class StoreVitalSign
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
@@ -120,8 +120,8 @@ class StoreVitalSign
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
@@ -180,8 +180,8 @@ class StoreVitalSign
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
@@ -240,8 +240,8 @@ class StoreVitalSign
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
@@ -300,8 +300,8 @@ class StoreVitalSign
                 "encounter" => [
                     "reference" => "Encounter/" . $encounterId, // Sesuaikan dengan encounter ID yang benar
                 ],
-                "effectiveDateTime" => $waktuTiba,
-                "issued"=> $waktuTiba,
+                "effectiveDateTime" => $WaktuDiperiksa,
+                "issued"=> $WaktuDiperiksa,
                 "performer"=> [
                     [
                         "reference" => "Practitioner/" . $dokterIhs,
