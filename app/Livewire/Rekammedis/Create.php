@@ -608,28 +608,7 @@ class Create extends Component
 
                 // SIMPAN DATA TANDA VITAL REKAM MEDIS
                 if (in_array('tanda-vital', $this->selected_forms_objective)) {
-                    if($kirimsatusehat){
-                        
-                        // Encounter ID yang sudah dibuat saat POST Encounter
-                        $encounterId = $pt->encounter_id;
-                        
-                        $PostVitalSign = app(StoreVitalSign::class);
-                        $observation = $PostVitalSign->handle(
-                            encounterId: $encounterId,
-                            pasienNama: $pt->pasien->nama,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            // WaktuDiperiksa: $pt->waktu_diperiksa,
-                            sistole: $this->tanda_vital['sistole'],
-                            diastole: $this->tanda_vital['diastole'],
-                            suhu_tubuh: $this->tanda_vital['suhu_tubuh'],
-                            nadi: $this->tanda_vital['nadi'],
-                            pernapasan: $this->tanda_vital['frekuensi_pernapasan'],
-                        );
-                    }
-                    TandaVitalRM::create([
+                    $tandavitals = TandaVitalRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'suhu_tubuh' => $this->tanda_vital['suhu_tubuh'],
                         'nadi' => $this->tanda_vital['nadi'],
@@ -637,33 +616,54 @@ class Create extends Component
                         'diastole' => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
                     ]);
+                    
+                    if($kirimsatusehat){
+                        $encounterId = $pt->encounter_id; // Encounter ID yang sudah dibuat saat POST Encounter
+                        $PostVitalSign = app(StoreVitalSign::class);
+                        if($tandavitals){
+                            $observation = $PostVitalSign->handle(
+                                encounterId: $encounterId,
+                                pasienNama: $pt->pasien->nama,
+                                pasienIhs: $pt->pasien->no_ihs,
+                                dokterNama: $pt->dokter->nama_dokter,
+                                dokterIhs: $pt->dokter->ihs,
+                                WaktuDiperiksa: $waktu_diperiksa,
+                                sistole: $tandavitals->sistole,
+                                diastole: $tandavitals->diastole,
+                                suhu_tubuh: $tandavitals->suhu_tubuh,
+                                nadi: $tandavitals->nadi,
+                                pernapasan: $tandavitals->frekuensi_pernapasan,
+                            );
+                        }
+                    }
                 }
 
                 // SIMPAN DATA PEMERIKSAAN FISIK REKAM MEDIS
                 if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
-                    if($kirimsatusehat){
-                        
-                        // Encounter ID yang sudah dibuat saat POST Encounter
-                        $encounterId = $pt->encounter_id;
-                        
-                        $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
-                        $observationFisik = $PostPemeriksaanFisik->handle(
-                            encounterId: $encounterId,
-                            pasienNama: $pt->pasien->nama,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            tinggiBadan: $this->pemeriksaan_fisik['tinggi_badan'],
-                            beratBadan: $this->pemeriksaan_fisik['berat_badan'],
-                        );
-                    }
-                    PemeriksaanFisikRM::create([
+                    $dataFisik = PemeriksaanFisikRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'tinggi_badan' => $this->pemeriksaan_fisik['tinggi_badan'],
                         'berat_badan' => $this->pemeriksaan_fisik['berat_badan'],
                         'imt' => $this->pemeriksaan_fisik['imt'],
                     ]);
+
+                    if($kirimsatusehat){
+                        // Encounter ID yang sudah dibuat saat POST Encounter
+                        $encounterId = $pt->encounter_id;
+                        $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
+                        if($dataFisik){
+                            $observationFisik = $PostPemeriksaanFisik->handle(
+                                encounterId: $encounterId,
+                                pasienNama: $pt->pasien->nama,
+                                pasienIhs: $pt->pasien->no_ihs,
+                                dokterNama: $pt->dokter->nama_dokter,
+                                dokterIhs: $pt->dokter->ihs,
+                                WaktuDiperiksa: $waktu_diperiksa,
+                                tinggiBadan: $dataFisik->tinggi_badan,
+                                beratBadan: $dataFisik->berat_badan,
+                            );
+                        }
+                    }
                 }
 
                 // SIMPAN DATA PEMERIKSAAN KULIT REKAM MEDIS
@@ -692,34 +692,33 @@ class Create extends Component
                         'diagnosa' => $this->diagnosa,
                     ]);
                 // }
-
-                // SIMPAN DATA ICD 10 REKAM MEDIS
-                    $condition_id = null;
-                    $encounterId = $pt->encounter_id;
                 // if (in_array('icd_10', $this->selected_forms_assessment)) {
+                    $condition_id = null;
                     foreach ($this->icd10 as $item) {
-                        // Kirim Data ICD ke Satu Sehat
-                        if($kirimsatusehat){
-                            
-                            // Panggil PostCondition
-                            $PostCondition = app(StoreCondition::class);
-                            $condition_id = $PostCondition->handle(
-                                encounterId: $encounterId,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                icdCode: $item['code'],
-                                icdName: $item['name_en'],
-                            );
+                        if (empty($item['code'])) {
+                            continue;
                         }
-                        // dd($condition_id);
-                        if (!empty($item['code'])) {
-                            IcdRM::create([
-                                'rekam_medis_id' => $rekammedis->id,
-                                'condition_id'   => $condition_id,
-                                'code'           => $item['code'],
-                                'name_id'        => $item['name_id'],
-                                'name_en'        => $item['name_en'],
-                            ]);
+                        $icd10s = IcdRM::create([
+                            'rekam_medis_id' => $rekammedis->id,
+                            'code'           => $item['code'],
+                            'name_id'        => $item['name_id'],
+                            'name_en'        => $item['name_en'],
+                        ]);
+                        if ($kirimsatusehat) {
+                            $encounterId = $pt->encounter_id;
+                            $PostCondition = app(StoreCondition::class);
+                            if($icd10s){
+                                $condition_id = $PostCondition->handle(
+                                    encounterId: $encounterId,
+                                    pasienNama: $pt->pasien->nama,
+                                    pasienIhs: $pt->pasien->no_ihs,
+                                    icdCode: $item['code'],
+                                    icdName: $item['name_en'],
+                                );
+                                // Update condition_id pada tabel lokal
+                                $icd10s->condition_id = $condition_id;
+                                $icd10s->save();
+                            }
                         }
                     }
                 // }
