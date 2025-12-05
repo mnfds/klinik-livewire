@@ -44,6 +44,7 @@ use App\Models\TreatmentBundlingUsage;
 use App\Services\StoreRiwayatPenyakit;
 use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
+use App\Services\StoreAlergiObat;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -483,7 +484,7 @@ class Create extends Component
 
                 // SIMPAN DATA KESEHATAN REKAM MEDIS
                 if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
-                    DataKesehatanRM::create([
+                    $datakesehatans = DataKesehatanRM::create([
                         'rekam_medis_id' => $rekammedis->id,
                         'status_perokok' => $this->data_kesehatan['status_perokok'],
                         'riwayat_penyakit' => json_encode($this->data_kesehatan['riwayat_penyakit']),
@@ -491,61 +492,79 @@ class Create extends Component
                         'riwayat_alergi_lainnya' => json_encode($this->data_kesehatan['riwayat_alergi_lainnya']),
                         'obat_sedang_dikonsumsi' => json_encode($this->data_kesehatan['obat_sedang_dikonsumsi']),
                     ]);
+
                     if ($kirimsatusehat) {
 
-                        // Encounter ID yang sudah dibuat saat POST Encounter
                         $encounterId = $pt->encounter_id;
-                        // Ambil data riwayat penyakit (berisi name_id saja)
-                        $icds = json_decode($this->kajian->dataKesehatan->riwayat_penyakit, true);
-                        $obatdikonsumsi = json_decode($this->kajian->dataKesehatan->obat_sedang_dikonsumsi, true);
-                        // Inisialisasi collection default
-                        $riwayatPenyakits = collect();
-                        $obatdikonsumsis = collect();
-                        // Jika array tidak kosong → ambil ICD dari DB berdasarkan name_id
-                        if ($icds && is_array($icds)) {
-                            $riwayatPenyakits = Icd::whereIn('name_id', $icds)
-                                ->get(['code', 'name_en', 'name_id']);
-                        }
-                        $payloadICD = $riwayatPenyakits->map(function ($i) {
-                            return [
-                                'code'    => $i->code,
-                                'name_en' => $i->name_en,
-                                'name_id' => $i->name_id,
-                            ];
-                        })->toArray();
-                        if(!empty($payloadICD)){
-                            $PostRiwayatPenyakit = app(StoreRiwayatPenyakit::class);
-                            $PostRiwayatPenyakit->handle(
-                                encounterId: $encounterId,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                dokterNama: $pt->dokter->nama_dokter,
-                                dokterIhs: $pt->dokter->ihs,
-                                WaktuDiperiksa: $waktu_diperiksa,
-                                icdList: $payloadICD  // ← kirim array ICD lengkap
-                            );
+
+                        // AMBIL LANGSUNG DARI DATA KESEHATAN RM
+                        $icds = json_decode($datakesehatans->riwayat_penyakit, true);
+                        $obatdikonsumsi = json_decode($datakesehatans->obat_sedang_dikonsumsi, true);
+                        $alergi = json_decode($datakesehatans->riwayat_alergi_obat, true);
+
+                        // ---- Riwayat Penyakit ----
+                        if ($icds) {
+                            $riwayatPenyakits = Icd::whereIn('name_id', $icds)->get(['code', 'name_en', 'name_id']);
+
+                            if ($riwayatPenyakits->isNotEmpty()) {
+                                $payloadICD = $riwayatPenyakits->map(fn($i) => [
+                                    'code' => $i->code,
+                                    'name_en' => $i->name_en,
+                                    'name_id' => $i->name_id,
+                                ])->toArray();
+
+                                app(StoreRiwayatPenyakit::class)->handle(
+                                    encounterId: $encounterId,
+                                    pasienNama: $pt->pasien->nama,
+                                    pasienIhs: $pt->pasien->no_ihs,
+                                    dokterNama: $pt->dokter->nama_dokter,
+                                    dokterIhs: $pt->dokter->ihs,
+                                    WaktuDiperiksa: $waktu_diperiksa,
+                                    icdList: $payloadICD
+                                );
+                            }
                         }
 
-                        if ($obatdikonsumsi && is_array($obatdikonsumsi)) {
+                        // ---- Obat Dikonsumsi ----
+                        if ($obatdikonsumsi) {
                             $obatdikonsumsis = KfaObat::whereIn('nama_obat_aktual', $obatdikonsumsi)
-                                ->select('kode_kfa_aktual', 'nama_obat_aktual')
-                                ->distinct()
-                                ->get();
+                                ->select('kode_kfa_aktual', 'nama_obat_aktual')->distinct()->get();
+
+                            if ($obatdikonsumsis->isNotEmpty()) {
+                                $payloadObatDikonsumsi = $obatdikonsumsis->map(fn($o) => [
+                                    'kode_kfa_aktual' => $o->kode_kfa_aktual,
+                                    'nama_obat_aktual' => $o->nama_obat_aktual,
+                                ])->toArray();
+
+                                app(StoreObatDikonsumsi::class)->handle(
+                                    encounterId: $encounterId,
+                                    pasienNama: $pt->pasien->nama,
+                                    pasienIhs: $pt->pasien->no_ihs,
+                                    obatKonsumsiList: $payloadObatDikonsumsi
+                                );
+                            }
                         }
-                        $payloadObatDikonsumsi = $obatdikonsumsis->map(function ($o) {
-                            return [
-                                'kode_kfa_aktual'  => $o->kode_kfa_aktual,
-                                'nama_obat_aktual' => $o->nama_obat_aktual,
-                            ];
-                        })->toArray();
-                        if(!empty($payloadObatDikonsumsi)){
-                            $PostObatDikonsumsi = app(StoreObatDikonsumsi::class);
-                            $PostObatDikonsumsi->handle(
-                                encounterId: $encounterId,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                obatKonsumsiList: $payloadObatDikonsumsi  // ← kirim array KFA OBAT lengkap
-                            );
+
+                        // ---- Alergi Obat ----
+                        if ($alergi) {
+                            $alergiobat = KfaObat::whereIn('nama_obat_aktual', $alergi)
+                                ->select('kode_kfa_aktual', 'nama_obat_aktual')->distinct()->get();
+
+                            if ($alergiobat->isNotEmpty()) {
+                                $payloadAlergi = $alergiobat->map(fn($o) => [
+                                    'kode_kfa_aktual' => $o->kode_kfa_aktual,
+                                    'nama_obat_aktual' => $o->nama_obat_aktual,
+                                ])->toArray();
+
+                                app(StoreAlergiObat::class)->handle(
+                                    encounterId: $encounterId,
+                                    pasienNama: $pt->pasien->nama,
+                                    pasienIhs: $pt->pasien->no_ihs,
+                                    dokterNama: $pt->dokter->nama_dokter,
+                                    dokterIhs: $pt->dokter->ihs,
+                                    obatAlergiList: $payloadAlergi
+                                );
+                            }
                         }
                     }
                 }
