@@ -45,8 +45,10 @@ use App\Services\StoreRiwayatPenyakit;
 use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
 use App\Services\StoreAlergiObat;
+use App\Services\StoreIntruksiObatNonRacik;
 use App\Services\StoreKonselingProcedure;
 use App\Services\StoreKonselingService;
+use App\Services\StoreObatNonRacik;
 use App\Services\StoreTingkatKesadaran;
 use App\View\Components\rekammedis\rencanalayanan;
 
@@ -934,7 +936,9 @@ class Create extends Component
                 // SIMPAN DATA OBAT NON RACIK
                 if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
                     foreach ($this->obat_non_racikan['nama_obat_non_racikan'] as $index => $namaObat) {
-                        ObatNonRacikanRM::create([
+                        if (empty($namaObat)) continue;
+
+                        $nonracik = ObatNonRacikanRM::create([
                             'rekam_medis_id' => $rekammedis->id,
                             'nama_obat_non_racikan' => $namaObat,
                             'jumlah_obat_non_racikan' => $this->obat_non_racikan['jumlah_obat_non_racikan'][$index] ?? 1,
@@ -943,6 +947,31 @@ class Create extends Component
                             'hari_obat_non_racikan' => $this->obat_non_racikan['hari_obat_non_racikan'][$index] ?? null,
                             'aturan_pakai_obat_non_racikan' => $this->obat_non_racikan['aturan_pakai_obat_non_racikan'][$index] ?? null,
                         ]);
+                        $kfa = KfaObat::where('nama_obat_aktual', $namaObat)->first();
+                        // dd($kfa);
+                        $nonracik_id = null;
+                        if ($kirimsatusehat && $kfa) {
+                            $PostObatNonRacik = app(StoreObatNonRacik::class);
+                            $nonracik_id = $PostObatNonRacik->handle(
+                                kfaKodeAktual: $kfa->kode_kfa_aktual,
+                                kfaNamaDagang: $kfa->nama_obat_aktual,
+                                kfaKodeVirtual: $kfa->kode_kfa_virtual,
+                                kfaNamaVirtual: $kfa->nama_obat_virtual,
+                            );
+                        }
+                        if($nonracik_id){
+                            $postIntruksiObatNonRacik = app(StoreIntruksiObatNonRacik::class);
+                            $postIntruksiObatNonRacik->handle(
+                                medicationId: $nonracik_id,
+                                kfaNamaDagang: $kfa->nama_obat_aktual,
+                                pasienNama: $pt->pasien->nama,
+                                pasienIhs: $pt->pasien->no_ihs,
+                                encounterId: $pt->encounter_id,
+                                dokterNama: $pt->dokter->nama_dokter,
+                                dokterIhs: $pt->dokter->ihs,
+                                waktuDiperiksa: $waktu_diperiksa,
+                            );
+                        }
                     }
                 }
                 
