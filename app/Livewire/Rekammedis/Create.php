@@ -46,9 +46,11 @@ use App\Services\StorePemeriksaanFisik;
 use App\Services\PutInProgressEncounter;
 use App\Services\StoreAlergiObat;
 use App\Services\StoreIntruksiObatNonRacik;
+use App\Services\StoreIntruksiObatRacik;
 use App\Services\StoreKonselingProcedure;
 use App\Services\StoreKonselingService;
 use App\Services\StoreObatNonRacik;
+use App\Services\StoreObatRacik;
 use App\Services\StoreTingkatKesadaran;
 use App\View\Components\rekammedis\rencanalayanan;
 
@@ -991,6 +993,7 @@ class Create extends Component
                         ]);
 
                         // 2. Simpan bahan racikan (jika ada)
+                        $bahanList = [];
                         if (!empty($racikan['bahan']) && is_array($racikan['bahan'])) {
                             foreach ($racikan['bahan'] as $bahan) {
                                 $obatRacikan->bahanRacikan()->create([
@@ -999,6 +1002,43 @@ class Create extends Component
                                     'jumlah_obat_racikan' => $bahan['jumlah_obat_racikan'] ?? 1,
                                     'satuan_obat_racikan' => $bahan['satuan_obat_racikan'] ?? null,
                                 ]);
+                                // kumpulkan bahan untuk payload SATUSEHAT
+                                $kfa = KfaObat::where('nama_obat_aktual', $bahan['nama_obat_racikan'])->first();
+                                if ($kfa) {
+                                    $bahanList[] = [
+                                        'kfaKodeAktual'   => $kfa->kode_kfa_aktual,
+                                        'namaObatDagang'  => $kfa->nama_obat_aktual
+                                    ];
+                                }
+                            }
+                        }
+
+                        if ($kirimsatusehat && count($bahanList) > 0) {
+
+                            // POST Medication Racik
+                            $PostObatRacik = app(StoreObatRacik::class);
+                            $racik_medication_id = $PostObatRacik->handle(
+                                namaRacikan: $racikan['nama_racikan'],
+                                ingredients: $bahanList,
+                            );
+
+                            // POST Instruksi Racik
+                            if ($racik_medication_id) {
+                                $postInstruksiRacik = app(StoreIntruksiObatRacik::class);
+                                $postInstruksiRacik->handle(
+                                    medicationId: $racik_medication_id,
+                                    namaRacikan: $racikan['nama_racikan'],
+                                    encounterId: $pt->encounter_id,
+                                    pasienNama: $pt->pasien->nama,
+                                    pasienIhs: $pt->pasien->no_ihs,
+                                    dokterNama: $pt->dokter->nama_dokter,
+                                    dokterIhs: $pt->dokter->ihs,
+                                    waktuDiperiksa: $waktu_diperiksa,
+                                    aturanPakai: $racikan['aturan_pakai_racikan'],
+                                    dosis: $racikan['dosis_obat_racikan'],
+                                    jumlahHari: $racikan['hari_obat_racikan'],
+                                    jumlahRacikan: $racikan['jumlah_racikan'],
+                                );
                             }
                         }
                     }
