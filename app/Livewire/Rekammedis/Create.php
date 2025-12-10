@@ -952,6 +952,7 @@ class Create extends Component
                         $kfa = KfaObat::where('nama_obat_aktual', $namaObat)->first();
                         // dd($kfa);
                         $nonracik_id = null;
+                        $nonracikrequest_id = null;
                         if ($kirimsatusehat && $kfa) {
                             $PostObatNonRacik = app(StoreObatNonRacik::class);
                             $nonracik_id = $PostObatNonRacik->handle(
@@ -960,10 +961,11 @@ class Create extends Component
                                 kfaKodeVirtual: $kfa->kode_kfa_virtual,
                                 kfaNamaVirtual: $kfa->nama_obat_virtual,
                             );
+                            $nonracik->medication_id = $nonracik_id;
                         }
                         if($nonracik_id){
                             $postIntruksiObatNonRacik = app(StoreIntruksiObatNonRacik::class);
-                            $postIntruksiObatNonRacik->handle(
+                            $nonracikrequest_id = $postIntruksiObatNonRacik->handle(
                                 medicationId: $nonracik_id,
                                 kfaNamaDagang: $kfa->nama_obat_aktual,
                                 pasienNama: $pt->pasien->nama,
@@ -973,7 +975,9 @@ class Create extends Component
                                 dokterIhs: $pt->dokter->ihs,
                                 waktuDiperiksa: $waktu_diperiksa,
                             );
+                            $nonracik->medication_request_id = $nonracikrequest_id;
                         }
+                        $nonracik->save();
                     }
                 }
                 
@@ -1013,19 +1017,21 @@ class Create extends Component
                             }
                         }
 
+                        $racik_medication_id = null;
+                        $racikrequest_id = null;
                         if ($kirimsatusehat && count($bahanList) > 0) {
-
                             // POST Medication Racik
                             $PostObatRacik = app(StoreObatRacik::class);
                             $racik_medication_id = $PostObatRacik->handle(
                                 namaRacikan: $racikan['nama_racikan'],
                                 ingredients: $bahanList,
                             );
+                            $obatRacikan->medication_id = $racik_medication_id;
 
                             // POST Instruksi Racik
                             if ($racik_medication_id) {
                                 $postInstruksiRacik = app(StoreIntruksiObatRacik::class);
-                                $postInstruksiRacik->handle(
+                                $racikrequest_id = $postInstruksiRacik->handle(
                                     medicationId: $racik_medication_id,
                                     namaRacikan: $racikan['nama_racikan'],
                                     encounterId: $pt->encounter_id,
@@ -1039,8 +1045,10 @@ class Create extends Component
                                     jumlahHari: $racikan['hari_obat_racikan'],
                                     jumlahRacikan: $racikan['jumlah_racikan'],
                                 );
+                                $obatRacikan->medication_request_id = $racikrequest_id;
                             }
                         }
+                        $obatRacikan->save();
                     }
                 }
 

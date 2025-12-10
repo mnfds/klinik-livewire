@@ -23,6 +23,9 @@ return new class extends Migration
             $table->text('hari_obat_racikan')->nullable();
             $table->text('aturan_pakai_racikan')->nullable();
             $table->text('metode_racikan')->nullable();
+            $table->text('medication_id')->nullable();
+            $table->text('medication_request_id')->nullable();
+            $table->text('medication_dispense_id')->nullable();
             $table->timestamps();
         });
     }
