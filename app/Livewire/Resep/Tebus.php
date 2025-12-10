@@ -166,7 +166,7 @@ class Tebus extends Component
         foreach ($obatNonRacikList as $nonracik) {
             if (!$nonracik->medication_id || !$nonracik->medication_request_id) {continue;}
             $postMedDispenseNonRacik = app(StorePenyerahanObatNonRacik::class);
-            $postMedDispenseNonRacik->handle(
+            $nonRacikMedDispenseId = $postMedDispenseNonRacik->handle(
                 encounterId: $encounterId,
                 medId: $nonracik->medication_id,
                 medRequestId: $nonracik->medication_request_id,
@@ -177,12 +177,17 @@ class Tebus extends Component
                 waktuDisiapkan: $pt->waktu_pulang,
                 waktuDiserahkan: $waktu_diserahkan,
             );
+            if ($nonRacikMedDispenseId) {
+                $nonracik->update([
+                    'medication_dispense_id' => $nonRacikMedDispenseId
+                ]);
+            }
         }
 
         foreach ($obatRacikList as $racik) {
             if (!$racik->medication_id || !$racik->medication_request_id) {continue;}
             $postMedDispenseRacik = app(StorePenyerahanObatRacik::class);
-            $postMedDispenseRacik->handle(
+            $racikMedDispenseId =$postMedDispenseRacik->handle(
                 encounterId: $encounterId,
                 medId: $racik->medication_id,
                 medRequestId: $racik->medication_request_id,
@@ -194,6 +199,11 @@ class Tebus extends Component
                 waktuDiserahkan: $waktu_diserahkan,
                 medName: $racik->nama_racikan,
             );
+            if ($racikMedDispenseId) {
+                $racik->update([
+                    'medication_dispense_id' => $racikMedDispenseId
+                ]);
+            }
         }
 
         $this->dispatch('toast', [
