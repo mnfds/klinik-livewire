@@ -23,7 +23,7 @@ class StorePenyerahanObatNonRacik
     public function handle(
         $encounterId, $medId, $medRequestId,
         $pasienNama, $pasienIhs,
-        $dokterNama, $dokterIhs,
+        // $dokterNama, $dokterIhs,
         $waktuDisiapkan, $waktuDiserahkan
     ) {
         try {
@@ -64,14 +64,15 @@ class StorePenyerahanObatNonRacik
                 "context" => [
                     "reference" => "Encounter/" . $encounterId,
                 ],
-                "performer" => [
-                    [
-                        "actor" => [
-                            "reference" => "Practitioner/" . $dokterIhs,
-                            "display" => $dokterNama,
-                        ]
-                    ],
-                ],
+                // Apoteker
+                // "performer" => [
+                //     [
+                //         "actor" => [
+                //             "reference" => "Practitioner/" . $dokterIhs,
+                //             "display" => $dokterNama,
+                //         ]
+                //     ],
+                // ],
                 "authorizingPrescription" => [
                     [
                         "reference" => "MedicationRequest/" . $medRequestId,
