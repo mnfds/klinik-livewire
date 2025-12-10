@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('aturan_pakai_obat_non_racikan')->nullable();
             $table->text('medication_id')->nullable();
             $table->text('medication_request_id')->nullable();
+            $table->text('medication_dispense_id')->nullable();
             $table->timestamps();
         });
     }

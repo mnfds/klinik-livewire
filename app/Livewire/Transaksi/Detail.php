@@ -287,8 +287,24 @@ class Detail extends Component
             }
 
             // --- Obat Non Racik ---
-            foreach ($this->selectedObat as $item) {
+            // foreach ($this->selectedObat as $item) {
+            //     $subtotalnonracik = (int) ($item->total_obat ?? 0);
+            //     RiwayatTransaksiKlinik::create([
+            //         'transaksi_klinik_id' => $transaksi->id,
+            //         'jenis_item' => 'obat_non_racik',
+            //         'nama_item' => $item->produk->nama_dagang ?? '-',
+            //         'qty' => $item->jumlah_obat,
+            //         'harga' => $item->harga_obat,
+            //         'subtotal' => $subtotalnonracik,
+            //     ]);
+            //     $totalTagihan += $subtotalnonracik;
+            // }
+            foreach ($this->selectedObat as $id) {
+                $item = ObatNonRacikanFinal::with('produk')->find($id);
+                if (!$item) continue;
+
                 $subtotalnonracik = (int) ($item->total_obat ?? 0);
+
                 RiwayatTransaksiKlinik::create([
                     'transaksi_klinik_id' => $transaksi->id,
                     'jenis_item' => 'obat_non_racik',
@@ -297,22 +313,41 @@ class Detail extends Component
                     'harga' => $item->harga_obat,
                     'subtotal' => $subtotalnonracik,
                 ]);
+
                 $totalTagihan += $subtotalnonracik;
             }
 
             // --- Obat Racik ---
-            foreach ($this->selectedObat as $item) {
+            // foreach ($this->selectedObat as $item) {
+            //     $subtotalracik = (int) ($item->total_racikan ?? 0);
+            //     RiwayatTransaksiKlinik::create([
+            //         'transaksi_klinik_id' => $transaksi->id,
+            //         'jenis_item' => 'obat_racik',
+            //         'nama_item' => $item->bahanRacikanFinals->produk->nama_dagang ?? '-',
+            //         'qty' => $item->jumlah_racikan,
+            //         'harga' => $subtotalracik,
+            //         'subtotal' => $subtotalracik,
+            //     ]);
+            //     $totalTagihan += $subtotalracik;
+            // }
+            foreach ($this->selectedRacikan as $id) {
+                $item = ObatRacikanFinal::with('bahanRacikanFinals.produk')->find($id);
+                if (!$item) continue;
+
                 $subtotalracik = (int) ($item->total_racikan ?? 0);
+
                 RiwayatTransaksiKlinik::create([
                     'transaksi_klinik_id' => $transaksi->id,
                     'jenis_item' => 'obat_racik',
-                    'nama_item' => $item->bahanRacikanFinals->produk->nama_dagang ?? '-',
+                    'nama_item' => $item->nama_racikan ?? '-',
                     'qty' => $item->jumlah_racikan,
                     'harga' => $subtotalracik,
                     'subtotal' => $subtotalracik,
                 ]);
+
                 $totalTagihan += $subtotalracik;
             }
+
 
             // ✅ 3. Update total tagihan transaksi
             $transaksi->update([
