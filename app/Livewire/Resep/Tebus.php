@@ -4,6 +4,9 @@ namespace App\Livewire\Resep;
 
 use Livewire\Component;
 use App\Models\PasienTerdaftar;
+use App\Services\StorePenyerahanObatNonRacik;
+use App\Services\StorePenyerahanObatRacik;
+use Carbon\Carbon;
 
 class Tebus extends Component
 {
@@ -31,6 +34,8 @@ class Tebus extends Component
             'rekamMedis.rencanaBundlingRM.bundling.produkObatBundlings.produk',
             'rekamMedis.produkBundlingUsages.produk',
             'rekamMedis.produkBundlingUsages.bundling',
+            'rekamMedis.obatNonRacikanRM',
+            'rekamMedis.obatRacikanRM',
         ])->findOrFail($this->pasien_terdaftar_id);
 
         $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
@@ -151,7 +156,46 @@ class Tebus extends Component
     public function create()
     {
         PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'selesai']);
-        // dd([$this->nama]);
+        $rekam = $this->pasienTerdaftar->rekamMedis;
+        $pt = PasienTerdaftar::with(['pasien','dokter'])->findOrFail($this->pasien_terdaftar_id);
+        $encounterId = $pt->encounter_id;
+        $waktu_diserahkan = Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
+        $obatNonRacikList = $rekam?->obatNonRacikanRM ?? collect(); // Obat Non Racik
+        $obatRacikList = $rekam?->obatRacikanRM ?? collect(); // Obat Racikan
+
+        foreach ($obatNonRacikList as $nonracik) {
+            if (!$nonracik->medication_id || !$nonracik->medication_request_id) {continue;}
+            $postMedDispenseNonRacik = app(StorePenyerahanObatNonRacik::class);
+            $postMedDispenseNonRacik->handle(
+                encounterId: $encounterId,
+                medId: $nonracik->medication_id,
+                medRequestId: $nonracik->medication_request_id,
+                pasienNama: $pt->pasien->nama,
+                pasienIhs: $pt->pasien->no_ihs,
+                dokterNama: $pt->dokter->nama_dokter,
+                dokterIhs: $pt->dokter->ihs,
+                waktuDisiapkan: $pt->waktu_pulang,
+                waktuDiserahkan: $waktu_diserahkan,
+            );
+        }
+
+        foreach ($obatRacikList as $racik) {
+            if (!$racik->medication_id || !$racik->medication_request_id) {continue;}
+            $postMedDispenseRacik = app(StorePenyerahanObatRacik::class);
+            $postMedDispenseRacik->handle(
+                encounterId: $encounterId,
+                medId: $racik->medication_id,
+                medRequestId: $racik->medication_request_id,
+                pasienNama: $pt->pasien->nama,
+                pasienIhs: $pt->pasien->no_ihs,
+                dokterNama: $pt->dokter->nama_dokter,
+                dokterIhs: $pt->dokter->ihs,
+                waktuDisiapkan: $pt->waktu_pulang,
+                waktuDiserahkan: $waktu_diserahkan,
+                medName: $racik->nama_racikan,
+            );
+        }
+
         $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Transaksi Selesai.'
