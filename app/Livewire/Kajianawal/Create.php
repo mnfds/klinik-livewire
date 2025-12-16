@@ -91,7 +91,7 @@ class Create extends Component
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
         ];
         if (in_array('data-kesehatan', $this->selected_forms)) {
-            $rules['keluhan_utama'] = 'required|string|min:3';
+            $rules['keluhan_utama'] = 'required|string';
         }
         if (in_array('tanda-vital', $this->selected_forms)) {
             // $rules['suhu_tubuh'] = 'required';

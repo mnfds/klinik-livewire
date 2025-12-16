@@ -24,7 +24,9 @@ use App\Models\RencanaProdukRM;
 use App\Models\ObatNonRacikanRM;
 use App\Models\RencanaLayananRM;
 use App\Services\StoreCondition;
+use App\Services\StoreObatRacik;
 use App\Services\StoreVitalSign;
+use App\Services\StoreAlergiObat;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
 use App\Models\RencanaTreatmentRM;
@@ -35,6 +37,7 @@ use App\Models\ProdukBundlingUsage;
 use App\Models\RencananaBundlingRM;
 use App\Models\TreatmentBundlingRM;
 use App\Services\StoreKeluhanUtama;
+use App\Services\StoreObatNonRacik;
 use Illuminate\Support\Facades\Log;
 use App\Models\ProdukObatBundlingRM;
 use Illuminate\Support\Facades\Auth;
@@ -42,16 +45,14 @@ use App\Services\StoreObatDikonsumsi;
 use App\Models\PelayananBundlingUsage;
 use App\Models\TreatmentBundlingUsage;
 use App\Services\StoreRiwayatPenyakit;
+use App\Services\StoreKonselingService;
 use App\Services\StorePemeriksaanFisik;
+use App\Services\StoreTingkatKesadaran;
 use App\Services\PutInProgressEncounter;
-use App\Services\StoreAlergiObat;
-use App\Services\StoreIntruksiObatNonRacik;
 use App\Services\StoreIntruksiObatRacik;
 use App\Services\StoreKonselingProcedure;
-use App\Services\StoreKonselingService;
-use App\Services\StoreObatNonRacik;
-use App\Services\StoreObatRacik;
-use App\Services\StoreTingkatKesadaran;
+use App\Services\StoreIntruksiObatNonRacik;
+use Illuminate\Validation\ValidationException;
 use App\View\Components\rekammedis\rencanalayanan;
 
 class Create extends Component
@@ -397,17 +398,27 @@ class Create extends Component
 
     public function create()
     {
-        $this->validate([
+        $rules = [
             'nama_dokter' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
-        ]);
+            'keluhan_utama' => 'required|string',
+            'tingkat_kesadaran' => 'required|string',
+        ];
+        if (collect($this->icd10)->flatten(1)->count() === 0) {
+            $rules['icd10'] = 'required';
+        }
+        // if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
+        //     $rules['']
+        // }
+        $this->validate($rules);
         // dd([
-        //     $this->selected_forms_subjective,
-        //     $this->selected_forms_objective,
-        //     $this->selected_forms_assessment,
-        //     $this->selected_forms_plan,
-        //     $this->pemeriksaan_fisik,
-        //     $this->tanda_vital,
+            // $this->keluhan_utama,
+            // $this->selected_forms_subjective,
+            // $this->selected_forms_objective,
+            // $this->selected_forms_assessment,
+            // $this->selected_forms_plan,
+            // $this->pemeriksaan_fisik,
+            // $this->tanda_vital,
             // $this->data_kesehatan,
             // $this->tingkat_kesadaran,
             // $this->diagnosa,

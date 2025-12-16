@@ -524,8 +524,9 @@
                                         </div>
                                         <!-- Keluhan Utama -->
                                         <div class="form-control md:col-span-2">
-                                            <label class="label">Keluhan Pasien</label>
+                                            <label class="label">Keluhan Pasien<span class="text-error">*</span></label>
                                             <input type="text" value="{{ $kajian->dataKesehatan->keluhan_utama ?? null }}" wire:model="keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
+                                            @error('keluhan_utama') <span class="text-sm text-red-500">Mohon isi keluhan utama pasien untuk melanjutkan pemeriksaan.</span> @enderror
                                         </div>
                                         <!-- DATA KESEHATAN -->
                                         <div x-show="selectedFormsSubjective.includes('data-kesehatan')" style="display: none">
@@ -564,7 +565,7 @@
                                         </div>
                                         <!-- Tingkat Kesadaran -->
                                         <div class="form-control">
-                                            <label class="label">Tingkat Kesadaran</label>
+                                            <label class="label">Tingkat Kesadaran<span class="text-error">*</span></label>
                                             <select wire:model="tingkat_kesadaran" class="select select-bordered w-full">
                                                 <option value="">Pilih Tingkatan</option>
                                                 <option value="Sadar Baik/Alert">Sadar Baik/Alert</option>
@@ -574,6 +575,7 @@
                                                 <option value="Gelisah atau bingung">Gelisah atau bingung</option>
                                                 <option value="Acute Confusional States">Acute Confusional States</option>
                                             </select>
+                                            @error('keluhan_utama') <span class="text-sm text-red-500">Mohon tentukan tingkat kesadaran pasien untuk melanjutkan pemeriksaan.</span> @enderror
                                         </div>
                                         <!-- Tanda Vital -->
                                         <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
@@ -611,7 +613,7 @@
                                         <!-- ICD 10 -->
                                         {{-- <div x-show="selectedFormsAssessment.includes('icd_10')" style="display: none"> --}}
                                             <div class="form-control" x-data="multiSelectIcd10()" x-init="init()">
-                                                <label class="label">ICD 10</label>
+                                                <label class="label">ICD 10<span class="text-error">*</span></label>
 
                                                 <!-- Input Area -->
                                                 <div class="relative" @click="setTimeout(() => open = true, 10)">
@@ -660,6 +662,7 @@
 
                                                 <span class="text-xs text-gray-400 mt-1">* Klik untuk pilih, klik ulang untuk hapus</span>
                                             </div>
+                                            @error('icd10') <span class="text-sm text-red-500">Mohon tentukan diagnosa ICD 10 pasien untuk melanjutkan pemeriksaan.</span> @enderror
                                         {{-- </div> --}}
 
                                         <!-- Diagnosa -->
