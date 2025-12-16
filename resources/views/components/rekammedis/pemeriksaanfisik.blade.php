@@ -8,15 +8,25 @@
 ])
     <div class="divider">Pemeriksaan Fisik Pasien</div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="input input-bordered flex items-center gap-2">
+        <div class="form-control">
+            <label class="label">Tinggi Badan (Cm)<span class="text-error">*</span></label>
+            <input value="{{ $pemeriksaanFisik['tinggi_badan'] }}" type="number" wire:model="pemeriksaan_fisik.tinggi_badan" id="tinggi_badan" placeholder="Tinggi Badan Pasien" class="input input-bordered w-full grow" />
+            @error('pemeriksaan_fisik.tinggi_badan') <span class="text-sm text-red-500">Mohon isi tinggi badan pasien untuk melanjutkan pemeriksaan.</span> @enderror
+        </div>
+        <div class="form-control">
+            <label class="label">Berat Badan (Kg)<span class="text-error">*</span></label>
+            <input value="{{ $pemeriksaanFisik['berat_badan'] }}" type="number" wire:model="pemeriksaan_fisik.berat_badan" id="berat_badan" placeholder="Berat Badan Pasien" class="input input-bordered w-full grow" />
+            @error('pemeriksaan_fisik.berat_badan') <span class="text-sm text-red-500">Mohon isi berat badan pasien untuk melanjutkan pemeriksaan.</span> @enderror
+        </div>
+        {{-- <label class="input input-bordered flex items-center gap-2">
             <input value="{{ $pemeriksaanFisik['tinggi_badan'] }}" wire:model="pemeriksaan_fisik.tinggi_badan" type="number" id="tinggi_badan" placeholder="Tinggi Badan" class="grow" />
             <span class="label">cm</span>
-        </label>
+        </label> --}}
 
-        <label class="input input-bordered flex items-center gap-2">
+        {{-- <label class="input input-bordered flex items-center gap-2">
             <input value="{{ $pemeriksaanFisik['berat_badan'] }}" wire:model="pemeriksaan_fisik.berat_badan" type="number" id="berat_badan" placeholder="Berat Badan" class="grow" />
             <span class="label">kg</span>
-        </label>
+        </label> --}}
     </div>
     <div class="mt-4">
         <label class="input input-bordered flex items-center gap-2">

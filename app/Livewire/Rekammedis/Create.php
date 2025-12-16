@@ -407,9 +407,10 @@ class Create extends Component
         if (collect($this->icd10)->flatten(1)->count() === 0) {
             $rules['icd10'] = 'required';
         }
-        // if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
-        //     $rules['']
-        // }
+        if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
+            $rules['pemeriksaan_fisik.tinggi_badan'] = 'required';
+            $rules['pemeriksaan_fisik.berat_badan'] = 'required';
+        }
         $this->validate($rules);
         // dd([
             // $this->keluhan_utama,
