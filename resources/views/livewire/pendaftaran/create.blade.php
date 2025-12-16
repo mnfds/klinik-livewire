@@ -60,22 +60,22 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="form-control">
                                     <label class="label">
-                                        <span class="label-text">Tanggal Kunjungan</span>
+                                        <span class="label-text">Tanggal Kunjungan<span class="text-error">*</span></span>
                                     </label>
                                     <input type="date" wire:model.defer="tanggal_kunjungan" class="input input-bordered" />
-                                    @error('tanggal_kunjungan') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('tanggal_kunjungan') <span class="text-sm text-red-500">Harap tentukan tanggal kunjungan terlebih dahulu</span> @enderror
                                 </div>
 
                                 <div class="form-control">
                                     <label class="label">
-                                        <span class="label-text">Jenis Kunjungan</span>
+                                        <span class="label-text">Jenis Kunjungan<span class="text-error">*</span></span>
                                     </label>
                                     <select wire:model.defer="jenis_kunjungan" class="select select-bordered">
                                         <option value="">Pilih Jenis</option>
                                         <option value="sehat">Sehat</option>
                                         <option value="sakit">Sakit</option>
                                     </select>
-                                    @error('jenis_kunjungan') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('jenis_kunjungan') <span class="text-sm text-red-500">Harap tentukan jenis kunjungan terlebih dahulu</span> @enderror
                                 </div>
                             </div>
                         </div>
@@ -87,26 +87,26 @@
                                 
                                 {{-- Poli --}}
                                 <div class="form-control">
-                                    <label class="label"><span class="label-text">Pilih Poli</span></label>
+                                    <label class="label"><span class="label-text">Pilih Poli<span class="text-error">*</span></span></label>
                                     <select wire:model.defer="poli_id" class="select select-bordered" @if($antrian_id) disabled @endif>
                                         <option value="">Pilih Poli</option>
                                         @foreach ($poli as $p)
                                             <option value="{{ $p->id }}">{{ $p->nama_poli }}</option>
                                         @endforeach
                                     </select>
-                                    @error('poli_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('poli_id') <span class="text-sm text-red-500">Harap tentukan poliklinik tujuan terlebih dahulu</span> @enderror
                                 </div>
 
                                 {{-- Dokter --}}
                                 <div class="form-control">
-                                    <label class="label"><span class="label-text">Pilih Dokter</span></label>
+                                    <label class="label"><span class="label-text">Pilih Dokter<span class="text-error">*</span></span></label>
                                     <select wire:model.defer="dokter_id" class="select select-bordered">
                                         <option value="">Pilih Dokter</option>
                                         @foreach ($dokter as $d)
                                             <option value="{{ $d->id }}">{{ $d->nama_dokter }}</option>
                                         @endforeach
                                     </select>
-                                    @error('dokter_id') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('dokter_id') <span class="text-sm text-red-500">Harap tentukan dokter terlebih dahulu</span> @enderror
                                 </div>
 
                             </div>

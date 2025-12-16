@@ -2,17 +2,19 @@
     <div class="divider">Pemeriksaan Fisik</div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="input input-bordered flex items-center gap-2">
-            <input wire:model="tinggi_badan" type="number" id="tinggi_badan" placeholder="Tinggi Badan" class="grow" />
-            <span class="label">cm</span>
-        </label>
-
-        <label class="input input-bordered flex items-center gap-2">
-            <input type="number" wire:model="berat_badan" id="berat_badan" placeholder="Berat Badan" class="grow" />
-            <span class="label">kg</span>
-        </label>
+        <div class="form-control">
+            <label class="label">Tinggi Badan (Cm)<span class="text-error">*</span></label>
+            <input type="number" wire:model="tinggi_badan" id="tinggi_badan" placeholder="Tinggi Badan Pasien" class="input input-bordered w-full grow" />
+            @error('tinggi_badan') <span class="text-sm text-red-500">Mohon isi tinggi badan pasien untuk melanjutkan pemeriksaan.</span> @enderror
+        </div>
+        <div class="form-control">
+            <label class="label">Berat Badan (Kg)<span class="text-error">*</span></label>
+            <input type="number" wire:model="berat_badan" id="berat_badan" placeholder="Berat Badan Pasien" class="input input-bordered w-full grow" />
+            @error('berat_badan') <span class="text-sm text-red-500">Mohon isi berat badan pasien untuk melanjutkan pemeriksaan.</span> @enderror
+        </div>
     </div>
     <div class="mt-4">
+        <label class="label"> Kalkulasi IMT</label>
         <label class="input input-bordered flex items-center gap-2">
             <input type="text" id="imt_result" readonly class="grow" placeholder="IMT akan muncul di sini" />
             <span class="label">kg/m²</span>

@@ -3,8 +3,9 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Keluhan Utama -->
         <div class="form-control md:col-span-2">
-            <label class="label">Keluhan Pasien</label>
+            <label class="label">Keluhan Pasien<span class="text-error">*</span></label>
             <input type="text" wire:model="keluhan_utama" placeholder="Keluhan Utama" class="input input-bordered w-full" />
+            @error('keluhan_utama') <span class="text-sm text-red-500">Mohon isi keluhan utama pasien untuk melanjutkan pemeriksaan.</span> @enderror
         </div>
 
         <!-- Status Perokok -->

@@ -82,18 +82,35 @@ class Create extends Component
         if ($this->pasien_terdaftar_id) {
             $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
         }
-
     }
 
     public function create()
     {
-        $this->validate([
+        $rules = [
             'nama_pengkaji' => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
-        ]);
-
+        ];
+        if (in_array('data-kesehatan', $this->selected_forms)) {
+            $rules['keluhan_utama'] = 'required|string|min:3';
+        }
+        if (in_array('tanda-vital', $this->selected_forms)) {
+            // $rules['suhu_tubuh'] = 'required';
+            // $rules['nadi'] = 'required';
+            // $rules['sistole'] = 'required';
+            // $rules['diastole'] = 'required';
+            // $rules['frekuensi_pernapasan'] = 'required';
+        }
+        if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
+            $rules['tinggi_badan'] = 'required';
+            $rules['berat_badan'] = 'required';
+        }
+        $this->validate($rules);
+        dd(
+            $this->tinggi_badan,
+            $this->berat_badan,
+            $this->imt,
+        );
         DB::beginTransaction();
-
         try {
             $kajianawal = KajianAwal::create([
                 'nama_pengkaji' => $this->nama_pengkaji,
@@ -127,23 +144,6 @@ class Create extends Component
 
             // Simpan data tanda vital
             if (in_array('tanda-vital', $this->selected_forms)) {
-                // if($kirimsatusehat){
-                    
-                //     $PostVitalSign = app(StoreVitalSign::class);
-                //     $observation = $PostVitalSign->handle(
-                //         encounterId: $encounterId,
-                //         pasienNama: $pt->pasien->nama,
-                //         pasienIhs: $pt->pasien->no_ihs,
-                //         dokterNama: $pt->dokter->nama_dokter,
-                //         dokterIhs: $pt->dokter->ihs,
-                //         waktuTiba: $pt->waktu_tiba,
-                //         sistole: $this->sistole,
-                //         diastole: $this->diastole,
-                //         suhu_tubuh: $this->suhu_tubuh,
-                //         nadi: $this->nadi,
-                //         pernapasan: $this->frekuensi_pernapasan,
-                //     );
-                // }
                 TandaVital::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'suhu_tubuh' => $this->suhu_tubuh,
@@ -156,20 +156,6 @@ class Create extends Component
 
             // Simpan data pemeriksaan fisik
             if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
-                // if($kirimsatusehat){
-                    
-                //     $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
-                //     $observationFisik = $PostPemeriksaanFisik->handle(
-                //         encounterId: $encounterId,
-                //         pasienNama: $pt->pasien->nama,
-                //         pasienIhs: $pt->pasien->no_ihs,
-                //         dokterNama: $pt->dokter->nama_dokter,
-                //         dokterIhs: $pt->dokter->ihs,
-                //         waktuTiba: $pt->waktu_tiba,
-                //         tinggiBadan: $this->tinggi_badan,
-                //         beratBadan: $this->berat_badan,
-                //     );
-                // }
                 PemeriksaanFisik::create([
                     'kajian_awal_id' => $kajianawal->id,
                     'tinggi_badan' => $this->tinggi_badan,
@@ -237,7 +223,6 @@ class Create extends Component
 
     public function render()
     {
-
         return view('livewire.kajianawal.create');
     }
 }

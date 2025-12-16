@@ -57,10 +57,10 @@
                             <h2 class="text-lg font-semibold border-b pb-2">Informasi Terkait</h2>
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text font-medium">Tenaga Kesehatan Pengkaji</span>
+                                    <span class="label-text font-medium">Tenaga Kesehatan Pengkaji<span class="text-error">*</span></span>
                                 </label>
                                 <select wire:model.defer="nama_pengkaji" class="select select-bordered w-full">
-                                    <option value="">Pilih Nakes</option>
+                                    <option value="">Pilih Tenaga Kesehatan</option>
                                     @foreach ($perawat as $p)
                                         <option value="{{ $p->biodata->nama_lengkap }}">{{ $p->biodata->nama_lengkap }}</option>
                                     @endforeach
@@ -69,7 +69,7 @@
                                     @endforeach
                                 </select>
                                 @error('nama_pengkaji') 
-                                    <span class="text-sm text-red-500">{{ $message }}</span> 
+                                    <span class="text-sm text-red-500">Harap tentukan Tenaga Kesehatan pengkaji terlebih dahulu</span> 
                                 @enderror
                             </div>
                         </div>
