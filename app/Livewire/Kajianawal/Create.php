@@ -105,11 +105,11 @@ class Create extends Component
             $rules['berat_badan'] = 'required';
         }
         $this->validate($rules);
-        dd(
-            $this->tinggi_badan,
-            $this->berat_badan,
-            $this->imt,
-        );
+        // dd(
+        //     $this->tinggi_badan,
+        //     $this->berat_badan,
+        //     $this->imt,
+        // );
         DB::beginTransaction();
         try {
             $kajianawal = KajianAwal::create([
