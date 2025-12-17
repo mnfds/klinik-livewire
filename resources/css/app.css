@@ -144,22 +144,85 @@
 }
 
 /* style multiple choices.js */
-.choices__item.choices__item--selectable {
-  @apply badge badge-primary;
+/* =========================
+   BASE INPUT
+   ========================= */
+.choices__inner {
+  @apply w-full min-h-[2.75rem]
+         px-3 py-2
+         bg-base-100 text-base-content
+         border border-base-300
+         rounded-xl
+         transition-all duration-200;
 }
 
-.choices__inner {
-  @apply w-full px-3 py-2 border border-base-300 rounded-lg bg-base-100 text-base-content;
+/* focus emerald */
+.choices__inner:focus-within {
+  @apply border-primary ring-2 ring-primary/20;
 }
 
 .dark .choices__inner {
-  @apply bg-base-200 text-base-content border-base-300;
+  @apply bg-base-200 border-base-300;
 }
 
+/* input text */
 .choices__input {
-  @apply bg-base-100 text-base-content;
+  @apply bg-transparent text-base-content placeholder:text-base-content/50;
 }
 
-.dark .choices__input {
-  @apply bg-base-200 text-base-content;
+/* =========================
+   MULTIPLE SELECT BADGE
+   ========================= */
+.choices__item.choices__item--selectable {
+  @apply badge badge-primary
+         mr-1 mb-1
+         text-xs
+         rounded-lg;
+}
+
+/* =========================
+   DROPDOWN CONTAINER
+   ========================= */
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+  @apply mt-2
+         p-2
+         bg-base-100
+         border border-base-300
+         rounded-xl
+         shadow-md
+         overflow-hidden;
+}
+
+.dark .choices__list--dropdown,
+.dark .choices__list[aria-expanded] {
+  @apply bg-base-200;
+}
+
+/* =========================
+   OPTION ITEM
+   ========================= */
+.choices__item--choice {
+  @apply px-3 py-2
+         text-sm text-base-content
+         cursor-pointer
+         transition-colors duration-150;
+}
+
+/* emerald soft hover */
+.choices__item--choice:hover,
+.choices__item--choice.is-highlighted {
+  @apply bg-primary/10 text-primary;
+}
+
+/* selected option (emerald soft) */
+.choices__item--choice.is-selected {
+  @apply bg-primary/20 text-primary font-medium;
+}
+
+/* =========================
+   NO RESULT
+   ========================= */
+.choices__item--disabled {
+  @apply text-base-content/50 italic;
 }

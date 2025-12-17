@@ -488,13 +488,6 @@
                         <form wire:submit.prevent="create" class="space-y-6">
                             <input type="hidden" wire:model.defer='nama_dokter'>
                             <input type="hidden" wire:model.defer='pasien_terdaftar_id'>
-                            {{-- NAVIGATION
-                            <div class="bg-base-100 text-base-content shadow rounded-box py-4 px-8 flex gap-6 justify-between sticky top-0 z-50">
-                                <a href="#subjective" class="font-semibold hover:text-primary">SUBJECTIVE</a>
-                                <a href="#objective" class="font-semibold hover:text-primary">OBJECTIVE</a>
-                                <a href="#assessment" class="font-semibold hover:text-primary">ASSESSMENT</a>
-                                <a href="#plan" class="font-semibold hover:text-primary">PLAN</a>
-                            </div> --}}
 
                             {{-- TABS SOAP --}}
                             <div class="tabs tabs-lift">
@@ -505,7 +498,7 @@
                                     {{-- SUBJECTIVE --}}
                                     <div id="subjective" class="bg-base-200 shadow rounded-lg py-6 px-3 scroll-mt-16"
                                         x-data="formChoicesSubjective()" 
-                                        x-init="initChoicesSubjective()" 
+                                        x-init="initChoicesSubjective()"
                                         x-effect="$wire.selected_forms_subjective = selectedFormsSubjective">
 
                                         <h2 class="text-lg font-semibold mb-4 border-b pb-2">SUBJECTIVE</h2>
