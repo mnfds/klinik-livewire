@@ -41,6 +41,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(Role::class);
     }
+
+    //helper untuk akses role
+    public function hasAkses(string $namaAkses): bool
+    {
+        if (! $this->role) {
+            return false;
+        }
+
+        return $this->role
+            ->aksesrole()
+            ->whereHas('akses', function ($query) use ($namaAkses) {
+                $query->where('nama_akses', $namaAkses);
+            })
+            ->exists();
+    }
+    
     /**
      * The attributes that should be hidden for serialization.
      *
