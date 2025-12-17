@@ -24,11 +24,11 @@ Route::get('/', function () {
 });
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+    ->middleware('auth')
     ->name('dashboard');
 
 Route::view('profile', 'profile')
-    ->middleware(['auth'])
+    ->middleware('auth')
     ->name('profile');
 
 Route::middleware(['auth'])->group(function () {
