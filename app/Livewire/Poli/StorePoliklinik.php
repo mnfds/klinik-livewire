@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Poli;
 
-use App\Models\PoliKlinik;
 use Livewire\Component;
+use App\Models\PoliKlinik;
+use Illuminate\Support\Facades\Gate;
 
 class StorePoliklinik extends Component
 {
@@ -21,6 +22,13 @@ class StorePoliklinik extends Component
             'nama_poli'   => 'required|string',
             'kode'   => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Poliklinik Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         PoliKlinik::create([
             'nama_poli'   => $this->nama_poli,

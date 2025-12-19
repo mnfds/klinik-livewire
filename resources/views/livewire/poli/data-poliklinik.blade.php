@@ -35,11 +35,9 @@
                 </div> --}}
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
+                        @can('akses', 'Poliklinik Tambah')
                         <button onclick="document.getElementById('storeModalPoli').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Poliklinik</button>
-                        {{-- <button class="btn btn-primary" onclick="storeModal.showModal()">Tambah Jam Kerja</button> --}}
-                        {{-- <a href="{{ route('users.create') }}" class="btn btn-primary">
-                            Tambah Jam Kerja
-                        </a> --}}
+                        @endcan
                     </div>
                     <livewire:poliklinik-table/>
                     <script>

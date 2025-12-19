@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\PoliKlinik;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class PoliklinikTable extends PowerGridComponent
@@ -87,26 +88,23 @@ final class PoliklinikTable extends PowerGridComponent
 
     public function actions(PoliKlinik $row): array
     {
-        return [
-            // Button::add('edit')
-            //     ->slot('Edit: '.$row->id)
-            //     ->id()
-            //     ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-            //     ->dispatch('edit', ['rowId' => $row->id]),
-
+        $poliButton = [];
+            Gate::allows('akses', 'Poliklinik Edit') && $poliButton[] =
             Button::add('editpoli')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->attributes([
                     'onclick' => 'modaleditpoli.showModal()',
                     'class' => 'btn btn-primary'
                 ])
-                ->dispatchTo('poli.update-poliklinik', 'editPoli', ['rowId' => $row->id]),
+                ->dispatchTo('poli.update-poliklinik', 'editPoli', ['rowId' => $row->id]);
             
+            Gate::allows('akses', 'Poliklinik Hapus') && $poliButton[] =
             Button::add('deletePoli')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('modaldeletepoli', ['rowId' => $row->id]),
-        ];
+                ->dispatch('modaldeletepoli', ['rowId' => $row->id]);
+        
+            return $poliButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletepoli')]
@@ -132,6 +130,14 @@ final class PoliklinikTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletepoli')]
     public function konfirmasideletepoli($rowId): void
     {
+        if (! Gate::allows('akses', 'Poliklinik Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+        
         PoliKlinik::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

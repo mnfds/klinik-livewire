@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Poli;
 
-use App\Models\PoliKlinik;
 use Livewire\Component;
+use App\Models\PoliKlinik;
+use Illuminate\Support\Facades\Gate;
 
 class UpdatePoliklinik extends Component
 {
@@ -29,6 +30,14 @@ class UpdatePoliklinik extends Component
             'nama_poli' => 'required',
             'kode' => 'required',
         ]);
+
+        if (! Gate::allows('akses', 'Poliklinik Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         PoliKlinik::where('id', $this->poliId)->update([
             'nama_poli' => $this->nama_poli,
