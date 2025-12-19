@@ -3,7 +3,7 @@
         document.getElementById('modaleditrole')?.close()
     })
 ">
-    <div class="modal-box max-w-2xl">
+    <div class="modal-box max-w-4xl w-full">
         <h3 class="font-bold text-lg mb-4">Pilih Akses Untuk Role {{ $nama_role }}</h3>
 
         <form wire:submit.prevent="update" class="space-y-4">
