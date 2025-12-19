@@ -4,6 +4,7 @@ namespace App\Livewire\Produkdanobat;
 
 use Livewire\Component;
 use App\Models\ProdukDanObat;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -36,6 +37,13 @@ class Store extends Component
             'supplier' => 'nullable|string',
         ]);
 
+        if (! Gate::allows('akses', 'Produk & Obat Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Hitung harga bersih
         $harga = (float) $this->harga_dasar;
         $potongan = (float) $this->potongan;

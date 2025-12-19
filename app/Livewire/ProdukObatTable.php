@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\ProdukDanObat;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -109,28 +110,25 @@ final class ProdukObatTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
-    }
-
     public function actions(ProdukDanObat $row): array
     {
-        return [
-            Button::add('updateprodukobat')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditprodukdanobat.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('produkdanobat.update', 'getupdateprodukobat', ['rowId' => $row->id]),
-            
-            Button::add('deleteprodukdanobat')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeleteprodukdanobat', ['rowId' => $row->id]),
-        ];
+        $produkButton = [];
+         Gate::allows('akses', 'Produk & Obat Edit') && $produkButton[] =
+         Button::add('updateprodukobat')  
+             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+             ->attributes([
+                 'onclick' => 'modaleditprodukdanobat.showModal()',
+                 'class' => 'btn btn-primary'
+             ])
+             ->dispatchTo('produkdanobat.update', 'getupdateprodukobat', ['rowId' => $row->id]);
+             
+          Gate::allows('akses', 'Produk & Obat Hapus') && $produkButton[] =
+          Button::add('deleteprodukdanobat')
+              ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+              ->class('btn btn-error')
+              ->dispatch('modaldeleteprodukdanobat', ['rowId' => $row->id]);
+
+        return $produkButton;
     }
 
     #[\Livewire\Attributes\On('modaldeleteprodukdanobat')]
@@ -156,6 +154,13 @@ final class ProdukObatTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleteprodukdanobat')]
     public function konfirmasideleteprodukdanobat($rowId): void
     {
+        if (! Gate::allows('akses', 'Produk & Obat Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         ProdukDanObat::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

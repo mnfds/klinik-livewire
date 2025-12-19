@@ -128,7 +128,9 @@
 
             {{-- Tombol Submit --}}
             <div class="col-span-1 sm:col-span-2 flex justify-end gap-2 mt-4">
+                @can('akses', 'Produk & Obat Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalProdukDanObat').close()">Batal</button>
             </div>
         </form>

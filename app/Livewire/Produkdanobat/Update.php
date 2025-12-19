@@ -4,6 +4,7 @@ namespace App\Livewire\Produkdanobat;
 
 use Livewire\Component;
 use App\Models\ProdukDanObat;
+use Illuminate\Support\Facades\Gate;
 
 class Update extends Component
 {
@@ -96,7 +97,13 @@ class Update extends Component
             'lokasi'        => $this->lokasi,
             'supplier'      => $this->supplier,
         ]);
-
+        if (! Gate::allows('akses', 'Produk & Obat Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data produk berhasil diperbarui.'
