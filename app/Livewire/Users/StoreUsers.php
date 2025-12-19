@@ -71,7 +71,7 @@ class StoreUsers extends Component
             'foto_wajah'     => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
         
-        if (! Gate::allows('akses', 'Staff Edit')) {
+        if (! Gate::allows('akses', 'Staff Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

@@ -2,16 +2,17 @@
 
 namespace App\Livewire\Dokter;
 
+use App\Models\User;
 use App\Models\Dokter;
 use App\Models\PoliKlinik;
-use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class DokterTable extends PowerGridComponent
@@ -89,16 +90,17 @@ final class DokterTable extends PowerGridComponent
 
     public function actions(Dokter $row): array
     {
-        return [
+        $actionDokter = [];
+        Gate::allows('akses', 'Dokter Detail') && $actionDokter[] =
             Button::add('detailDokter')
-                ->slot('<i class="fas fa-eye"></i> Detail')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Lihat detail',
-                    'onclick' => "Livewire.navigate('" . route('dokter.detail', $row->id) . "')",
-                    'class' => 'btn btn-primary',
-                ]),
-
+                    ->slot('<i class="fas fa-eye"></i> Detail')
+                    ->tag('button')
+                    ->attributes([
+                        'title' => 'Lihat detail',
+                        'onclick' => "Livewire.navigate('" . route('dokter.detail', $row->id) . "')",
+                        'class' => 'btn btn-primary',
+                    ]);
+        Gate::allows('akses', 'Dokter Edit') && $actionDokter[] =
             Button::add('EditDokter')
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
                 ->tag('button')
@@ -106,13 +108,14 @@ final class DokterTable extends PowerGridComponent
                     'title' => 'Edit data',
                     'onclick' => "Livewire.navigate('" . route('dokter.update', $row->id) . "')",
                     'class' => 'btn btn-secondary',
-                ]),
-
+                ]);
+        Gate::allows('akses', 'Dokter Hapus') && $actionDokter[] =
             Button::add('deleteDokter')
                 ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('deleteModalDokter', ['rowId' => $row->id]),
-        ];
+                ->dispatch('deleteModalDokter', ['rowId' => $row->id]);
+        
+            return $actionDokter;
     }
 
     #[\Livewire\Attributes\On('deleteModalDokter')]
@@ -138,6 +141,14 @@ final class DokterTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasihapusdokter')]
     public function konfirmasihapusdokter($rowId): void
     {
+        if (! Gate::allows('akses', 'Dokter Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         Dokter::findOrFail($rowId)->delete();
 
         $this->dispatch('toast', [

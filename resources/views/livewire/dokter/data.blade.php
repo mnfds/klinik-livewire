@@ -33,9 +33,11 @@
                 
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between items-center mb-4">
+                        @can('akses', 'Dokter Tambah')
                         <a wire:navigate href="{{ route('dokter.create') }}" class="btn btn-success">
                             <i class="fa-solid fa-plus"></i> Dokter
                         </a>
+                        @endcan
                     </div>
                     <livewire:dokter.dokter-table />
                 </div>

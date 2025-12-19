@@ -4,10 +4,11 @@ namespace App\Livewire\Dokter;
 
 use App\Models\User;
 use App\Models\Dokter;
+use Livewire\Component;
 use App\Models\DokterPoli;
 use App\Models\PoliKlinik;
-use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 
@@ -77,7 +78,14 @@ class Create extends Component
             'foto_wajah' => 'nullable|image|max:1024',
             'ttd_digital' => 'nullable|file|max:1024',
         ]);
-
+        
+        if (! Gate::allows('akses', 'Dokter Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // dd($data);
 
         $fotoPath = $this->foto_wajah

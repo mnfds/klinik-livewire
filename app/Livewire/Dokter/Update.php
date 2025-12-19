@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Dokter;
 
-use Illuminate\Support\Facades\Storage;
 use App\Models\Dokter;
 use Livewire\Component;
 use App\Models\PoliKlinik;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class Update extends Component
 {
@@ -74,7 +75,14 @@ class Update extends Component
 
             'poli_id' => 'required|exists:poli_kliniks,id',
         ]);
-
+        
+        if (! Gate::allows('akses', 'Dokter Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         $dokter = Dokter::findOrFail($this->dokterId);
 
         // Handle upload foto wajah
