@@ -42,7 +42,14 @@
                                 <button onclick="document.getElementById('storeModalPelayanan').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Medis</button>
                                 @endcan
                             </div>
-                            <livewire:pelayanan-table/>
+                            @can('akses', 'Pelayanan Medis Data')
+                                <livewire:pelayanan-table/>
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endcan
                         </div>
                     </div>
 
@@ -58,7 +65,14 @@
                                 <button onclick="document.getElementById('storeModalPelayananEstetika').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Estetika</button>
                                 @endcan
                             </div>
-                            <livewire:treatment-table/>
+                            @can('akses', 'Pelayanan Estetika Data')
+                                <livewire:treatment-table/>
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endcan
                         </div>
                     </div>
 

@@ -38,8 +38,7 @@
                         Gate::allows('akses', 'Dokter Data') ||
                         Gate::allows('akses', 'Jam Kerja Data') ||
                         Gate::allows('akses', 'Poliklinik Data') ||
-                        Gate::allows('akses', 'Pelayanan Medis Data') ||
-                        Gate::allows('akses', 'Pelayanan Estetika Data') ||
+                        Gate::allows('akses', 'Pelayanan Data') ||
                         Gate::allows('akses', 'Paket Bundling Data') ||
                         Gate::allows('akses', 'Produk & Obat Data')
                     )
