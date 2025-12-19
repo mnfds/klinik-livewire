@@ -5,11 +5,12 @@ namespace App\Livewire\Users;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Registered;
 
 class UpdateUsers extends Component
 {
@@ -68,6 +69,14 @@ class UpdateUsers extends Component
             'foto_wajah' => 'nullable|image|max:2048',
         ]);
 
+        if (! Gate::allows('akses', 'Staff Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         $this->user->update([
             'name' => $this->name,
             'email' => $this->email,
@@ -114,6 +123,14 @@ class UpdateUsers extends Component
     public function kirimUlangVerifikasi()
     {
         $user = User::find($this->user->id ?? null); // pastikan user ada
+        
+        if (! Gate::allows('akses', 'Verifikasi Email')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         if ($user && !$user->hasVerifiedEmail()) {
             event(new Registered($user)); // kirim ulang email verifikasi
@@ -126,6 +143,14 @@ class UpdateUsers extends Component
     public function kirimResetPassword()
     {
         $user = User::find($this->user->id ?? null); // atau berdasarkan email
+
+        if (! Gate::allows('akses', 'Reset Password')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         if ($user) {
             Password::sendResetLink(['email' => $user->email]);

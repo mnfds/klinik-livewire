@@ -5,6 +5,7 @@ namespace App\Livewire\Users;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Gate;
 
 class DataUsers extends Component
 {
@@ -21,6 +22,14 @@ class DataUsers extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Staff Data')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
+
         $users = User::with('biodata')
             ->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')

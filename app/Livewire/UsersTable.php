@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Query\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -113,6 +114,14 @@ final class UsersTable extends PowerGridComponent
     #[\Livewire\Attributes\On('deleteConfirmed')]
     public function deleteConfirmed($rowId): void
     {
+        if (! Gate::allows('akses', 'Staff Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         User::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
@@ -125,21 +134,24 @@ final class UsersTable extends PowerGridComponent
 
     public function actions($row): array
     {
-        return [
+        $buttons = [];
+
+        Gate::allows('akses', 'Staff Edit') && $buttons[] =
             Button::add('detail')
                 ->slot('<i class="fas fa-eye"></i> Detail')
-                ->tag('button') // supaya tidak jadi <a>
+                ->tag('button')
                 ->attributes([
-                    'title' => 'Lihat detail',
                     'onclick' => "Livewire.navigate('".route('users.edit', $row->id)."')",
                     'class' => 'btn btn-primary'
-                ]),
+                ]);
 
+        Gate::allows('akses', 'Staff Hapus') && $buttons[] =
             Button::add('delete')
-                ->slot('<i class="fa-solid fa-eraser"></i></i> Hapus')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
                 ->class('btn btn-error')
-                ->dispatch('delete', ['rowId' => $row->id]),
-        ];
+                ->dispatch('delete', ['rowId' => $row->id]);
+
+        return $buttons;
     }
 
     

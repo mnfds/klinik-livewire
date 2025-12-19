@@ -36,9 +36,11 @@
                     </div> --}}
                     <div class="p-6 text-base-content space-y-4">
                         <div class="flex justify-between items-center mb-4">
+                            @can('akses','Staff Tambah')
                             <a href="{{ route('users.create') }}" class="btn btn-success">
                                 <i class="fa-solid fa-plus"></i> Staff
                             </a>
+                            @endcan
                         </div>
                         <livewire:users-table />
                         <script>

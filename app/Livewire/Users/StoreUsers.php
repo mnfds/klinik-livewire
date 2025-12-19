@@ -9,6 +9,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Gate;
 
 class StoreUsers extends Component
 {
@@ -69,6 +70,14 @@ class StoreUsers extends Component
 
             'foto_wajah'     => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
+        
+        if (! Gate::allows('akses', 'Staff Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         // Upload foto jika ada
         $fotoPath = null;

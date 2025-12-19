@@ -45,6 +45,18 @@ class AksesSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        DB::table('akses')->insert([
+            'nama_akses' => 'Verifikasi Email',
+            'nomor_group_akses' => '2',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('akses')->insert([
+            'nama_akses' => 'Reset Password',
+            'nomor_group_akses' => '2',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         //AKSES DOKTER
         DB::table('akses')->insert([
