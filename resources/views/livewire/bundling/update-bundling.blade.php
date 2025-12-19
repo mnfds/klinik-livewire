@@ -118,7 +118,9 @@
 
             {{-- Tombol Aksi --}}
             <div class="modal-action flex justify-end gap-2">
+                @can('akses', 'Paket Bundling Edit')
                 <button type="submit" class="btn btn-primary">Update</button>
+                @endcan
                 <button type="button" class="btn btn-neutral" onclick="modalEditBundling?.close()">Batal</button>
             </div>
         </form>

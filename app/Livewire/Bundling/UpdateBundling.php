@@ -9,8 +9,9 @@ use App\Models\Treatment;
 use Livewire\Attributes\On;
 use App\Models\ProdukDanObat;
 use App\Models\PelayananBundling;
-use App\Models\ProdukObatBundling;
 use App\Models\TreatmentBundling;
+use App\Models\ProdukObatBundling;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateBundling extends Component
 {
@@ -129,6 +130,14 @@ class UpdateBundling extends Component
             'produkInputs.*.produk_id' => 'nullable|exists:produk_dan_obats,id',
             'produkInputs.*.jumlah' => 'nullable|numeric|min:1',
         ]);
+        
+        if (! Gate::allows('akses', 'Paket Bundling Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $bundling = Bundling::findOrFail($this->bundlingId);
         $bundling->update([

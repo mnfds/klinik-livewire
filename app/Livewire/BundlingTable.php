@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Bundling;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class BundlingTable extends PowerGridComponent
@@ -144,6 +145,14 @@ final class BundlingTable extends PowerGridComponent
 
     public function onUpdatedToggleable(string|int $id, string $field, string $value): void
     {
+        if (! Gate::allows('akses', 'Paket Bundling Status')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         Bundling::query()->find($id)->update([
             $field => e($value),
         ]);
@@ -158,20 +167,24 @@ final class BundlingTable extends PowerGridComponent
 
     public function actions(Bundling $row): array
     {
-        return [
-            Button::add('editBundling')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modalEditBundling.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('bundling.update-bundling', 'editBundling', ['rowId' => $row->id]),
+        $bundlingButton = [];
+        
+        Gate::allows('akses', 'Paket Bundling Edit') && $bundlingButton[] =
+        Button::add('editBundling')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modalEditBundling.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('bundling.update-bundling', 'editBundling', ['rowId' => $row->id]);
 
-            Button::add('deleteButton')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('deleteModalBundling', ['rowId' => $row->id]),
-        ];
+        Gate::allows('akses', 'Paket Bundling Hapus') && $bundlingButton[] =
+        Button::add('deleteButton')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('deleteModalBundling', ['rowId' => $row->id]);
+        
+            return $bundlingButton;
     }
 
     #[\Livewire\Attributes\On('deleteModalBundling')]
@@ -197,6 +210,13 @@ final class BundlingTable extends PowerGridComponent
     #[\Livewire\Attributes\On('KonfirmasiDeleteBundling')]
     public function KonfirmasiDeleteBundling($rowId): void
     {
+        if (! Gate::allows('akses', 'Paket Bundling Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Bundling::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

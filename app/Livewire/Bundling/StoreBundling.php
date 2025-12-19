@@ -5,8 +5,9 @@ namespace App\Livewire\Bundling;
 use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\Pelayanan;
-use App\Models\ProdukDanObat;
 use App\Models\Treatment;
+use App\Models\ProdukDanObat;
+use Illuminate\Support\Facades\Gate;
 
 class StoreBundling extends Component
 {
@@ -92,6 +93,13 @@ class StoreBundling extends Component
             'produkInputs.*.produk_id' => 'nullable|exists:produk_dan_obats,id',
             'produkInputs.*.jumlah' => 'nullable|numeric|min:1',
         ]);
+        if (! Gate::allows('akses', 'Paket Bundling Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $bundling = Bundling::create([
             'nama' => $this->nama,
