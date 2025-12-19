@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\JamKerja;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class JamKerjaTable extends PowerGridComponent
@@ -91,20 +92,24 @@ final class JamKerjaTable extends PowerGridComponent
 
     public function actions(JamKerja $row): array
     {
-        return [
-            Button::add('updateJamKerja')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'my_modal_1.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('jamkerja.update', 'getupdate', ['rowId' => $row->id]),
+        $jamKerjaButton = [];
 
-            Button::add('delete')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('delete', ['rowId' => $row->id]),
-        ];
+        Gate::allows('akses', 'Jam Kerja Edit') && $jamKerjaButton[] =
+        Button::add('updateJamKerja')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'my_modal_1.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('jamkerja.update', 'getupdate', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Jam Kerja Hapus') && $jamKerjaButton[] =
+        Button::add('delete')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('delete', ['rowId' => $row->id]);
+        
+            return $jamKerjaButton;
     }
 
     #[\Livewire\Attributes\On('delete')]
@@ -130,6 +135,14 @@ final class JamKerjaTable extends PowerGridComponent
     #[\Livewire\Attributes\On('deleteConfirmed')]
     public function deleteConfirmed($rowId): void
     {
+        if (! Gate::allows('akses', 'Jam Kerja Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         JamKerja::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

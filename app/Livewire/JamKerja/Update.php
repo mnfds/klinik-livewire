@@ -4,6 +4,7 @@ namespace App\Livewire\Jamkerja;
 
 use Livewire\Component;
 use App\Models\JamKerja;
+use Illuminate\Support\Facades\Gate;
 
 class Update extends Component
 {
@@ -40,6 +41,14 @@ class Update extends Component
             'jam_selesai'  => 'nullable|string',
             'lewat_hari'   => 'boolean',
         ]);
+        
+        if (! Gate::allows('akses', 'Jam Kerja Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $jamKerja = JamKerja::findOrFail($this->jamKerjaId);
 

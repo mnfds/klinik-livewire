@@ -45,7 +45,9 @@
             </div>
 
             <div class="modal-action justify-end mt-6">
+                @can('akses', 'Jam Kerja Edit')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-neutral" onclick="document.getElementById('my_modal_1').close()">Batal</button>
             </div>
         </form>

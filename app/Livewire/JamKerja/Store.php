@@ -4,6 +4,7 @@ namespace App\Livewire\Jamkerja;
 
 use Livewire\Component;
 use App\Models\JamKerja;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -27,6 +28,13 @@ class Store extends Component
             'jam_selesai'  => 'nullable|string',
             'lewat_hari'   => 'boolean',
         ]);
+        if (! Gate::allows('akses', 'Jam Kerja Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         JamKerja::create([
             'nama_shift'   => $this->nama_shift,
