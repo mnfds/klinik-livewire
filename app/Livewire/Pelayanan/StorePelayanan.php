@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Pelayanan;
 
-use App\Models\Pelayanan;
 use Livewire\Component;
+use App\Models\Pelayanan;
+use Illuminate\Support\Facades\Gate;
 
 class StorePelayanan extends Component
 {
@@ -34,6 +35,13 @@ class StorePelayanan extends Component
             'potongan'        => 'nullable|min:0|integer',
             'deskripsi'       => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Pelayanan Medis Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
          // Hitung harga bersih
         $harga = (float) $this->harga_pelayanan;

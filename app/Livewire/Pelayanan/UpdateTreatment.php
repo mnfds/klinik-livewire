@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Pelayanan;
 
-use App\Models\Treatment;
 use Livewire\Component;
+use App\Models\Treatment;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateTreatment extends Component
 {
@@ -59,6 +60,13 @@ class UpdateTreatment extends Component
             'diskon'           => 'nullable|numeric|min:0|max:100',
             'deskripsi'        => 'nullable|string',
         ]);
+        if (! Gate::allows('akses', 'Pelayanan Estetika Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         Treatment::where('id', $this->treatmentId)->update([
             'nama_treatment'  => $this->nama_treatment,

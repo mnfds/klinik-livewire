@@ -33,7 +33,9 @@
 
             {{-- Tombol Simpan --}}
             <div class="modal-action">
+                @can('akses', 'Pelayanan Estetika Tambah Bahan')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-neutral" 
                         onclick="document.getElementById('modaleditbahan').close()">
                     Batal

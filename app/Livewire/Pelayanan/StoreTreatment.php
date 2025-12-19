@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Pelayanan;
 
-use App\Models\Treatment;
 use Livewire\Component;
+use App\Models\Treatment;
+use Illuminate\Support\Facades\Gate;
 
 class StoreTreatment extends Component
 {
@@ -28,6 +29,13 @@ class StoreTreatment extends Component
             'diskon'          => 'nullable|min:0|max:100',
             'deskripsi'       => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Pelayanan Estetika Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
          // Hitung harga bersih
         $harga = (float) $this->harga_treatment;

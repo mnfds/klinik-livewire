@@ -50,7 +50,9 @@
 
             {{-- Tombol --}}
             <div class="modal-action flex justify-end gap-2 pt-4">
+                @can('akses', 'Pelayanan Estetika Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModalPelayananEstetika').close()">Batal</button>
             </div>
         </form>

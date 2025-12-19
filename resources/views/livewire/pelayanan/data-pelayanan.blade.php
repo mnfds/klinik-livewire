@@ -38,7 +38,9 @@
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
                             <div class="flex justify-between items-center mb-4">
+                                @can('akses', 'Pelayanan Medis Tambah')
                                 <button onclick="document.getElementById('storeModalPelayanan').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Medis</button>
+                                @endcan
                             </div>
                             <livewire:pelayanan-table/>
                         </div>
@@ -52,7 +54,9 @@
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
                             <div class="flex justify-between items-center mb-4">
+                                @can('akses', 'Pelayanan Estetika Tambah')
                                 <button onclick="document.getElementById('storeModalPelayananEstetika').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i>Layanan Estetika</button>
+                                @endcan
                             </div>
                             <livewire:treatment-table/>
                         </div>

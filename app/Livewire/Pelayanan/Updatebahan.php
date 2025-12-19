@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Pelayanan;
 
+use Livewire\Component;
 use App\Models\BahanBaku;
 use App\Models\Treatment;
 use App\Models\TreatmentBahan;
-use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Updatebahan extends Component
 {
@@ -42,6 +43,13 @@ class Updatebahan extends Component
 
     public function update()
     {
+        if (! Gate::allows('akses', 'Pelayanan Estetika Tambah Bahan')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Simpan relasi bahan baku dengan treatment
         TreatmentBahan::where('treatments_id', $this->treatmentBahanId)->delete();
 

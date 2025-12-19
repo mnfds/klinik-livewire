@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Treatment;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class TreatmentTable extends PowerGridComponent
@@ -113,28 +114,33 @@ final class TreatmentTable extends PowerGridComponent
 
     public function actions(Treatment $row): array
     {
-        return [
-            Button::add('updatebahan')  
-                ->slot('<i class="fa-solid fa-pump-medical"></i> Bahan')
-                ->attributes([
-                    'onclick' => 'modaleditbahan.showModal()',
-                    'class' => 'btn btn-secondary'
-                ])
-                ->dispatchTo('pelayanan.updatebahan', 'getupdatebahan', ['rowId' => $row->id]),
-            
-            Button::add('editTreatment')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditpelayananEstetika.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('pelayanan.update-treatment', 'editTreatment', ['rowId' => $row->id]),
-            
-            Button::add('deleteTreatment')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletepelayananEstetika', ['rowId' => $row->id]),
-        ];
+        $pelayananEstetikaButton = [];
+
+        Gate::allows('akses', 'Pelayanan Estetika Tambah Bahan') && $pelayananEstetikaButton[] =
+        Button::add('updatebahan')  
+            ->slot('<i class="fa-solid fa-pump-medical"></i> Bahan')
+            ->attributes([
+                'onclick' => 'modaleditbahan.showModal()',
+                'class' => 'btn btn-secondary'
+            ])
+            ->dispatchTo('pelayanan.updatebahan', 'getupdatebahan', ['rowId' => $row->id]);
+        
+        Gate::allows('akses', 'Pelayanan Estetika Edit') && $pelayananEstetikaButton[] =
+        Button::add('editTreatment')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditpelayananEstetika.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('pelayanan.update-treatment', 'editTreatment', ['rowId' => $row->id]);
+        
+        Gate::allows('akses', 'Pelayanan Estetika Hapus') && $pelayananEstetikaButton[] =
+        Button::add('deleteTreatment')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletepelayananEstetika', ['rowId' => $row->id]);
+        
+        return $pelayananEstetikaButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletepelayananEstetika')]
@@ -160,6 +166,13 @@ final class TreatmentTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletepelayananestetika')]
     public function konfirmasideletepelayananestetika($rowId): void
     {
+        if (! Gate::allows('akses', 'Pelayanan Estetika Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Treatment::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Pelayanan;
 
-use App\Models\Pelayanan;
 use Livewire\Component;
+use App\Models\Pelayanan;
+use Illuminate\Support\Facades\Gate;
 
 class UpdatePelayanan extends Component
 {
@@ -59,6 +60,13 @@ class UpdatePelayanan extends Component
             'diskon'           => 'nullable|numeric|min:0|max:100',
             'deskripsi'        => 'nullable|string',
         ]);
+        if (! Gate::allows('akses', 'Pelayanan Medis Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         Pelayanan::where('id', $this->pelayananId)->update([
             'nama_pelayanan'  => $this->nama_pelayanan,

@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Pelayanan;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class PelayananTable extends PowerGridComponent
@@ -85,20 +86,23 @@ final class PelayananTable extends PowerGridComponent
 
     public function actions(Pelayanan $row): array
     {
-        return [
-            Button::add('editpelayanan')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditpelayanan.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('pelayanan.update-pelayanan', 'editPelayanan', ['rowId' => $row->id]),
-            
-            Button::add('deletePelayanan')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletepelayanan', ['rowId' => $row->id]),
-        ];
+        $pelayananMedisButton = [];
+         Gate::allows('akses', 'Pelayanan Medis Edit') && $pelayananMedisButton[] =
+         Button::add('editpelayanan')  
+             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+             ->attributes([
+                 'onclick' => 'modaleditpelayanan.showModal()',
+                 'class' => 'btn btn-primary'
+             ])
+             ->dispatchTo('pelayanan.update-pelayanan', 'editPelayanan', ['rowId' => $row->id]);
+         
+        Gate::allows('akses', 'Pelayanan Medis Hapus') && $pelayananMedisButton[] =
+        Button::add('deletePelayanan')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletepelayanan', ['rowId' => $row->id]);
+        
+        return $pelayananMedisButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletepelayanan')]
@@ -123,7 +127,14 @@ final class PelayananTable extends PowerGridComponent
 
     #[\Livewire\Attributes\On('konfirmasideletepelayanan')]
     public function konfirmasideletepelayanan($rowId): void
-    {
+    {        
+        if (! Gate::allows('akses', 'Pelayanan Medis Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Pelayanan::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
