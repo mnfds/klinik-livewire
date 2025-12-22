@@ -826,14 +826,18 @@
                         <!-- B: Button -->
                         <div class="bg-base-100 shadow rounded-box p-4 pb-7">
                             <h3 class="font-semibold mb-4">Aksi</h3>
+                            @can('akses', 'Rekam Medis Tambah')
                             <button wire:click.prevent="create" class="btn btn-primary w-full mb-1" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endcan
+                            @can('akses', 'Pasien Riwayat Rekam Medis')
                             <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasienTerdaftar->pasien->id]) }}"
                                 class="btn btn-info mb-1 w-full" >
                                 <i class="fa-solid fa-book-medical"></i> Riwayat Rekam Medis
                             </a>
+                            @endcan
                             @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
                                 <div class="btn w-full btn-success mb-1 ">
                                     <i class="fa-solid fa-money-bill-1-wave"></i>

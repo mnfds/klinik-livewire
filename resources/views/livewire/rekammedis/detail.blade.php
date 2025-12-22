@@ -49,7 +49,7 @@
         <!-- Main Content -->
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="p-6 space-y-6">
-
+                @if (Gate::allows('akses', 'Detail Rekam Medis'))
                 <div class="bg-base-100 border border-base-300 rounded-lg p-4">
                     <div class="collapse-title font-semibold">
                         {{ \Carbon\Carbon::parse($pasienTerdaftar->tanggal_kunjungan)->translatedFormat('d F Y') }}
@@ -828,6 +828,12 @@
 
                     </div>
                 </div>
+                @else
+                    <div class="alert alert-error">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Anda tidak memiliki akses untuk melihat data ini.
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -60,7 +60,14 @@
                     
                     <div class="bg-base-100 border border-base-300 rounded-lg p-4">
                         <h3 class="font-semibold text-lg mb-4">Riwayat Kunjungan</h3>
-                        <livewire:Rekammedis.RiwayatTable :pasien_id="$pasien_id">
+                        @if (Gate::allows('akses','Riwayat Rekam Medis'))
+                            <livewire:Rekammedis.RiwayatTable :pasien_id="$pasien_id">
+                        @else
+                            <div class="alert alert-error">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Anda tidak memiliki akses untuk melihat data ini.
+                            </div>
+                        @endif
                     </div>
 
                 </div>

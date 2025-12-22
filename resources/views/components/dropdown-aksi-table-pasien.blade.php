@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 @endcan
-                @can('akses', 'Pasien Riwayat Rekam Medis')
+                @can('akses', 'Riwayat Rekam Medis')
                 <li>
                     <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id'=> $row->id ]) }}">
                         <i class="fa-solid fa-clipboard-list"></i>

@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\KajianAwal;
 use App\Models\RekamMedis;
 use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 
 class Detail extends Component
 {
@@ -51,6 +52,13 @@ class Detail extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Detail Rekam Medis')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.rekammedis.detail', [
             'pasienTerdaftar' => $this->pasienTerdaftar,
             'pasien'          => $this->pasien,

@@ -3,8 +3,9 @@
 namespace App\Livewire\Rekammedis;
 
 use App\Models\Pasien;
-use App\Models\PasienTerdaftar;
 use Livewire\Component;
+use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 
 class Data extends Component
 {
@@ -26,6 +27,13 @@ class Data extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Riwayat Rekam Medis')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.rekammedis.data');
     }
 }

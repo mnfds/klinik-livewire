@@ -41,6 +41,7 @@ use App\Services\StoreObatNonRacik;
 use Illuminate\Support\Facades\Log;
 use App\Models\ProdukObatBundlingRM;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Services\StoreObatDikonsumsi;
 use App\Models\PelayananBundlingUsage;
 use App\Models\TreatmentBundlingUsage;
@@ -1239,6 +1240,13 @@ class Create extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Rekam Medis')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.rekammedis.create');
     }
 }

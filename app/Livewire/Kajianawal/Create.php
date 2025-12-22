@@ -11,11 +11,12 @@ use App\Models\DataKesehatan;
 use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
 use App\Models\PemeriksaanFisik;
+use App\Services\StoreVitalSign;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Services\PutInProgressEncounter;
+use Illuminate\Support\Facades\Gate;
 use App\Services\StorePemeriksaanFisik;
-use App\Services\StoreVitalSign;
+use App\Services\PutInProgressEncounter;
 
 class Create extends Component
 {
@@ -105,6 +106,14 @@ class Create extends Component
             $rules['berat_badan'] = 'required';
         }
         $this->validate($rules);
+        
+        if (! Gate::allows('akses', 'Kajian Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // dd(
         //     $this->tinggi_badan,
         //     $this->berat_badan,
@@ -223,6 +232,13 @@ class Create extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Kajian')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.kajianawal.create');
     }
 }

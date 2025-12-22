@@ -136,11 +136,14 @@ class AksesSeeder extends Seeder
             // Kajian
             16 => [
                 'Kajian',
+                'Kajian Tambah',
             ],
             // Rekam Medis
             17 => [
                 'Rekam Medis',
-                'Pasien Riwayat Rekam Medis',
+                'Rekam Medis Tambah',
+                'Riwayat Rekam Medis',
+                'Detail Rekam Medis',
             ],
         ];
 

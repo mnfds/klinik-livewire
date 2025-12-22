@@ -235,7 +235,7 @@
                                 <i class="fa-solid fa-pen-clip mr-2"></i>Edit Data Pasien
                             </a>
                             @endcan
-                            @can('akses', 'Pasien Riwayat Rekam Medis')                                
+                            @can('akses', 'Riwayat Rekam Medis')                                
                             <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasien->id]) }}" class="btn btn-info w-full">
                                 <i class="fa-solid fa-clipboard-list mr-2"></i>Riwayat Rekam Medis Pasien
                             </a>

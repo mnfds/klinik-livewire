@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Rekammedis;
 
-use App\Models\PasienTerdaftar;
 use Illuminate\Support\Carbon;
+use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class RiwayatTable extends PowerGridComponent
@@ -77,16 +78,18 @@ final class RiwayatTable extends PowerGridComponent
 
     public function actions(PasienTerdaftar $row): array
     {
-        return [
-            Button::add('detail_kunjungan')
-                ->slot('<i class="fa-solid fa-magnifying-glass"></i> Detail')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Detail Kunjungan Medis',
-                    'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-primary',
-                ]),
-        ];
+        $riwayatRekamMedis = [];
+        
+        Gate::allows('akses', 'Detail Rekam Medis') && $riwayatRekamMedis[] =
+        Button::add('detail_kunjungan')
+            ->slot('<i class="fa-solid fa-magnifying-glass"></i> Detail')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Detail Kunjungan Medis',
+                'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-primary',
+            ]);
+        return $riwayatRekamMedis;
     }
 
     /*
