@@ -4,12 +4,13 @@ namespace App\Livewire\AntrianTable;
 
 use App\Models\NomorAntrian;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class Dipanggil extends PowerGridComponent
@@ -77,28 +78,35 @@ final class Dipanggil extends PowerGridComponent
 
     public function actions(NomorAntrian $row): array
     {
-        return [
-            Button::add('registasiButton')
-                ->slot('<i class="fa-solid fa-laptop-medical"></i> Registasi')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Registasi Pasien',
-                    'onclick' => "Livewire.navigate('" . route('pendaftaran.search', ['id' => $row->id]) . "')",
-                    'class' => 'btn btn-primary',
-                ]),
-            Button::add('dipanggilButton')
-                ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Panggil Antrian',
-                    'onclick' => "responsiveVoice.speak('Nomor Antrian, {$row->kode}{$row->nomor_antrian}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
-                    'class' => 'btn btn-secondary',
-                ]),
-            Button::add('deleteButton')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('deleteModalNomorAntrian', ['rowId' => $row->id]),
-        ];
+        $antrianDipanggilButton = [];
+
+        Gate::allows('akses', 'Pasien Registrasi') && $antrianDipanggilButton[] =
+        Button::add('registasiButton')
+            ->slot('<i class="fa-solid fa-laptop-medical"></i> Registasi')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Registasi Pasien',
+                'onclick' => "Livewire.navigate('" . route('pendaftaran.search', ['id' => $row->id]) . "')",
+                'class' => 'btn btn-primary',
+            ]);
+
+        Gate::allows('akses', 'Panggilan Suara') && $antrianDipanggilButton[] =
+        Button::add('dipanggilButton')
+            ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Panggil Antrian',
+                'onclick' => "responsiveVoice.speak('Nomor Antrian, {$row->kode}{$row->nomor_antrian}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
+                'class' => 'btn btn-secondary',
+            ]);
+
+        Gate::allows('akses', 'Hapus Nomor Antrian Dipanggil') && $antrianDipanggilButton[] =
+        Button::add('deleteButton')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('deleteModalNomorAntrian', ['rowId' => $row->id]);
+
+        return $antrianDipanggilButton;
     }
 
     #[\Livewire\Attributes\On('dipanggilModalButton')]

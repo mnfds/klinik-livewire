@@ -4,6 +4,7 @@ namespace App\Livewire\AntrianTable;
 
 use App\Models\NomorAntrian;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -78,17 +79,20 @@ final class Masuk extends PowerGridComponent
 
     public function actions(NomorAntrian $row): array
     {
-        return [
-            Button::add('pindahButton')
-                ->slot('<i class="fa-solid fa-arrow-right"></i> Pindah')
-                ->class('btn btn-primary')
-                ->dispatch('pindahModalButton', ['rowId' => $row->id]),
+        $antrianMasukButton = [];
 
-            Button::add('deleteButton')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('deleteModalNomorAntrian', ['rowId' => $row->id]),
-        ];
+        $antrianMasukButton[] = Button::add('pindahButton')
+            ->slot('<i class="fa-solid fa-arrow-right"></i> Pindah')
+            ->class('btn btn-primary')
+            ->dispatch('pindahModalButton', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Hapus Nomor Antrian Masuk') && $antrianMasukButton[] =
+        Button::add('deleteButton')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('deleteModalNomorAntrian', ['rowId' => $row->id]);
+        
+        return $antrianMasukButton;
     }
 
     #[\Livewire\Attributes\On('pindahModalButton')]

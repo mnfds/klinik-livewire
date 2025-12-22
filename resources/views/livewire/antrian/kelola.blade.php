@@ -75,7 +75,7 @@
                         <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
                             <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Antrian Pasien Terdaftar" style="background-image: none;" />
                             <span class="flex items-center gap-2">
-                                Antrian Pendaftaran
+                                Antrian Terdaftar
                                 <div class="badge badge-sm badge-primary text-base-primary" wire:poll.visible.5s='updateJumlahPasienTerdaftar'>{{ $jumlahPasienTerdaftar }}</div>
                             </span>
                         </label>
@@ -83,7 +83,14 @@
                             <h1 class="text-lg font-bold text-base-content">
                                 Antrian Terdaftar
                             </h1>
-                            <livewire:pendaftaran.pendaftaran-table />
+                            @if (Gate::allows('akses', 'Pasien Terdaftar Data'))
+                                <livewire:pendaftaran.pendaftaran-table />
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endif
                         </div>
 
                         {{-- TABS PASIEN DIPERIKSA --}}
@@ -98,7 +105,14 @@
                             <h1 class="text-lg font-bold text-base-content">
                                 Pasien Menunggu Konsultasi
                             </h1>
-                            <livewire:pendaftaran.pasiendiperiksa-table />
+                            @if (Gate::allows('akses', 'Pasien Diperiksa Data'))
+                                <livewire:pendaftaran.pasiendiperiksa-table />
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

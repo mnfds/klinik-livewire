@@ -113,6 +113,28 @@ class AksesSeeder extends Seeder
                 'Pasien Riwayat Rekam Medis',
                 'Pasien Registrasi',
             ],
+            // Antrian
+            14 => [
+                'Antrian',
+                'Ambil Nomor',
+                'Kelola Antrian',
+                'Panggilan Suara',
+                'Hapus Nomor Antrian Masuk',
+                'Hapus Nomor Antrian Dipanggil',
+                'Display Antrian',
+                'Display Registrasi',
+                'Display Poliklinik',
+                'Display Apotek',
+            ],
+            // Rawat Jalan
+            15 => [
+                'Rawat Jalan',
+                'Pendaftaran',
+                'Pasien Terdaftar Data',
+                'Pasien Diperiksa Data',
+                'Reservasi',
+                'Tindak Lanjut',
+            ],
         ];
 
         $data = [];

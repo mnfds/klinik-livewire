@@ -265,7 +265,7 @@
                     </x-side-link>
                 </li>
                 @endcan
-
+                @can('akses', 'Antrian')                    
                 <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">
                         <i class="fa-solid fa-users"></i>
@@ -274,18 +274,23 @@
                     </x-side-link>
 
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @can('akses', 'Ambil Nomor')                            
                         <li>
                             <x-side-link href="{{ route('antrian.display') }}" :active="request()->routeIs('antrian.display')" wire:navigate>
                                 Ambil Nomor Antrian
                             </x-side-link>
                         </li>
+                        @endcan
+                        @can('akses', 'Kelola Antrian')                            
                         <li>
                             <x-side-link href="{{ route('antrian.data') }}" :active="request()->routeIs('antrian.data')" wire:navigate>
                                 Kelola Antrian
                             </x-side-link>
                         </li>
+                        @endcan
 
                         <!-- Nested TV Antrian -->
+                        @can('akses', 'Display Antrian')                            
                         <li x-data="{ open: {{ request()->routeIs('tv.*') ? 'true' : 'false' }} }">
                             <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('tv.*')">
                                 <span class="flex-1 ml-3 text-left">TV Antrian</span>
@@ -293,25 +298,33 @@
                             </x-side-link>
 
                             <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                                @can('akses', 'Display Registrasi')
                                 <li>
                                     <x-side-link :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
                                         TV Pendaftaran
                                     </x-side-link>
                                 </li>
+                                @endcan
+                                @can('akses', 'Display Poliklinik')
                                 <li>
                                     <x-side-link :active="request()->routeIs('tv.poli')" wire:navigate>
                                         TV Poliklinik
                                     </x-side-link>
                                 </li>
+                                @endcan
+                                @can('akses', 'Display Apotek')
                                 <li>
                                     <x-side-link :active="request()->routeIs('tv.apotek')" wire:navigate>
                                         TV Apotek
                                     </x-side-link>
                                 </li>
+                                @endcan
                             </ul>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @endcan
 
                 @php
                     use App\Models\Reservasi;
