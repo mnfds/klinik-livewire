@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\PoliKlinik;
 use Mike42\Escpos\Printer;
 use App\Models\NomorAntrian;
+use Illuminate\Support\Facades\Gate;
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
@@ -34,6 +35,13 @@ class Display extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Ambil Nomor')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.antrian.display');
     }
 

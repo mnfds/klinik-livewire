@@ -19,7 +19,7 @@ class PasienSeeder extends Seeder
             [
                 'no_register' => 'REG-' . Str::upper(Str::random(6)),
                 'nik' => '3201010101010001',
-                'no_ihs' => 'IHS-001',
+                'no_ihs' => null,
                 'nama' => 'Ahmad Fauzi',
                 'alamat' => 'Jl. Merpati No.10, Jakarta',
                 'no_telp' => '081234567890',
@@ -36,7 +36,7 @@ class PasienSeeder extends Seeder
             [
                 'no_register' => 'REG-' . Str::upper(Str::random(6)),
                 'nik' => '3201010101010002',
-                'no_ihs' => 'IHS-002',
+                'no_ihs' => null,
                 'nama' => 'Siti Aminah',
                 'alamat' => 'Jl. Kenanga No.5, Bandung',
                 'no_telp' => '082345678901',

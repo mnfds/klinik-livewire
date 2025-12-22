@@ -4,6 +4,7 @@ namespace App\Livewire\Pendaftaran;
 
 use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -123,28 +124,35 @@ final class PendaftaranTable extends PowerGridComponent
 
     public function actions(PasienTerdaftar $row): array
     {
-        return [
-            Button::add('kajianbutton')
-                ->slot('<i class="fa-solid fa-clipboard-list"></i> Kajian Awal')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Isi Kajian Pasien',
-                    'onclick' => "Livewire.navigate('" . route('kajian.create', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-info',
-                ]),
-            Button::add('rekammedisbutton')
-                ->slot('<i class="fa-solid fa-book-medical"></i> Rekam Medis')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Isi Rekam Medis Pasien',
-                    'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-secondary',
-                ]),
-            Button::add('deletepasienterdaftar')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletepasienterdaftar', ['rowId' => $row->id]),
-        ];
+        $pendaftaranButton = [];
+
+        Gate::allows('akses', 'Kajian') && $pendaftaranButton[] =
+        Button::add('kajianbutton')
+            ->slot('<i class="fa-solid fa-clipboard-list"></i> Kajian Awal')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Isi Kajian Pasien',
+                'onclick' => "Livewire.navigate('" . route('kajian.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-info',
+            ]);
+
+        Gate::allows('akses', 'Rekam Medis') && $pendaftaranButton[] =    
+        Button::add('rekammedisbutton')
+            ->slot('<i class="fa-solid fa-book-medical"></i> Rekam Medis')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Isi Rekam Medis Pasien',
+                'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-secondary',
+            ]);
+
+        Gate::allows('akses', 'Hapus Pasien Terdaftar') && $pendaftaranButton[] =
+        Button::add('deletepasienterdaftar')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletepasienterdaftar', ['rowId' => $row->id]);
+        
+        return $pendaftaranButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletepasienterdaftar')]
@@ -170,6 +178,14 @@ final class PendaftaranTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletepasienterdaftar')]
     public function konfirmasideletepasienterdaftar($rowId): void
     {
+        if (! Gate::allows('akses', 'Hapus Pasien Terdaftar')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         PasienTerdaftar::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

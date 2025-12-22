@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Pendaftaran;
 
-use App\Models\PasienTerdaftar;
 use Illuminate\Support\Carbon;
+use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class PasiendiperiksaTable extends PowerGridComponent
@@ -120,16 +121,19 @@ final class PasiendiperiksaTable extends PowerGridComponent
 
     public function actions(PasienTerdaftar $row): array
     {
-        return [
-            Button::add('rekammedisbutton')
-                ->slot('<i class="fa-solid fa-book-medical"></i> Rekam Medis')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Isi Rekam Medis Pasien',
-                    'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-secondary',
-                ]),
-        ];
+        $diperiksaButton = [];
+        
+        Gate::allows('akses', 'Rekam Medis') && $diperiksaButton[] =
+        Button::add('rekammedisbutton')
+            ->slot('<i class="fa-solid fa-book-medical"></i> Rekam Medis')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Isi Rekam Medis Pasien',
+                'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.create', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-secondary',
+            ]);
+
+        return $diperiksaButton;
     }
 
 }

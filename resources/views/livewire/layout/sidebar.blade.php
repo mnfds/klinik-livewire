@@ -338,6 +338,7 @@
                         ->count();
                 @endphp
 
+                @can('akses', 'Rawat Jalan')                    
                 <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') || request()->routeIs('rekam-medis-pasien.*') || request()->routeIs('reservasi.*') ? 'true' : 'false' }} }">
                     <x-side-link 
                         @click.prevent="open = !open" 
@@ -358,6 +359,7 @@
 
                     {{-- Submenu --}}
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @can('akses', 'Pendaftaran')                            
                         <li>
                             <x-side-link href="{{ route('pendaftaran.data') }}" 
                                 :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')"  
@@ -365,6 +367,8 @@
                                 Pendaftaran
                             </x-side-link>
                         </li>
+                        @endcan
+                        @can('akses', 'Reservasi')                            
                         <li>
                             <x-side-link href="{{ route('reservasi.data') }}" 
                                 :active="request()->routeIs('reservasi.*')"  
@@ -376,7 +380,9 @@
                                     </span>
                                 @endif
                             </x-side-link>
+                        @endcan
                         </li>
+                        @can('akses', 'Tindak Lanjut')                            
                         <li>
                             <x-side-link href="{{ route('tindaklanjut.data') }}" 
                                 :active="request()->routeIs('tindaklanjut*')"  
@@ -384,8 +390,10 @@
                                 Tindak Lanjut
                             </x-side-link>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @endcan
 
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">

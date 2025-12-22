@@ -110,7 +110,6 @@ class AksesSeeder extends Seeder
                 'Pasien Detail',
                 'Pasien Edit',
                 'Pasien Hapus',
-                'Pasien Riwayat Rekam Medis',
                 'Pasien Registrasi',
             ],
             // Antrian
@@ -131,9 +130,17 @@ class AksesSeeder extends Seeder
                 'Rawat Jalan',
                 'Pendaftaran',
                 'Pasien Terdaftar Data',
+                'Hapus Pasien Terdaftar',
                 'Pasien Diperiksa Data',
-                'Reservasi',
-                'Tindak Lanjut',
+            ],
+            // Kajian
+            16 => [
+                'Kajian',
+            ],
+            // Rekam Medis
+            17 => [
+                'Rekam Medis',
+                'Pasien Riwayat Rekam Medis',
             ],
         ];
 

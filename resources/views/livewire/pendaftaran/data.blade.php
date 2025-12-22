@@ -49,7 +49,14 @@
                                 </a>
                                 @endcan
                             </div>
-                            <livewire:pendaftaran.pendaftaran-table />
+                            @if (Gate::allows('akses', 'Pasien Terdaftar Data'))
+                                <livewire:pendaftaran.pendaftaran-table />
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endif
                         </div>
                         
                         <label class="tab bg-transparent text-base-content gap-2 cursor-pointer">
@@ -62,7 +69,14 @@
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="flex justify-between items-center mb-4">
                             </div>
-                            <livewire:pendaftaran.pasiendiperiksa-table />
+                            @if (Gate::allows('akses', 'Pasien Diperiksa Data'))
+                                <livewire:pendaftaran.pasiendiperiksa-table />
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

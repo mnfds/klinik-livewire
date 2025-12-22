@@ -5,6 +5,7 @@ namespace App\Livewire\Pendaftaran;
 use Livewire\Component;
 use App\Models\NomorAntrian;
 use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 
 class Data extends Component
 {    
@@ -31,6 +32,13 @@ class Data extends Component
     }
     public function render()
     {
+        if (! Gate::allows('akses', 'Pendaftaran')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.pendaftaran.data');
     }
 }

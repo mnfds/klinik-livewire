@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Antrian;
 
+use Livewire\Component;
 use App\Models\NomorAntrian;
 use App\Models\PasienTerdaftar;
-use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Kelola extends Component
 {
@@ -46,6 +47,14 @@ class Kelola extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Kelola Antrian')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
+        
         return view('livewire.antrian.kelola');
     }
 }
