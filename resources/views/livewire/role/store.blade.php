@@ -3,7 +3,7 @@
         document.getElementById('storeModalRole')?.close()
     })
 ">
-    <div class="modal-box">
+    <div class="modal-box max-w-4xl w-full">
         <h3 class="text-lg font-bold">Tambah Role</h3>
         <form wire:submit.prevent="store">
             {{-- Nama Role --}}

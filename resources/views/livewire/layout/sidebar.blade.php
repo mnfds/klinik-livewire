@@ -150,9 +150,17 @@
                 @endforeach
 
                 <!-- Manajemen Klinik Section -->
+                    
+                @if (
+                    Gate::allows('akses', 'Jadwal') ||
+                    Gate::allows('akses', 'Laporan') ||
+                    Gate::allows('akses', 'Persediaan') ||
+                    Gate::allows('akses', 'Pengajuan')
+                )
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Manajemen Klinik</span>
                 </li>
+                @endif
                 @can('akses', 'Jadwal')                    
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
@@ -254,9 +262,17 @@
                 @endcan
 
                 <!-- Pelayanan Klinik Section -->
+                @if (
+                    Gate::allows('akses', 'Pasien') ||
+                    Gate::allows('akses', 'Antrian') ||
+                    Gate::allows('akses', 'Rawat Jalan') ||
+                    Gate::allows('akses', 'Transaksi') ||
+                    Gate::allows('akses', 'Resep Obat')
+                )
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Pelayanan Klinik</span>
                 </li>
+                @endif
                 @can('akses', 'Pasien')
                 <li>
                     <x-side-link href="{{ route('pasien.data') }}" :active="request()->routeIs('pasien.*')" wire:navigate>
@@ -415,12 +431,14 @@
                     </ul>
                 </li>
                 @endcan
+                @can('akses', 'Resep Obat')
                 <li>
                     <x-side-link href="{{ route('resep.data') }}" :active="request()->routeIs('resep.*')" wire:navigate>
                         <i class="fa-solid fa-prescription"></i>
                         <span class="ml-3">Resep Obat</span>
                     </x-side-link>
                 </li>
+                @endcan
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>
                 </li>
