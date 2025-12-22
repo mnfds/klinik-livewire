@@ -168,13 +168,14 @@
                                 </div>
 
                             </div>
-
+                            @can('akses', 'Transaksi Apotik Edit')
                             <button wire:click.prevent="update"
                                     class="btn btn-success w-full mt-4"
                                     wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-pen-to-square"></i> Update</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endcan
                         </div>
                     </div>
                 </div>

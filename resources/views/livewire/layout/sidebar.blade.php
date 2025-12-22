@@ -394,7 +394,7 @@
                     </ul>
                 </li>
                 @endcan
-
+                @can('akses', 'Transaksi')                    
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">
                         <i class="fa-solid fa-cash-register"></i>
@@ -402,14 +402,19 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @can('akses', 'Transaksi Klinik')
                         <li>
                             <x-side-link href="{{ route('transaksi.kasir') }}" :active="request()->routeIs('transaksi.kasir*')" wire:navigate>Klinik</x-side-link>
                         </li>
+                        @endcan
+                        @can('akses', 'Transaksi Apotik')
                         <li>
                             <x-side-link href="{{ route('apotik.kasir') }}" :active="request()->routeIs('apotik.*')" wire:navigate>Apotik</x-side-link>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @endcan
                 <li>
                     <x-side-link href="{{ route('resep.data') }}" :active="request()->routeIs('resep.*')" wire:navigate>
                         <i class="fa-solid fa-prescription"></i>

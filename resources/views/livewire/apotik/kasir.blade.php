@@ -32,14 +32,25 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-start items-center mb-4">
-                        <a href="{{ route('apotik.create') }}" class="btn btn-success mx-1">
-                            <i class="fa-solid fa-plus"></i> Transaksi
-                        </a>
-                        <a href="{{ route('pasien.create') }}" class="btn btn-success mx-1">
-                            <i class="fa-solid fa-plus"></i> Pasien
-                        </a>
+                    @can('akses', 'Transaksi Apotik Tambah')
+                    <a href="{{ route('apotik.create') }}" class="btn btn-success mx-1">
+                        <i class="fa-solid fa-plus"></i> Transaksi
+                    </a>
+                    @endcan
+                    @can('akses', 'Pasien Tambah')
+                    <a href="{{ route('pasien.create') }}" class="btn btn-success mx-1">
+                        <i class="fa-solid fa-plus"></i> Pasien
+                    </a>
+                    @endcan
                     </div>
-                    <livewire:apotik.transaksi-table />
+                    @if (Gate::allows('akses','Transaksi Apotik Data'))
+                        <livewire:apotik.transaksi-table />
+                    @else
+                        <div class="alert alert-error">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Anda tidak memiliki akses untuk melihat data ini.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

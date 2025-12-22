@@ -699,9 +699,11 @@
                                 </div>
                                 
                                 @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
+                                    @can('akses', 'Transaksi Klinik Selesai')
                                     <button wire:click.prevent="create" class="btn btn-success btn-sm mt-4 w-full">
                                         <i class="fa-solid fa-plus"></i> Bayar
                                     </button>
+                                    @endcan
                                 @else
                                     <button class="btn btn-warning btn-sm mt-4 w-full">
                                         <i class="fa-solid fa-rotate"></i> Diproses

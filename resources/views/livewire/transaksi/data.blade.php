@@ -30,9 +30,15 @@
         <!-- Main Content -->
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
-                
                 <div class="p-6 text-base-content space-y-4">
-                    <livewire:Transaksi.Transaksi-Table />
+                    @if (Gate::allows('akses','Transaksi Klinik Data'))
+                        <livewire:Transaksi.Transaksi-Table />
+                    @else
+                        <div class="alert alert-error">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Anda tidak memiliki akses untuk melihat data ini.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

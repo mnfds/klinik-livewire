@@ -5,6 +5,7 @@ namespace App\Livewire\Apotik;
 use Livewire\Component;
 use App\Models\ProdukDanObat;
 use App\Models\TransaksiApotik;
+use Illuminate\Support\Facades\Gate;
 
 class Update extends Component
 {
@@ -67,6 +68,13 @@ class Update extends Component
             'obat_estetika.*.produk_id' => 'required|exists:produk_dan_obats,id',
             'obat_estetika.*.jumlah_produk' => 'required|integer|min:1',
         ]);
+        if (! Gate::allows('akses', 'Transaksi Apotik Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $totalHarga = 0;
 
@@ -105,6 +113,13 @@ class Update extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Transaksi Apotik Edit')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.apotik.update');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Livewire\Transaksi;
 
 use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -134,24 +135,28 @@ final class TransaksiTable extends PowerGridComponent
 
     public function actions(PasienTerdaftar $row): array
     {
-        return [
-            Button::add('cekresepbutton')
-                ->slot('<i class="fa-solid fa-tablets"></i> Peresepan')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Lihat Resep Obat',
-                    'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
-                    'class' => 'btn btn-accent',
-                ]),
-            Button::add('bayarbutton')
-                ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Pembayaran')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Pembayaran Obat',
-                    'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
-                    'class' => 'btn btn-secondary',
-                ]),
-        ];
+        $transaksiButton = [];
+
+        $transaksiButton[] = Button::add('cekresepbutton')
+            ->slot('<i class="fa-solid fa-tablets"></i> Peresepan')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Lihat Resep Obat',
+                'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
+                'class' => 'btn btn-accent',
+            ]);
+
+        Gate::allows('akses', 'Transaksi Klinik Detail') && $transaksiButton[] =
+        Button::add('bayarbutton')
+            ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Pembayaran')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Pembayaran Obat',
+                'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
+                'class' => 'btn btn-secondary',
+            ]);
+
+        return $transaksiButton; 
     }
 
     public function actionRules($row): array

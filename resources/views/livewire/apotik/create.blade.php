@@ -250,13 +250,14 @@
                                     <span x-text="Object.values(items).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
                                 </div>
                             </div>
-
+                            @can('akses', 'Transaksi Apotik Tambah')
                             <button wire:click.prevent="create"
                                 class="btn btn-success w-full mt-4"
                                 wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endcan
                         </div>
                     </div>
                 </div>

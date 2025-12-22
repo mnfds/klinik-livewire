@@ -16,6 +16,7 @@ use App\Models\RencanaTreatmentRM;
 use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
 use App\Models\RencananaBundlingRM;
+use Illuminate\Support\Facades\Gate;
 use App\Models\RiwayatTransaksiKlinik;
 use App\Services\PutInFinishedEncounter;
 
@@ -101,6 +102,13 @@ class Detail extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Transaksi Klinik Detail')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.transaksi.detail');
     }
 
@@ -135,6 +143,13 @@ class Detail extends Component
 
     public function create()
     {
+        if (! Gate::allows('akses', 'Transaksi Klinik Selesai')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         DB::beginTransaction();
 
         try {

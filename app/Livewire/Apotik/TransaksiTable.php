@@ -5,6 +5,7 @@ namespace App\Livewire\Apotik;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
 use App\Models\TransaksiApotik;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -99,30 +100,35 @@ final class TransaksiTable extends PowerGridComponent
 
     public function actions(TransaksiApotik $row): array
     {
-        return [
-            Button::add('detail')
-                ->slot('<i class="fas fa-eye"></i> Detail')
-                ->tag('button') // supaya tidak jadi <a>
-                ->attributes([
-                    'title' => 'Lihat detail',
-                    'onclick' => "Livewire.navigate('".route('apotik.detail', $row->id)."')",
-                    'class' => 'btn btn-primary'
-                ]),
+        $transaksiApotikButton = [];
 
-            Button::add('update')
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->tag('button') // supaya tidak jadi <a>
-                ->attributes([
-                    'title' => 'Edit Data',
-                    'onclick' => "Livewire.navigate('".route('apotik.update', $row->id)."')",
-                    'class' => 'btn btn-secondary'
-                ]),
+        Gate::allows('akses', 'Transaksi Apotik Detail') && $transaksiApotikButton[] =
+        Button::add('detail')
+            ->slot('<i class="fas fa-eye"></i> Detail')
+            ->tag('button') // supaya tidak jadi <a>
+            ->attributes([
+                'title' => 'Lihat detail',
+                'onclick' => "Livewire.navigate('".route('apotik.detail', $row->id)."')",
+                'class' => 'btn btn-primary'
+            ]);
 
-            Button::add('delete')
-                ->slot('<i class="fa-solid fa-eraser"></i></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('delete', ['rowId' => $row->id]),
-        ];
+        Gate::allows('akses', 'Transaksi Apotik Edit') && $transaksiApotikButton[] =
+        Button::add('update')
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->tag('button') // supaya tidak jadi <a>
+            ->attributes([
+                'title' => 'Edit Data',
+                'onclick' => "Livewire.navigate('".route('apotik.update', $row->id)."')",
+                'class' => 'btn btn-secondary'
+            ]);
+
+        Gate::allows('akses', 'Transaksi Apotik Hapus') && $transaksiApotikButton[] =
+        Button::add('delete')
+            ->slot('<i class="fa-solid fa-eraser"></i></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('delete', ['rowId' => $row->id]);
+    
+        return $transaksiApotikButton;
     }
 
     #[\Livewire\Attributes\On('delete')]
@@ -148,6 +154,13 @@ final class TransaksiTable extends PowerGridComponent
     #[\Livewire\Attributes\On('deleteConfirmed')]
     public function deleteConfirmed($rowId): void
     {
+        if (! Gate::allows('akses', 'Transaksi Apotik Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         TransaksiApotik::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

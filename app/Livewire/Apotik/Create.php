@@ -8,6 +8,7 @@ use App\Models\ProdukDanObat;
 use App\Models\TransaksiApotik;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Create extends Component
 {
@@ -75,6 +76,13 @@ class Create extends Component
 
     public function create()
     {
+        if (! Gate::allows('akses', 'Transaksi Apotik Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Hitung total harga
         $total = collect($this->obat_estetika)
             ->sum(fn($item) => (int) $item['subtotal']);
@@ -116,6 +124,13 @@ class Create extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Transaksi Apotik Tambah')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.apotik.create');
     }
 }

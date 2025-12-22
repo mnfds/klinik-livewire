@@ -145,6 +145,24 @@ class AksesSeeder extends Seeder
                 'Riwayat Rekam Medis',
                 'Detail Rekam Medis',
             ],
+            // Transaksi
+            18 => [
+                'Transaksi',
+                'Transaksi Klinik',
+                'Transaksi Klinik Data',
+                'Transaksi Klinik Detail',
+                'Transaksi Klinik Selesai',
+                'Transaksi Apotik',
+                'Transaksi Apotik Data',
+                'Transaksi Apotik Tambah',
+                'Transaksi Apotik Detail',
+                'Transaksi Apotik Edit',
+                'Transaksi Apotik Hapus',
+            ],
+            // Resep
+            19 => [
+                'Resep Obat',
+            ],
         ];
 
         $data = [];
