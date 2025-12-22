@@ -41,180 +41,187 @@
                 <div class="lg:col-span-2">
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
-                            <!-- name of each tab group should be unique -->
-                            <div class="tabs tabs-lift">
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" style="background-image: none;" aria-label="Biodata" checked="checked" />
-                                <div class="tab-content bg-base-100 border-base-300 p-6">
-                                    <div class="text-xl font-semibold border-b pb-2">Biodata:</div>
+                            @can('akses', 'Pasien Detail')
+                                <!-- name of each tab group should be unique -->
+                                <div class="tabs tabs-lift">
+                                    <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" style="background-image: none;" aria-label="Biodata" checked="checked" />
+                                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                                        <div class="text-xl font-semibold border-b pb-2">Biodata:</div>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <p class="font-semibold">Nama:</p>
-                                            <p>{{ $pasien->nama }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">No. RM:</p>
-                                            <p>{{ $pasien->no_register }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">NIK:</p>
-                                            <p>{{ $pasien->nik ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">No. IHS:</p>
-                                            <p>{{ $pasien->no_ihs ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">Jenis Kelamin:</p>
-                                            <p>{{ $pasien->jenis_kelamin }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">Tanggal Lahir:</p>
-                                            <p>{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d M Y') }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">Agama:</p>
-                                            <p>{{ $pasien->agama ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">Profesi:</p>
-                                            <p>{{ $pasien->profesi ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">Status:</p>
-                                            <p>{{ $pasien->status ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold">No. Telp:</p>
-                                            <p>{{ $pasien->no_telp ?: '-' }}</p>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <p class="font-semibold">Alamat:</p>
-                                            <p>{{ $pasien->alamat ?: '-' }}</p>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <p class="font-semibold">Deskripsi:</p>
-                                            <p>{{ $pasien->deskripsi ?: '-' }}</p>
-                                        </div>
-                                        @if ($pasien->foto_pasien)
-                                            <div class="md:col-span-2">
-                                                <p class="font-semibold">Foto Pasien:</p>
-                                                <img src="{{ asset('storage/' . $pasien->foto_pasien) }}"
-                                                    alt="Foto Pasien"
-                                                    class="w-40 h-40 object-cover rounded border">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="font-semibold">Nama:</p>
+                                                <p>{{ $pasien->nama }}</p>
                                             </div>
+                                            <div>
+                                                <p class="font-semibold">No. RM:</p>
+                                                <p>{{ $pasien->no_register }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">NIK:</p>
+                                                <p>{{ $pasien->nik ?: '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">No. IHS:</p>
+                                                <p>{{ $pasien->no_ihs ?: '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">Jenis Kelamin:</p>
+                                                <p>{{ $pasien->jenis_kelamin }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">Tanggal Lahir:</p>
+                                                <p>{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d M Y') }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">Agama:</p>
+                                                <p>{{ $pasien->agama ?: '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">Profesi:</p>
+                                                <p>{{ $pasien->profesi ?: '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">Status:</p>
+                                                <p>{{ $pasien->status ?: '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">No. Telp:</p>
+                                                <p>{{ $pasien->no_telp ?: '-' }}</p>
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <p class="font-semibold">Alamat:</p>
+                                                <p>{{ $pasien->alamat ?: '-' }}</p>
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <p class="font-semibold">Deskripsi:</p>
+                                                <p>{{ $pasien->deskripsi ?: '-' }}</p>
+                                            </div>
+                                            @if ($pasien->foto_pasien)
+                                                <div class="md:col-span-2">
+                                                    <p class="font-semibold">Foto Pasien:</p>
+                                                    <img src="{{ asset('storage/' . $pasien->foto_pasien) }}"
+                                                        alt="Foto Pasien"
+                                                        class="w-40 h-40 object-cover rounded border">
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" style="background-image: none;" aria-label="Layanan Tersisa" />
+                                    <div class="tab-content bg-base-100 border-base-300 p-6">
+                                        <div class="text-lg font-bold border-b pb-2">Layanan / Tindakan Tersisa</div>
+                                        @php
+                                            $grouped = [];
+
+                                            // Gabungkan semua data menjadi satu array besar agar mudah dikelompokkan
+                                            $allItems = collect()
+                                                ->merge($bundlingPasien['treatments'])
+                                                ->merge($bundlingPasien['pelayanans'])
+                                                ->merge($bundlingPasien['produks']);
+
+                                            foreach ($allItems as $item) {
+                                                $groupKey = $item->group_bundling ?? 'Tanpa Group';
+                                                $bundlingKey = $item->bundling_id;
+                                                $bundlingNama = optional($item->bundling)->nama ?? '-';
+
+                                                // Buat struktur dasar group_bundling
+                                                if (!isset($grouped[$groupKey])) {
+                                                    $grouped[$groupKey] = [
+                                                        'bundlings' => []
+                                                    ];
+                                                }
+
+                                                // Buat struktur dasar bundling di dalam group
+                                                if (!isset($grouped[$groupKey]['bundlings'][$bundlingKey])) {
+                                                    $grouped[$groupKey]['bundlings'][$bundlingKey] = [
+                                                        'nama' => $bundlingNama,
+                                                        'treatments' => [],
+                                                        'pelayanans' => [],
+                                                        'produks' => [],
+                                                    ];
+                                                }
+
+                                                // Klasifikasi berdasarkan tipe model
+                                                if ($item instanceof \App\Models\TreatmentBundlingRM) {
+                                                    $grouped[$groupKey]['bundlings'][$bundlingKey]['treatments'][] = $item;
+                                                } elseif ($item instanceof \App\Models\PelayananBundlingRM) {
+                                                    $grouped[$groupKey]['bundlings'][$bundlingKey]['pelayanans'][] = $item;
+                                                } elseif ($item instanceof \App\Models\ProdukObatBundlingRM) {
+                                                    $grouped[$groupKey]['bundlings'][$bundlingKey]['produks'][] = $item;
+                                                }
+                                            }
+                                        @endphp
+                                        @if(count($grouped))
+                                            <div class="space-y-8">
+                                                @foreach($grouped as $groupName => $groupData)
+                                                    <div class="p-3 border rounded bg-base-200 mb-3">
+                                                        {{-- <p class="text-md font-bold mb-3">{{ $groupName }}</p> --}}
+
+                                                        @foreach($groupData['bundlings'] as $bundling)
+                                                            <div class="mb-5 ml-3">
+                                                                <p class="text-md font-bold mb-3">{{ $bundling['nama'] }}</p>
+
+                                                                {{-- Treatments --}}
+                                                                @if(!empty($bundling['treatments']))
+                                                                    <p class="font-medium text-xs text-gray-500 mb-1">Treatment</p>
+                                                                    <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                        @foreach($bundling['treatments'] as $t)
+                                                                            <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                                <span>{{ optional($t->treatment)->nama_treatment ?? '-' }}</span>
+                                                                                <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                    {{ $t->sisa ?? ($t->jumlah_awal - $t->jumlah_terpakai) }}x
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                @endif
+
+                                                                {{-- Pelayanan --}}
+                                                                @if(!empty($bundling['pelayanans']))
+                                                                    <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Pelayanan</p>
+                                                                    <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                        @foreach($bundling['pelayanans'] as $p)
+                                                                            <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                                <span>{{ optional($p->pelayanan)->nama_pelayanan ?? '-' }}</span>
+                                                                                <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                    {{ $p->jumlah_awal - $p->jumlah_terpakai }}x
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                @endif
+
+                                                                {{-- Produk --}}
+                                                                @if(!empty($bundling['produks']))
+                                                                    <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Produk Obat</p>
+                                                                    <ul class="list-disc list-inside text-sm space-y-1 ml-3">
+                                                                        @foreach($bundling['produks'] as $pr)
+                                                                            <li class="flex items-center justify-between border-b border-base-300 pb-1">
+                                                                                <span>{{ optional($pr->produk)->nama_dagang ?? '-' }}</span>
+                                                                                <span class="btn btn-xs text-xs btn-circle btn-primary">
+                                                                                    {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}x
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <p class="text-sm text-gray-500">Tidak ada layanan tersisa</p>
                                         @endif
                                     </div>
                                 </div>
-
-                                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" style="background-image: none;" aria-label="Layanan Tersisa" />
-                                <div class="tab-content bg-base-100 border-base-300 p-6">
-                                    <div class="text-lg font-bold border-b pb-2">Layanan / Tindakan Tersisa</div>
-                                    @php
-                                        $grouped = [];
-
-                                        // Gabungkan semua data menjadi satu array besar agar mudah dikelompokkan
-                                        $allItems = collect()
-                                            ->merge($bundlingPasien['treatments'])
-                                            ->merge($bundlingPasien['pelayanans'])
-                                            ->merge($bundlingPasien['produks']);
-
-                                        foreach ($allItems as $item) {
-                                            $groupKey = $item->group_bundling ?? 'Tanpa Group';
-                                            $bundlingKey = $item->bundling_id;
-                                            $bundlingNama = optional($item->bundling)->nama ?? '-';
-
-                                            // Buat struktur dasar group_bundling
-                                            if (!isset($grouped[$groupKey])) {
-                                                $grouped[$groupKey] = [
-                                                    'bundlings' => []
-                                                ];
-                                            }
-
-                                            // Buat struktur dasar bundling di dalam group
-                                            if (!isset($grouped[$groupKey]['bundlings'][$bundlingKey])) {
-                                                $grouped[$groupKey]['bundlings'][$bundlingKey] = [
-                                                    'nama' => $bundlingNama,
-                                                    'treatments' => [],
-                                                    'pelayanans' => [],
-                                                    'produks' => [],
-                                                ];
-                                            }
-
-                                            // Klasifikasi berdasarkan tipe model
-                                            if ($item instanceof \App\Models\TreatmentBundlingRM) {
-                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['treatments'][] = $item;
-                                            } elseif ($item instanceof \App\Models\PelayananBundlingRM) {
-                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['pelayanans'][] = $item;
-                                            } elseif ($item instanceof \App\Models\ProdukObatBundlingRM) {
-                                                $grouped[$groupKey]['bundlings'][$bundlingKey]['produks'][] = $item;
-                                            }
-                                        }
-                                    @endphp
-                                    @if(count($grouped))
-                                        <div class="space-y-8">
-                                            @foreach($grouped as $groupName => $groupData)
-                                                <div class="p-3 border rounded bg-base-200 mb-3">
-                                                    {{-- <p class="text-md font-bold mb-3">{{ $groupName }}</p> --}}
-
-                                                    @foreach($groupData['bundlings'] as $bundling)
-                                                        <div class="mb-5 ml-3">
-                                                            <p class="text-md font-bold mb-3">{{ $bundling['nama'] }}</p>
-
-                                                            {{-- Treatments --}}
-                                                            @if(!empty($bundling['treatments']))
-                                                                <p class="font-medium text-xs text-gray-500 mb-1">Treatment</p>
-                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                    @foreach($bundling['treatments'] as $t)
-                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                            <span>{{ optional($t->treatment)->nama_treatment ?? '-' }}</span>
-                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                                {{ $t->sisa ?? ($t->jumlah_awal - $t->jumlah_terpakai) }}x
-                                                                            </span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            @endif
-
-                                                            {{-- Pelayanan --}}
-                                                            @if(!empty($bundling['pelayanans']))
-                                                                <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Pelayanan</p>
-                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                    @foreach($bundling['pelayanans'] as $p)
-                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                            <span>{{ optional($p->pelayanan)->nama_pelayanan ?? '-' }}</span>
-                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                                {{ $p->jumlah_awal - $p->jumlah_terpakai }}x
-                                                                            </span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            @endif
-
-                                                            {{-- Produk --}}
-                                                            @if(!empty($bundling['produks']))
-                                                                <p class="font-medium text-xs text-gray-500 mt-2 mb-1">Produk Obat</p>
-                                                                <ul class="list-disc list-inside text-sm space-y-1 ml-3">
-                                                                    @foreach($bundling['produks'] as $pr)
-                                                                        <li class="flex items-center justify-between border-b border-base-300 pb-1">
-                                                                            <span>{{ optional($pr->produk)->nama_dagang ?? '-' }}</span>
-                                                                            <span class="btn btn-xs text-xs btn-circle btn-primary">
-                                                                                {{ $pr->jumlah_awal - $pr->jumlah_terpakai }}x
-                                                                            </span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <p class="text-sm text-gray-500">Tidak ada layanan tersisa</p>
-                                    @endif
+                            @else
+                                <div class="alert alert-error">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Anda tidak memiliki akses untuk melihat data ini.
                                 </div>
-                            </div>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -223,15 +230,21 @@
                 <div>
                     <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                         <div class="p-6 text-base-content space-y-4">
+                            @can('akses', 'Pasien Edit')
                             <a wire:navigate href="{{ route('pasien.update', ['id' => $pasien->id]) }}" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-pen-clip mr-2"></i>Edit Data Pasien
                             </a>
+                            @endcan
+                            @can('akses', 'Pasien Riwayat Rekam Medis')                                
                             <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasien->id]) }}" class="btn btn-info w-full">
                                 <i class="fa-solid fa-clipboard-list mr-2"></i>Riwayat Rekam Medis Pasien
                             </a>
+                            @endcan
+                            @can('akses', 'Pasien Registrasi')                                
                             <a wire:navigate href="{{ route('pendaftaran.create', ['pasien_id' => $pasien->id]) }}" class="btn btn-primary w-full">
                                 <i class="fa-solid fa-laptop-medical"></i>Registrasi Pasien
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>

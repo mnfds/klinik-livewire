@@ -210,10 +210,12 @@
                     <div class="sticky top-20">
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Aksi</h3>
+                            @can('akses', 'Pasien Registrasi')                                
                             <button wire:click="submit" class="btn btn-success w-full" wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endcan
                             <a wire:navigate href="{{ route('pendaftaran.data') }}" class="btn btn-primary w-full my-1">
                                 <i class="fa-solid fa-rotate-left"></i>
                                 Kembali

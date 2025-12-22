@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\PelayananBundlingRM;
 use App\Models\TreatmentBundlingRM;
 use App\Models\ProdukObatBundlingRM;
+use Illuminate\Support\Facades\Gate;
 
 class Detail extends Component
 {

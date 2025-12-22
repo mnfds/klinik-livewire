@@ -5,6 +5,7 @@ namespace App\Livewire\Pasien;
 use App\Models\Pasien;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
 
 class CreateDefault extends Component
 {
@@ -61,7 +62,13 @@ class CreateDefault extends Component
             'foto_pasien'     => 'nullable|image|max:2048', // maksimal 2MB
             'deskripsi'       => 'nullable|string',
         ]);
-
+        if (! Gate::allows('akses', 'Pasien Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Upload foto jika ada
         $fotoPath = null;
         if ($this->foto_pasien) {

@@ -5,6 +5,7 @@ namespace App\Livewire\Pasien;
 use App\Models\Pasien;
 use Illuminate\View\View;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -116,6 +117,13 @@ final class PasienTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasihapuspasien')]
     public function konfirmasihapuspasien($rowId): void
     {
+        if (! Gate::allows('akses', 'Poliklinik Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Pasien::findOrFail($rowId)->delete();
 
         $this->dispatch('toast', [

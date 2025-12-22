@@ -153,18 +153,22 @@
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Manajemen Klinik</span>
                 </li>
+                @can('akses', 'Jadwal')                    
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-calendar-days"></i>
                         <span class="ml-3">Jadwal</span>
                     </x-side-link>
                 </li>
+                @endcan
+                @can('akses', 'Laporan')                    
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-chart-column"></i>
                         <span class="ml-3">Laporan</span>
                     </x-side-link>
                 </li>
+                @endcan
 
                 @php
                     use App\Models\BahanBaku;
@@ -184,6 +188,7 @@
                     $jumlahReminder = $bahanHampirExpired->count();
                 @endphp
 
+                @can('akses', 'Persediaan')                    
                 <li 
                     x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
                     >
@@ -230,8 +235,9 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
 
-                <!-- Dropdown Example (reuseable later for antrian/rawat jalan/etc) -->
+                @can('akses', 'Pengajuan')                    
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*')">
                         <i class="fa-solid fa-folder-open"></i>
@@ -245,17 +251,20 @@
                         <li><x-side-link href="#" wire:navigate>Izin Keluar</x-side-link></li>
                     </ul>
                 </li>
+                @endcan
 
                 <!-- Pelayanan Klinik Section -->
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Pelayanan Klinik</span>
                 </li>
+                @can('akses', 'Pasien')
                 <li>
                     <x-side-link href="{{ route('pasien.data') }}" :active="request()->routeIs('pasien.*')" wire:navigate>
                         <i class="fa-solid fa-hospital-user"></i>
                         <span class="ml-3">Pasien</span>
                     </x-side-link>
                 </li>
+                @endcan
 
                 <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">

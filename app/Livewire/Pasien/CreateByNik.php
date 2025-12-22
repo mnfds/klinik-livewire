@@ -9,6 +9,7 @@ use App\Services\getAccessToken;
 use App\Services\GetPatientByNik;
 use App\Services\SatuSehatService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class CreateByNik extends Component
 {
@@ -103,7 +104,13 @@ class CreateByNik extends Component
             'foto_pasien'     => 'nullable|image|max:2048', // maksimal 2MB
             'deskripsi'       => 'nullable|string',
         ]);
-
+        if (! Gate::allows('akses', 'Pasien Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Upload foto jika ada
         $fotoPath = null;
         if ($this->foto_pasien) {

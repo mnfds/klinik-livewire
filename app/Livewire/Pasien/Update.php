@@ -5,6 +5,7 @@ namespace App\Livewire\Pasien;
 use App\Models\Pasien;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class Update extends Component
@@ -71,6 +72,14 @@ class Update extends Component
             'deskripsi'        => 'nullable|string|max:500',
             'new_foto_pasien'  => 'nullable|image|max:1024', // maksimal 1MB
         ]);
+        
+        if (! Gate::allows('akses', 'Pasien Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $pasien = Pasien::findOrFail($this->pasienId);
 

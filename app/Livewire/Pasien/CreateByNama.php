@@ -7,9 +7,10 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Services\getAccessToken;
 use App\Services\GetPatientByNik;
-use App\Services\GetPatientByNikBirthdateGender;
 use App\Services\SatuSehatService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
+use App\Services\GetPatientByNikBirthdateGender;
 
 class CreateByNama extends Component
 {
@@ -116,6 +117,13 @@ class CreateByNama extends Component
             'foto_pasien'     => 'nullable|image|max:2048', // maksimal 2MB
             'deskripsi'       => 'nullable|string',
         ]);
+        if (! Gate::allows('akses', 'Pasien Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         // Upload foto jika ada
         $fotoPath = null;

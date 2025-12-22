@@ -14,7 +14,7 @@
                     <span class="label-text font-semibold">Daftar Akses</span>
                 </label>
 
-                <div class="space-y-4 max-h-60 overflow-y-auto border p-2 rounded-box">
+                <div class="space-y-4 max-h-80 overflow-y-auto border p-2 rounded-box">
                     @foreach ($this->groupedAkses as $group => $aksesGroup)
                         <div>
                             <h3 class="font-bold text-sm text-gray-700 mb-1">

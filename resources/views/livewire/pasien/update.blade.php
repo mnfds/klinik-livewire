@@ -196,9 +196,11 @@
 
                     {{-- Tombol Simpan --}}
                     <div class="pt-4 text-right border-t">
+                        @can('akses', 'Pasien Edit')                            
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save mr-2"></i> Simpan Pasien
                         </button>
+                        @endcan
                     </div>
                 </form>
             </div>

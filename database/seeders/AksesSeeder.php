@@ -13,255 +13,121 @@ class AksesSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dashboard',
-            'nomor_group_akses' => '1',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $now = now();
 
-        //AKSES STAFF
-        DB::table('akses')->insert([
-            'nama_akses' => 'Staff Data',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Staff Tambah',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Staff Hapus',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Staff Edit',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Verifikasi Email',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Reset Password',
-            'nomor_group_akses' => '2',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $akses = [
+            // Dashboard
+            1 => [
+                'Dashboard',
+            ],
 
-        //AKSES DOKTER
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dokter Data',
-            'nomor_group_akses' => '3',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dokter Tambah',
-            'nomor_group_akses' => '3',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dokter Hapus',
-            'nomor_group_akses' => '3',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dokter Edit',
-            'nomor_group_akses' => '3',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Dokter Detail',
-            'nomor_group_akses' => '3',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //AKSES JAM KERJA
-        DB::table('akses')->insert([
-            'nama_akses' => 'Jam Kerja Data',
-            'nomor_group_akses' => '4',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Jam Kerja Tambah',
-            'nomor_group_akses' => '4',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Jam Kerja Hapus',
-            'nomor_group_akses' => '4',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Jam Kerja Edit',
-            'nomor_group_akses' => '4',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //AKSES POLIKLINIK
-        DB::table('akses')->insert([
-            'nama_akses' => 'Poliklinik Data',
-            'nomor_group_akses' => '5',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Poliklinik Tambah',
-            'nomor_group_akses' => '5',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Poliklinik Hapus',
-            'nomor_group_akses' => '5',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Poliklinik Edit',
-            'nomor_group_akses' => '5',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //PELAYANAN MEDIS
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Data',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Medis Data',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Medis Tambah',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Medis Hapus',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Medis Edit',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Medis Tambah Bahan',
-            'nomor_group_akses' => '6',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //PELAYANAN ESTETIKA
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Estetika Data',
-            'nomor_group_akses' => '7',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Estetika Tambah',
-            'nomor_group_akses' => '7',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Estetika Hapus',
-            'nomor_group_akses' => '7',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Estetika Edit',
-            'nomor_group_akses' => '7',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Pelayanan Estetika Tambah Bahan',
-            'nomor_group_akses' => '7',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //PAKET BUNDLING
-        DB::table('akses')->insert([
-            'nama_akses' => 'Paket Bundling Data',
-            'nomor_group_akses' => '8',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Paket Bundling Tambah',
-            'nomor_group_akses' => '8',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Paket Bundling Hapus',
-            'nomor_group_akses' => '8',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Paket Bundling Edit',
-            'nomor_group_akses' => '8',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Paket Bundling Status',
-            'nomor_group_akses' => '8',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //PRODUK & OBAT
-        DB::table('akses')->insert([
-            'nama_akses' => 'Produk & Obat Data',
-            'nomor_group_akses' => '9',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Produk & Obat Tambah',
-            'nomor_group_akses' => '9',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Produk & Obat Hapus',
-            'nomor_group_akses' => '9',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('akses')->insert([
-            'nama_akses' => 'Produk & Obat Edit',
-            'nomor_group_akses' => '9',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // Staff
+            2 => [
+                'Staff Data',
+                'Staff Tambah',
+                'Staff Hapus',
+                'Staff Edit',
+                'Verifikasi Email',
+                'Reset Password',
+            ],
+
+            // Dokter
+            3 => [
+                'Dokter Data',
+                'Dokter Tambah',
+                'Dokter Hapus',
+                'Dokter Edit',
+                'Dokter Detail',
+            ],
+
+            // Jam Kerja
+            4 => [
+                'Jam Kerja Data',
+                'Jam Kerja Tambah',
+                'Jam Kerja Hapus',
+                'Jam Kerja Edit',
+            ],
+
+            // Poliklinik
+            5 => [
+                'Poliklinik Data',
+                'Poliklinik Tambah',
+                'Poliklinik Hapus',
+                'Poliklinik Edit',
+            ],
+
+            // Produk & Obat
+            6 => [
+                'Produk & Obat Data',
+                'Produk & Obat Tambah',
+                'Produk & Obat Hapus',
+                'Produk & Obat Edit',
+            ],
+
+            // Pelayanan Medis
+            7 => [
+                'Pelayanan Data',
+                'Pelayanan Medis Data',
+                'Pelayanan Medis Tambah',
+                'Pelayanan Medis Hapus',
+                'Pelayanan Medis Edit',
+                'Pelayanan Medis Tambah Bahan',
+                'Pelayanan Estetika Data',
+                'Pelayanan Estetika Tambah',
+                'Pelayanan Estetika Hapus',
+                'Pelayanan Estetika Edit',
+                'Pelayanan Estetika Tambah Bahan',
+            ],
+
+            // Paket Bundling
+            8 => [
+                'Paket Bundling Data',
+                'Paket Bundling Tambah',
+                'Paket Bundling Hapus',
+                'Paket Bundling Edit',
+                'Paket Bundling Status',
+            ],
+            // Jadwal
+            9 => [
+                'Jadwal',
+            ],
+            // Laporan
+            10 => [
+                'Laporan',
+            ],
+            // Persediaan
+            11 => [
+                'Persediaan',
+            ],
+            // Pengajuan
+            12 => [
+                'Pengajuan',
+            ],
+            // Pasien
+            13 => [
+                'Pasien',
+                'Pasien Tambah',
+                'Pasien Detail',
+                'Pasien Edit',
+                'Pasien Hapus',
+                'Pasien Riwayat Rekam Medis',
+                'Pasien Registrasi',
+            ],
+        ];
+
+        $data = [];
+
+        foreach ($akses as $group => $items) {
+            foreach ($items as $nama) {
+                $data[] = [
+                    'nama_akses'        => $nama,
+                    'nomor_group_akses' => $group,
+                    'created_at'        => $now,
+                    'updated_at'        => $now,
+                ];
+            }
+        }
+
+        DB::table('akses')->insert($data);
     }
 }
