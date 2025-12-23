@@ -4,6 +4,7 @@ namespace App\Livewire\Bahan;
 
 use App\Models\BahanBaku;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -101,20 +102,24 @@ final class BahanTable extends PowerGridComponent
 
     public function actions(BahanBaku $row): array
     {
-        return [
-            Button::add('updatebahanbaku')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditbahanbaku.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('bahan.update', 'getupdatebahanbaku', ['rowId' => $row->id]),
-            
-            Button::add('deletebahanbaku')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletebahanbaku', ['rowId' => $row->id]),
-        ];
+        $bahanBakuButton = [];
+        
+        Gate::allows('akses', 'Persediaan Bahan Baku Edit') && $bahanBakuButton[] =
+        Button::add('updatebahanbaku')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditbahanbaku.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('bahan.update', 'getupdatebahanbaku', ['rowId' => $row->id]);
+        
+        Gate::allows('akses', 'Persediaan Bahan Baku') && $bahanBakuButton[] =
+        Button::add('deletebahanbaku')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletebahanbaku', ['rowId' => $row->id]);
+
+        return $bahanBakuButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletebahanbaku')]
@@ -140,6 +145,13 @@ final class BahanTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletebahanbaku')]
     public function konfirmasideletebahanbaku($rowId): void
     {
+        if (! Gate::allows('akses', 'Persediaan Bahan Baku Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         BahanBaku::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

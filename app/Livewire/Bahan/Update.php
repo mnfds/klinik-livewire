@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Bahan;
 
-use App\Models\BahanBaku;
 use Livewire\Component;
+use App\Models\BahanBaku;
+use Illuminate\Support\Facades\Gate;
 
 class Update extends Component
 {
@@ -41,6 +42,13 @@ class Update extends Component
             'reminder' => 'nullable',
             'keterangan' => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Bahan Baku Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         BahanBaku::where('id', $this->bahan_id)->update([
             'nama' => $this->nama,

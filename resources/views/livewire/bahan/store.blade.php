@@ -59,7 +59,9 @@
             </div>
 
             <div class="modal-action justify-end pt-4">
+                @can('akses', 'Persediaan Bahan Baku Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-error" onclick="document.getElementById('storeModalBahan').close()">Batal</button>
             </div>
         </form>

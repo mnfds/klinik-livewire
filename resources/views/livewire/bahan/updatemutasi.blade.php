@@ -51,7 +51,9 @@
             </div>
 
             <div class="modal-action justify-end pt-4">
+                @can('akses', 'Persediaan Riwayat Bahan Baku Edit')
                 <button type="submit" class="btn btn-primary">Simpan</button>
+                @endcan
                 <button type="button" class="btn btn-error" onclick="document.getElementById('modaleditmutasibahan').close()">Batal</button>
             </div>
         </form>

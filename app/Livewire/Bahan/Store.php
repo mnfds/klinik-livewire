@@ -5,6 +5,7 @@ namespace App\Livewire\Bahan;
 use Livewire\Component;
 use App\Models\BahanBaku;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -30,6 +31,13 @@ class Store extends Component
             'lokasi'        => 'nullable',
             'keterangan'    => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Bahan Baku Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $bahanbaku = BahanBaku::create([
             'nama'      => $this->nama,

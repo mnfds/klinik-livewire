@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Bahan;
 
-use App\Models\MutasiBahanbaku;
 use App\TipeRiwayatBahanbaku;
 use Illuminate\Support\Carbon;
+use App\Models\MutasiBahanbaku;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class RiwayatTable extends PowerGridComponent
@@ -85,20 +86,24 @@ final class RiwayatTable extends PowerGridComponent
 
     public function actions(MutasiBahanbaku $row): array
     {
-        return [
-            Button::add('updatemutasibahan')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditmutasibahan.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('bahan.updatemutasi', 'getupdatemutasibahan', ['rowId' => $row->id]),
-            
-            Button::add('deletemutasibahan')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletemutasibahan', ['rowId' => $row->id]),
-        ];
+        $riwayatBahanBakuButton = [];
+        
+        Gate::allows('akses', 'Persediaan Riwayat Bahan Baku Edit') && $riwayatBahanBakuButton[] =
+        Button::add('updatemutasibahan')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditmutasibahan.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('bahan.updatemutasi', 'getupdatemutasibahan', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Persediaan Riwayat Bahan Baku Hapus') && $riwayatBahanBakuButton[] =
+        Button::add('deletemutasibahan')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletemutasibahan', ['rowId' => $row->id]);
+
+        return $riwayatBahanBakuButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletemutasibahan')]
@@ -124,6 +129,13 @@ final class RiwayatTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletemutasibahan')]
     public function konfirmasideletemutasibahan($rowId): void
     {
+        if (! Gate::allows('akses', 'Persediaan Bahan Baku Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         MutasiBahanbaku::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

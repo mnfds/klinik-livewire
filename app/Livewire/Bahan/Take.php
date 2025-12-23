@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\BahanBaku;
 use App\Models\MutasiBahanbaku;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Take extends Component
 {
@@ -31,6 +32,13 @@ class Take extends Component
             'jumlah'   => 'required|numeric',
             'catatan'   => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Bahan Baku Keluar')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         MutasiBahanbaku::create([
             'bahan_baku_id'   => $this->bahan_baku_id,
