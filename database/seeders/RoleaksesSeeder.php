@@ -13,11 +13,22 @@ class RoleaksesSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('role_akses')->insert([
-            'role_id' => 1,
-            'akses_id' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $now = now();
+
+        // Ambil semua ID akses
+        $aksesIds = DB::table('akses')->pluck('id');
+
+        $roleAkses = [];
+
+        foreach ($aksesIds as $aksesId) {
+            $roleAkses[] = [
+                'role_id'   => 1, // SUPER ADMIN
+                'akses_id'  => $aksesId,
+                'created_at'=> $now,
+                'updated_at'=> $now,
+            ];
+        }
+
+        DB::table('role_akses')->insert($roleAkses);
     }
 }

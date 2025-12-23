@@ -32,7 +32,14 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 
                 <div class="p-6 text-base-content space-y-4">
-                    <livewire:Resep.Resep-Table />
+                    @can('akses', 'Resep Obat')
+                        <livewire:Resep.Resep-Table />
+                    @else
+                        <div class="alert alert-error">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Anda tidak memiliki akses untuk melihat data ini.
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>

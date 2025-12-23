@@ -9,6 +9,7 @@ use App\Models\ObatRacikanFinal;
 use App\Models\BahanRacikanFinal;
 use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
+use Illuminate\Support\Facades\Gate;
 
 class Detail extends Component
 {
@@ -186,6 +187,13 @@ class Detail extends Component
 
     public function create()
     {
+        if (! Gate::allows('akses', 'Kalkulasi Obat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         $this->hitungTotalObat();
 
         $nonracik = json_decode($this->obatNonracikFinal, true);

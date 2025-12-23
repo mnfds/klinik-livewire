@@ -166,6 +166,8 @@ class AksesSeeder extends Seeder
             // Resep
             19 => [
                 'Resep Obat',
+                'Kalkulasi Obat',
+                'Tebus Obat',
             ],
             // Satu Sehat
             20 => [

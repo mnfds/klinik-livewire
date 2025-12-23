@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Resep;
 
+use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\PasienTerdaftar;
-use App\Services\StorePenyerahanObatNonRacik;
+use Illuminate\Support\Facades\Gate;
 use App\Services\StorePenyerahanObatRacik;
-use Carbon\Carbon;
+use App\Services\StorePenyerahanObatNonRacik;
 
 class Tebus extends Component
 {
@@ -155,6 +156,14 @@ class Tebus extends Component
 
     public function create()
     {
+        if (! Gate::allows('akses', 'Tebus Obat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'selesai']);
         $rekam = $this->pasienTerdaftar->rekamMedis;
         $pt = PasienTerdaftar::with(['pasien','dokter'])->findOrFail($this->pasien_terdaftar_id);

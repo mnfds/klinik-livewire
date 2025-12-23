@@ -155,17 +155,19 @@
                                         {{-- Jika kedua array kosong --}}
                                         @if (empty($produkRencanaItems) && empty($produkBundlingItems) && empty($produkBundlingUsageItems))
                                             <p class="text-gray-500 italic">Tidak ada produk dibeli.</p>
-                                        @endif
+                                        @endif 
                                     </div>
                                 </div>
                             </div>
                             <form wire:submit.prevent="create">
                                 <input type="text" class="input input-bordered w-full" wire:model.lazy="nama" required>
                             </form>
+                            @can('akses', 'Tebus Obat')
                             <button wire:click.prevent="create" class="btn btn-success w-full mb-1" wire:loading.attr="disabled">
                                 <span wire:loading.remove>Selesai</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endcan
                         </div>
                     </div>
                 </div>

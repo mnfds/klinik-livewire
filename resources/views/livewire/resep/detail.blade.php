@@ -666,10 +666,12 @@
                                     </div>
                                 </div>
 
+                                @can('akses', 'Kalkulasi Obat')
                                 <button wire:click.prevent="create" class="btn btn-primary w-full mb-1" wire:loading.attr="disabled">
                                     <span wire:loading.remove>Update</span>
                                     <span wire:loading.inline>Loading...</span>
                                 </button>
+                                @endcan
                             </form>
                         </div>
                     </div>

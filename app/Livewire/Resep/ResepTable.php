@@ -2,16 +2,17 @@
 
 namespace App\Livewire\Resep;
 
-use App\Models\PasienTerdaftar;
 use Illuminate\Support\Carbon;
+use App\Models\PasienTerdaftar;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
-use PowerComponents\LivewirePowerGrid\PowerGridFields;
-use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\Facades\Rule;
+use PowerComponents\LivewirePowerGrid\Facades\Filter;
+use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
+use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class ResepTable extends PowerGridComponent
 {
@@ -131,25 +132,28 @@ final class ResepTable extends PowerGridComponent
 
     public function actions(PasienTerdaftar $row): array
     {
-        return [
-            Button::add('cekresepbutton')
-                ->slot('<i class="fa-solid fa-mortar-pestle"></i> Verifikasi Resep')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Input Obat dari Resep',
-                    'onclick' => "Livewire.navigate('" . route('resep.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-secondary',
-                ]),
+        $resepButton = [];
+        
+        Gate::allows('akses', 'Kalkulasi Obat') && $resepButton[] =
+        Button::add('cekresepbutton')
+            ->slot('<i class="fa-solid fa-mortar-pestle"></i> Verifikasi Resep')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Input Obat dari Resep',
+                'onclick' => "Livewire.navigate('" . route('resep.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-secondary',
+            ]);
 
-            Button::add('tebusbutton')
-                ->slot('<i class="fa-solid fa-file-prescription"></i> Daftar Obat Tebusan')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'List Obat untuk Ditebus',
-                    'onclick' => "Livewire.navigate('" . route('resep.tebus', ['pasien_terdaftar_id' => $row->id]) . "')",
-                    'class' => 'btn btn-primary',
-                ]),
-        ];
+        Gate::allows('akses', 'Tebus Obat') && $resepButton[] =
+        Button::add('tebusbutton')
+            ->slot('<i class="fa-solid fa-file-prescription"></i> Daftar Obat Tebusan')
+            ->tag('button')
+            ->attributes([
+                'title' => 'List Obat untuk Ditebus',
+                'onclick' => "Livewire.navigate('" . route('resep.tebus', ['pasien_terdaftar_id' => $row->id]) . "')",
+                'class' => 'btn btn-primary',
+            ]);
+        return $resepButton;
     }
 
     public function actionRules($row): array
