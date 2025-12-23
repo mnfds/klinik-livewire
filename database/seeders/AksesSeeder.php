@@ -67,11 +67,13 @@ class AksesSeeder extends Seeder
             // Pelayanan Medis
             7 => [
                 'Pelayanan Data',
+
                 'Pelayanan Medis Data',
                 'Pelayanan Medis Tambah',
                 'Pelayanan Medis Hapus',
                 'Pelayanan Medis Edit',
                 'Pelayanan Medis Tambah Bahan',
+
                 'Pelayanan Estetika Data',
                 'Pelayanan Estetika Tambah',
                 'Pelayanan Estetika Hapus',
@@ -120,6 +122,7 @@ class AksesSeeder extends Seeder
                 'Panggilan Suara',
                 'Hapus Nomor Antrian Masuk',
                 'Hapus Nomor Antrian Dipanggil',
+                
                 'Display Antrian',
                 'Display Registrasi',
                 'Display Poliklinik',
@@ -152,6 +155,7 @@ class AksesSeeder extends Seeder
                 'Transaksi Klinik Data',
                 'Transaksi Klinik Detail',
                 'Transaksi Klinik Selesai',
+
                 'Transaksi Apotik',
                 'Transaksi Apotik Data',
                 'Transaksi Apotik Tambah',
@@ -166,9 +170,18 @@ class AksesSeeder extends Seeder
             // Satu Sehat
             20 => [
                 'Satu Sehat',
+
                 'Praktisi Satu Sehat',
+                'Tambah Praktisi Satu Sehat',
+                'Hapus Praktisi Satu Sehat',
+
                 'Lokasi Satu Sehat',
+                'Tambah Lokasi Satu Sehat',
+                'Hapus Lokasi Satu Sehat',
+
                 'Organisasi Satu Sehat',
+                'Tambah Organisasi Satu Sehat',
+                'Hapus Organisasi Satu Sehat',
             ],
         ];
 

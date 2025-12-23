@@ -7,6 +7,7 @@ use App\Models\Locations;
 use App\Models\PoliKlinik;
 use App\Services\GetLocation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class Search extends Component
 {
@@ -49,6 +50,13 @@ class Search extends Component
 
     public function saveLocation($org_id)
     {
+        if (! Gate::allows('akses', 'Tambah Lokasi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         try {
             // Cari data org berdasarkan ID
             $org = collect($this->dataLocation)->firstWhere('id', $org_id);

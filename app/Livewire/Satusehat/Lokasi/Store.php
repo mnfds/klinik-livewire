@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Satusehat\Lokasi;
 
-use App\Models\District;
-use App\Models\PoliKlinik;
-use App\Models\Province;
 use App\Models\Regency;
 use App\Models\Village;
 use Livewire\Component;
+use App\Models\District;
+use App\Models\Province;
+use App\Models\PoliKlinik;
 use App\Services\StoreLocation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -37,6 +38,14 @@ class Store extends Component
 
     public function store(StoreLocation $orgService)
     {
+        if (! Gate::allows('akses', 'Tambah Lokasi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         try {
             $this->kota = Regency::where('id', $this->city_code)->value('name');
             // ======== PAYLOAD ==========

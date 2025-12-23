@@ -4,12 +4,13 @@ namespace App\Livewire\Satusehat\Praktisi;
 
 use App\Models\Practitioner;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class Datatable extends PowerGridComponent
@@ -121,6 +122,13 @@ final class Datatable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletePraktisi')]
     public function konfirmasideletePraktisi($rowId): void
     {
+        if (! Gate::allows('akses', 'Hapus Praktisi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Practitioner::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

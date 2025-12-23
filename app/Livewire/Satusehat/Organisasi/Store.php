@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Satusehat\Organisasi;
 
-use App\Models\PoliKlinik;
 use Livewire\Component;
+use App\Models\PoliKlinik;
 use Livewire\Volt\Compilers\Mount;
 use App\Services\StoreOrganization;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -29,6 +30,13 @@ class Store extends Component
 
     public function store(StoreOrganization $orgService)
     {
+        if (! Gate::allows('akses', 'Tambah Organisasi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         try {
             // ======== PAYLOAD ==========
             $payload = [

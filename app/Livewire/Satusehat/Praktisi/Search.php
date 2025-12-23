@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Satusehat\Praktisi;
 
-use App\Models\Practitioner;
 use App\Models\User;
 use Livewire\Component;
+use App\Models\Practitioner;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 use App\Services\GetPractitionerByNik;
 
 class Search extends Component
@@ -57,6 +58,13 @@ class Search extends Component
 
     public function saveIHS($selectedUser)
     {
+        if (! Gate::allows('akses', 'Tambah Praktisi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Dapatkan user + relasi
         $user = User::with(['biodata', 'dokter'])->find($selectedUser);
 

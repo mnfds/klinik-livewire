@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Satusehat\Organisasi;
 
-use App\Models\Organization;
-use App\Models\PoliKlinik;
 use Livewire\Component;
+use App\Models\PoliKlinik;
+use App\Models\Organization;
 use App\Services\GetOrganization;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class Search extends Component
 {
@@ -47,6 +48,13 @@ class Search extends Component
 
     public function saved($orgId)
     {
+        if (! Gate::allows('akses', 'Tambah Organisasi Satu Sehat')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         try {
             // Cari data org berdasarkan ID
             $org = collect($this->dataOrganisasi)->firstWhere('id', $orgId);
