@@ -442,6 +442,7 @@
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>
                 </li>
+                @can('akses', 'Satu Sehat')                    
                 <li x-data="{ open: {{ request()->routeIs(
                         'satusehat.praktisi*',
                         'satusehat.lokasi*',
@@ -465,6 +466,7 @@
                     </x-side-link>
 
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @can('akses', 'Praktisi Satu Sehat')
                         <li>
                             <x-side-link href="{{ route('satusehat.praktisi.data') }}"
                                 :active="request()->routeIs('satusehat.praktisi*')" 
@@ -472,6 +474,8 @@
                                 Praktisi
                             </x-side-link>
                         </li>
+                        @endcan
+                        @can('akses', 'Lokasi Satu Sehat')
                         <li>
                             <x-side-link href="{{ route('satusehat.lokasi.data') }}"
                                 :active="request()->routeIs('satusehat.lokasi*')" 
@@ -479,6 +483,8 @@
                                 Lokasi
                             </x-side-link>
                         </li>
+                        @endcan
+                        @can('akses', 'Organisasi Satu Sehat')
                         <li>
                             <x-side-link href="{{ route('satusehat.organisasi.data') }}"
                                 :active="request()->routeIs('satusehat.organisasi*')" 
@@ -486,8 +492,10 @@
                                 Organisasi
                             </x-side-link>
                         </li>
+                        @endcan
                     </ul>
                 </li>
+                @endcan
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-circle-info"></i>

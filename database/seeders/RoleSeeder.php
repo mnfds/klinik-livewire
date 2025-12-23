@@ -14,22 +14,47 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         DB::table('roles')->insert([
-            'nama_role' => 'admin',
+            'nama_role' => 'Super Admin',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('roles')->insert([
-            'nama_role' => 'dokter',
+            'nama_role' => 'Dokter',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('roles')->insert([
-            'nama_role' => 'perawat',
+            'nama_role' => 'Perawat',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('roles')->insert([
-            'nama_role' => 'apoteker',
+            'nama_role' => 'Apoteker',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('roles')->insert([
+            'nama_role' => 'Admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('roles')->insert([
+            'nama_role' => 'Kasir',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('roles')->insert([
+            'nama_role' => 'Beautician',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('roles')->insert([
+            'nama_role' => 'Satpam',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('roles')->insert([
+            'nama_role' => 'Umum',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

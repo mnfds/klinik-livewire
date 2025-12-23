@@ -163,6 +163,13 @@ class AksesSeeder extends Seeder
             19 => [
                 'Resep Obat',
             ],
+            // Satu Sehat
+            20 => [
+                'Satu Sehat',
+                'Praktisi Satu Sehat',
+                'Lokasi Satu Sehat',
+                'Organisasi Satu Sehat',
+            ],
         ];
 
         $data = [];
