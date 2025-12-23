@@ -122,7 +122,7 @@ class AksesSeeder extends Seeder
                 'Panggilan Suara',
                 'Hapus Nomor Antrian Masuk',
                 'Hapus Nomor Antrian Dipanggil',
-                
+
                 'Display Antrian',
                 'Display Registrasi',
                 'Display Poliklinik',
@@ -177,11 +177,9 @@ class AksesSeeder extends Seeder
 
                 'Lokasi Satu Sehat',
                 'Tambah Lokasi Satu Sehat',
-                'Hapus Lokasi Satu Sehat',
 
                 'Organisasi Satu Sehat',
                 'Tambah Organisasi Satu Sehat',
-                'Hapus Organisasi Satu Sehat',
             ],
         ];
 
