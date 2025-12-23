@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\TipeMutasiBarang;
 use App\Models\MutasiBarang;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -86,20 +87,24 @@ final class MutasiTable extends PowerGridComponent
 
     public function actions(MutasiBarang $row): array
     {
-        return [
-            Button::add('updatemutais')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditmutasi.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('barang.updatemutasi', 'getupdatemutasi', ['rowId' => $row->id]),
-            
-            Button::add('deletemutasi')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletemutasi', ['rowId' => $row->id]),
-        ];
+        $riwayatBarangButton = [];
+
+        Gate::allows('akses', 'Persediaan Riwayat Barang Edit') && $riwayatBarangButton[] =
+        Button::add('updatemutais')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditmutasi.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('barang.updatemutasi', 'getupdatemutasi', ['rowId' => $row->id]);
+        
+        Gate::allows('akses', 'Persediaan Riwayat Barang Hapus') && $riwayatBarangButton[] =
+        Button::add('deletemutasi')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletemutasi', ['rowId' => $row->id]);
+
+        return $riwayatBarangButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletemutasi')]
@@ -125,6 +130,13 @@ final class MutasiTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletemutasi')]
     public function konfirmasideletemutasi($rowId): void
     {
+        if (! Gate::allows('akses', 'Persediaan Riwayat Barang Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         MutasiBarang::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

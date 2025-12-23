@@ -6,6 +6,7 @@ use App\Models\Barang;
 use Livewire\Component;
 use App\Models\MutasiBarang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Restok extends Component
 {
@@ -31,6 +32,13 @@ class Restok extends Component
             'jumlah'   => 'required|numeric',
             'catatan'   => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Barang Masuk')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         MutasiBarang::create([
             'barang_id'   => $this->barang_id,

@@ -6,6 +6,7 @@ use App\Models\Barang;
 use Livewire\Component;
 use App\Models\MutasiBarang;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Store extends Component
 {
@@ -29,6 +30,13 @@ class Store extends Component
             'lokasi'        => 'nullable',
             'keterangan'    => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Barang Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $barang = Barang::create([
             'nama'   => $this->nama,

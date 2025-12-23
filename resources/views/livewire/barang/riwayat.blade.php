@@ -38,12 +38,16 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between md:justify-start items-center mb-4 gap-2">
-                        <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary">
-                            <i class="fa-solid fa-circle-plus"></i> Masuk
-                        </button>
+                        @can('akses', 'Persediaan Barang Keluar')
                         <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary">
                             <i class="fa-solid fa-circle-minus"></i> Keluar
                         </button>
+                        @endcan
+                        @can('akses', 'Persediaan Barang Masuk')
+                        <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary">
+                            <i class="fa-solid fa-circle-plus"></i> Masuk
+                        </button>
+                        @endcan
                     </div>
                     <livewire:mutasi-table />
                     <livewire:barang.take />

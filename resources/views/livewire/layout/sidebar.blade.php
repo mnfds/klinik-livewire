@@ -196,54 +196,61 @@
                     $jumlahReminder = $bahanHampirExpired->count();
                 @endphp
 
-                @can('akses', 'Persediaan')                    
-                <li 
-                    x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
-                    >
-                    <x-side-link 
-                        @click.prevent="open = !open" 
-                        class="cursor-pointer" 
-                        :active="request()->routeIs('barang.*', 'bahanbaku.*')"
+                @if (
+                        Gate::allows('akses','Persediaan Barang') ||
+                        Gate::allows('akses','Persediaan Bahan Baku')
+                    )
+                    <li 
+                        x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
                         >
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span class="flex-1 ml-3 text-left">Persediaan</span>
+                        <x-side-link 
+                            @click.prevent="open = !open" 
+                            class="cursor-pointer" 
+                            :active="request()->routeIs('barang.*', 'bahanbaku.*')"
+                            >
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                            <span class="flex-1 ml-3 text-left">Persediaan</span>
 
-                        {{-- ✅ Badge Reminder: tampil di menu utama hanya jika belum dibuka --}}
-                        <template x-if="!open && {{ $jumlahReminder }} > 0">
-                            <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
-                                <i class="fa-solid fa-bell"></i>
-                            </span>
-                        </template>
+                            {{-- ✅ Badge Reminder: tampil di menu utama hanya jika belum dibuka --}}
+                            <template x-if="!open && {{ $jumlahReminder }} > 0">
+                                <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="fa-solid fa-bell"></i>
+                                </span>
+                            </template>
 
-                        <i class="fa-solid fa-chevron-right transition-transform duration-200" 
-                        :class="open ? 'rotate-90' : ''"></i>
-                    </x-side-link>
+                            <i class="fa-solid fa-chevron-right transition-transform duration-200" 
+                            :class="open ? 'rotate-90' : ''"></i>
+                        </x-side-link>
 
-                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li>
-                            <x-side-link href="{{ route('barang.data') }}" 
-                                :active="request()->routeIs('barang.*')"  
-                                wire:navigate>
-                                Barang
-                            </x-side-link>
-                        </li>
-                        <li>
-                            <x-side-link href="{{ route('bahanbaku.data') }}" 
-                                :active="request()->routeIs('bahanbaku.*')"  
-                                wire:navigate>
-                                Bahan Baku
+                        <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                            @can('akses', 'Persediaan Barang')
+                            <li>
+                                <x-side-link href="{{ route('barang.data') }}" 
+                                    :active="request()->routeIs('barang.*')"  
+                                    wire:navigate>
+                                    Barang
+                                </x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Persediaan Bahan Baku')
+                            <li>
+                                <x-side-link href="{{ route('bahanbaku.data') }}" 
+                                    :active="request()->routeIs('bahanbaku.*')"  
+                                    wire:navigate>
+                                    Bahan Baku
 
-                                @if($jumlahReminder > 0)
-                                    <span class="ml-auto rounded-full text-warning bg-accent-content">
-                                        <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
-                                    </span>
-                                @endif
+                                    @if($jumlahReminder > 0)
+                                        <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                            <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                        </span>
+                                    @endif
 
-                            </x-side-link>
-                        </li>
-                    </ul>
-                </li>
-                @endcan
+                                </x-side-link>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif
 
                 @can('akses', 'Pengajuan')                    
                 <li x-data="{ open: false }">
@@ -281,66 +288,72 @@
                     </x-side-link>
                 </li>
                 @endcan
-                @can('akses', 'Antrian')                    
-                <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">
-                        <i class="fa-solid fa-users"></i>
-                        <span class="flex-1 ml-3 text-left">Antrian</span>
-                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
-                    </x-side-link>
-
-                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        @can('akses', 'Ambil Nomor')                            
-                        <li>
-                            <x-side-link href="{{ route('antrian.display') }}" :active="request()->routeIs('antrian.display')" wire:navigate>
-                                Ambil Nomor Antrian
-                            </x-side-link>
-                        </li>
-                        @endcan
-                        @can('akses', 'Kelola Antrian')                            
-                        <li>
-                            <x-side-link href="{{ route('antrian.data') }}" :active="request()->routeIs('antrian.data')" wire:navigate>
-                                Kelola Antrian
-                            </x-side-link>
-                        </li>
-                        @endcan
-
-                        <!-- Nested TV Antrian -->
-                        @can('akses', 'Display Antrian')                            
-                        <li x-data="{ open: {{ request()->routeIs('tv.*') ? 'true' : 'false' }} }">
-                            <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('tv.*')">
-                                <span class="flex-1 ml-3 text-left">TV Antrian</span>
-                                <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
-                            </x-side-link>
-
-                            <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                                @can('akses', 'Display Registrasi')
-                                <li>
-                                    <x-side-link :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
-                                        TV Pendaftaran
-                                    </x-side-link>
-                                </li>
-                                @endcan
-                                @can('akses', 'Display Poliklinik')
-                                <li>
-                                    <x-side-link :active="request()->routeIs('tv.poli')" wire:navigate>
-                                        TV Poliklinik
-                                    </x-side-link>
-                                </li>
-                                @endcan
-                                @can('akses', 'Display Apotek')
-                                <li>
-                                    <x-side-link :active="request()->routeIs('tv.apotek')" wire:navigate>
-                                        TV Apotek
-                                    </x-side-link>
-                                </li>
-                                @endcan
-                            </ul>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
-                @endcan
+                @if (
+                    Gate::allows('akses','Ambil Nomor') ||
+                    Gate::allows('akses','Kelola Nomor')
+                    )
+                    <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
+                        <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="flex-1 ml-3 text-left">Antrian</span>
+                            <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                        </x-side-link>
+    
+                        <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                            @can('akses', 'Ambil Nomor')                            
+                            <li>
+                                <x-side-link href="{{ route('antrian.display') }}" :active="request()->routeIs('antrian.display')" wire:navigate>
+                                    Ambil Nomor Antrian
+                                </x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Kelola Antrian')                            
+                            <li>
+                                <x-side-link href="{{ route('antrian.data') }}" :active="request()->routeIs('antrian.data')" wire:navigate>
+                                    Kelola Antrian
+                                </x-side-link>
+                            </li>
+                            @endcan
+                            @if (
+                                    Gate::allows('akses','Display Registrasi') ||
+                                    Gate::allows('akses','Display Poliklinik') ||
+                                    Gate::allows('akses','Display Apotek')
+                                )
+                            <!-- Nested TV Antrian -->
+                            <li x-data="{ open: {{ request()->routeIs('tv.*') ? 'true' : 'false' }} }">
+                                <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('tv.*')">
+                                    <span class="flex-1 ml-3 text-left">TV Antrian</span>
+                                    <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                                </x-side-link>
+    
+                                <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                                    @can('akses', 'Display Registrasi')
+                                    <li>
+                                        <x-side-link :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
+                                            TV Pendaftaran
+                                        </x-side-link>
+                                    </li>
+                                    @endcan
+                                    @can('akses', 'Display Poliklinik')
+                                    <li>
+                                        <x-side-link :active="request()->routeIs('tv.poli')" wire:navigate>
+                                            TV Poliklinik
+                                        </x-side-link>
+                                    </li>
+                                    @endcan
+                                    @can('akses', 'Display Apotek')
+                                    <li>
+                                        <x-side-link :active="request()->routeIs('tv.apotek')" wire:navigate>
+                                            TV Apotek
+                                        </x-side-link>
+                                    </li>
+                                    @endcan
+                                </ul>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
 
                 @php
                     use App\Models\Reservasi;
@@ -354,63 +367,70 @@
                         ->count();
                 @endphp
 
-                @can('akses', 'Rawat Jalan')                    
-                <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') || request()->routeIs('rekam-medis-pasien.*') || request()->routeIs('reservasi.*') ? 'true' : 'false' }} }">
-                    <x-side-link 
-                        @click.prevent="open = !open" 
-                        class="cursor-pointer relative" 
-                        :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*', 'reservasi.*')"
-                    >
-                        <i class="fa-solid fa-notes-medical"></i>
-                        <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
-
-                        <template x-if="!open && {{ $reservasiCount }} > 0">
-                            <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
-                                <i class="fa-solid fa-bell"></i>
-                            </span>
-                        </template>
-
-                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
-                    </x-side-link>
-
-                    {{-- Submenu --}}
-                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        @can('akses', 'Pendaftaran')                            
-                        <li>
-                            <x-side-link href="{{ route('pendaftaran.data') }}" 
-                                :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')"  
-                                wire:navigate>
-                                Pendaftaran
-                            </x-side-link>
-                        </li>
-                        @endcan
-                        @can('akses', 'Reservasi')                            
-                        <li>
-                            <x-side-link href="{{ route('reservasi.data') }}" 
-                                :active="request()->routeIs('reservasi.*')"  
-                                wire:navigate>
-                                Reservasi
-                                @if ($reservasiCount > 0)
-                                    <span class="ml-auto rounded-full text-warning bg-accent-content">
-                                        <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
-                                    </span>
-                                @endif
-                            </x-side-link>
-                        @endcan
-                        </li>
-                        @can('akses', 'Tindak Lanjut')                            
-                        <li>
-                            <x-side-link href="{{ route('tindaklanjut.data') }}" 
-                                :active="request()->routeIs('tindaklanjut*')"  
-                                wire:navigate>
-                                Tindak Lanjut
-                            </x-side-link>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
-                @endcan
-                @can('akses', 'Transaksi')                    
+                @if (
+                    Gate::allows('akses','Pendaftaran') ||
+                    Gate::allows('akses','Reservasi') ||
+                    Gate::allows('akses','Tindak Lanjut')
+                    )                    
+                    <li x-data="{ open: {{ request()->routeIs('pendaftaran.*') || request()->routeIs('kajian.*') || request()->routeIs('rekam-medis-pasien.*') || request()->routeIs('reservasi.*') ? 'true' : 'false' }} }">
+                        <x-side-link 
+                            @click.prevent="open = !open" 
+                            class="cursor-pointer relative" 
+                            :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*', 'reservasi.*')"
+                            >
+                            <i class="fa-solid fa-notes-medical"></i>
+                            <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
+    
+                            <template x-if="!open && {{ $reservasiCount }} > 0">
+                                <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="fa-solid fa-bell"></i>
+                                </span>
+                            </template>
+    
+                            <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                        </x-side-link>
+    
+                        {{-- Submenu --}}
+                        <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                            @can('akses', 'Pendaftaran')                            
+                            <li>
+                                <x-side-link href="{{ route('pendaftaran.data') }}" 
+                                    :active="request()->routeIs('pendaftaran.*', 'kajian.*', 'rekam-medis-pasien.*')"  
+                                    wire:navigate>
+                                    Pendaftaran
+                                </x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Reservasi')                            
+                            <li>
+                                <x-side-link href="{{ route('reservasi.data') }}" 
+                                    :active="request()->routeIs('reservasi.*')"  
+                                    wire:navigate>
+                                    Reservasi
+                                    @if ($reservasiCount > 0)
+                                        <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                            <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                        </span>
+                                    @endif
+                                </x-side-link>
+                            @endcan
+                            </li>
+                            @can('akses', 'Tindak Lanjut')                            
+                            <li>
+                                <x-side-link href="{{ route('tindaklanjut.data') }}" 
+                                    :active="request()->routeIs('tindaklanjut*')"  
+                                    wire:navigate>
+                                    Tindak Lanjut
+                                </x-side-link>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif                
+                @if (
+                    Gate::allows('akses','Transaksi Klinik') ||
+                    Gate::allows('akses','Transaksi Apotik')
+                    )
                 <li x-data="{ open: false }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">
                         <i class="fa-solid fa-cash-register"></i>
@@ -430,7 +450,7 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
+                @endif                    
                 @can('akses', 'Resep Obat')
                 <li>
                     <x-side-link href="{{ route('resep.data') }}" :active="request()->routeIs('resep.*')" wire:navigate>
@@ -439,10 +459,16 @@
                     </x-side-link>
                 </li>
                 @endcan
+
+
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>
                 </li>
-                @can('akses', 'Satu Sehat')                    
+                @if (
+                    Gate::allows('akses','Praktisi Satu Sehat') ||
+                    Gate::allows('akses','Lokasi Satu Sehat') ||
+                    Gate::allows('akses','Organisasi Satu Sehat')
+                    )                    
                 <li x-data="{ open: {{ request()->routeIs(
                         'satusehat.praktisi*',
                         'satusehat.lokasi*',
@@ -495,7 +521,7 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
+                @endif            
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-circle-info"></i>

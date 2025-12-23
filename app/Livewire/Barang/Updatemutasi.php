@@ -7,6 +7,7 @@ use App\Models\Barang;
 use App\Models\Biodata;
 use Livewire\Component;
 use App\Models\MutasiBarang;
+use Illuminate\Support\Facades\Gate;
 
 class Updatemutasi extends Component
 {
@@ -47,6 +48,13 @@ class Updatemutasi extends Component
             'diajukan_oleh' => 'required',
             'catatan' => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Riwayat Barang Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $data = MutasiBarang::where('id', $this->mutasi_id)->update([
             'barang_id' => $this->barang_id,

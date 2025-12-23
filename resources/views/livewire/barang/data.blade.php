@@ -35,22 +35,30 @@
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
                         <!-- KIRI: Tambah Barang & Riwayat -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
+                            @can('akses', 'Persediaan Barang Tambah')
                             <button onclick="document.getElementById('storeModalBarang').showModal()" class="btn btn-success w-full">
                                 <i class="fa-solid fa-box-open"></i> Tambah
                             </button>
+                            @endcan
+                            @can('akses', 'Persediaan Riwayat Barang')
                             <a href="{{ route('barang.riwayat') }}" class="btn btn-warning w-full">
                                 <i class="fa-solid fa-clipboard"></i> Riwayat
                             </a>
+                            @endcan
                         </div>
 
                         <!-- KANAN: Stok Keluar & Masuk -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
+                            @can('akses', 'Persediaan Barang Keluar')
                             <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-circle-minus"></i> Keluar
                             </button>
+                            @endcan
+                            @can('akses', 'Persediaan Barang Masuk')
                             <button onclick="document.getElementById('restockModalBarang').showModal()" class="btn btn-primary w-full">
                                 <i class="fa-solid fa-circle-plus"></i> Masuk
                             </button>
+                            @endcan
                         </div>
                     </div>
                     <livewire:barang-table />

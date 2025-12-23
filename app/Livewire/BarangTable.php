@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Barang;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
-use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class BarangTable extends PowerGridComponent
@@ -98,20 +99,24 @@ final class BarangTable extends PowerGridComponent
 
     public function actions(Barang $row): array
     {
-        return [
-            Button::add('updatebarang')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditbarang.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('barang.update', 'getupdatebarang', ['rowId' => $row->id]),
-            
-            Button::add('deletebarang')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modaldeletebarang', ['rowId' => $row->id]),
-        ];
+        $barangButton = [];
+
+        Gate::allows('akses', 'Persediaan Barang Edit') && $barangButton[] =
+        Button::add('updatebarang')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditbarang.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('barang.update', 'getupdatebarang', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Persedian Barang Hapus') && $barangButton[] =
+        Button::add('deletebarang')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeletebarang', ['rowId' => $row->id]);
+
+        return $barangButton;
     }
 
     #[\Livewire\Attributes\On('modaldeletebarang')]
@@ -137,6 +142,13 @@ final class BarangTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletebarang')]
     public function konfirmasideletebarang($rowId): void
     {
+        if (! Gate::allows('akses', 'Persediaan Barang Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         Barang::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

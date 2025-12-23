@@ -4,6 +4,7 @@ namespace App\Livewire\Barang;
 
 use App\Models\Barang;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class Update extends Component
 {
@@ -37,6 +38,13 @@ class Update extends Component
             'lokasi' => 'nullable',
             'keterangan' => 'nullable',
         ]);
+        if (! Gate::allows('akses', 'Persediaan Barang Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         Barang::where('id', $this->barang_id)->update([
             'nama' => $this->nama,
