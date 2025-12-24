@@ -93,7 +93,7 @@
                                         jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk"),
                                         potongan: @entangle("obat_estetika.$uuid.potongan"),
                                         diskon: @entangle("obat_estetika.$uuid.diskon"),
-                                        harga_asli: @entangle("obat_estetika.$uuid.harga_asli"),
+                                        harga_satuan: @entangle("obat_estetika.$uuid.harga_satuan"),
                                         subtotal: @entangle("obat_estetika.$uuid.subtotal"),
 
                                         query: '',
@@ -114,14 +114,14 @@
                                         selectProduk(item) {
                                             this.query = item.text;
                                             this.produk_id = item.id;
-                                            this.harga_asli = item.harga; // langsung assign harga dari API
+                                            this.harga_satuan = item.harga; // langsung assign harga dari API
                                             this.results = [];
                                             this.open = false;
                                             this.hitung();
                                         },
 
                                         hitung() {
-                                            let base = (this.harga_asli || 0) * (this.jumlah_produk || 1);
+                                            let base = (this.harga_satuan || 0) * (this.jumlah_produk || 1);
                                             let diskon = Number(this.diskon) || 0;
                                             let potongan = Number(this.potongan) || 0;
                                             let afterDiskon = base - (base * diskon / 100);
@@ -167,7 +167,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_asli)" readonly>
+                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_satuan)" readonly>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
@@ -220,7 +220,7 @@
 
                                             <!-- Harga asli (coret kalau ada potongan/diskon) -->
                                             <span :class="(row.potongan > 0 || row.diskon > 0) ? 'line-through text-gray-500' : ''"
-                                                x-text="(row.harga_asli || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })">
+                                                x-text="(row.harga_satuan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })">
                                             </span>
                                         </div>
                                         

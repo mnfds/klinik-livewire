@@ -28,9 +28,10 @@ class Create extends Component
         return [
             'produk_id' => null,
             'jumlah_produk' => 1,
+            'harga_Satuan' => 0,
             'potongan' => 0,
             'diskon' => 0,
-            'harga_asli' => 0,
+            // 'harga_asli' => 0,
             'subtotal' => 0,
             'uuid' => $uuid,
         ];
@@ -51,27 +52,36 @@ class Create extends Component
     {
         [$uuid, $field] = explode('.', $key);
 
-        if (in_array($field, ['produk_id', 'jumlah_produk', 'potongan', 'diskon'])) {
-            $row = $this->obat_estetika[$uuid];
+        if (!isset($this->obat_estetika[$uuid])) return;
 
-            if ($row['produk_id']) {
-                $produk   = $this->produk->find($row['produk_id']);
-                $harga    = (int) ($produk->harga_dasar ?? 0);
-                $jumlah   = (int) ($row['jumlah_produk'] ?? 1);
-                $potongan = (int) ($row['potongan'] ?? 0);
-                $diskon   = (float) ($row['diskon'] ?? 0);
+        $row = $this->obat_estetika[$uuid];
 
-                $hargaAsli = $harga * $jumlah;
-                $subtotal  = $hargaAsli - $potongan;
-                $subtotal -= $subtotal * ($diskon / 100);
-
-                $this->obat_estetika[$uuid]['harga_asli'] = (int) max($hargaAsli, 0);
-                $this->obat_estetika[$uuid]['subtotal']   = (int) max($subtotal, 0);
-            } else {
-                $this->obat_estetika[$uuid]['harga_asli'] = 0;
-                $this->obat_estetika[$uuid]['subtotal']   = 0;
-            }
+        // hanya respon field penting
+        if (!in_array($field, ['produk_id', 'jumlah_produk', 'potongan', 'diskon'])) {
+            return;
         }
+
+        if (!$row['produk_id']) {
+            $this->obat_estetika[$uuid]['harga_satuan'] = 0;
+            $this->obat_estetika[$uuid]['subtotal'] = 0;
+            return;
+        }
+
+        $produk = $this->produk->find($row['produk_id']);
+
+        // ⬇️ INI YANG SEBELUMNYA BELUM ADA
+        $hargaSatuan = (int) ($produk->harga_dasar ?? 0);
+
+        $jumlah   = (int) ($row['jumlah_produk'] ?? 1);
+        $potongan = (int) ($row['potongan'] ?? 0);
+        $diskon   = (float) ($row['diskon'] ?? 0);
+
+        $total = $hargaSatuan * $jumlah;
+        $total -= ($total * $diskon / 100);
+        $total -= $potongan;
+
+        $this->obat_estetika[$uuid]['harga_satuan'] = $hargaSatuan;
+        $this->obat_estetika[$uuid]['subtotal'] = max(0, (int) $total);
     }
 
     public function create()
