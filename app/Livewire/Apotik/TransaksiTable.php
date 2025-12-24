@@ -18,6 +18,11 @@ final class TransaksiTable extends PowerGridComponent
 {
     public string $tableName = 'transaksi-table-yzeedt-table';
 
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         // $this->showCheckBox();
@@ -33,7 +38,21 @@ final class TransaksiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return TransaksiApotik::query()->with(['riwayat', 'riwayat.produk']);
+        return TransaksiApotik::query()
+        ->when(
+            $this->hasTanggalFilter(),
+            function ($q){
+                $range = $this->getTanggalFilter();
+                $q->whereBetween(
+                    'tanggal',
+                    [$range['start'], $range['end']]
+                );
+            },
+            fn($q) => $q->whereDate('tanggal', today()) 
+        )
+        ->orderByDesc('tanggal')
+        ->orderByDesc('id') 
+        ->with(['riwayat', 'riwayat.produk']);
     }
 
     public function relationSearch(): array
@@ -95,6 +114,7 @@ final class TransaksiTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal', 'tanggal'),
         ];
     }
 
@@ -171,15 +191,23 @@ final class TransaksiTable extends PowerGridComponent
         ]);
     }
 
-    /*
-    public function actionRules($row): array
+    protected function hasTanggalFilter(): bool
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
+        return ! empty(
+            data_get($this->filters, 'date.tanggal.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal.end')
+            )->toDateString(),
         ];
     }
-    */
 }

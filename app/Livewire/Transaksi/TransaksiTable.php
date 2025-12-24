@@ -18,6 +18,11 @@ final class TransaksiTable extends PowerGridComponent
 {
     public string $tableName = 'transaksi-table-ngctmf-table';
 
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         // $this->showCheckBox();
@@ -33,13 +38,22 @@ final class TransaksiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'pembayaran', 'lunas', 'selesai'])
-            // ->whereDate('created_at', today())
-            ->with([
-                'pasien',
-                'poliklinik', 
-                'dokter',
-        ]);
+        return PasienTerdaftar::query()
+            ->whereIn('status_terdaftar', ['peresepan', 'pembayaran', 'lunas', 'selesai'])
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q) {
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween(
+                        'tanggal_kunjungan',
+                        [$range['start'], $range['end']]
+                    );
+                },
+                fn ($q) => $q->whereDate('tanggal_kunjungan', today())
+            )
+            ->orderByDesc('tanggal_kunjungan')
+            ->orderByDesc('id') 
+            ->with(['pasien', 'poliklinik', 'dokter']);
     }
 
     public function relationSearch(): array
@@ -89,6 +103,7 @@ final class TransaksiTable extends PowerGridComponent
     public function columns(): array
     {
         return [
+
             Column::make('#', '')->index(),
             Column::make('Tanggal Kunjungan', 'tanggal_kunjungan'),
 
@@ -114,9 +129,9 @@ final class TransaksiTable extends PowerGridComponent
             Column::make('Poli dan Dokter', 'dokter_dan_poli')
                 ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Tanggal Kunjungan', 'tanggal_kunjungan')
-                ->hidden()
-                ->sortable(),
+            // Column::make('Tanggal Kunjungan', 'tanggal_kunjungan')
+            //     ->hidden()
+            //     ->sortable(),
 
             Column::make('status', 'status'),
             
@@ -130,6 +145,7 @@ final class TransaksiTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_kunjungan', 'tanggal_kunjungan'),
         ];
     }
 
@@ -169,6 +185,26 @@ final class TransaksiTable extends PowerGridComponent
             Rule::button('bayarbutton')
                 ->when(fn($row) => $row->status_terdaftar !== 'pembayaran')
                 ->hide(),
+        ];
+    }
+    
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_kunjungan.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.end')
+            )->toDateString(),
         ];
     }
 
