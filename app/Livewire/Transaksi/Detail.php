@@ -16,6 +16,7 @@ use App\Models\RencanaTreatmentRM;
 use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
 use App\Models\RencananaBundlingRM;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\RiwayatTransaksiKlinik;
 use App\Services\PutInFinishedEncounter;
@@ -373,6 +374,7 @@ class Detail extends Component
             // ✅ 4. Update status pasien + kurangi stok
             PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
             $this->kurangiStokProduk();
+            $this->kurangiStokBahanBaku();
 
             DB::commit();
             if($kirimsatusehat){
@@ -427,7 +429,7 @@ class Detail extends Component
 
         }
 
-        // --- Pengurangan Stok Produk Dari Obat Non Racik ---
+        // --- Pengurangan Stok Produk Dari Obat Racikan ---
         foreach ($this->selectedRacikan as $racikId) {
             // Ambil racikan beserta bahan-bahan yang digunakan
             $racik = ObatRacikanFinal::with('bahanRacikanFinals.produk')->find($racikId);
@@ -463,6 +465,71 @@ class Detail extends Component
             }
         }
 
+    }
+
+    protected function kurangiStokBahanBaku()
+    {
+        DB::transaction(function () {
+            foreach ($this->treatment as $item) {
+                $jumlahTreatment = $item->jumlah_treatment ?? 1;
+                // ambil semua bahan baku dari treatment
+                $treatmentBahans = $item->treatment
+                    ->treatmentbahan()
+                    ->with('bahanbaku')
+                    ->get();
+                foreach ($treatmentBahans as $tb) {
+                    $bahan = $tb->bahanbaku;
+                    if (! $bahan) {
+                        continue;
+                    }
+                    // total bahan baku yang dipakai
+                    $jumlahKeluar = ($tb->jumlah ?? 1) * $jumlahTreatment;
+                    // hitung stok baru (aman)
+                    $stokAwal = $bahan->stok;
+                    $stokAkhir = max($stokAwal - $jumlahKeluar, 0);
+                    // update stok bahan baku
+                    $bahan->update([
+                        'stok' => $stokAkhir,
+                    ]);
+                    // catat mutasi keluar
+                    $bahan->mutasibahan()->create([
+                        'tipe'          => 'keluar',
+                        'jumlah'        => $jumlahKeluar,
+                        'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? 'System',
+                        'catatan'       => 'Pemakaian bahan baku dari treatment',
+                    ]);
+                }
+            }
+
+            foreach ($this->bundling as $rb) {
+                $jumlahBundling = $rb->jumlah_bundling ?? 1;
+                $treatmentBundlings = $rb->bundling
+                    ->treatmentBundlings()
+                    ->with('treatment.treatmentbahan.bahanbaku')
+                    ->get();
+                foreach ($treatmentBundlings as $tb) {
+                    $jumlahTreatmentDalamBundling = $tb->jumlah ?? 1;
+                    foreach ($tb->treatment->treatmentbahan as $treatmentBahan) {
+                        $bahan = $treatmentBahan->bahanbaku;
+                        if (! $bahan) continue;
+                        $jumlahKeluar =
+                            ($treatmentBahan->jumlah ?? 1)
+                            * $jumlahTreatmentDalamBundling
+                            * $jumlahBundling;
+                        if ($bahan->stok < $jumlahKeluar) {
+                            throw new \Exception("Stok {$bahan->nama} tidak mencukupi");
+                        }
+                        $bahan->decrement('stok', $jumlahKeluar);
+                        $bahan->mutasibahan()->create([
+                            'tipe'          => 'keluar',
+                            'jumlah'        => $jumlahKeluar,
+                            'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? 'System',
+                            'catatan'       => 'Pemakaian bahan baku dari bundling',
+                        ]);
+                    }
+                }
+            }
+        });
     }
 
 }
