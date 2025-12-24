@@ -105,16 +105,6 @@
                         >
                     </div>
 
-                    <!-- Potongan Harga -->
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-                        <input type="text"
-                            class="input input-bordered w-full"
-                            :value="formatCurrency(item.potongan)"
-                            @input="e => updatePotongan(index, e.target.value)"
-                        >
-                    </div>
-
                     <!-- Diskon -->
                     <div>
                         <label class="block text-sm font-semibold mb-1">Diskon</label>
@@ -126,6 +116,16 @@
                             >
                             <span class="ml-2">%</span>
                         </div>
+                    </div>
+
+                    <!-- Potongan Harga -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                        <input type="text"
+                            class="input input-bordered w-full"
+                            :value="formatCurrency(item.potongan)"
+                            @input="e => updatePotongan(index, e.target.value)"
+                        >
                     </div>
 
                     <!-- Subtotal -->
@@ -208,9 +208,9 @@ function obatEstetikaForm() {
             let hargaAsli = this.calcHargaAsli(item);
             let potongan = Number(item.potongan) || 0;
             let diskon = Number(item.diskon) || 0;
-            let afterPotongan = hargaAsli - potongan;
-            if (afterPotongan < 0) afterPotongan = 0;
-            return afterPotongan - (afterPotongan * (diskon / 100));
+            let afterDiskon = hargaAsli - (hargaAsli * (diskon / 100));
+            let subtotal = afterDiskon - potongan;
+            return subtotal < 0 ? 0 : subtotal;
         },
 
         calcTotal() {

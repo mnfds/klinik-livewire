@@ -109,17 +109,7 @@
                             readonly
                         >
                     </div>
-
-                    <!-- Potongan Harga -->
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-                        <input type="text"
-                            class="input input-bordered w-full"
-                            :value="formatCurrency(item.potongan)"
-                            @input="e => updatePotongan(index, e.target.value)"
-                        >
-                    </div>
-
+                    
                     <!-- Diskon -->
                     <div>
                         <label class="block text-sm font-semibold mb-1">Diskon</label>
@@ -131,6 +121,16 @@
                             >
                             <span class="ml-2">%</span>
                         </div>
+                    </div>
+
+                    <!-- Potongan Harga -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                        <input type="text"
+                            class="input input-bordered w-full"
+                            :value="formatCurrency(item.potongan)"
+                            @input="e => updatePotongan(index, e.target.value)"
+                        >
                     </div>
 
                     <!-- Subtotal -->
@@ -165,136 +165,136 @@
 </div>
 
 <script>
-function treatmentForm() {
-    return {
-        // state
-        treatmentItems: [{ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 }],
-        treatments: @json($layanandanbundling['treatment']),
+    function treatmentForm() {
+        return {
+            // state
+            treatmentItems: [{ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+            treatments: @json($layanandanbundling['treatment']),
 
-        // helpers
-        getTreatment(id) {
-            return this.treatments.find(t => t.id == id);
-        },
+            // helpers
+            getTreatment(id) {
+                return this.treatments.find(t => t.id == id);
+            },
 
-        formatCurrency(value) {
-            if (!value) return 'Rp 0';
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(value);
-        },
+            formatCurrency(value) {
+                if (!value) return 'Rp 0';
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(value);
+            },
 
-        // update potongan
-        updatePotongan(i, val) {
-            let number = parseInt(val.replace(/[^\d]/g, '')) || 0;
-            this.treatmentItems[i].potongan = number;
-            this.syncItemTreatment(i);
-        },
+            // update potongan
+            updatePotongan(i, val) {
+                let number = parseInt(val.replace(/[^\d]/g, '')) || 0;
+                this.treatmentItems[i].potongan = number;
+                this.syncItemTreatment(i);
+            },
 
-        // update diskon
-        updateDiskon(i, val) {
-            let number = parseInt(val) || 0;
-            if (number < 0) number = 0;
-            if (number > 100) number = 100;
-            this.treatmentItems[i].diskon = number;
-            this.syncItemTreatment(i);
-        },
+            // update diskon
+            updateDiskon(i, val) {
+                let number = parseInt(val) || 0;
+                if (number < 0) number = 0;
+                if (number > 100) number = 100;
+                this.treatmentItems[i].diskon = number;
+                this.syncItemTreatment(i);
+            },
 
-        // kalkulasi
-        calcHargaAsli(item) {
-            let treatment = this.getTreatment(item.treatments_id);
-            let harga = treatment ? Number(treatment.harga_treatment) : 0;
-            let jumlah = Number(item.jumlah_treatment) || 1;
-            return harga * jumlah;
-        },
+            // kalkulasi
+            calcHargaAsli(item) {
+                let treatment = this.getTreatment(item.treatments_id);
+                let harga = treatment ? Number(treatment.harga_treatment) : 0;
+                let jumlah = Number(item.jumlah_treatment) || 1;
+                return harga * jumlah;
+            },
 
-        calcSubtotal(item) {
-            let hargaAsli = this.calcHargaAsli(item);
-            let potongan = Number(item.potongan) || 0;
-            let diskon = Number(item.diskon) || 0;
-            let afterPotongan = hargaAsli - potongan;
-            if (afterPotongan < 0) afterPotongan = 0;
-            return afterPotongan - (afterPotongan * (diskon / 100));
-        },
+            calcSubtotal(item) {
+                let hargaAsli = this.calcHargaAsli(item);
+                let diskon = Number(item.diskon) || 0;
+                let potongan = Number(item.potongan) || 0;
+                let afterDiskon = hargaAsli - (hargaAsli * (diskon / 100));
+                let subtotal = afterDiskon - potongan;
+                return subtotal < 0 ? 0 : subtotal;
+            },
 
-        calcTotal() {
-            return this.treatmentItems.reduce((total, item) => total + this.calcSubtotal(item), 0);
-        },
+            calcTotal() {
+                return this.treatmentItems.reduce((total, item) => total + this.calcSubtotal(item), 0);
+            },
 
-        // aksi
-        addTreatment() {
-            this.treatmentItems.push({ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 });
-            this.syncTreatmentToLivewire();
-        },
+            // aksi
+            addTreatment() {
+                this.treatmentItems.push({ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 });
+                this.syncTreatmentToLivewire();
+            },
 
-        removeTreatment(index) {
-            this.treatmentItems.splice(index, 1);
-            this.reindexTreatment();
-            this.syncTreatmentToLivewire();
-            this.cleanupTreatmentLivewire();
-        },
+            removeTreatment(index) {
+                this.treatmentItems.splice(index, 1);
+                this.reindexTreatment();
+                this.syncTreatmentToLivewire();
+                this.cleanupTreatmentLivewire();
+            },
 
-        reindexTreatment() {
-            this.treatmentItems = this.treatmentItems.map(item => ({ ...item }));
-        },
+            reindexTreatment() {
+                this.treatmentItems = this.treatmentItems.map(item => ({ ...item }));
+            },
 
-        syncItemTreatment(i) {
-            let item = this.treatmentItems[i];
-            let subtotal = this.calcSubtotal(item);
-            item.subtotal = subtotal;
+            syncItemTreatment(i) {
+                let item = this.treatmentItems[i];
+                let subtotal = this.calcSubtotal(item);
+                item.subtotal = subtotal;
 
-            // Ganti $wire.set dengan @this.set
-            @this.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
-            @this.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
-            @this.set(`rencana_estetika.potongan.${i}`, item.potongan);
-            @this.set(`rencana_estetika.diskon.${i}`, item.diskon);
-            @this.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
-        },
+                // Ganti $wire.set dengan @this.set
+                @this.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
+                @this.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
+                @this.set(`rencana_estetika.potongan.${i}`, item.potongan);
+                @this.set(`rencana_estetika.diskon.${i}`, item.diskon);
+                @this.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
+            },
 
-        syncTreatmentToLivewire() {
-            this.treatmentItems.forEach((item, i) => this.syncItemTreatment(i));
-        },
+            syncTreatmentToLivewire() {
+                this.treatmentItems.forEach((item, i) => this.syncItemTreatment(i));
+            },
 
-        cleanupTreatmentLivewire() {
-            let length = this.treatmentItems.length;
-            for (let i = length; i < 100; i++) {
-                @this.set(`rencana_estetika.treatments_id.${i}`, null);
-                @this.set(`rencana_estetika.jumlah_treatment.${i}`, null);
-                @this.set(`rencana_estetika.potongan.${i}`, null);
-                @this.set(`rencana_estetika.diskon.${i}`, null);
-                @this.set(`rencana_estetika.subtotal.${i}`, null);
+            cleanupTreatmentLivewire() {
+                let length = this.treatmentItems.length;
+                for (let i = length; i < 100; i++) {
+                    @this.set(`rencana_estetika.treatments_id.${i}`, null);
+                    @this.set(`rencana_estetika.jumlah_treatment.${i}`, null);
+                    @this.set(`rencana_estetika.potongan.${i}`, null);
+                    @this.set(`rencana_estetika.diskon.${i}`, null);
+                    @this.set(`rencana_estetika.subtotal.${i}`, null);
+                }
             }
         }
     }
-}
-function singleSelectTreatment(getModel, setModel) {
-    return {
-        open: false,
-        selected: null,
-        search: '',
-        filteredOptions: [],
-        fetchOptions() {
-            if (this.search.trim() === '') { 
-                this.filteredOptions = []; 
-                return; 
+    function singleSelectTreatment(getModel, setModel) {
+        return {
+            open: false,
+            selected: null,
+            search: '',
+            filteredOptions: [],
+            fetchOptions() {
+                if (this.search.trim() === '') { 
+                    this.filteredOptions = []; 
+                    return; 
+                }
+                fetch(`/ajax/treatment?q=${encodeURIComponent(this.search)}`)
+                    .then(r => r.json())
+                    .then(data => { this.filteredOptions = data; });
+            },
+            choose(item) {
+                this.selected = item;
+                setModel(item);
+                this.search = item.text; // langsung tampil nama treatment terpilih
+                this.filteredOptions = [];
+                this.open = false;
+            },
+            remove() {
+                this.selected = null;
+                setModel(null);
+                this.search = '';
             }
-            fetch(`/ajax/treatment?q=${encodeURIComponent(this.search)}`)
-                .then(r => r.json())
-                .then(data => { this.filteredOptions = data; });
-        },
-        choose(item) {
-            this.selected = item;
-            setModel(item);
-            this.search = item.text; // langsung tampil nama treatment terpilih
-            this.filteredOptions = [];
-            this.open = false;
-        },
-        remove() {
-            this.selected = null;
-            setModel(null);
-            this.search = '';
         }
     }
-}
 </script>

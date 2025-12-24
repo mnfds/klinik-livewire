@@ -122,8 +122,11 @@
 
                                         hitung() {
                                             let base = (this.harga_asli || 0) * (this.jumlah_produk || 1);
-                                            let afterPotongan = base - (this.potongan || 0);
-                                            this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0)/100);
+                                            let diskon = Number(this.diskon) || 0;
+                                            let potongan = Number(this.potongan) || 0;
+                                            let afterDiskon = base - (base * diskon / 100);
+                                            let subtotal = afterDiskon - potongan;
+                                            this.subtotal = subtotal < 0 ? 0 : subtotal;
                                         },
 
                                         formatRupiah(val) {
@@ -167,13 +170,13 @@
                                             <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_asli)" readonly>
                                         </div>
                                         <div>
+                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                                        </div>
+                                        <div>
                                             <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
                                             <input type="text" class="input input-bordered w-full input-rupiah-transaksi" placeholder="Rp 0">
                                             <input type="hidden" class="input-rupiah-hidden-transaksi" wire:model.defer="obat_estetika.{{ $uuid }}.potongan">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Subtotal</label>
@@ -220,20 +223,20 @@
                                                 x-text="(row.harga_asli || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })">
                                             </span>
                                         </div>
+                                        
+                                        <!-- tampilkan diskon jika ada -->
+                                        <template x-if="row.diskon && row.diskon > 0">
+                                            <div class="flex justify-between text-sm text-blue-600">
+                                                <span>Diskon:</span>
+                                                <span x-text="row.diskon + '%'"></span>
+                                            </div>
+                                        </template>
 
                                         <!-- tampilkan potongan jika ada -->
                                         <template x-if="row.potongan && row.potongan > 0">
                                             <div class="flex justify-between text-sm text-red-600">
                                                 <span>Potongan:</span>
                                                 <span x-text="Number(row.potongan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
-                                            </div>
-                                        </template>
-
-                                        <!-- tampilkan diskon jika ada -->
-                                        <template x-if="row.diskon && row.diskon > 0">
-                                            <div class="flex justify-between text-sm text-blue-600">
-                                                <span>Diskon:</span>
-                                                <span x-text="row.diskon + '%'"></span>
                                             </div>
                                         </template>
 
