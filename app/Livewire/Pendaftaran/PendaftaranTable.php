@@ -35,30 +35,27 @@ final class PendaftaranTable extends PowerGridComponent
         ];
     }
 
-public function datasource(): Builder
-{
-    return PasienTerdaftar::query()
-        ->with(['pasien', 'poliklinik', 'dokter'])
-        ->when(
-            $this->pasien_id,
-            fn ($q) => $q->where('pasien_id', $this->pasien_id)
-        )
-        ->when(
-            $this->hasTanggalFilter(),
-            function ($q) {
-                $range = $this->getTanggalFilter();
-                $q->whereBetween(
-                    'tanggal_kunjungan',
-                    [$range['start'], $range['end']]
-                );
-            },
-            fn ($q) => $q->whereDate('tanggal_kunjungan', today())
-        )
+    public function datasource(): Builder
+    {
+        return PasienTerdaftar::query()
+            ->with(['pasien', 'poliklinik', 'dokter'])
+            ->whereIn('status_terdaftar', ['terdaftar', 'selesai'])
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q) {
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween(
+                        'tanggal_kunjungan',
+                        [$range['start'], $range['end']]
+                    );
+                },
+                fn ($q) => $q->whereDate('tanggal_kunjungan', today())
+            )
 
-        // sorting
-        ->orderByDesc('tanggal_kunjungan')
-        ->orderByDesc('id');
-}
+            // sorting
+            ->orderByDesc('tanggal_kunjungan')
+            ->orderByDesc('id');
+    }
 
     public function relationSearch(): array
     {
