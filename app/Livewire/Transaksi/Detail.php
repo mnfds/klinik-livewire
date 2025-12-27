@@ -5,6 +5,7 @@ namespace App\Livewire\Transaksi;
 use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\RekamMedis;
+use Mike42\Escpos\Printer;
 use App\Models\ProdukDanObat;
 use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
@@ -18,8 +19,10 @@ use App\Models\ObatNonRacikanFinal;
 use App\Models\RencananaBundlingRM;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Mike42\Escpos\CapabilityProfile;
 use App\Models\RiwayatTransaksiKlinik;
 use App\Services\PutInFinishedEncounter;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class Detail extends Component
 {
@@ -90,7 +93,7 @@ class Detail extends Component
         $this->selectedRacikan = $this->obatapoteker
             ->flatMap(fn($final) => $final->obatRacikanFinals->pluck('id'))
             ->toArray();
-        
+
         $this->bundlingUsages = collect();
 
         if ($rekamMedis) {
@@ -170,7 +173,7 @@ class Detail extends Component
 
             // ✅ 1. Buat Transaksi Klinik
             $rekamMedis = RekamMedis::findOrFail($this->rekammedis_id);
-            
+
             $pt = $this->pasienTerdaftar;
 
             // Jika tidak ada waktu_pulang, update dengan Carbon::now
@@ -184,8 +187,8 @@ class Detail extends Component
             $waktu_pulang = $pt->waktu_pulang;
             //put encounter
             $kirimsatusehat = $pt->encounter_id;
-            if($kirimsatusehat){               
-                
+            if ($kirimsatusehat) {
+
                 // Encounter ID yang sudah dibuat saat POST Encounter
                 $encounterId = $pt->encounter_id;
                 $diagnosis = $pt->rekamMedis->icdRM ?? [];
@@ -375,14 +378,15 @@ class Detail extends Component
             PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
             $this->kurangiStokProduk();
             $this->kurangiStokBahanBaku();
+            $this->invoice($transaksi->id);
 
             DB::commit();
-            if($kirimsatusehat){
+            if ($kirimsatusehat) {
                 $this->dispatch('toast', [
                     'type' => 'success',
                     'message' => 'Transaksi berhasil disimpan Dan Kirim Satu Sehat'
                 ]);
-            }else{
+            } else {
                 $this->dispatch('toast', [
                     'type' => 'success',
                     'message' => 'Transaksi berhasil disimpan'
@@ -391,7 +395,6 @@ class Detail extends Component
 
             $this->reset();
             return redirect()->route('transaksi.kasir');
-
         } catch (\Throwable $th) {
             DB::rollBack();
             $this->dispatch('toast', [
@@ -408,7 +411,7 @@ class Detail extends Component
             if ($item->produk) {
                 $produk = $item->produk; // relasi ke ProdukDanObat
                 $jumlah = $item->jumlah_produk ?? 0;
-                
+
                 $stokBaru = max($produk->stok - $jumlah, 0);
                 $produk->update(['stok' => $stokBaru]);
             }
@@ -426,7 +429,6 @@ class Detail extends Component
 
             $stokBaru = max($produk->stok - $jumlah, 0);
             $produk->update(['stok' => $stokBaru]);
-
         }
 
         // --- Pengurangan Stok Produk Dari Obat Racikan ---
@@ -464,7 +466,6 @@ class Detail extends Component
                 $produk->update(['stok' => $stokBaru]);
             }
         }
-
     }
 
     protected function kurangiStokBahanBaku()
@@ -532,4 +533,79 @@ class Detail extends Component
         });
     }
 
+    protected function invoice(int $transaksiId)
+    {
+        try {
+            $transaksi = TransaksiKlinik::with([
+                'riwayatTransaksi',
+                'rekamMedis.pasienTerdaftar.poliklinik',
+                'rekamMedis.pasienTerdaftar.pasien'
+            ])->findOrFail($transaksiId);
+
+            $pt    = $transaksi->rekamMedis->pasienTerdaftar;
+            $pasien = $pt->pasien;
+            $poli   = $pt->poliklinik;
+
+            $connector = new WindowsPrintConnector("b21");
+            $profile   = CapabilityProfile::load("simple");
+            $printer   = new Printer($connector, $profile);
+
+            /* ================= HEADER ================= */
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(2, 1);
+            $printer->text("KLINIK DOKTER L\n");
+            $printer->setTextSize(1, 1);
+            $printer->text("Jl. Gatot Subroto No.88\n");
+            $printer->text("Banjarmasin\n");
+            $printer->text("--------------------------------\n");
+
+            /* ================= INFO ================= */
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text("No Invoice : {$transaksi->no_transaksi}\n");
+            $printer->text("Tanggal    : " . Carbon::parse($transaksi->tanggal_transaksi)
+                ->timezone('Asia/Makassar')
+                ->format('d/m/Y H:i') . " WITA\n");
+            $printer->text("Pasien     : {$pasien->nama}\n");
+            $printer->text("Poli       : {$poli->nama_poli}\n");
+            $printer->text("--------------------------------\n");
+
+            /* ================= ITEM ================= */
+            foreach ($transaksi->riwayatTransaksi as $item) {
+                $printer->text($item->nama_item . "\n");
+                $printer->text(
+                    "  {$item->qty} x " .
+                        number_format($item->harga, 0, ',', '.') .
+                        " = " .
+                        number_format($item->subtotal, 0, ',', '.') .
+                        "\n"
+                );
+            }
+
+            $printer->text("--------------------------------\n");
+
+            /* ================= TOTAL ================= */
+            $printer->setEmphasis(true);
+            $printer->text(
+                "TOTAL : Rp " .
+                    number_format($transaksi->total_tagihan, 0, ',', '.') .
+                    "\n"
+            );
+            $printer->setEmphasis(false);
+
+            /* ================= FOOTER ================= */
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("\nTerima kasih\n");
+            $printer->text("Semoga lekas sembuh\n");
+
+            $printer->cut();
+            $printer->close();
+        } catch (\Throwable $e) {
+            logger()->error($e);
+
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Gagal cetak invoice: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
