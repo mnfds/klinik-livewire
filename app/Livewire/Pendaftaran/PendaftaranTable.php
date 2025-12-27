@@ -18,6 +18,10 @@ final class PendaftaranTable extends PowerGridComponent
 {
     public string $tableName = 'pendaftaran-table-3tzmte-table';
 
+    public function boot(): void{
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         // $this->showCheckBox();
@@ -31,12 +35,30 @@ final class PendaftaranTable extends PowerGridComponent
         ];
     }
 
-    public function datasource(): Builder
-    {
-        return PasienTerdaftar::where('status_terdaftar', 'terdaftar')
-            ->whereDate('created_at', today())
-            ->with(['pasien', 'poliklinik', 'dokter']);
-    }
+public function datasource(): Builder
+{
+    return PasienTerdaftar::query()
+        ->with(['pasien', 'poliklinik', 'dokter'])
+        ->when(
+            $this->pasien_id,
+            fn ($q) => $q->where('pasien_id', $this->pasien_id)
+        )
+        ->when(
+            $this->hasTanggalFilter(),
+            function ($q) {
+                $range = $this->getTanggalFilter();
+                $q->whereBetween(
+                    'tanggal_kunjungan',
+                    [$range['start'], $range['end']]
+                );
+            },
+            fn ($q) => $q->whereDate('tanggal_kunjungan', today())
+        )
+
+        // sorting
+        ->orderByDesc('tanggal_kunjungan')
+        ->orderByDesc('id');
+}
 
     public function relationSearch(): array
     {
@@ -61,11 +83,11 @@ final class PendaftaranTable extends PowerGridComponent
             ->add('dokter_dan_poli', function($row){
                 return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
             })
-            ->add('status', fn ($row) =>
-                $row->status_terdaftar === 'terdaftar'
-                    ? '<span class="badge badge-primary">Registrasi</span>'
-                    : ($row->status_terdaftar ?? '-')
-            )
+            ->add('status', fn ($row) => match ($row->status_terdaftar) {
+                'terdaftar' => '<span class="badge badge-primary">Registrasi</span>',
+                'selesai'   => '<span class="badge badge-success">Selesai</span>',
+                default     => $row->status_terdaftar ?? '-',
+            })
             ->add('tanggal_kunjungan') // Jika ingin menampilkan tanggal kunjungan juga
             ->add('jenis_kunjungan')  // Jika ingin menampilkan jenis kunjungan juga
             ->add('kunjungan', function($row){
@@ -119,6 +141,27 @@ final class PendaftaranTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_kunjungan', 'tanggal_kunjungan'),
+        ];
+    }
+    
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_kunjungan.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.end')
+            )->toDateString(),
         ];
     }
 
@@ -151,7 +194,6 @@ final class PendaftaranTable extends PowerGridComponent
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
             ->dispatch('modaldeletepasienterdaftar', ['rowId' => $row->id]);
-        
         return $pendaftaranButton;
     }
 
@@ -200,14 +242,25 @@ final class PendaftaranTable extends PowerGridComponent
     public function actionRules($row): array
     {
        return [
-            // Hide button edit for ID 1
             Rule::button('kajianbutton')
-                ->when(fn($row) => $row->poliklinik->nama_poli === 'Poli Kecantikan')
+                ->when(fn($row) => $row->poliklinik->nama_poli !== 'Poli Umum')
                 ->hide(),
 
             Rule::button('rekammedisbutton')
-                ->when(fn($row) => $row->poliklinik->nama_poli != 'Poli Kecantikan')
+                ->when(fn($row) => $row->poliklinik->nama_poli !== 'Poli Kecantikan')
                 ->hide(),
+            
+            Rule::button('kajianbutton')
+            ->when(fn($row) => $row->status_terdaftar !== 'terdaftar')
+            ->hide(),
+
+            Rule::button('rekammedisbutton')
+            ->when(fn($row) => $row->status_terdaftar !== 'terdaftar')
+            ->hide(),
+
+            Rule::button('deletepasienterdaftar')
+            ->when(fn($row) => $row->status_terdaftar !== 'terdaftar')
+            ->hide(),
         ];
     }
 

@@ -39,7 +39,11 @@ final class RiwayatTable extends PowerGridComponent
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'pasien' => ['nama', 'no_register'],
+            'poliklinik' => ['nama_poli'],
+            'dokter' => ['nama_dokter'],
+        ];
     }
 
     public function fields(): PowerGridFields
@@ -59,7 +63,7 @@ final class RiwayatTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
             Column::make('Tanggal Input', 'created_at_formatted')->sortable(),
-            Column::make('Poliklinik', 'poliklinik.nama_poli'),
+            Column::make('Poliklinik', 'poliklinik.nama_poli')->searchable(),
             Column::action('Action')
         ];
     }

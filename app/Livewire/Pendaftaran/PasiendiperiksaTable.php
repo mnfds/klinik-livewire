@@ -12,10 +12,15 @@ use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use PowerComponents\LivewirePowerGrid\Facades\Rule; 
 
 final class PasiendiperiksaTable extends PowerGridComponent
 {
     public string $tableName = 'pasiendiperiksa-table-5vuqpr-table';
+
+    public function boot(): void{
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
 
     public function setUp(): array
     {
@@ -32,8 +37,20 @@ final class PasiendiperiksaTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::where('status_terdaftar', 'konsultasi')
-            ->whereDate('created_at', today())
+        return PasienTerdaftar::whereIn('status_terdaftar', ['konsultasi','selesai'])
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q){
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween(
+                        'tanggal_kunjungan',
+                        [$range['start'], $range['end']]
+                    );
+                },
+                fn ($q) => $q->whereDate('tanggal_kunjungan', today())
+            )
+            ->orderByDesc('tanggal_kunjungan')
+            ->orderByDesc('id')
             ->with(['pasien', 'poliklinik', 'dokter']);
     }
 
@@ -116,6 +133,27 @@ final class PasiendiperiksaTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_kunjungan', 'tanggal_kunjungan'),
+        ];
+    }
+
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_kunjungan.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.end')
+            )->toDateString(),
         ];
     }
 
@@ -133,7 +171,27 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 'class' => 'btn btn-secondary',
             ]);
 
+        $diperiksaButton[] = Button::add('selesai')
+            ->slot('<i class="fa-regular fa-circle-check"></i> Selesai')
+            ->tag('button')
+            ->attributes([
+                'class' => 'badge badge-success',
+            ]);
+
         return $diperiksaButton;
     }
 
+    public function actionRules($row): array
+    {
+       return [
+
+            Rule::button('selesai')
+                ->when(fn($row) => $row->status_terdaftar !== 'selesai')
+                ->hide(),
+
+            Rule::button('rekammedisbutton')
+                ->when(fn($row) => $row->status_terdaftar !== 'konsultasi')
+                ->hide(),
+        ];
+    }
 }
