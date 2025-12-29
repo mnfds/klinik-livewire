@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('no_transaksi')->unique();
             $table->dateTime('tanggal_transaksi')->default(now());
             $table->unsignedBigInteger('total_tagihan')->default(0);
+            $table->unsignedBigInteger('diskon')->nullable()->default(0);
+            $table->unsignedBigInteger('potongan')->nullable()->default(0);
             $table->enum('status', ['lunas', 'belum_bayar', 'batal'])->default('belum_bayar');
             $table->timestamps();
         });

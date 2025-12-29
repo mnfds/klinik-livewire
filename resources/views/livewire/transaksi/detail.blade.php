@@ -700,9 +700,35 @@
                                 
                                 @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
                                     @can('akses', 'Transaksi Klinik Selesai')
-                                    <button wire:click.prevent="create" class="btn btn-success btn-sm mt-4 w-full">
+                                    @if ($showPaymentForm)
+                                    <div class="mb-1">
+                                        <label class="label font-medium">Diskon (%)</label>
+                                        <input type="number" class="input input-bordered w-full" wire:model.defer="diskon" min="0" max="100">
+                                    </div>
+
+                                    <div class="mb-1">
+                                        <label class="label font-medium">Potongan (Rp)</label>
+                                        <input type="text" class="input input-bordered w-full" wire:model.defer="potongan" placeholder="0"
+                                            x-data
+                                            x-on:input="
+                                                let value = $el.value.replace(/\D/g,'');
+                                                $el.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                            "
+                                        >
+                                    </div>
+
+                                    <button wire:click="create"
+                                        class="btn btn-primary btn-sm mt-4 w-full"> Konfirmasi Bayar
+                                    </button>
+                                    <button wire:click="$set('showPaymentForm', false)"
+                                        class="btn btn-error btn-sm mt-4 w-full">Batal
+                                    </button>
+                                    @endif
+                                    @if (!$showPaymentForm)
+                                    <button wire:click="openPayment" class="btn btn-success btn-sm mt-4 w-full">
                                         <i class="fa-solid fa-plus"></i> Bayar
                                     </button>
+                                    @endif
                                     @endcan
                                 @else
                                     <button class="btn btn-warning btn-sm mt-4 w-full">

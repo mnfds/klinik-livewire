@@ -44,6 +44,12 @@ class Detail extends Component
     public $selectedObat = []; // untuk non racikan
     public $selectedRacikan = [];
 
+    public bool $showPaymentForm = false;
+
+    public $diskon = 0;
+    public $potongan = 0;
+
+
     public function mount($id)
     {
         $this->pasien_terdaftar_id = $id;
@@ -116,35 +122,6 @@ class Detail extends Component
         return view('livewire.transaksi.detail');
     }
 
-    // public function create(){
-    //     $nonRacikanIds = $this->selectedObat;
-    //     $racikanIds = $this->selectedRacikan;
-
-    //     // Update kolom konfirmasi menjadi 'terkonfirmasi'
-    //     if (!empty($nonRacikanIds)) {
-    //         ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
-    //             ->update(['konfirmasi' => 'terkonfirmasi']);
-    //     }
-
-    //     if (!empty($racikanIds)) {
-    //         ObatRacikanFinal::whereIn('id', $racikanIds)
-    //             ->update(['konfirmasi' => 'terkonfirmasi']);
-    //     }
-
-    //     PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
-
-    //     $this->kurangiStokProduk();
-
-    //     $this->dispatch('toast', [
-    //             'type' => 'success',
-    //             'message' => 'Transaksi Selesai.'
-    //     ]);
-
-    //     $this->reset();
-
-    //     return redirect()->route('transaksi.kasir');
-    // }
-
     public function create()
     {
         if (! Gate::allows('akses', 'Transaksi Klinik Selesai')) {
@@ -154,8 +131,15 @@ class Detail extends Component
             ]);
             return;
         }
+
+        $this->potongan = (int) str_replace('.', '', $this->potongan);
+
         DB::beginTransaction();
 
+        dd([
+            'potongan' => $this->potongan,
+            'diskon' => $this->diskon,
+        ]);
         try {
             $nonRacikanIds = $this->selectedObat;
             $racikanIds = $this->selectedRacikan;
@@ -305,19 +289,6 @@ class Detail extends Component
                 $totalTagihan += $subtotalbundling;
             }
 
-            // --- Obat Non Racik ---
-            // foreach ($this->selectedObat as $item) {
-            //     $subtotalnonracik = (int) ($item->total_obat ?? 0);
-            //     RiwayatTransaksiKlinik::create([
-            //         'transaksi_klinik_id' => $transaksi->id,
-            //         'jenis_item' => 'obat_non_racik',
-            //         'nama_item' => $item->produk->nama_dagang ?? '-',
-            //         'qty' => $item->jumlah_obat,
-            //         'harga' => $item->harga_obat,
-            //         'subtotal' => $subtotalnonracik,
-            //     ]);
-            //     $totalTagihan += $subtotalnonracik;
-            // }
             foreach ($this->selectedObat as $id) {
                 $item = ObatNonRacikanFinal::with('produk')->find($id);
                 if (!$item) continue;
@@ -336,19 +307,6 @@ class Detail extends Component
                 $totalTagihan += $subtotalnonracik;
             }
 
-            // --- Obat Racik ---
-            // foreach ($this->selectedObat as $item) {
-            //     $subtotalracik = (int) ($item->total_racikan ?? 0);
-            //     RiwayatTransaksiKlinik::create([
-            //         'transaksi_klinik_id' => $transaksi->id,
-            //         'jenis_item' => 'obat_racik',
-            //         'nama_item' => $item->bahanRacikanFinals->produk->nama_dagang ?? '-',
-            //         'qty' => $item->jumlah_racikan,
-            //         'harga' => $subtotalracik,
-            //         'subtotal' => $subtotalracik,
-            //     ]);
-            //     $totalTagihan += $subtotalracik;
-            // }
             foreach ($this->selectedRacikan as $id) {
                 $item = ObatRacikanFinal::with('bahanRacikanFinals.produk')->find($id);
                 if (!$item) continue;
@@ -367,10 +325,29 @@ class Detail extends Component
                 $totalTagihan += $subtotalracik;
             }
 
+            $diskonNominal = 0;
+
+            // Diskon persen
+            if ($this->diskon > 0) {
+                $diskonNominal = ($totalTagihan * $this->diskon) / 100;
+            }
+
+            // Total setelah diskon
+            $totalSetelahDiskon = $totalTagihan - $diskonNominal;
+
+            // Potongan nominal
+            $totalAkhir = $totalSetelahDiskon - ($this->potongan ?? 0);
+
+            // Proteksi agar tidak minus
+            if ($totalAkhir < 0) {
+                $totalAkhir = 0;
+            }
 
             // ✅ 3. Update total tagihan transaksi
             $transaksi->update([
-                'total_tagihan' => $totalTagihan,
+                'total_tagihan' => $totalAkhir,
+                'diskon' => $this->diskon,
+                'potongan' => $this->potongan,
                 'status' => 'lunas',
             ]);
 
@@ -402,6 +379,13 @@ class Detail extends Component
                 'message' => 'Terjadi kesalahan: ' . $th->getMessage()
             ]);
         }
+    }
+
+    public function openPayment()
+    {
+        $this->diskon = 0;
+        $this->potongan = 0;
+        $this->showPaymentForm = true;
     }
 
     protected function kurangiStokProduk()
