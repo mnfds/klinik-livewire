@@ -108,6 +108,6 @@ class RekamMedis extends Model
     // ----- DATA TRANSAKSI PERKUNJUNGAN ----- //
     public function transaksi()
     {
-        return $this->hasOne(TransaksiKlinik::class);
+        return $this->hasOne(TransaksiKlinik::class, 'rekam_medis_id');
     }
 }

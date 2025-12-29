@@ -11,7 +11,7 @@ class TransaksiKlinik extends Model
 
     public function rekammedis()
     {
-        return $this->belongsTo(RekamMedis::class);
+        return $this->belongsTo(RekamMedis::class, 'rekam_medis_id');
     }
     
     public function riwayatTransaksi()

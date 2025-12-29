@@ -171,6 +171,16 @@ final class TransaksiTable extends PowerGridComponent
                 'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
                 'class' => 'btn btn-secondary',
             ]);
+            
+        $transaksiButton[] =
+        Button::add('invoice')
+            ->slot('<i class="fa-solid fa-print"></i>Print Invoice')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Print Invoice Transaksi',
+                'class' => 'btn btn-secondary',
+            ])
+            ->dispatchTo('transaksi.invoice', 'print', ['rowId' => $row->id]);
 
         return $transaksiButton; 
     }
@@ -184,6 +194,10 @@ final class TransaksiTable extends PowerGridComponent
 
             Rule::button('bayarbutton')
                 ->when(fn($row) => $row->status_terdaftar !== 'pembayaran')
+                ->hide(),
+
+            Rule::button('invoice')
+                ->when(fn($row) => ! in_array($row->status_terdaftar, ['lunas', 'selesai']))
                 ->hide(),
         ];
     }
