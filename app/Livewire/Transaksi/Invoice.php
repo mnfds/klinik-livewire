@@ -223,8 +223,20 @@ class Invoice extends Component
             }
             $line();
             /* ================= TOTAL ================= */
+            $grandTotalBersih = $grandTotal;
+            if ($data_transaksi->diskon > 0) {
+            $grandTotalBersih -= ($grandTotalBersih * $data_transaksi->diskon / 100);
+            }
+
+            // potongan rupiah
+            if ($data_transaksi->potongan > 0) {
+                $grandTotalBersih -= (int) $data_transaksi->potongan;
+            }
             $printer->setEmphasis(true);
-            $printLR("TOTAL", "Rp " . number_format($grandTotal));
+            $printLR("SUBTOTAL", "Rp " . number_format($grandTotal));
+            $printLR("Disc", number_format($data_transaksi->diskon) . " %");
+            $printLR("Pot", "Rp " . number_format($data_transaksi->potongan));
+            $printLR("TOTAL", "Rp " . number_format($grandTotalBersih));
             $printer->setEmphasis(false);
 
             /* ================= FOOTER ================= */

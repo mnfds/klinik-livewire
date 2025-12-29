@@ -136,10 +136,10 @@ class Detail extends Component
 
         DB::beginTransaction();
 
-        dd([
-            'potongan' => $this->potongan,
-            'diskon' => $this->diskon,
-        ]);
+        // dd([
+        //     'potongan' => $this->potongan,
+        //     'diskon' => $this->diskon,
+        // ]);
         try {
             $nonRacikanIds = $this->selectedObat;
             $racikanIds = $this->selectedRacikan;
@@ -345,7 +345,8 @@ class Detail extends Component
 
             // ✅ 3. Update total tagihan transaksi
             $transaksi->update([
-                'total_tagihan' => $totalAkhir,
+                'total_tagihan' => $totalTagihan,
+                'total_tagihan_bersih' => $totalAkhir,
                 'diskon' => $this->diskon,
                 'potongan' => $this->potongan,
                 'status' => 'lunas',
@@ -386,6 +387,58 @@ class Detail extends Component
         $this->diskon = 0;
         $this->potongan = 0;
         $this->showPaymentForm = true;
+    }
+
+    public function getTotalKotorProperty()
+    {
+        $total = 0;
+
+        foreach ([$this->pelayanan, $this->treatment, $this->produk, $this->bundling] as $collection) {
+            foreach ($collection ?? [] as $item) {
+                $total += (int) (
+                    $item->subtotal
+                    ?? $item->pelayanan->harga_pelayanan
+                    ?? $item->treatment->harga_treatment
+                    ?? $item->produk->harga_jual
+                    ?? $item->bundling->harga_bundling
+                    ?? 0
+                );
+            }
+        }
+
+        foreach ($this->obatapoteker ?? [] as $obat) {
+
+            $total +=
+                ($obat->obatNonRacikanFinals?->whereIn('id', $this->selectedObat ?? [])->sum('total_obat') ?? 0) +
+                ($obat->obatRacikanFinals?->whereIn('id', $this->selectedRacikan ?? [])->sum('total_racikan') ?? 0);
+
+            $adaRacikan = $obat->obatRacikanFinals
+                ?->whereIn('id', $this->selectedRacikan ?? [])
+                ->isNotEmpty();
+
+            if ($adaRacikan) {
+                $total += ($obat->tuslah ?? 0) + ($obat->embalase ?? 0);
+            }
+        }
+
+        return $total;
+    }
+
+    public function getTotalBayarProperty()
+    {
+        $total = $this->totalKotor;
+
+        // diskon persen
+        if ($this->diskon > 0) {
+            $total -= ($total * $this->diskon / 100);
+        }
+
+        // potongan rupiah
+        if ($this->potongan > 0) {
+            $total -= (int) $this->potongan;
+        }
+
+        return max(0, (int) $total);
     }
 
     protected function kurangiStokProduk()
@@ -725,8 +778,20 @@ class Detail extends Component
             }
             $line();
             /* ================= TOTAL ================= */
+            $grandTotalBersih = $grandTotal;
+            if ($data_transaksi->diskon > 0) {
+            $grandTotalBersih -= ($grandTotalBersih * $data_transaksi->diskon / 100);
+            }
+
+            // potongan rupiah
+            if ($data_transaksi->potongan > 0) {
+                $grandTotalBersih -= (int) $data_transaksi->potongan;
+            }
             $printer->setEmphasis(true);
-            $printLR("TOTAL", "Rp " . number_format($grandTotal));
+            $printLR("SUBTOTAL", "Rp " . number_format($grandTotal));
+            $printLR("Disc", number_format($data_transaksi->diskon) . " %");
+            $printLR("Pot", "Rp " . number_format($data_transaksi->potongan));
+            $printLR("TOTAL", "Rp " . number_format($grandTotalBersih));
             $printer->setEmphasis(false);
 
             /* ================= FOOTER ================= */

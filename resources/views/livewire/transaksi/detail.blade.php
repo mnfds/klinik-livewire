@@ -666,53 +666,47 @@
 
                                 <hr class="my-2 border-base-300">
 
-                                {{-- === Hitung Total === --}}
-                                @php
-                                    $total = collect([$pelayanan, $treatment, $produk, $bundling])
-                                        ->flatten()
-                                        ->sum(fn($item) => $item->subtotal
-                                            ?? $item->pelayanan->harga_pelayanan
-                                            ?? $item->treatment->harga_treatment
-                                            ?? $item->produk->harga_jual
-                                            ?? $item->bundling->harga_bundling
-                                            ?? 0
-                                        );
-
-                                    foreach ($obatapoteker as $obat) {
-                                        // Total obat dipilih
-                                        $total +=
-                                            ($obat->obatNonRacikanFinals?->whereIn('id', $selectedObat ?? [])->sum('total_obat') ?? 0) +
-                                            ($obat->obatRacikanFinals?->whereIn('id', $selectedRacikan ?? [])->sum('total_racikan') ?? 0);
-
-                                        // Tambah tuslah & embalase hanya jika ada racikan terpilih
-                                        $adaRacikanDipilih = $obat->obatRacikanFinals?->whereIn('id', $selectedRacikan ?? [])->isNotEmpty();
-
-                                        if($adaRacikanDipilih){
-                                            $total += ($obat->tuslah ?? 0) + ($obat->embalase ?? 0);
-                                        }
-                                    }
-                                @endphp
-
-                                <div class="flex justify-between font-bold text-base mt-3">
-                                    <span>Total:</span>
-                                    <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                <div class="flex justify-between">
+                                    <span>Total</span>
+                                    <span>Rp {{ number_format($this->totalKotor, 0, ',', '.') }}</span>
                                 </div>
+
+                                @if ($diskon > 0)
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>Diskon ({{ $diskon }}%)</span>
+                                    <span>- Rp {{ number_format($this->totalKotor * $diskon / 100, 0, ',', '.') }}</span>
+                                </div>
+                                @endif
+
+                                @if ($potongan > 0)
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>Potongan</span>
+                                    <span>- Rp {{ number_format($potongan, 0, ',', '.') }}</span>
+                                </div>
+                                @endif
+
+                                <div class="flex justify-between font-bold text-base mt-2">
+                                    <span>Total Bayar</span>
+                                    <span>Rp {{ number_format($this->totalBayar, 0, ',', '.') }}</span>
+                                </div>
+
                                 
                                 @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
                                     @can('akses', 'Transaksi Klinik Selesai')
                                     @if ($showPaymentForm)
                                     <div class="mb-1">
                                         <label class="label font-medium">Diskon (%)</label>
-                                        <input type="number" class="input input-bordered w-full" wire:model.defer="diskon" min="0" max="100">
+                                        <input type="number" class="input input-bordered w-full" wire:model.live="diskon" min="0" max="100">
                                     </div>
 
                                     <div class="mb-1">
                                         <label class="label font-medium">Potongan (Rp)</label>
-                                        <input type="text" class="input input-bordered w-full" wire:model.defer="potongan" placeholder="0"
+                                        <input type="text" class="input input-bordered w-full" wire:model.live="potongan" placeholder="0"
                                             x-data
                                             x-on:input="
-                                                let value = $el.value.replace(/\D/g,'');
-                                                $el.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                let v = $el.value.replace(/\D/g,'');
+                                                $el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                $wire.set('potongan', v);
                                             "
                                         >
                                     </div>
