@@ -47,6 +47,7 @@
                         let subtotal = afterDiskon - potongan;
     
                         this.subtotal = subtotal > 0 ? subtotal : 0;
+                        $wire.set('produktambahan.{{ $uuid }}.subtotal', this.subtotal);
                     },
     
                     formatRupiah(val) {
@@ -131,8 +132,8 @@
     
                 <div class="flex justify-end mt-2">
                     <button type="button" class="btn btn-error btn-sm"
-                            wire:click="removeRow('{{ $uuid }}')"
-                            @if(count($produktambahan) === 1) disabled @endif>
+                            wire:click="removeRow('{{ $uuid }}')">
+                            {{-- @if(count($produktambahan) === 1) disabled @endif> --}}
                         Hapus
                     </button>
                 </div>

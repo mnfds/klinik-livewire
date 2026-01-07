@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('riwayat_transaksi_kliniks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaksi_klinik_id')->constrained('transaksi_kliniks')->onDelete('cascade');
-            $table->enum('jenis_item', ['produk', 'pelayanan', 'treatment', 'bundling', 'obat_non_racik', 'obat_racik']);
+            $table->enum('jenis_item', ['produk', 'pelayanan', 'treatment', 'bundling', 'obat_non_racik', 'obat_racik', 'produk_tambahan']);
             $table->string('nama_item');
             $table->integer('qty')->default(1);
             $table->unsignedBigInteger('harga')->default(0);

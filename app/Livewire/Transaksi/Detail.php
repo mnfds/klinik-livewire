@@ -146,11 +146,11 @@ class Detail extends Component
 
         DB::beginTransaction();
 
-        dd([
+        // dd([
             // 'potongan' => $this->potongan,
             // 'diskon' => $this->diskon,
-            'potongan_harga' => $this->produktambahan,
-        ]);
+            // 'potongan_harga' => $this->produktambahan,
+        // ]);
         try {
             $nonRacikanIds = $this->selectedObat;
             $racikanIds = $this->selectedRacikan;
@@ -286,6 +286,30 @@ class Detail extends Component
                 $totalTagihan += $subtotalproduk;
             }
 
+            // --- Produk Tambahan ---
+            if($this->showTambahanItem === true){
+                foreach ($this->produktambahan ?? [] as $item) {
+                    // SKIP JIKA TIDAK ADA PRODUK / DIBATALKAN
+                    if (
+                        !isset($item['produk_id']) ||
+                        ($item['subtotal'] ?? 0) <= 0
+                    ) {
+                        continue;
+                    }
+                    $produkDitambah = $this->produksearch->firstWhere('id', $item['produk_id']);
+                    $subtotalProdukDiTambah = (int) $item['subtotal'];
+                    RiwayatTransaksiKlinik::create([
+                        'transaksi_klinik_id' => $transaksi->id,
+                        'jenis_item' => 'produk_tambahan',
+                        'nama_item' => $produkDitambah?->nama_dagang ?? '-',
+                        'qty' => $item['jumlah_produk'],
+                        'harga' => $item['harga_satuan'],
+                        'subtotal' => $subtotalProdukDiTambah,
+                    ]);
+                    $totalTagihan += $subtotalproduk;
+                }
+            }
+
             // --- Bundling ---
             foreach ($this->bundling as $item) {
                 $subtotalbundling = (int) ($item->subtotal ?? 0);
@@ -409,8 +433,13 @@ class Detail extends Component
     {
         $total = 0;
 
-        foreach ([$this->pelayanan, $this->treatment, $this->produk, $this->bundling] as $collection) {
+        foreach ([$this->pelayanan, $this->treatment, $this->produk, $this->bundling, $this->produktambahan] as $collection) {
             foreach ($collection ?? [] as $item) {
+                // === PRODUK TAMBAHAN (ARRAY) ===
+                if (is_array($item) && $this->showTambahanItem === true) {
+                    $total += (int) ($item['subtotal'] ?? 0);
+                    continue;
+                }
                 $total += (int) (
                     $item->subtotal
                     ?? $item->pelayanan->harga_pelayanan
@@ -467,6 +496,27 @@ class Detail extends Component
 
                 $stokBaru = max($produk->stok - $jumlah, 0);
                 $produk->update(['stok' => $stokBaru]);
+            }
+        }
+
+        // --- Pengurangan Stok Produk Dari Produk Tambahan ---
+        if ($this->showTambahanItem === true) {
+            foreach ($this->produktambahan ?? [] as $item) {
+                // 🔒skip jika tidak item tambahan / dibatalkan
+                if (!isset($item['produk_id']) || ($item['jumlah_produk'] ?? 0) <= 0) {
+                    continue;
+                }
+
+                $produk = ProdukDanObat::lockForUpdate()->find($item['produk_id']);
+                if (! $produk) continue;
+
+                $jumlah = (int) $item['jumlah_produk'];
+                if ($jumlah <= 0) continue;
+
+                $stokBaru = max($produk->stok - $jumlah, 0);
+                $produk->update([
+                    'stok' => $stokBaru,
+                ]);
             }
         }
 

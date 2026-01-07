@@ -586,7 +586,7 @@
                         
                         @if (!$showTambahanItem)
                             <button wire:click="tambahItem" class="btn btn-success btn-sm mt-4 w-full">
-                                <i class="fa-solid fa-plus"></i> Tambahan Item Pembelian
+                                <i class="fa-solid fa-plus"></i> Item Pembelian
                             </button>
                         @endif
                         @if ($showTambahanItem)
@@ -606,23 +606,36 @@
                         <div class="bg-base-100 border-t-3 border-t-info shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
                             <div class="space-y-2 text-sm">
+                                {{-- {{  $produk }} --}}
 
-                                {{-- === Pelayanan, Treatment, Produk, Bundling === --}}
-                                @foreach([$pelayanan, $treatment, $produk, $bundling] as $collection)
+                                {{-- === Pelayanan, Treatment, Produk, Bundling, Produk Tambahan === --}}
+                                @foreach([$pelayanan, $treatment, $produk, $bundling, $produktambahan] as $collection)
                                     @foreach($collection as $item)
+                                        @if(is_array($item) && (!$showTambahanItem || empty($item['produk_id']) || ($item['subtotal'] ?? 0) <= 0))
+                                            @continue
+                                        @endif
                                         @php
-                                            $nama = $item->pelayanan->nama_pelayanan
-                                                ?? $item->treatment->nama_treatment
-                                                ?? $item->produk->nama_dagang
-                                                ?? $item->bundling->nama
-                                                ?? '-';
+                                            // === KHUSUS PRODUK TAMBAHAN (ARRAY) ===
+                                            if (is_array($item)) {
+                                                $produkTambahan = $produksearch->firstWhere('id', $item['produk_id']);
 
-                                            $harga = $item->subtotal
-                                                ?? $item->pelayanan->harga_pelayanan
-                                                ?? $item->treatment->harga_treatment
-                                                ?? $item->produk->harga_jual
-                                                ?? $item->bundling->harga_bundling
-                                                ?? 0;
+                                                $nama = $produkTambahan?->nama_dagang ?? 'Produk Tambahan';
+                                                $harga = $item['subtotal'] ?? 0;
+                                            } else {
+                                                // === KHUSUS PELAYANAN, PRODUK, TREATMENT, BUNDLING ===
+                                                $nama = $item->pelayanan->nama_pelayanan
+                                                    ?? $item->treatment->nama_treatment
+                                                    ?? $item->produk->nama_dagang
+                                                    ?? $item->bundling->nama
+                                                    ?? '-';
+
+                                                $harga = $item->subtotal
+                                                    ?? $item->pelayanan->harga_pelayanan
+                                                    ?? $item->treatment->harga_treatment
+                                                    ?? $item->produk->harga_jual
+                                                    ?? $item->bundling->harga_bundling
+                                                    ?? 0;
+                                            }
                                         @endphp
 
                                         <div class="flex justify-between">
