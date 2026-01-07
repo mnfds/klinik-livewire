@@ -100,6 +100,28 @@
                                     </div>
                                 </div>
 
+                                {{-- ITEM TAMBAHAN --}}
+                                <div class="collapse collapse-open join-item border-base-300 border">
+                                    <div class="collapse-title font-semibold">
+                                        Produk / Obat Tambahan
+                                    </div>
+
+                                    <div class="collapse-content text-sm">
+                                        @forelse ($produkObatTambahan as $pot)
+                                            <div class="py-2 border-b">
+                                                <div class="flex justify-between">
+                                                    <span>{{ $pot['nama_produk'] }}</span>
+                                                    <span>{{ $pot['jumlah'] }} Pcs</span>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <p class="text-gray-500 italic">
+                                                Tidak ada produk / obat tambahan.
+                                            </p>
+                                        @endforelse
+                                    </div>
+                                </div>
+
                                 {{-- PRODUK DIBELI --}}
                                 <div class="collapse collapse-open join-item border-base-300 border">
                                     <div class="collapse-title font-semibold">Produk Dibeli</div>

@@ -19,6 +19,7 @@ class Tebus extends Component
     public array $produkRencanaItems = [];
     public array $produkBundlingItems = [];
     public array $produkBundlingUsageItems = [];
+    public array $produkObatTambahan = [];
 
     public $rekammedis_id;
 
@@ -37,6 +38,7 @@ class Tebus extends Component
             'rekamMedis.produkBundlingUsages.bundling',
             'rekamMedis.obatNonRacikanRM',
             'rekamMedis.obatRacikanRM',
+            'rekamMedis.transaksi.riwayatTransaksi' //transaksi produk ataut obat tambahan
         ])->findOrFail($this->pasien_terdaftar_id);
 
         $this->rekammedis_id = $this->pasienTerdaftar->rekamMedis->id;
@@ -61,7 +63,6 @@ class Tebus extends Component
                 'konfirmasi' => $o->konfirmasi,
             ])
         ->toArray() ?? [];
-
 
         // mapping data obat racikan
         $this->obatRacikanItems = $final
@@ -89,7 +90,6 @@ class Tebus extends Component
                 ])->toArray(),
             ])
         ->toArray() ?? [];
-
 
         // mapping data produk individual
         $this->produkRencanaItems = $this->pasienTerdaftar->rekamMedis->rencanaProdukRM->map(fn($p) => [
@@ -139,7 +139,20 @@ class Tebus extends Component
                 'tipe' => 'usage',
                 'is_pembelian_baru' => (bool) ($u->is_pembelian_baru ?? false),
             ])
-            ->toArray();
+        ->toArray();
+        
+        //mapping data produk/obat transaksi tambahan
+        $this->produkObatTambahan =$this->pasienTerdaftar->rekamMedis->transaksi->riwayatTransaksi
+                ->where('jenis_item', 'produk_tambahan')
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'nama_produk' => $item->nama_item,
+                    'jumlah' => $item->qty,
+                    'harga' => $item->harga,
+                    'subtotal' => $item->subtotal,
+                ])->values()
+        ->toArray();
+
             // dd(
             //     $this->obatNonRacikanItems,
             //     $this->obatRacikanItems,
