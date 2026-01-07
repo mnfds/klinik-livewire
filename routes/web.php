@@ -338,7 +338,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wilayah/kelurahan/{kec}', function ($kec) {
         return App\Models\Village::where('district_id', $kec)->get();
     });
+    // ====== AJAX INDONESIA REGION ========= //
 
+    // ====== LAPORAN ARUS KAS ====== //
+    Route::view('/aruskas', 'aruskas.data')->name('aruskas.data');    
+    // ====== LAPORAN ARUS KAS ====== //
+
+    // ====== LAPORAN KUNJUNGAN ====== //
+    Route::view('/kunjungan', 'kunjungan.data')->name('kunjungan.data');    
+    // ====== LAPORAN KUNJUNGAN ====== //
+
+    // ====== LAPORAN KINERJA ====== //
+    Route::view('/kinerja', 'kinerja.data')->name('kinerja.data');    
+    // ====== LAPORAN KINERJA ====== //
 });
 
 

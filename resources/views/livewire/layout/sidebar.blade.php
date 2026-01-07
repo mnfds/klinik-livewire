@@ -169,14 +169,33 @@
                     </x-side-link>
                 </li>
                 @endcan
-                @can('akses', 'Laporan')                    
-                <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
-                        <i class="fa-solid fa-chart-column"></i>
-                        <span class="ml-3">Laporan</span>
-                    </x-side-link>
-                </li>
-                @endcan
+
+                @if (Gate::allows('akses','Laporan') || Gate::allows('akses','Laporan'))
+                    <li x-data="{ open: {{ request()->routeIs('aruskas.*') || request()->routeIs('kunjungan.*') || request()->routeIs('kinerja.*') ? 'true' : 'false' }} }">
+                        <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('aruskas.*', 'kunjungan.*', 'kinerja.*')">
+                            <i class="fa-solid fa-chart-column"></i>
+                            <span class="flex-1 ml-3 text-left">Laporan</span>
+                            <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                        </x-side-link>
+                        <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                            @can('akses', 'Laporan')
+                            <li>
+                                <x-side-link href="{{ route('aruskas.data') }}" :active="request()->routeIs('aruskas.*')" wire:navigate>Arus Kas</x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Laporan')
+                            <li>
+                                <x-side-link href="{{ route('kunjungan.data') }}" :active="request()->routeIs('kunjungan.*')" wire:navigate>Kunjungan Pasien</x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Laporan')
+                            <li>
+                                <x-side-link href="{{ route('kinerja.data') }}" :active="request()->routeIs('kinerja.*')" wire:navigate>Kinerja Utama</x-side-link>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif 
 
                 @php
                     use App\Models\BahanBaku;
@@ -431,8 +450,8 @@
                     Gate::allows('akses','Transaksi Klinik') ||
                     Gate::allows('akses','Transaksi Apotik')
                     )
-                <li x-data="{ open: false }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*')">
+                <li x-data="{ open: {{ request()->routeIs('apotik.*') || request()->routeIs('transaksi.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*', 'transaksi.*')">
                         <i class="fa-solid fa-cash-register"></i>
                         <span class="flex-1 ml-3 text-left">Transaksi</span>
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
