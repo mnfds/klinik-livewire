@@ -583,6 +583,20 @@
                                 </div>
                             @endif
                         @endif
+                        
+                        @if (!$showTambahanItem)
+                            <button wire:click="tambahItem" class="btn btn-success btn-sm mt-4 w-full">
+                                <i class="fa-solid fa-plus"></i> Tambahan Item Pembelian
+                            </button>
+                        @endif
+                        @if ($showTambahanItem)
+                        @include('transaksi.partials.tambahproduk')
+                            {{-- <x-transaksi.tambahproduk /> --}}
+                            <button wire:click="$set('showTambahanItem', false)" class="btn btn-error btn-sm mt-4 w-full">
+                                Batal
+                            </button>
+                        @endif
+
                     </div>
                 </div>
 
@@ -690,7 +704,6 @@
                                     <span>Rp {{ number_format($this->totalBayar, 0, ',', '.') }}</span>
                                 </div>
 
-                                
                                 @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
                                     @can('akses', 'Transaksi Klinik Selesai')
                                     @if ($showPaymentForm)
@@ -733,7 +746,6 @@
                         </div>
                     </div>
                 </div>
-
 
             </div>
         </div>

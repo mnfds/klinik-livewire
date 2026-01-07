@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\RekamMedis;
 use Mike42\Escpos\Printer;
+use Illuminate\Support\Str;
 use App\Models\ProdukDanObat;
 use Illuminate\Support\Carbon;
 use App\Models\PasienTerdaftar;
@@ -45,10 +46,13 @@ class Detail extends Component
     public $selectedRacikan = [];
 
     public bool $showPaymentForm = false;
+    public bool $showTambahanItem = false;
+
+    public $produksearch;
+    public $produktambahan = [];
 
     public $diskon = 0;
     public $potongan = 0;
-
 
     public function mount($id)
     {
@@ -108,6 +112,12 @@ class Detail extends Component
                 ->merge($rekamMedis->treatmentBundlingUsages ?? [])
                 ->merge($rekamMedis->pelayananBundlingUsages ?? []);
         }
+
+        // DINAMIS PRODUK/OBAT TAMBAHAN
+        $this->produksearch = ProdukDanObat::all();
+        $uuid = (string) Str::uuid();
+        $this->produktambahan[$uuid] = $this->emptyRowWithUuid($uuid);
+    
     }
 
     public function render()
@@ -136,10 +146,11 @@ class Detail extends Component
 
         DB::beginTransaction();
 
-        // dd([
-        //     'potongan' => $this->potongan,
-        //     'diskon' => $this->diskon,
-        // ]);
+        dd([
+            // 'potongan' => $this->potongan,
+            // 'diskon' => $this->diskon,
+            'potongan_harga' => $this->produktambahan,
+        ]);
         try {
             $nonRacikanIds = $this->selectedObat;
             $racikanIds = $this->selectedRacikan;
@@ -389,6 +400,11 @@ class Detail extends Component
         $this->showPaymentForm = true;
     }
 
+    public function tambahItem()
+    {
+        $this->showTambahanItem = true;
+    }
+
     public function getTotalKotorProperty()
     {
         $total = 0;
@@ -569,6 +585,33 @@ class Detail extends Component
             }
         });
     }
+
+    // ===== DINAMIS PRODUK/OBAT TAMBAHAN ===== //
+    private function emptyRowWithUuid($uuid)
+    {
+        return [
+            'produk_id' => null,
+            'jumlah_produk' => 1,
+            'harga_satuan' => 0,
+            'potongan_harga' => 0,
+            'diskon' => 0,
+            // 'harga_asli' => 0,
+            'subtotal' => 0,
+            'uuid' => $uuid,
+        ];
+    }
+
+    public function addRow()
+    {
+        $uuid = (string) Str::uuid();
+        $this->produktambahan[$uuid] = $this->emptyRowWithUuid($uuid);
+    }
+
+    public function removeRow($uuid)
+    {
+        unset($this->produktambahan[$uuid]);
+    }
+    // ===== DINAMIS PRODUK/OBAT TAMBAHAN ===== //
 
     protected function invoice(int $transaksiId)
     {
