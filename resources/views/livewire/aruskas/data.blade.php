@@ -28,11 +28,18 @@
         </div>
 
         <!-- Main Content -->
+        
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
+            <!-- TABS -->
+            <div class="tabs tabs-border">
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Klinik" style="background-image: none;" checked/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Aruskas.uangklinikcard />
+                </div>
                 
-                <div class="p-6 text-base-content space-y-4">
-                    ARUS KAS DATA
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Apotik" style="background-image: none;"/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Aruskas.uangapotikcard />
                 </div>
             </div>
         </div>
