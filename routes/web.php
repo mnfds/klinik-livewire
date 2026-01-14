@@ -351,6 +351,10 @@ Route::middleware(['auth'])->group(function () {
     // ====== LAPORAN KINERJA ====== //
     Route::view('/kinerja', 'kinerja.data')->name('kinerja.data');    
     // ====== LAPORAN KINERJA ====== //
+
+    // ====== PENGAJUAN UANG KELUAR ====== //
+    Route::view('/uangkeluar', 'uangkeluar.data')->name('uangkeluar.data');    
+    // ====== LAPORAN KINERJA ====== //
 });
 
 

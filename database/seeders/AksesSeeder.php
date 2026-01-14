@@ -122,7 +122,22 @@ class AksesSeeder extends Seeder
             ],
             // Pengajuan
             13 => [
-                'Pengajuan',
+                'Pengajuan Pengeluaran',
+                'Pengajuan Pengeluaran Tambah',
+                
+                'Pengajuan Pengeluaran Pending',
+                'Pengajuan Pengeluaran Pending Hapus',
+                'Pengajuan Pengeluaran Pending Edit',
+                
+                'Pengajuan Pengeluaran Disetujui',
+                'Pengajuan Pengeluaran Disetujui Hapus',
+                'Pengajuan Pengeluaran Disetujui Edit',
+
+                'Pengajuan Pengeluaran Ditolak',
+                'Pengajuan Pengeluaran Ditolak Hapus',
+                'Pengajuan Pengeluaran Ditolak Edit',
+
+                'Pengajuan Pengeluaran Persetujuan',
             ],
             // Pasien
             14 => [

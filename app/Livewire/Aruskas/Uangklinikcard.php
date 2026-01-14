@@ -3,6 +3,7 @@
 namespace App\Livewire\Aruskas;
 
 use App\Models\TransaksiKlinik;
+use App\Models\Uangkeluar;
 use Livewire\Component;
 use Illuminate\Support\Carbon;
 
@@ -27,7 +28,10 @@ class Uangklinikcard extends Component
 
         $this->totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
             ->sum('total_tagihan_bersih');
-        $this->totalKeluar = 1000000;
+        $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
+            ->where('unit_usaha','Klinik')
+            ->where('status','Disetujui')
+            ->sum('jumlah_uang');
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
@@ -46,7 +50,10 @@ class Uangklinikcard extends Component
 
         $this->totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi',[$start, $end])
             ->sum('total_tagihan_bersih');
-        $this->totalKeluar = 100;
+        $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
+            ->where('unit_usaha','Klinik')
+            ->where('status','Disetujui')
+            ->sum('jumlah_uang');
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
