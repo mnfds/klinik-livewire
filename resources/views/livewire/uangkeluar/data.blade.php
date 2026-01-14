@@ -46,6 +46,11 @@
                                 <i class="fa-solid fa-envelope"></i> Ajukan Permintaan
                             </button>
                             @endcan
+                            @can('akses', 'Pengajuan Pengeluaran Disetujui Tambah')
+                            <button onclick="document.getElementById('storeModalUangKeluarKasir').showModal()" class="btn btn-success w-full">
+                                <i class="fa-solid fa-plus"></i> Pengeluaran
+                            </button>
+                            @endcan
                         </div>
                     </div>
                     <div class="space-y-8">

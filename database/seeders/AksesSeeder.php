@@ -130,6 +130,7 @@ class AksesSeeder extends Seeder
                 'Pengajuan Pengeluaran Pending Edit',
                 
                 'Pengajuan Pengeluaran Disetujui',
+                'Pengajuan Pengeluaran Disetujui Tambah',
                 'Pengajuan Pengeluaran Disetujui Hapus',
                 'Pengajuan Pengeluaran Disetujui Edit',
 
