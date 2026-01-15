@@ -41,6 +41,10 @@
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Aruskas.uangapotikcard />
                 </div>
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;"/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Aruskas.uangrekapitulasicard />
+                </div>
             </div>
         </div>
     </div>
