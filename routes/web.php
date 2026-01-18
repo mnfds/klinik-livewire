@@ -354,7 +354,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== PENGAJUAN UANG KELUAR ====== //
     Route::view('/uangkeluar', 'uangkeluar.data')->name('uangkeluar.data');    
-    // ====== LAPORAN KINERJA ====== //
+    // ====== PENGAJUAN UANG KELUAR ====== //
+
+    // ====== PENGAJUAN IZIN KELUAR ====== //
+    Route::view('/izinkeluar', 'izinkeluar.data')->name('izinkeluar.data');    
+    // ====== PENGAJUAN IZIN KELUAR ====== //
 });
 
 

@@ -17,7 +17,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('bahanbaku.data') }}" class="inline-flex items-center gap-1">
+                        <a href="{{ route('uangkeluar.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
                             Uang Keluar
                         </a>
