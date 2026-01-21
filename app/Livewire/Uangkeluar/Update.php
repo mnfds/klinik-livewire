@@ -154,6 +154,7 @@ class Update extends Component
         $this->dispatch('closemodaleditditolak');
         $this->reset();
 
-        return redirect()->route('uangkeluar.data'); // untuk PowerGrid refresh
+        // return redirect()->route('uangkeluar.data');
+        return redirect()->route('aruskas.data');
     }
 }

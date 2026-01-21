@@ -272,7 +272,7 @@
                 @endif
                  
                 @if (Gate::allows('akses','Pengajuan Pengeluaran') || Gate::allows('akses','Pengajuan Pengeluaran') || Gate::allows('akses','Pengajuan Pengeluaran'))   
-                <li x-data="{ open: {{ request()->routeIs('uangkeluar.*') || request()->routeIs('izinkeluar.*') || request()->routeIs('uangkeluar.*') ? 'true' : 'false' }} }">
+                <li x-data="{ open: {{ request()->routeIs('izinkeluar.*') || request()->routeIs('izinkeluar.*') || request()->routeIs('izinkeluar.*') ? 'true' : 'false' }} }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*') || request()->routeIs('uangkeluar.*')">
                         <i class="fa-solid fa-folder-open"></i>
                         <span class="flex-1 ml-3 text-left">Pengajuan</span>
@@ -285,11 +285,11 @@
                             <x-side-link href="{{ route('izinkeluar.data') }}" :active="request()->routeIs('izinkeluar.*')" wire:navigate>Izin keluar</x-side-link>
                         </li>
                         @endcan
-                        @can('akses', 'Pengajuan Pengeluaran')
+                        {{-- @can('akses', 'Pengajuan Pengeluaran')
                         <li>
                             <x-side-link href="{{ route('uangkeluar.data') }}" :active="request()->routeIs('uangkeluar.*')" wire:navigate>Pengeluaran</x-side-link>
                         </li>
-                        @endcan
+                        @endcan --}}
                     </ul>
                 </li>
                 @endif

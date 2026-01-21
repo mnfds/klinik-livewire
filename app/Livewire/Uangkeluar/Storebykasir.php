@@ -58,8 +58,10 @@ class Storebykasir extends Component
             'message' => 'Pengajuan berhasil Dibuat.'
         ]);
         $this->dispatch('storeModalUangKeluarKasir');
+        $this->dispatch('uangkeluar-disetujui');
         $this->reset();
-        return redirect()->route('uangkeluar.data');
+        // return redirect()->route('uangkeluar.data');
+        return redirect()->route('aruskas.data');
     }
     public function render()
     {

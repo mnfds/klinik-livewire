@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('keterangan');
             $table->unsignedBigInteger('jumlah_uang');
             $table->enum('jenis_pengeluaran',['SDM', 'Administrasi', 'Marketing', 'Operasional', 'Rumah Tangga', 'Dll']);
-            $table->enum('unit_usaha',['Klinik', 'Apotik']);
+            $table->enum('unit_usaha',['Klinik', 'Apotik', 'Lainnya']);
             $table->enum('status',['Menunggu', 'Disetujui', 'Ditolak']);
             $table->dateTime('tanggal_pengajuan')->default(now());
             $table->timestamps();

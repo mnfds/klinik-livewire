@@ -62,6 +62,7 @@ class Store extends Component
         ]);
         $this->dispatch('closestoreModalUangKeluar');
         $this->reset();
-        return redirect()->route('uangkeluar.data');
+        // return redirect()->route('uangkeluar.data');
+        return redirect()->route('aruskas.data');
     }
 }

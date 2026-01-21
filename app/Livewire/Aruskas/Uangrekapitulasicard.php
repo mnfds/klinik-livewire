@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Aruskas;
 
+use App\Models\Pendapatanlainnya;
 use App\Models\TransaksiKlinik;
 use App\Models\TransaksiApotik;
 use App\Models\Uangkeluar;
@@ -73,8 +74,17 @@ class Uangrekapitulasicard extends Component
             ->where('status','Disetujui')
             ->sum('jumlah_uang');
 
-        $this->totalMasuk = $totalMasukKlinik + $totalMasukApotik;
-        $this->totalKeluar = $totalKeluarKlinik + $totalKeluarApotik;
+        $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->whereIn('unit_usaha',['Sewa Multifunction', 'Coffeshop', 'Dll'])
+            ->whereIn('status',['lunas', 'belum lunas'])
+            ->sum('total_tagihan');
+        $totalKeluarLainnya = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
+            ->where('unit_usaha','Lainnya')
+            ->where('status','Disetujui')
+            ->sum('jumlah_uang');
+
+        $this->totalMasuk = $totalMasukKlinik + $totalMasukApotik + $totalMasukLainnya;
+        $this->totalKeluar = $totalKeluarKlinik + $totalKeluarApotik + $totalKeluarLainnya;
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
