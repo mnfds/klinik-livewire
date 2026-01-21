@@ -40,7 +40,7 @@
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
-                            @can('akses', 'Persediaan Bahan Baku Tambah')
+                            @can('akses', 'Pengajuan Izin Keluar Tambah')
                             <button onclick="document.getElementById('storeModalIzinKeluar').showModal()" class="btn btn-success w-full">
                                 <i class="fa-solid fa-plus"></i> Tambah
                             </button>
@@ -48,6 +48,7 @@
                         </div>
                     </div>
                     <div class="space-y-8">
+                        @can('akses', 'Pengajuan Izin Keluar')
                         {{-- IZIN ON PROCESS (STATUS === DISETUJUI) --}}
                         <div class="card bg-base-100 shadow">
                             <div class="card-body">
@@ -58,6 +59,8 @@
                                 <livewire:Izinkeluar.Izinkeluardisetujui-Table />
                             </div>
                         </div>
+                        @endcan
+                        @can('akses', 'Pengajuan Riwayat Izin Keluar')
                         {{-- IZIN SELESAI (STATUS === SELESAI) --}}
                         <div class="card bg-base-100 shadow">
                             <div class="card-body">
@@ -68,6 +71,7 @@
                                 <livewire:Izinkeluar.Izinkeluarselesai-Table />
                             </div>
                         </div>
+                        @endcan
                     </div>
                 </div>
             </div>

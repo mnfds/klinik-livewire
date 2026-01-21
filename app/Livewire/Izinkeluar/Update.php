@@ -53,7 +53,7 @@ class Update extends Component
             'jam_keluar'    => 'required',
             'keperluan'     => 'required',
         ]);
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit')) {
+        if (! Gate::allows('akses', 'Pengajuan Izin Keluar Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
@@ -87,7 +87,7 @@ class Update extends Component
             'jam_kembali'   => 'required',
             'keperluan'     => 'required',
         ]);
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit')) {
+        if (! Gate::allows('akses', 'Pengajuan Riwayat Izin Keluar Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

@@ -140,8 +140,22 @@ class AksesSeeder extends Seeder
 
                 'Pengajuan Pengeluaran Persetujuan',
             ],
-            // Pasien
+
+            // Izin Keluar
             14 => [
+                'Pengajuan Izin Keluar',
+                'Pengajuan Izin Keluar Tambah',
+                'Pengajuan Izin Keluar Hapus',
+                'Pengajuan Izin Keluar Edit',
+
+                'Pengajuan Riwayat Izin Keluar',
+                'Pengajuan Riwayat Izin Keluar Hapus',
+                'Pengajuan Riwayat Izin Keluar Edit',
+
+                'Pengajuan Izin Keluar Selesai',
+            ],
+            // Pasien
+            15 => [
                 'Pasien',
                 'Pasien Tambah',
                 'Pasien Detail',
@@ -150,51 +164,51 @@ class AksesSeeder extends Seeder
                 'Pasien Registrasi',
             ],
             // Antrian
-            15 => [
+            16 => [
                 'Kelola Antrian',
                 'Panggilan Suara',
                 'Hapus Nomor Antrian Masuk',
                 'Hapus Nomor Antrian Dipanggil',
                 'Ambil Nomor',
             ],
-            16 => [
+            17 => [
                 'Display Registrasi',
                 'Display Poliklinik',
                 'Display Apotek',
             ],
             // Rawat Jalan
-            17 => [
+            18 => [
                 'Pendaftaran',
                 'Pasien Terdaftar Data',
                 'Hapus Pasien Terdaftar',
                 'Pasien Diperiksa Data',
             ],
-            18 => [
+            19 => [
                 'Reservasi',
             ],
-            19 => [
+            20 => [
                 'Tindak Lanjut',
             ],
             // Kajian
-            20 => [
+            21 => [
                 'Kajian',
                 'Kajian Tambah',
             ],
             // Rekam Medis
-            21 => [
+            22 => [
                 'Rekam Medis',
                 'Rekam Medis Tambah',
                 'Riwayat Rekam Medis',
                 'Detail Rekam Medis',
             ],
             // Transaksi
-            22 => [
+            23 => [
                 'Transaksi Klinik',
                 'Transaksi Klinik Data',
                 'Transaksi Klinik Detail',
                 'Transaksi Klinik Selesai',
             ],
-            23 => [
+            24 => [
                 'Transaksi Apotik',
                 'Transaksi Apotik Data',
                 'Transaksi Apotik Tambah',
@@ -203,22 +217,22 @@ class AksesSeeder extends Seeder
                 'Transaksi Apotik Hapus',
             ],
             // Resep
-            24 => [
+            25 => [
                 'Resep Obat',
                 'Kalkulasi Obat',
                 'Tebus Obat',
             ],
             // Satu Sehat
-            25 => [
+            26 => [
                 'Praktisi Satu Sehat',
                 'Tambah Praktisi Satu Sehat',
                 'Hapus Praktisi Satu Sehat',
             ],
-            26 => [
+            27 => [
                 'Lokasi Satu Sehat',
                 'Tambah Lokasi Satu Sehat',
             ],
-            27 => [
+            28 => [
                 'Organisasi Satu Sehat',
                 'Tambah Organisasi Satu Sehat',
             ],

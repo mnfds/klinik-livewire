@@ -280,7 +280,7 @@
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
                         <li><x-side-link href="#" wire:navigate>Lembur</x-side-link></li>
-                        @can('akses', 'Pengajuan Pengeluaran')
+                        @can('akses', 'Pengajuan Izin Keluar')
                         <li>
                             <x-side-link href="{{ route('izinkeluar.data') }}" :active="request()->routeIs('izinkeluar.*')" wire:navigate>Izin keluar</x-side-link>
                         </li>

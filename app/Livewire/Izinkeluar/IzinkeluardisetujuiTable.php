@@ -88,7 +88,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
     {
         $izindisetujuitable = [];
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Persetujuan') && $izindisetujuitable[] =
+        Gate::allows('akses', 'Pengajuan Izin Keluar Selesai') && $izindisetujuitable[] =
         Button::add('selesai')  
             ->slot('<i class="fa-solid fa-circle-check"></i> Selesai')
             ->attributes([
@@ -96,7 +96,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
             ])
         ->dispatch('selesai', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Edit') && $izindisetujuitable[] =
+        Gate::allows('akses', 'Pengajuan Izin Keluar Edit') && $izindisetujuitable[] =
         Button::add('updateizindisetujui')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -105,7 +105,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
             ])
         ->dispatchTo('izinkeluar.update', 'getupdateizindisetujui', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus') && $izindisetujuitable[] =
+        Gate::allows('akses', 'Pengajuan Izin Keluar Hapus') && $izindisetujuitable[] =
         Button::add('deleteizindisetujui')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error btn-sm')
@@ -117,7 +117,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
     #[\Livewire\Attributes\On('selesai')]
     public function selesai($rowId)
     {
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Persetujuan')) {
+        if (! Gate::allows('akses', 'Pengajuan Izin Keluar Selesai')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
@@ -159,7 +159,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleteizindisetujui')]
     public function konfirmasideleteizindisetujui($rowId): void
     {
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus')) {
+        if (! Gate::allows('akses', 'Pengajuan Izin Keluar Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

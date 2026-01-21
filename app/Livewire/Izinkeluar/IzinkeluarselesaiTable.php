@@ -94,7 +94,7 @@ final class IzinkeluarselesaiTable extends PowerGridComponent
     {
         $izinselesaitable = [];
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Edit') && $izinselesaitable[] =
+        Gate::allows('akses', 'Pengajuan Riwayat Izin Keluar Edit') && $izinselesaitable[] =
         Button::add('updateizinselesai')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -103,7 +103,7 @@ final class IzinkeluarselesaiTable extends PowerGridComponent
             ])
         ->dispatchTo('izinkeluar.update', 'getupdateizinselesai', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus') && $izinselesaitable[] =
+        Gate::allows('akses', 'Pengajuan Riwayat Izin Keluar Hapus') && $izinselesaitable[] =
         Button::add('deleteizinselesai')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error btn-sm')
@@ -141,7 +141,7 @@ final class IzinkeluarselesaiTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleteizinselesai')]
     public function konfirmasideleteizinselesai($rowId): void
     {
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus')) {
+        if (! Gate::allows('akses', 'Pengajuan Riwayat Izin Keluar Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

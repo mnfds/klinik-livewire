@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('keterangan');
 
             $table->enum('unit_usaha',['Klinik', 'Apotik', 'Sewa Multifunction', 'Coffeshop', 'Dll']);
-            $table->enum('status', ['belum lunas','lunas', 'belum bayar', 'batal'])->default('belum_bayar');
+            $table->enum('status', ['belum lunas','lunas', 'belum bayar', 'batal'])->default('belum bayar');
             $table->timestamps();
         });
     }

@@ -32,7 +32,7 @@ class Store extends Component
             'status'        => 'required',
         ]);
         
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Tambah')) {
+        if (! Gate::allows('akses', 'Pengajuan Izin Keluar Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

@@ -37,7 +37,7 @@
                 </div>
     
                 <div class="modal-action justify-end pt-4">
-                    @can('akses', 'Pengajuan Pengeluaran Pending Edit')
+                    @can('akses', 'Pengajuan Izin Keluar Edit')
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     @endcan
                     <button type="button" class="btn btn-error" onclick="document.getElementById('modaleditizindisetujui').close()">Batal</button>
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="modal-action justify-end pt-4">
-                    @can('akses', 'Pengajuan Pengeluaran Disetujui Edit')
+                    @can('akses', 'Pengajuan Riwayat Izin Keluar Edit')
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     @endcan
                     <button type="button" class="btn btn-error" onclick="document.getElementById('modaleditizinselesai').close()">Batal</button>
