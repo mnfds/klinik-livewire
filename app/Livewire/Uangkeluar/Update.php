@@ -60,7 +60,9 @@ class Update extends Component
         $this->dispatch('closemodaleditpending');
         $this->reset();
 
-        return redirect()->route('uangkeluar.data'); // untuk PowerGrid refresh
+        // return redirect()->route('uangkeluar.data'); // untuk PowerGrid refresh
+        return redirect()->route('aruskas.data');
+    
     }
 
     #[\Livewire\Attributes\On('getupdatediterima')]
@@ -107,7 +109,9 @@ class Update extends Component
         $this->dispatch('closemodaleditditerima');
         $this->reset();
 
-        return redirect()->route('uangkeluar.data'); // untuk PowerGrid refresh
+        // return redirect()->route('uangkeluar.data'); // untuk PowerGrid refresh
+        return redirect()->route('aruskas.data');
+
     }
     
     #[\Livewire\Attributes\On('getupdateditolak')]
