@@ -22,7 +22,7 @@
             </div>
         </div>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4"> 
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4"> 
         <!-- BAR CHART -->
         <div class="card bg-base-100 shadow-md border border-success/50 lg:col-span-3">
             <div class="card-body">
@@ -34,14 +34,14 @@
             </div>
         </div>
 
-        <!-- PIE CHART -->
-        <div class="card bg-base-100 shadow-md border border-error/50">
+        <!-- RADAR CHART -->
+        <div class="card bg-base-100 shadow-md border border-error/50 lg:col-span-2">
             <div class="card-body flex flex-col items-center justify-center">
                 <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-error"></i>
                     Perbandingan Total Perbulan
                 </h3>
-                <canvas id="grafikRekapBulananRadar" class="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]"></canvas>
+                <canvas id="grafikRekapBulananRadar" class=""></canvas>
             </div>
         </div>
     </div>
