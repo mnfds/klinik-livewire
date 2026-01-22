@@ -2,6 +2,9 @@ import 'alpinejs';
 
 import './bootstrap';
 
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 // resources/js/app.js
 import './../../vendor/power-components/livewire-powergrid/dist/powergrid'
 import flatpickr from "flatpickr";
