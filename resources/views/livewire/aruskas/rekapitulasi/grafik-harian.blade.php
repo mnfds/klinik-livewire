@@ -20,7 +20,7 @@
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-calendar-days text-primary"></i>
                 <h2 class="text-sm font-semibold uppercase tracking-wide">
-                    Set Tanggal Grafik
+                    Set Tanggal Grafik Perhari
                 </h2>
             </div>
 
