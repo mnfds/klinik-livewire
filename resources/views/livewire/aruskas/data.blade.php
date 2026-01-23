@@ -42,14 +42,6 @@
                     <livewire:Aruskas.uangapotikcard />
                 </div>
 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked />
-                <div class="tab-content bg-base-200 p-1">
-                    <livewire:Aruskas.uangrekapitulasicard />
-                    <livewire:Aruskas.Rekapitulasi.GrafikHarian />
-                    <livewire:Aruskas.Rekapitulasi.GrafikBulanan />
-                    <livewire:Aruskas.Rekapitulasi.GrafikTahunan />
-                </div>
-
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Pendapatan Lainnya" style="background-image: none;"/>
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Pendapatanlainnya.data />
@@ -123,6 +115,14 @@
                     <livewire:Uangkeluar.Store />
                     <livewire:Uangkeluar.Storebykasir />
                     <livewire:Uangkeluar.Update />
+                </div>
+                
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked />
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Aruskas.uangrekapitulasicard />
+                    <livewire:Aruskas.Rekapitulasi.GrafikHarian />
+                    <livewire:Aruskas.Rekapitulasi.GrafikBulanan />
+                    <livewire:Aruskas.Rekapitulasi.GrafikTahunan />
                 </div>
 
             </div>

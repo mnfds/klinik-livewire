@@ -4,7 +4,7 @@
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-calendar-days text-primary"></i>
                 <h2 class="text-sm font-semibold uppercase tracking-wide">
-                    Set Tahun Grafik Perbulan
+                    Set Tahun Grafik Bulanan
                 </h2>
             </div>
             <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -22,29 +22,45 @@
             </div>
         </div>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4"> 
+
+    {{-----  CHART BULANAN BAR TANPA ADA RADAR  -----}}
+    <div class="grid grid-cols-1 gap-4">
+        <div class="card bg-base-100 shadow-md border border-info/50">
+            <div class="card-body">
+                <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-info"></i>
+                    Grafik Rekapitulasi Bulanan
+                </h3>
+                <div class="relative w-full h-[120px] sm:h-[160px]">
+                    <canvas wire:ignore class="w-full" id="grafikRekapBulananBar"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-----  CHART BULANAN BAR DAN RADAR  -----}}
+    {{-- <div class="grid grid-cols-1 lg:grid-cols-5 gap-4"> 
         <!-- BAR CHART -->
         <div class="card bg-base-100 shadow-md border border-success/50 lg:col-span-3">
             <div class="card-body">
                 <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-success"></i>
-                    Rekap Perbulan
+                    Grafik Rekapitulasi Bulanan
                 </h3>
                 <canvas id="grafikRekapBulananBar" class="w-full h-[260px] sm:h-[320px]"></canvas>
             </div>
         </div>
-
         <!-- RADAR CHART -->
         <div class="card bg-base-100 shadow-md border border-error/50 lg:col-span-2">
             <div class="card-body flex flex-col items-center justify-center">
                 <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-error"></i>
-                    Perbandingan Total Perbulan
+                    Diagram Perbandingan Bulanan
                 </h3>
                 <canvas id="grafikRekapBulananRadar" class=""></canvas>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -77,6 +93,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,

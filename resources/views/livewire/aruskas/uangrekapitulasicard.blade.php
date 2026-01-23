@@ -17,11 +17,11 @@
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-calendar-days text-primary"></i>
                 <h2 class="text-sm font-semibold uppercase tracking-wide">
-                    Set Tanggal Summary Card
+                    Set Tanggal Summary Card Rekapitulasi
                 </h2>
             </div>
             <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                <input x-ref="range" type="text" class="input input-bordered input-primary w-full sm:w-64" placeholder="Pilih rentang tanggal" readonly >
+                <input x-ref="range" type="text" class="input input-bordered input-primary w-full sm:w-40" placeholder="Pilih rentang tanggal" readonly >
                 <button type="button" class="btn btn-error btn-sm flex items-center gap-1" @click="picker.clear(); @this.set('startDate', null); @this.set('endDate', null); @this.call('resetData');">
                     <i class="fa-solid fa-trash-can"></i>
                     Clear
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {{-- CARD UANG MASUK --}}
         <div class="card bg-base-100 shadow-md border border-success/30">
             <div class="card-body space-y-1.5">
@@ -76,20 +76,20 @@
         </div>
     
         {{-- CARD UANG TERSISA --}}
-        <div class="card bg-base-100 shadow-md border border-primary/30">
+        <div class="card bg-base-100 shadow-md border border-info/50">
             <div class="card-body space-y-1.5">
                 <p class="text-xs md:text-sm text-base-content/70">
                     Total Uang Tersisa
                 </p>
                 <div class="flex items-center gap-3">
-                    <div class="btn btn-soft btn-primary btn-circle pointer-events-none">
+                    <div class="btn btn-soft btn-info btn-circle pointer-events-none">
                         <i class="fa-solid fa-money-bill-wave"></i>
                     </div>
                     <div class="leading-tight">
                         <p class="text-[11px] md:text-xs text-base-content/60">
                             Saldo Akhir
                         </p>
-                        <p class="text-base md:text-lg lg:text-2xl font-bold text-primary">
+                        <p class="text-base md:text-lg lg:text-2xl font-bold text-info">
                             Rp {{ number_format($totalBersih, 0, ',', '.') }}
                         </p>
                     </div>

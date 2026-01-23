@@ -20,12 +20,12 @@
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-calendar-days text-primary"></i>
                 <h2 class="text-sm font-semibold uppercase tracking-wide">
-                    Set Tanggal Grafik Perhari
+                    Set Tanggal Grafik Harian
                 </h2>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                <input x-ref="range" type="text" class="input input-bordered input-primary w-full sm:w-64" placeholder="Pilih rentang tanggal" readonly >
+                <input x-ref="range" type="text" class="input input-bordered input-primary w-full sm:w-40" placeholder="Pilih rentang tanggal" readonly >
                 <button type="button" class="btn btn-error btn-sm flex items-center gap-1" @click="picker.clear(); @this.set('startDate', null); @this.set('endDate', null); @this.call('resetData');">
                     <i class="fa-solid fa-trash-can"></i>
                     Clear
@@ -39,7 +39,7 @@
             <div class="card-body">
                 <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-success"></i>
-                    Rekap Harian
+                    Grafik Rekapitulasi Harian
                 </h3>
                 <canvas id="grafikRekapHarianBar" class="w-full h-[260px] sm:h-[320px]"></canvas>
             </div>
@@ -50,7 +50,7 @@
             <div class="card-body flex flex-col items-center justify-center">
                 <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-error"></i>
-                    Perbandingan Total Harian
+                    Diagram Perbandingan Harian
                 </h3>
                 <canvas id="grafikRekapHarianPie" class="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]"></canvas>
             </div>

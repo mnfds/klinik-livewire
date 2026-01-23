@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Aruskas;
 
+use App\Models\Pendapatanlainnya;
 use App\Models\TransaksiKlinik;
 use App\Models\Uangkeluar;
 use Livewire\Component;
@@ -26,12 +27,17 @@ class Uangklinikcard extends Component
         $start = Carbon::parse($this->startDate)->startOfDay();
         $end   = Carbon::parse($this->endDate)->endOfDay();
 
-        $this->totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
+        $totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
             ->sum('total_tagihan_bersih');
+        $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->where('unit_usaha','Klinik')
+            ->whereIn('status',['lunas', 'belum lunas'])
+            ->sum('total_tagihan');
         $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
             ->where('unit_usaha','Klinik')
             ->where('status','Disetujui')
             ->sum('jumlah_uang');
+        $this->totalMasuk = $totalMasuk + $totalMasukLainnya;
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
@@ -48,12 +54,19 @@ class Uangklinikcard extends Component
         $start = Carbon::parse($this->startDate)->startOfDay();
         $end   = Carbon::parse($this->endDate)->endOfDay();
 
-        $this->totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi',[$start, $end])
+        $totalMasuk = TransaksiKlinik::whereBetween('tanggal_transaksi',[$start, $end])
             ->sum('total_tagihan_bersih');
+        $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->where('unit_usaha','Klinik')
+            ->whereIn('status',['lunas', 'belum lunas'])
+            ->sum('total_tagihan');
         $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
             ->where('unit_usaha','Klinik')
             ->where('status','Disetujui')
             ->sum('jumlah_uang');
+
+        $this->totalMasuk = $totalMasuk + $totalMasukLainnya;
+
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 

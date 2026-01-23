@@ -1,16 +1,14 @@
 <div class="mt-4">
     <div class="grid grid-cols-1 gap-4">
-        <div class="card bg-base-100 shadow-md border border-success/50">
+        <div class="card bg-base-100 shadow-md border border-warning/50">
             <div class="card-body">
                 <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-column text-success"></i>
-                    Rekap Pertahun
+                    <i class="fa-solid fa-chart-column text-warning"></i>
+                    Grafik Rekapitulasi Tahunan
                 </h3>
-
                 <div class="relative w-full h-[120px] sm:h-[160px]">
                     <canvas class="w-full" id="grafikRekapTahunanBar"></canvas>
                 </div>
-
             </div>
         </div>
     </div>

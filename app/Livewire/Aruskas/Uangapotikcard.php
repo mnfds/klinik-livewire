@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Aruskas;
 
+use App\Models\Pendapatanlainnya;
 use App\Models\TransaksiApotik;
 use App\Models\Uangkeluar;
 use Livewire\Component;
@@ -26,12 +27,17 @@ class Uangapotikcard extends Component
         $start = Carbon::parse($this->startDate)->startOfDay();
         $end   = Carbon::parse($this->endDate)->endOfDay();
 
-        $this->totalMasuk = TransaksiApotik::whereBetween('tanggal', [$start, $end])
+        $totalMasuk = TransaksiApotik::whereBetween('tanggal', [$start, $end])
             ->sum('total_harga');
+        $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->where('unit_usaha','Apotik')
+            ->whereIn('status',['lunas', 'belum lunas'])
+            ->sum('total_tagihan');
         $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
             ->where('unit_usaha','Apotik')
             ->where('status','Disetujui')
             ->sum('jumlah_uang');
+        $this->totalMasuk = $totalMasuk + $totalMasukLainnya;
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
@@ -48,12 +54,19 @@ class Uangapotikcard extends Component
         $start = Carbon::parse($this->startDate)->startOfDay();
         $end   = Carbon::parse($this->endDate)->endOfDay();
 
-        $this->totalMasuk = TransaksiApotik::whereBetween('tanggal',[$start, $end])
+        $totalMasuk = TransaksiApotik::whereBetween('tanggal',[$start, $end])
             ->sum('total_harga');
+        $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->where('unit_usaha','Apotik')
+            ->whereIn('status',['lunas', 'belum lunas'])
+            ->sum('total_tagihan');
         $this->totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
             ->where('unit_usaha','Apotik')
             ->where('status','Disetujui')
             ->sum('jumlah_uang');
+            
+        $this->totalMasuk = $totalMasuk + $totalMasukLainnya;
+
         $this->totalBersih = $this->totalMasuk - $this->totalKeluar;
     }
 
