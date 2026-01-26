@@ -29,11 +29,23 @@
 
         <!-- Main Content -->
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
-                
-                <div class="p-6 text-base-content space-y-4">
-                    KUNJUNGAN PASIEN
+            <!-- TABS -->
+            <div class="tabs tabs-border">
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Wanita" style="background-image: none;" checked/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Kunjungan.Card.Wanita />
                 </div>
+                
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Laki-Laki" style="background-image: none;"/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Kunjungan.Card.Lakilaki />
+                </div>
+
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;"/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Kunjungan.Card.Rekapitulasi />
+                </div>
+
             </div>
         </div>
     </div>
