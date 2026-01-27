@@ -34,6 +34,9 @@
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Wanita" style="background-image: none;" checked/>
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Kunjungan.Card.Wanita />
+                    <livewire:Kunjungan.Wanita.GrafikHarian />
+                    <livewire:Kunjungan.Wanita.GrafikBulanan />
+                    <livewire:Kunjungan.Wanita.GrafikTahunan />
                 </div>
                 
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Laki-Laki" style="background-image: none;"/>
