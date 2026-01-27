@@ -75,7 +75,6 @@
             }
         });
         Livewire.on('update-kunjungan-laki-harian-bar', (data) => {
-            console.log('DATA POLI KUNJUNGAN LAKI BAR:', data);
             const payload = data[0];
             dataKunjunganLakiHarianBar.data.labels = payload.labelstanggal;
             dataKunjunganLakiHarianBar.data.datasets = payload.datasets;
@@ -114,9 +113,7 @@
         });
 
         Livewire.on('update-kunjungan-laki-harian-pie', payload => {
-            const data = payload[0]; // 🔥 INI KUNCINYA
-
-            console.log('DATA POLI KUNJUNGAN LAKI PIE:', data);
+            const data = payload[0];
             chartKunjunganLakiPie.data.labels = data.labels;
             chartKunjunganLakiPie.data.datasets[0].data =
                 data.datasets[0].data;

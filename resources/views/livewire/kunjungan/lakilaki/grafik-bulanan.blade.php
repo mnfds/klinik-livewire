@@ -70,10 +70,7 @@
             }
         });
         Livewire.on('update-kunjungan-laki-bulanan-bar', data => {
-            console.log('DATA BAR BULANAN:', data);
-
             const payload = data[0];
-
             dataKunjunganLakiBulananBar.data.labels = payload.labelsBulan;
             dataKunjunganLakiBulananBar.data.datasets.length = 0;
             payload.datasets.forEach(ds => {

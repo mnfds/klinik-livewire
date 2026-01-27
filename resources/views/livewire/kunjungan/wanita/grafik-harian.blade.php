@@ -75,7 +75,6 @@
             }
         });
         Livewire.on('update-kunjungan-wanita-harian-bar', (data) => {
-            console.log('DATA POLI KUNJUNGAN WANITA BAR:', data);
             const payload = data[0];
             dataKunjunganWanitaHarianBar.data.labels = payload.labelstanggal;
             dataKunjunganWanitaHarianBar.data.datasets = payload.datasets;
@@ -116,7 +115,6 @@
         Livewire.on('update-kunjungan-wanita-harian-pie', payload => {
             const data = payload[0]; // 🔥 INI KUNCINYA
 
-            console.log('DATA POLI KUNJUNGAN WANITA PIE:', data);
             chartKunjunganWanitaPie.data.labels = data.labels;
             chartKunjunganWanitaPie.data.datasets[0].data =
                 data.datasets[0].data;

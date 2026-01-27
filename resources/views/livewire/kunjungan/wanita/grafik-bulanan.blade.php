@@ -70,8 +70,6 @@
             }
         });
         Livewire.on('update-kunjungan-wanita-bulanan-bar', data => {
-            console.log('DATA BAR BULANAN:', data);
-
             const payload = data[0];
 
             dataKunjunganWanitaBulananBar.data.labels = payload.labelsBulan;

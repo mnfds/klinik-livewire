@@ -39,7 +39,7 @@
                     <livewire:Kunjungan.Wanita.GrafikTahunan />
                 </div>
                 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Laki-Laki" style="background-image: none;" checked/>
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Laki-Laki" style="background-image: none;" />
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Kunjungan.Card.Lakilaki />
                     <livewire:Kunjungan.Lakilaki.GrafikHarian />
@@ -47,9 +47,12 @@
                     <livewire:Kunjungan.Lakilaki.GrafikTahunan />
                 </div>
 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;"/>
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked/>
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Kunjungan.Card.Rekapitulasi />
+                    <livewire:Kunjungan.Rekapitulasi.GrafikHarian />
+                    <livewire:Kunjungan.Rekapitulasi.GrafikBulanan />
+                    <livewire:Kunjungan.Rekapitulasi.GrafikTahunan />
                 </div>
 
             </div>
