@@ -4,7 +4,7 @@
             <div class="card-body">
                 <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-warning"></i>
-                    Grafik Kunjungan Pasien Laki-Laki Tahunan
+                    Grafik Kunjungan Pasien Pria Tahunan
                 </h3>
                 <div class="relative w-full h-[120px] sm:h-[160px]">
                     <canvas class="w-full" id="grafikKunjunganLakiTahunanBar"></canvas>

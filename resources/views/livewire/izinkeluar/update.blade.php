@@ -6,16 +6,16 @@
         })
         ">
         <div class="modal-box w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Edit Izin Keluar</h3>
+            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Keluar</h3>
     
             <form wire:submit.prevent="updateDisetujui" class="space-y-4">
                 <div>
-                    <label class="label font-medium">Staff Yang Izin Keluar</label>
+                    <label class="label font-medium">Karyawan</label>
                     @php
                         $users = \App\Models\User::with(['biodata', 'role'])->get();
                     @endphp
                     <select class="select select-bordered w-full" wire:model.defer="user_id">
-                        <option value="">Pilih Staff</option>
+                        <option value="">Pilih Karyawan</option>
                         @foreach ($users as $u)
                             <option value="{{ $u->id }}">
                                 {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter }}
@@ -54,16 +54,16 @@
         })
         ">
         <div class="modal-box w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Edit Riwayat Izin Keluar</h3>
+            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Keluar</h3>
     
             <form wire:submit.prevent="updateSelesai" class="space-y-4">
                 <div>
-                    <label class="label font-medium">Staff Yang Izin Keluar</label>
+                    <label class="label font-medium">Karyawan</label>
                     @php
                         $users = \App\Models\User::with(['biodata', 'role'])->get();
                     @endphp
                     <select class="select select-bordered w-full" wire:model.defer="user_id">
-                        <option value="">Pilih Staff</option>
+                        <option value="">Pilih karyawan</option>
                         @foreach ($users as $u)
                             <option value="{{ $u->id }}">
                                 {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter }}

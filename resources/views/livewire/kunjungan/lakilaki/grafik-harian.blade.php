@@ -39,7 +39,7 @@
             <div class="card-body">
                 <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-column text-success"></i>
-                    Grafik Kunjungan Pasien Laki-Laki Harian
+                    Grafik Kunjungan Pasien Pria Harian
                 </h3>
                 <canvas id="grafikKunjunganLakiHarianBar" class="w-full h-[260px] sm:h-[320px]"></canvas>
             </div>

@@ -53,7 +53,7 @@
                         <div class="card bg-base-100 shadow">
                             <div class="card-body">
                                 <h2 class="text-lg font-semibold text-primary flex items-center gap-2">
-                                    <i class="fa-solid fa-circle-check"></i> Staff Sedang Izin Keluar
+                                    <i class="fa-solid fa-circle-check"></i> Karyawan Sedang  Diluar Lokasi
                                 </h2>
                                 <div class="divider my-2"></div>
                                 <livewire:Izinkeluar.Izinkeluardisetujui-Table />
@@ -65,7 +65,7 @@
                         <div class="card bg-base-100 shadow">
                             <div class="card-body">
                                 <h2 class="text-lg font-semibold text-success flex items-center gap-2">
-                                    <i class="fa-solid fa-circle-check"></i> Riwayat Staff Izin Keluar
+                                    <i class="fa-solid fa-circle-check"></i> Riwayat Karyawan Izin Keluar Lokasi
                                 </h2>
                                 <div class="divider my-2"></div>
                                 <livewire:Izinkeluar.Izinkeluarselesai-Table />

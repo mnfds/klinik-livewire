@@ -13,7 +13,6 @@ use App\Livewire\Users\DataUsers;
 use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\JamKerja\DataJamKerja;
 use App\Livewire\Bahan\Riwayat as BahanRiwayat;
 use App\Livewire\Barang\Riwayat as BarangRiwayat;
 
