@@ -51,9 +51,22 @@
                             <button class="btn btn-warning">Warning</button>
                             <button class="btn btn-error">Error</button>
                         </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="btn btn-neutral" onclick="playNotif()">Klik Untuk Bunyi Bell</button>
+                            <audio id="notifAudio" src="{{ asset('assets/music/bell.mp3') }}"></audio>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+<script>
+    function playNotif() {
+        const audio = document.getElementById('notifAudio');
+        audio.currentTime = 0; // reset biar bisa dipencet berkali-kali
+        audio.play();
+    }
+</script>
+
 </x-app-layout>

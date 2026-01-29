@@ -130,6 +130,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
         ]);
         $this->dispatch('pg:eventRefresh');
         $this->dispatch('izinkeluar-selesai');
+        $this->dispatch('play-notif');
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Izin Keluar Telah Selesai',
