@@ -24,6 +24,7 @@ class Store extends Component
     {
         return $this->allAkses
             ? $this->allAkses->groupBy('nomor_group_akses')
+            ->sortKeys()
             : collect();
     }
     

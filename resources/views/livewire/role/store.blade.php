@@ -3,7 +3,7 @@
         document.getElementById('storeModalRole')?.close()
     })
 ">
-    <div class="modal-box max-w-4xl w-full">
+    <div class="modal-box max-w-6xl w-full">
         <h3 class="text-lg font-bold">Tambah Role</h3>
         <form wire:submit.prevent="store">
             {{-- Nama Role --}}
@@ -18,7 +18,7 @@
                     <span class="label-text font-semibold">Daftar Akses</span>
                 </label>
 
-                <div class="space-y-4 max-h-60 overflow-y-auto border p-2 rounded-box">
+                <div class="space-y-4 max-h-90 overflow-y-auto border p-2 rounded-box">
                     @foreach ($this->groupedAkses as $group => $aksesGroup)
                         <div>
                             <h3 class="font-bold text-sm text-gray-700 mb-1">

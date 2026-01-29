@@ -44,6 +44,7 @@ class Updateakses extends Component
         // Cegah error jika $allAkses belum diisi
         return $this->allAkses
             ? $this->allAkses->groupBy('nomor_group_akses')
+            ->sortKeys()
             : collect();
     }
 
