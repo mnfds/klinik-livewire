@@ -54,18 +54,6 @@
 
                     $now = Carbon::today();
 
-                    $produkAdaReminder = ProdukDanObat::query()
-                        ->whereNotNull('expired_at')
-                        ->whereNotNull('reminder')
-                        ->get()
-                        ->contains(function ($row) use ($now) {
-                            $expired      = Carbon::parse($row->expired_at)->startOfMonth();
-                            $reminderDate = Carbon::parse($row->expired_at)
-                                ->subMonths($row->reminder)
-                                ->startOfMonth();
-
-                            return $now->greaterThanOrEqualTo($reminderDate);
-                        });
                     $isSuperAdmin = auth()->user()->role()->where('id', 1)->exists();
 
                     $masterLinks = [
@@ -98,13 +86,6 @@
                             'icon' => 'fa-solid fa-house-chimney-medical',
                             'url'  => 'poliklinik.data',
                             'hak_akses' => 'Poliklinik Data',
-                        ],
-                        [
-                            'name' => 'Produk & Obat',
-                            'icon' => 'fa-solid fa-pills',
-                            'url'  => 'produk-obat.data',
-                            'warning' => $produkAdaReminder,
-                            'hak_akses' => 'Produk & Obat Data',
                         ],
                         [
                             'name' => 'Pelayanan',
@@ -211,8 +192,21 @@
                             $reminderDate = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
                             return $today->greaterThanOrEqualTo($reminderDate);
                         });
-
                     $jumlahReminder = $bahanHampirExpired->count();
+                    
+                    $produkHampirExpired = ProdukDanObat::query()
+                        ->whereNotNull('expired_at')
+                        ->whereNotNull('reminder')
+                        ->get()
+                        ->contains(function ($row) use ($today) {
+                            $expired      = Carbon::parse($row->expired_at)->startOfMonth();
+                            $reminderDate = Carbon::parse($row->expired_at)
+                                ->subMonths($row->reminder)
+                                ->startOfMonth();
+
+                            return $today->greaterThanOrEqualTo($reminderDate);
+                        });
+                    // dd($produkHampirExpired);
                 @endphp
 
                 @if (
@@ -220,12 +214,12 @@
                         Gate::allows('akses','Persediaan Bahan Baku')
                     )
                     <li 
-                        x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
+                        x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('produk-obat.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
                         >
                         <x-side-link 
                             @click.prevent="open = !open" 
                             class="cursor-pointer" 
-                            :active="request()->routeIs('barang.*', 'bahanbaku.*')"
+                            :active="request()->routeIs('barang.*', 'bahanbaku.*', 'produk-obat.*')"
                             >
                             <i class="fa-solid fa-boxes-stacked"></i>
                             <span class="flex-1 ml-3 text-left">Persediaan</span>
@@ -259,6 +253,22 @@
                                     Bahan Baku
 
                                     @if($jumlahReminder > 0)
+                                        <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                            <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                        </span>
+                                    @endif
+
+                                </x-side-link>
+                            </li>
+                            @endcan
+                            @can('akses', 'Persediaan Bahan Baku')
+                            <li>
+                                <x-side-link href="{{ route('produk-obat.data') }}" 
+                                    :active="request()->routeIs('produk-obat.*')"  
+                                    wire:navigate>
+                                    Produk & Obat
+
+                                    @if($produkHampirExpired === true)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
                                         </span>
@@ -567,7 +577,6 @@
                     </x-side-link>
                 </li>
 
-                <!-- Repeat dropdowns for Persediaan, Antrian, Rawat Jalan, Transaksi etc... -->
             </ul>
         </div>
     </div>

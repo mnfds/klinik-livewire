@@ -15,6 +15,8 @@ use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Bahan\Riwayat as BahanRiwayat;
 use App\Livewire\Barang\Riwayat as BarangRiwayat;
+use App\Livewire\Produkdanobat\Mutasi\Riwayat;
+use App\Models\MutasiProdukDanObat;
 
 // Route::view('/', 'welcome');
 
@@ -66,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== PRODUK & OBAT ====== //
     Route::view('/produk-obat', 'produkdanobat.data')->name('produk-obat.data');
+    Route::get('/produk-obat/riwayat', Riwayat::class)->name('produk-obat.riwayat');
     // ====== PRODUK & OBAT ====== //
 
     // ====== PELAYANAN ====== //

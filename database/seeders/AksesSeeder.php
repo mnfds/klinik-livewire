@@ -62,6 +62,11 @@ class AksesSeeder extends Seeder
                 'Produk & Obat Tambah',
                 'Produk & Obat Hapus',
                 'Produk & Obat Edit',
+                'Produk & Obat Keluar',
+                'Produk & Obat Masuk',
+                'Riwayat Produk & Obat',
+                'Riwayat Produk & Obat Edit',
+                'Riwayat Produk & Obat Hapus',
             ],
 
             // Pelayanan Medis
