@@ -136,6 +136,7 @@
                     Gate::allows('akses', 'Jadwal') ||
                     Gate::allows('akses', 'Laporan') ||
                     Gate::allows('akses', 'Persediaan') ||
+                    Gate::allows('akses', 'Produk & Obat Data') ||
                     Gate::allows('akses', 'Pengajuan')
                 )
                 <li class="pt-2">
@@ -289,6 +290,7 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        <li><x-side-link href="#" wire:navigate>Cuti</x-side-link></li>
                         <li><x-side-link href="#" wire:navigate>Lembur</x-side-link></li>
                         @can('akses', 'Pengajuan Izin Keluar')
                         <li>
@@ -303,6 +305,15 @@
                     </ul>
                 </li>
                 @endif
+                
+                {{-- @can('akses', 'Inventaris') --}}
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-warehouse"></i>
+                        <span class="ml-3">Inventaris</span>
+                    </x-side-link>
+                </li>
+                {{-- @endcan --}}
 
                 <!-- Pelayanan Klinik Section -->
                 @if (
