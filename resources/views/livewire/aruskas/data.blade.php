@@ -40,7 +40,7 @@
                     <livewire:Aruskas.Klinik.GrafikTahunan />
                 </div>
                 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Apotik" style="background-image: none;" checked/>
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Apotik" style="background-image: none;"/>
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Aruskas.uangapotikcard />
                     <livewire:Aruskas.Apotik.GrafikHarian />
@@ -123,7 +123,7 @@
                     <livewire:Uangkeluar.Update />
                 </div>
 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" />
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked />
                 <div class="tab-content bg-base-200 p-1">
                     <livewire:Aruskas.uangrekapitulasicard />
                     <livewire:Aruskas.Rekapitulasi.GrafikHarian />

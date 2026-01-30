@@ -25,8 +25,8 @@ class Store extends Component
 
         $this->validate([
             'user_id'       => 'required',
-            'tanggal_izin'  => 'required',
-            'jam_keluar'    => 'required',
+            // 'tanggal_izin'  => 'required',
+            // 'jam_keluar'    => 'required',
             'keperluan'     => 'required',
             'disetujui_oleh'=> 'required',
             'status'        => 'required',
@@ -43,7 +43,7 @@ class Store extends Component
         $data = Izinkeluar::create([
             'user_id'       => $this->user_id,
             'tanggal_izin'  => Carbon::now(),
-            'jam_keluar'    => $this->jam_keluar,
+            'jam_keluar'    => now()->format('H:i:s'),
             'jam_kembali'   => null,
             'keperluan'     => $this->keperluan,
             'status'        => $this->status,

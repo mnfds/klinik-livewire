@@ -25,10 +25,18 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="label font-medium">Tanggal Dan Waktu Lembur</label>
-                    <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required>
+                <div class="space-y-2">
+                    <label class="label font-medium"><span class="label-text">Tanggal & Waktu Keluar</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required >
+                            <span class="text-xs text-gray-500 ml-1">Tanggal keluar</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required >
+                            <span class="text-xs text-gray-500 ml-1">Jam keluar</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -73,10 +81,18 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="label font-medium">Tanggal Dan Waktu Lembur</label>
-                    <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required>
+                <div class="space-y-2">
+                    <label class="label font-medium"><span class="label-text">Tanggal & Waktu Keluar</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required >
+                            <span class="text-xs text-gray-500 ml-1">Tanggal keluar</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required >
+                            <span class="text-xs text-gray-500 ml-1">Jam keluar</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -121,11 +137,22 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="label font-medium">Tanggal Dan Waktu Lembur</label>
-                    <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_selesai" required>
+                <div class="space-y-2">
+                    <label class="label font-medium"><span class="label-text">Tanggal & Waktu Lembur</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_lembur" required>
+                            <span class="text-xs text-gray-500 ml-1">Tanggal</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_mulai" required>
+                            <span class="text-xs text-gray-500 ml-1">Jam Mulai</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_selesai" required>
+                            <span class="text-xs text-gray-500 ml-1">Jam Selesai</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>

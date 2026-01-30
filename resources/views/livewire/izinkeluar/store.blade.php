@@ -23,11 +23,11 @@
                 </select>
             </div>
 
-            <div>
+            {{-- <div>
                 <label class="label font-medium">Tanggal Dan Waktu Keluar</label>
                 <input type="date" class="input input-bordered w-full" wire:model.lazy="tanggal_izin" required>
                 <input type="time" class="input input-bordered w-full" wire:model.lazy="jam_keluar" required>
-            </div>
+            </div> --}}
 
             <div>
                 <label class="label font-medium">Keperluan</label>

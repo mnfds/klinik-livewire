@@ -25,10 +25,18 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="label font-medium">Tanggal Dan Waktu Keluar</label>
-                    <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_izin" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_keluar" required>
+                <div class="space-y-2">
+                    <label class="label font-medium"><span class="label-text">Tanggal & Waktu Keluar</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_izin" required >
+                            <span class="text-xs text-gray-500 ml-1">Tanggal keluar</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_keluar" required >
+                            <span class="text-xs text-gray-500 ml-1">Jam keluar</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -73,11 +81,25 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="label font-medium">Tanggal Dan Waktu</label>
-                    <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_izin" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_keluar" required>
-                    <input type="time" class="input input-bordered w-full" wire:model.defer="jam_kembali" required>
+                <div class="space-y-2">
+                    <label class="label font-medium">
+                        <span class="label-text">Tanggal & Waktu</span>
+                    </label>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <input type="date" class="input input-bordered w-full" wire:model.defer="tanggal_izin" required>
+                            <span class="text-xs text-gray-500 ml-1">Tanggal</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_keluar" required>
+                            <span class="text-xs text-gray-500 ml-1">Jam keluar</span>
+                        </div>
+                        <div>
+                            <input type="time" class="input input-bordered w-full" wire:model.defer="jam_kembali" required>
+                            <span class="text-xs text-gray-500 ml-1">Jam kembali</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>

@@ -33,7 +33,8 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Izinkeluar::with(['user','user.biodata'])
-            ->where('status', 'disetujui');
+            ->where('status', 'disetujui')
+            ->latest();
     }
 
     public function relationSearch(): array
@@ -126,7 +127,7 @@ final class IzinkeluardisetujuiTable extends PowerGridComponent
         }
         Izinkeluar::where('id', $rowId)->update([
             'status' => 'selesai',
-            'jam_kembali' => now()->format('H:i'),
+            'jam_kembali' => now()->format('H:i:s'),
         ]);
         $this->dispatch('pg:eventRefresh');
         $this->dispatch('izinkeluar-selesai');

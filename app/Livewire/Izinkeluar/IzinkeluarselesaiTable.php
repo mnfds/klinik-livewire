@@ -33,7 +33,8 @@ final class IzinkeluarselesaiTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Izinkeluar::with(['user','user.biodata'])
-            ->where('status', 'selesai');
+            ->where('status', 'selesai')
+            ->latest();
     }
 
     public function relationSearch(): array
