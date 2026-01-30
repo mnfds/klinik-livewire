@@ -52,35 +52,46 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {{-- Username --}}
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Username</span></label>
-                                <input wire:model.defer="name" id="name" name="name" type="text"required autofocus placeholder="username" class="input input-bordered w-full" />
-                                <x-input-error :messages="$errors->get('name')" class="text-error text-sm mt-1" />
+                                <label class="label"><span class="label-text">Username<span class="text-error">*</span></label>
+                                <input wire:model.defer="name" id="name" name="name" type="text" autofocus placeholder="username" class="input input-bordered w-full @error('name') input-error @enderror" />
+                                @error('name')
+                                    <span class="text-error text-sm mt-1">
+                                        Mohon Isi Username Dengan Benar
+                                    </span>
+                                @enderror
                             </div>
 
                             {{-- Email --}}
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Email</span></label>
-                                <input wire:model.defer="email" type="email" class="input input-bordered w-full" />
-                                <x-input-error :messages="$errors->get('email')" class="text-error text-sm mt-1" />
+                                <label class="label"><span class="label-text">Email<span class="text-error">*</span></span></label>
+                                <input wire:model.defer="email" type="email" class="input input-bordered w-full @error('email') input-error @enderror" />
+                                @error('email')
+                                    <span class="text-error text-sm mt-1">
+                                        Mohon Isi Email Dengan Benar
+                                    </span>
+                                @enderror
                             </div>
 
                             {{-- Password Baru --}}
                             <div class="form-control">
                                 <label class="label"><span class="label-text">Password Baru</span></label>
                                 <input wire:model.defer="password" type="password" class="input input-bordered w-full" placeholder="Kosongkan jika tidak ingin mengubah" />
-                                <x-input-error :messages="$errors->get('password')" class="text-error text-sm mt-1" />
                             </div>
 
                             {{-- Role --}}
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Role</span></label>
-                                <select wire:model.defer="role_id" class="select select-bordered w-full">
+                                <label class="label"><span class="label-text">Role<span class="text-error">*</span></span></label>
+                                <select wire:model.defer="role_id" class="select select-bordered w-full @error('role_id') input-error @enderror">
                                     <option value="">Pilih Role</option>
                                     @foreach ($roles as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <x-input-error :messages="$errors->get('role_id')" class="text-error text-sm mt-1" />
+                                @error('role_id')
+                                    <span class="text-error text-sm mt-1">
+                                        Mohon Pilih Role Akses Yang Akan Diberikan
+                                    </span>
+                                @enderror
                             </div>
                         </div>
 
@@ -89,8 +100,13 @@
                             {{-- Nama Lengkap --}}
                             <div class="form-control">
                                 <label for="nama_lengkap" class="label"><span class="label-text">Nama Lengkap</span></label>
-                                <input wire:model="nama_lengkap" type="text" id="nama_lengkap" name="nama_lengkap" class="input input-bordered w-full" />
-                                <x-input-error :messages="$errors->get('nama_lengkap')" class="text-error text-sm mt-1" />
+                                <input wire:model="nama_lengkap" type="text" id="nama_lengkap" name="nama_lengkap"
+                                    class="input input-bordered w-full @error('nama_lengkap') input-error @enderror" />
+                                @error('nama_lengkap')
+                                    <span class="text-error text-sm mt-1">
+                                        Mohon Mengisi Nama Lengkap
+                                    </span>
+                                @enderror
                             </div>
 
                             {{-- NIK --}}
@@ -123,13 +139,17 @@
 
                             {{-- Jenis Kelamin --}}
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Jenis Kelamin</span></label>
-                                <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full">
+                                <label class="label"><span class="label-text">Jenis Kelamin<span class="text-error">*</span></span></label>
+                                <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full @error('jenis_kelamin') input-error @enderror">
                                     <option value="">Pilih Jenis Kelamin</option>
                                     <option value="L">Laki-laki</option>
                                     <option value="P">Perempuan</option>
                                 </select>
-                                <x-input-error :messages="$errors->get('jenis_kelamin')" class="text-error text-sm mt-1" />
+                                @error('jenis_kelamin')
+                                    <span class="text-error text-sm mt-1">
+                                        Mohon Memilih Jenis Kelamin
+                                    </span>
+                                @enderror
                             </div>
 
                             {{-- Tempat Lahir --}}

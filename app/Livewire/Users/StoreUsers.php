@@ -56,7 +56,7 @@ class StoreUsers extends Component
             'name'           => ['required', 'string', 'max:255', 'unique:users'],
             'email'          => ['required', 'email', 'unique:users'],
             'password'       => ['required', 'min:6'],
-            'role_id'        => ['nullable'],
+            'role_id'        => ['required'],
 
             'nama_lengkap'   => ['required', 'string', 'max:255'],
             'nik'            => ['nullable', 'string'],
@@ -65,7 +65,7 @@ class StoreUsers extends Component
             'alamat'         => ['nullable', 'string'],
             'tempat_lahir'   => ['nullable', 'string'],
             'tanggal_lahir'  => ['nullable', 'date'],
-            'jenis_kelamin'  => ['nullable', Rule::in(['L', 'P'])],
+            'jenis_kelamin'  => ['required', Rule::in(['L', 'P'])],
             'mulai_bekerja'  => ['nullable', 'date'],
 
             'foto_wajah'     => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
