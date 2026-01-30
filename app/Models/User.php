@@ -54,6 +54,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Izinkeluar::class, 'disetujui_oleh');
     }
 
+    public function lembur()
+    {
+        // USER ATAU STAFF YANG SEDANG KELUAR
+        return $this->hasMany(lembur::class, 'user_id');
+    }
+
+    public function lemburDisetujui()
+    {
+        // USER ATAU STAFF YANG MENYETUJUI IZIN UNTUK KELUAR
+        return $this->hasMany(Lembur::class, 'disetujui_oleh');
+    }
+
     //helper untuk akses role
     public function hasAkses(string $namaAkses): bool
     {

@@ -282,38 +282,37 @@
                     </li>
                 @endif
                  
-                @if (Gate::allows('akses','Pengajuan Pengeluaran') || Gate::allows('akses','Pengajuan Pengeluaran') || Gate::allows('akses','Pengajuan Pengeluaran'))   
-                <li x-data="{ open: {{ request()->routeIs('izinkeluar.*') || request()->routeIs('izinkeluar.*') || request()->routeIs('izinkeluar.*') ? 'true' : 'false' }} }">
-                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('pengajuan.*') || request()->routeIs('uangkeluar.*')">
+                @if (Gate::allows('akses','Pengajuan Izin Keluar') || Gate::allows('akses','Pengajuan Cuti') || Gate::allows('akses','Pengajuan Lembur'))   
+                <li x-data="{ open: {{ request()->routeIs('izinkeluar.*') || request()->routeIs('lembur.*') || request()->routeIs('izinkeluar.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('izinkeluar.*') || request()->routeIs('lembur.*') || request()->routeIs('cuti.*')">
                         <i class="fa-solid fa-folder-open"></i>
                         <span class="flex-1 ml-3 text-left">Pengajuan</span>
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        <li><x-side-link href="#" wire:navigate>Cuti</x-side-link></li>
-                        <li><x-side-link href="#" wire:navigate>Lembur</x-side-link></li>
                         @can('akses', 'Pengajuan Izin Keluar')
                         <li>
                             <x-side-link href="{{ route('izinkeluar.data') }}" :active="request()->routeIs('izinkeluar.*')" wire:navigate>Izin keluar</x-side-link>
                         </li>
                         @endcan
-                        {{-- @can('akses', 'Pengajuan Pengeluaran')
+                        @can('akses', 'Pengajuan Lembur')
                         <li>
-                            <x-side-link href="{{ route('uangkeluar.data') }}" :active="request()->routeIs('uangkeluar.*')" wire:navigate>Pengeluaran</x-side-link>
+                            <x-side-link href="{{ route('lembur.data') }}" :active="request()->routeIs('lembur.*')" wire:navigate>Lembur</x-side-link>
                         </li>
-                        @endcan --}}
+                        @endcan
+                        <li><x-side-link href="#" wire:navigate>Cuti</x-side-link></li>
                     </ul>
                 </li>
                 @endif
                 
-                {{-- @can('akses', 'Inventaris') --}}
+                @can('akses', 'Inventaris')
                 <li>
                     <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
                         <i class="fa-solid fa-warehouse"></i>
                         <span class="ml-3">Inventaris</span>
                     </x-side-link>
                 </li>
-                {{-- @endcan --}}
+                @endcan
 
                 <!-- Pelayanan Klinik Section -->
                 @if (

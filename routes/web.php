@@ -361,6 +361,10 @@ Route::middleware(['auth'])->group(function () {
     // ====== PENGAJUAN IZIN KELUAR ====== //
     Route::view('/izinkeluar', 'izinkeluar.data')->name('izinkeluar.data');    
     // ====== PENGAJUAN IZIN KELUAR ====== //
+
+    // ====== PENGAJUAN LEMBUR ====== //
+    Route::view('/lembur', 'lembur.data')->name('lembur.data');    
+    // ====== PENGAJUAN LEMBUR ====== //
 });
 
 
