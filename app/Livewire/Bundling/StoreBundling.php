@@ -79,10 +79,10 @@ class StoreBundling extends Component
         $this->validate([
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
-            'harga' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:1.',
             'potongan' => 'nullable|numeric|min:0',
             'diskon' => 'nullable|numeric|min:0|max:100',
-            'harga_bersih' => 'required|numeric|min:0',
+            'harga_bersih' => 'required|numeric|min:1',
 
             'treatmentInputs.*.treatments_id' => 'nullable|exists:treatments,id',
             'treatmentInputs.*.jumlah' => 'nullable|numeric|min:1',

@@ -11,7 +11,7 @@
             {{-- Nama Pelayanan --}}
             <div class="form-control">
                 <label class="label font-semibold">Nama Pelayanan <span class="text-error">*</span></label>
-                <input type="text" class="input input-bordered w-full @error('nama_treatment') @enderror" wire:model="nama_treatment">
+                <input type="text" class="input input-bordered w-full @error('nama_treatment') input-error @enderror" wire:model="nama_treatment">
                 @error('nama_treatment')
                     <span class="text-error text-sm mt-1">
                         Mohon Mengisi Nama Treatment

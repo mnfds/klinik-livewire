@@ -14,8 +14,13 @@
 
             {{-- Nama --}}
             <div class="form-control">
-                <label class="label font-semibold">Nama Bundling</label>
-                <input type="text" class="input input-bordered w-full" wire:model.defer="nama" required>
+                <label class="label font-semibold">Nama Bundling <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama') input-error @enderror" wire:model.defer="nama">
+                @error('nama')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Bundling
+                    </span>
+                @enderror
             </div>
 
             {{-- Deskripsi --}}
@@ -26,9 +31,14 @@
 
             {{-- Harga --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga</label>
-                <input type="text" id="display_harga_bundling" class="input input-bordered input-rupiah w-full" wire:model.defer="harga_show" placeholder="Rp 0">
+                <label class="label font-semibold">Harga <span class="text-error">*</span></label>
+                <input type="text" id="display_harga_bundling" class="input input-bordered input-rupiah w-full @error('harga') input-error @enderror" wire:model.defer="harga_show" placeholder="Rp 0">
                 <input type="hidden" wire:model.defer="harga" class="input-rupiah-hidden">
+                @error('harga')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Bundling
+                    </span>
+                @enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -48,9 +58,14 @@
 
             {{-- Harga Bersih --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Bersih (Setelah Diskon)</label>
-                <input type="text" id="display_harga_bersih_bundling" class="input input-bordered input-rupiah bg-base-200 w-full" wire:model.defer="harga_bersih_show" readonly placeholder="Otomatis terhitung">
+                <label class="label font-semibold">Harga Bersih (Setelah Diskon) <span class="text-error">*</span></label>
+                <input type="text" id="display_harga_bersih_bundling" class="input input-bordered input-rupiah bg-base-200 w-full @error('harga_bersih') input-error @enderror" wire:model.defer="harga_bersih_show" readonly placeholder="Otomatis terhitung">
                 <input type="hidden" wire:model.defer="harga_bersih" class="input-rupiah-hidden">
+                @error('harga_bersih')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Bundling
+                    </span>
+                @enderror
             </div>
 
             {{-- Pelayanan Medis --}}

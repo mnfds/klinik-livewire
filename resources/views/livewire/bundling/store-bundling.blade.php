@@ -10,8 +10,13 @@
 
             {{-- Nama Bundling --}}
             <div class="form-control">
-                <label class="label font-semibold">Nama Bundling</label>
-                <input type="text" class="input input-bordered w-full" placeholder="Masukkan nama bundling" wire:model.defer="nama" required>
+                <label class="label font-semibold">Nama Bundling <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama') input-error @enderror" placeholder="Masukkan nama bundling" wire:model.defer="nama">
+                @error('nama')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Bundling
+                    </span>
+                @enderror
             </div>
 
             {{-- Deskripsi --}}
@@ -22,9 +27,14 @@
 
             {{-- Harga --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga</label>
-                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <label class="label font-semibold">Harga <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered input-rupiah w-full @error('harga') input-error @enderror" placeholder="Rp 0">
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga">
+                @error('harga')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Bundling
+                    </span>
+                @enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -39,15 +49,20 @@
                 {{-- Diskon --}}
                 <div class="form-control">
                     <label class="label font-semibold">Diskon (%)</label>
-                    <input type="number" class="input input-bordered w-full" placeholder="0-100" min="0" max="100" wire:model.defer="diskon" required>
+                    <input type="number" class="input input-bordered w-full" placeholder="0-100" min="0" max="100" wire:model.defer="diskon">
                 </div>
             </div>
 
             {{-- Harga Bersih --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Bersih</label>
-                <input type="text" class="input input-bordered input-rupiah bg-base-200 w-full" placeholder="Otomatis terhitung" readonly>
+                <label class="label font-semibold">Harga Bersih <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered input-rupiah bg-base-200 w-full @error('harga_bersih') input-error @enderror" placeholder="Otomatis terhitung" readonly>
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_bersih">
+                @error('harga_bersih')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Bundling
+                    </span>
+                @enderror
             </div>
 
             {{-- Pelayanan Dinamis --}}

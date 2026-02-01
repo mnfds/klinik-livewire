@@ -37,9 +37,9 @@ class UpdateUsers extends Component
         $this->telepon = $biodata->telepon ?? '';
         $this->alamat = $biodata->alamat ?? '';
         $this->tempat_lahir = $biodata->tempat_lahir ?? '';
-        $this->tanggal_lahir = $biodata->tanggal_lahir ?? '';
+        $this->tanggal_lahir = $biodata->tanggal_lahir ?? null;
         $this->jenis_kelamin = $biodata->jenis_kelamin ?? '';
-        $this->mulai_bekerja = $biodata->mulai_bekerja ?? '';
+        $this->mulai_bekerja = $biodata->mulai_bekerja ?? null;
         $this->foto_wajah_preview = $biodata->foto_wajah ?? null;
 
         $this->roles = \App\Models\Role::orderBy('nama_role')->pluck('nama_role', 'id')->toArray();
