@@ -8,13 +8,23 @@
 
         <form wire:submit.prevent="update" class="space-y-4">
             <div>
-                <label class="label font-medium">Nama Poli</label>
-                <input type="text" class="input input-bordered w-full" wire:model="nama_poli">
+                <label class="label font-medium">Nama Poli <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_poli') input-error @enderror" wire:model="nama_poli">
+                @error('nama_poli')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Poliklinik
+                    </span>
+                @enderror
             </div>
 
             <div>
-                <label class="label font-medium">Kode Poli</label>
-                <input type="text" class="input input-bordered w-full" wire:model="kode">
+                <label class="label font-medium">Kode Poli <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('kode') input-error @enderror" wire:model="kode">
+                @error('kode')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Kode Poliklinik
+                    </span>
+                @enderror
             </div>
 
             <div class="modal-action justify-end pt-4">

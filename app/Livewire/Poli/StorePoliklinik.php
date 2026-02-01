@@ -20,7 +20,7 @@ class StorePoliklinik extends Component
     {
         $this->validate([
             'nama_poli'   => 'required|string',
-            'kode'   => 'nullable',
+            'kode'   => 'required',
         ]);
         if (! Gate::allows('akses', 'Poliklinik Tambah')) {
             $this->dispatch('toast', [

@@ -8,8 +8,13 @@
         <form wire:submit.prevent="store">
             {{-- Nama Role --}}
             <div class="form-control mb-2">
-                <label class="label">Nama Role</label>
-                <input type="text" class="input input-bordered" wire:model.lazy="nama_role" required>
+                <label class="label">Nama Role <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_role') input-error @enderror" wire:model.lazy="nama_role">
+                    @error('nama_role')
+                        <span class="text-error text-sm mt-1">
+                            Mohon Mengisi Nama Role
+                        </span>
+                    @enderror
             </div>
 
             {{-- Daftar Akses --}}

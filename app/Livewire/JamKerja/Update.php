@@ -35,10 +35,10 @@ class Update extends Component
     public function update()
     {
         $this->validate([
-            'nama_shift'   => 'nullable|string',
+            'nama_shift'   => 'required|string',
             'tipe_shift'   => 'nullable|in:full,pagi,siang,malam,libur,mp',
-            'jam_mulai'    => 'nullable|string',
-            'jam_selesai'  => 'nullable|string',
+            'jam_mulai'    => 'required|string',
+            'jam_selesai'  => 'required|string',
             'lewat_hari'   => 'boolean',
         ]);
         

@@ -9,8 +9,13 @@
         <form wire:submit.prevent="store" class="space-y-4">
 
             <div>
-                <label class="label font-medium">Nama Shift</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_shift">
+                <label class="label font-medium">Nama Shift <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_shift') input-error @enderror" wire:model.lazy="nama_shift">
+                @error('nama_shift')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Shift
+                    </span>
+                @enderror
             </div>
 
             <div>
@@ -28,12 +33,22 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="label font-medium">Jam Mulai</label>
-                    <input type="time" class="input input-bordered w-full" wire:model.lazy="jam_mulai">
+                    <label class="label font-medium">Jam Mulai <span class="text-error">*</span></label>
+                    <input type="time" class="input input-bordered w-full @error('jam_mulai') input-error @enderror" wire:model.lazy="jam_mulai">
+                    @error('jam_mulai')
+                        <span class="text-error text-sm mt-1">
+                            Mohon Mengisi Jam Mulai
+                        </span>
+                    @enderror
                 </div>
                 <div>
-                    <label class="label font-medium">Jam Selesai</label>
-                    <input type="time" class="input input-bordered w-full" wire:model.lazy="jam_selesai">
+                    <label class="label font-medium">Jam Selesai <span class="text-error">*</span></label>
+                    <input type="time" class="input input-bordered w-full @error('jam_selesai') input-error @enderror" wire:model.lazy="jam_selesai">
+                    @error('jam_selesai')
+                        <span class="text-error text-sm mt-1">
+                            Mohon Mengisi Jam Selesai
+                        </span>
+                    @enderror
                 </div>
             </div>
 
