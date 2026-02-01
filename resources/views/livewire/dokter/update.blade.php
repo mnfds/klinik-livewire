@@ -40,23 +40,31 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {{-- Poli --}}
                         <div class="form-control">
-                            <label class="label"><span class="label-text">Poli</span></label>
-                            <select wire:model.defer="poli_id" class="select select-bordered w-full">
+                            <label class="label"><span class="label-text">Poli <span class="text-error">*</span></span></label>
+                            <select wire:model.defer="poli_id" class="select select-bordered w-full @error('poli_id') input-error @enderror">
                                 <option value="">Pilih Poli</option>
                                 @foreach ($poli as $item)
                                     <option value="{{ $item->id }}">{{ $item->nama_poli }}</option>
                                 @endforeach
                             </select>
-                            <x-input-error :messages="$errors->get('poli_id')" class="text-error text-sm mt-1" />
+                            @error('poli_id')
+                                <span class="text-error text-sm mt-1">
+                                    Mohon Memilih Poliklinik
+                                </span>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {{-- Nama Lengkap --}}
                         <div class="form-control">
-                            <label class="label"><span class="label-text">Nama Lengkap</span></label>
-                            <input wire:model.defer="nama_dokter" type="text" class="input input-bordered w-full" />
-                            <x-input-error :messages="$errors->get('nama_dokter')" class="text-error text-sm mt-1" />
+                            <label class="label"><span class="label-text">Nama Lengkap <span class="text-error">*</span></span></label>
+                            <input wire:model.defer="nama_dokter" type="text" class="input input-bordered w-full @error('nama_dokter') input-error @enderror" />
+                            @error('nama_dokter')
+                                <span class="text-error text-sm mt-1">
+                                    Mohon Mengisi Nama Lengkap
+                                </span>
+                            @enderror
                         </div>
 
                         {{-- NIK --}}
@@ -82,13 +90,17 @@
 
                         {{-- Jenis Kelamin --}}
                         <div class="form-control">
-                            <label class="label"><span class="label-text">Jenis Kelamin</span></label>
-                            <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full">
+                            <label class="label"><span class="label-text">Jenis Kelamin <span class="text-error">*</span></span></label>
+                            <select wire:model.defer="jenis_kelamin" class="select select-bordered w-full @error('jenis_kelamin') input-error @enderror">
                                 <option value="">Pilih Jenis Kelamin</option>
                                 <option value="L">Laki-laki</option>
                                 <option value="P">Perempuan</option>
                             </select>
-                            <x-input-error :messages="$errors->get('jenis_kelamin')" class="text-error text-sm mt-1" />
+                            @error('jenis_kelamin')
+                                <span class="text-error text-sm mt-1">
+                                    Mohon Memilih Jenis Kelamin
+                                </span>
+                            @enderror
                         </div>
 
                         {{-- Telepon --}}

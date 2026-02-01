@@ -63,7 +63,7 @@ class Update extends Component
 
             'tingkat_pendidikan' => 'nullable|string',
             'institusi' => 'nullable|string',
-            'tahun_kelulusan' => 'nullable|date',
+            'tahun_kelulusan' => 'nullable',
 
             'ihs' => 'nullable|string',
             'no_str' => 'nullable|string',

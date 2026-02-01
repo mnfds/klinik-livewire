@@ -65,6 +65,7 @@ class Create extends Component
             'alamat_dokter' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',
+            'id_poli' => 'required',
 
             'tingkat_pendidikan' => 'nullable',
             'institusi' => 'nullable',
