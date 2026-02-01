@@ -10,15 +10,25 @@
 
             {{-- Nama Pelayanan --}}
             <div class="form-control">
-                <label class="label font-semibold">Nama Pelayanan</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="nama_treatment">
+                <label class="label font-semibold">Nama Pelayanan <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_treatment') input-error @enderror" wire:model.lazy="nama_treatment">
+                @error('nama_treatment')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Treatment
+                    </span>
+                @enderror
             </div>
 
             {{-- Harga --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Dasar</label>
-                <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
+                <label class="label font-semibold">Harga Dasar <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered input-rupiah w-full @error('harga_treatment') input-error @enderror" placeholder="Rp 0">
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_treatment">
+                @error('harga_treatment')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Treatment
+                    </span>
+                @enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

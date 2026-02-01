@@ -10,15 +10,25 @@
 
             {{-- Nama Pelayanan --}}
             <div class="form-control">
-                <label class="label font-semibold">Nama Pelayanan</label>
-                <input type="text" class="input input-bordered w-full" wire:model="nama_treatment">
+                <label class="label font-semibold">Nama Pelayanan <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_treatment') @enderror" wire:model="nama_treatment">
+                @error('nama_treatment')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Treatment
+                    </span>
+                @enderror
             </div>
 
             {{-- Harga Pelayanan --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Pelayanan</label>
-                <input type="text" id="display_harga_treatment" class="input input-bordered input-rupiah w-full" wire:model.defer="harga_treatment_show" placeholder="Rp 0">
+                <label class="label font-semibold">Harga Pelayanan <span class="text-error">*</span></label>
+                <input type="text" id="display_harga_treatment" class="input input-bordered input-rupiah w-full @error('harga_treatment') input-error @enderror" wire:model.defer="harga_treatment_show" placeholder="Rp 0">
                 <input type="hidden" wire:model.defer="harga_treatment" class="input-rupiah-hidden">
+                @error('harga_treatment')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Treatment
+                    </span>
+                @enderror
             </div>
 
             {{-- Potongan --}}

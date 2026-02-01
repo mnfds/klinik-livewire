@@ -9,15 +9,25 @@
         <form wire:submit.prevent="update" class="space-y-4">
             {{-- Nama Pelayanan --}}
             <div class="form-control">
-                <label class="label font-semibold">Nama Pelayanan</label>
-                <input type="text" class="input input-bordered w-full" wire:model="nama_pelayanan">
+                <label class="label font-semibold">Nama Pelayanan <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_pelayanan') input-error @enderror" wire:model="nama_pelayanan">
+                @error('nama_pelayanan')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Nama Layanan Medis
+                    </span>
+                @enderror
             </div>
 
             {{-- Harga Pelayanan --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Pelayanan</label>
-                <input type="text" id="display_harga_pelayanan" class="input input-bordered input-rupiah w-full" wire:model.defer="harga_pelayanan_show" placeholder="Rp 0">
+                <label class="label font-semibold">Harga Pelayanan <span class="text-error">*</span></label>
+                <input type="text" id="display_harga_pelayanan" class="input input-bordered input-rupiah w-full @error('harga_pelayanan') input-error @enderror" wire:model.defer="harga_pelayanan_show" placeholder="Rp 0">
                 <input type="hidden" wire:model.defer="harga_pelayanan" class="input-rupiah-hidden">
+                @error('harga_pelayanan')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Harga Layanan Medis
+                    </span>
+                @enderror
             </div>
 
             {{-- Potongan --}}
