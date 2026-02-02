@@ -5,6 +5,9 @@ namespace App\Livewire\Dokter;
 use App\Models\Dokter;
 use Livewire\Component;
 use App\Models\PoliKlinik;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Password;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -138,6 +141,46 @@ class Update extends Component
             'message' => 'Data Dokter berhasil diperbarui.',
         ]);
         return redirect()->route('dokter.data'); // ganti sesuai route-mu
+    }
+
+    public function kirimUlangVerifikasi()
+    {
+        $user = \App\Models\Dokter::find($this->dokterId)?->user;
+        // dd($user);
+        if (! Gate::allows('akses', 'Verifikasi Email')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            event(new Registered($user)); // kirim ulang email verifikasi
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Email verifikasi dikirim ulang.']);
+        } else {
+            $this->dispatch('toast', ['type' => 'info', 'message' => 'Email sudah terverifikasi.']);
+        }
+    }
+
+    public function kirimResetPassword()
+    {
+        $user = \App\Models\Dokter::find($this->dokterId)?->user;
+        // dd($user);
+        if (! Gate::allows('akses', 'Reset Password')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
+        if ($user) {
+            Password::sendResetLink(['email' => $user->email]);
+            $this->dispatch('toast', ['type' => 'success', 'message' => 'Link reset password dikirim.']);
+        } else {
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'User tidak ditemukan.']);
+        }
     }
 
     public function render()

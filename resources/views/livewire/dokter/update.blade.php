@@ -35,7 +35,19 @@
 
         <!-- Main Content -->
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            <div class="bg-base-100 shadow rounded-box">
+            <div class="bg-base-100 shadow rounded-box p-6">
+                <div class="flex gap-4 mt-6">
+                    @can('akses', 'Verifikasi Email')
+                    <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info">
+                        Verifikasi Email
+                    </button>
+                    @endcan
+                    @can('akses', 'Reset Password')
+                    <button type="button" wire:click="kirimResetPassword" class="btn btn-warning">
+                        Kirim Reset Password
+                    </button>
+                    @endcan
+                </div>
                 <form wire:submit.prevent="update" class="p-6 space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {{-- Poli --}}

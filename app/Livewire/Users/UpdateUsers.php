@@ -123,7 +123,7 @@ class UpdateUsers extends Component
     public function kirimUlangVerifikasi()
     {
         $user = User::find($this->user->id ?? null); // pastikan user ada
-        
+        dd($user);
         if (! Gate::allows('akses', 'Verifikasi Email')) {
             $this->dispatch('toast', [
                 'type' => 'error',

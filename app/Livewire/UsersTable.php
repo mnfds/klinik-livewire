@@ -37,7 +37,8 @@ final class UsersTable extends PowerGridComponent
     public function datasource(): \Illuminate\Database\Eloquent\Builder
     {
         // return DB::table('users');
-        return \App\Models\User::with(['biodata','role']);
+        return \App\Models\User::with(['biodata','role'])
+            ->where('role_id', '!=', 2);
     }
 
     public function relationSearch(): array
