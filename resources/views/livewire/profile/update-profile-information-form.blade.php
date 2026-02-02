@@ -115,23 +115,33 @@ new class extends Component
         <!-- Username -->
         <div class="form-control">
             <label for="name" class="label">
-                <span class="label-text">{{ __('Username') }}</span>
+                <span class="label-text">{{ __('Username') }} <span class="text-error">*</span></span>
             </label>
             <input wire:model="name" id="name" name="name" type="text"
-                   required autofocus autocomplete="name"
-                   class="input input-bordered w-full" />
-            <x-input-error :messages="$errors->get('name')" class="mt-1 text-error text-sm" />
+                    autofocus autocomplete="name"
+                    class="input input-bordered w-full @error('name') input-error @enderror" />
+            @error('name')
+            <span class="mt-1 text-error text-sm">
+                Mohon mengisi Username
+            </span>   
+            @enderror
+            {{-- <x-input-error :messages="$errors->get('name')" class="mt-1 text-error text-sm" /> --}}
         </div>
 
         <!-- Email -->
         <div class="form-control">
             <label for="email" class="label">
-                <span class="label-text">{{ __('Email') }}</span>
+                <span class="label-text">{{ __('Email') }} <span class="text-error">*</span></span>
             </label>
             <input wire:model="email" id="email" name="email" type="email"
-                   required autocomplete="username"
-                   class="input input-bordered w-full" />
-            <x-input-error :messages="$errors->get('email')" class="mt-1 text-error text-sm" />
+                    autocomplete="username"
+                    class="input input-bordered w-full @error('email') input-error @enderror" />
+                @error('email')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Email Dengan Benar
+                    </span>
+                @enderror
+            {{-- <x-input-error :messages="$errors->get('email')" class="mt-1 text-error text-sm" /> --}}
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                 <div class="mt-2 text-sm">

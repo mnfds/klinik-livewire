@@ -12,10 +12,15 @@
         <!-- Nama Lengkap -->
         <div class="form-control">
             <label for="nama_lengkap" class="label">
-                <span class="label-text">{{ __('Nama Lengkap') }}</span>
+                <span class="label-text">{{ __('Nama Lengkap') }} <span class="text-error">*</span></span>
             </label>
-            <input wire:model.defer="nama_lengkap" id="nama_lengkap" type="text" class="input input-bordered w-full" />
-            <x-input-error :messages="$errors->get('nama_lengkap')" class="mt-1 text-error text-sm" />
+            <input wire:model.defer="nama_lengkap" id="nama_lengkap" type="text" class="input input-bordered w-full @error('nama_lengkap') input-error @enderror" />
+            @error('nama_lengkap')
+                <span class="text-error text-sm mt-1">
+                    Mohon Mengisi Nama Lengkap Anda Dengan Benar
+                </span>
+            @enderror
+            {{-- <x-input-error :messages="$errors->get('nama_lengkap')" class="mt-1 text-error text-sm" /> --}}
         </div>
 
         <!-- Alamat -->
@@ -48,14 +53,19 @@
         <!-- Jenis Kelamin -->
         <div class="form-control">
             <label for="jenis_kelamin" class="label">
-                <span class="label-text">{{ __('Jenis Kelamin') }}</span>
+                <span class="label-text">{{ __('Jenis Kelamin') }} <span class="text-error">*</span></span>
             </label>
-            <select wire:model.defer="jenis_kelamin" id="jenis_kelamin" class="select select-bordered w-full">
+            <select wire:model.defer="jenis_kelamin" id="jenis_kelamin" class="select select-bordered w-full @error('jenis_kelamin') input-error @enderror">
                 <option value="">{{ __('Pilih Jenis Kelamin') }}</option>
                 <option value="L">{{ __('Laki-laki') }}</option>
                 <option value="P">{{ __('Perempuan') }}</option>
             </select>
-            <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-1 text-error text-sm" />
+            @error('jenis_kelamin')
+                <span>
+                    Mohon Memilih Jenis Kelamin Anda Dengan Benar
+                </span>   
+            @enderror
+            {{-- <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-1 text-error text-sm" /> --}}
         </div>
 
         <!-- Telepon -->

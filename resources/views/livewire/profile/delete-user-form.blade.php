@@ -54,11 +54,16 @@ new class extends Component
             <form wire:submit.prevent="deleteUser" class="space-y-4">
                 <div class="form-control">
                     <label class="label" for="password">
-                        <span class="label-text">{{ __('Password') }}</span>
+                        <span class="label-text">{{ __('Password') }} <span class="text-error">*</span></span>
                     </label>
                     <input wire:model.defer="password" id="password" type="password"
-                           class="input input-bordered w-full" placeholder="********" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-1 text-error text-sm" />
+                           class="input input-bordered w-full @error('password') input-error @enderror" placeholder="********" />
+                        @error('password')
+                            <span class="text-error text-sm mt-1">
+                                Mohon Mengisi Password Dengan Benar, Apa Anda Yakin Ingin Menghapus Akun Anda ?
+                            </span>
+                        @enderror
+                    {{-- <x-input-error :messages="$errors->get('password')" class="mt-1 text-error text-sm" /> --}}
                 </div>
 
                 <div class="modal-action">

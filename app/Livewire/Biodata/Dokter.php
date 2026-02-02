@@ -47,7 +47,7 @@ class Dokter extends Component
     {
         $this->validate([
             'nama_dokter' => 'required|string|max:255',
-            'nik' => 'required|numeric',
+            'nik' => 'nullable|string|max:255',
             'alamat_dokter' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',

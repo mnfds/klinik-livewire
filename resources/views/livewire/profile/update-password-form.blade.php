@@ -51,22 +51,32 @@ new class extends Component
     <form wire:submit="updatePassword" class="space-y-5">
         <div class="form-control">
             <label class="label" for="update_password_current_password">
-                <span class="label-text">{{ __('Password Lama') }}</span>
+                <span class="label-text">{{ __('Password Lama') }} <span class="text-error">*</span></span>
             </label>
             <input wire:model="current_password" id="update_password_current_password" name="current_password"
                    type="password" autocomplete="current-password"
-                   class="input input-bordered w-full" />
-            <x-input-error :messages="$errors->get('current_password')" class="mt-1 text-error text-sm" />
+                   class="input input-bordered w-full @error('current_password') input-error @enderror" />
+                @error('current_password')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Password Lama Anda
+                    </span>
+                @enderror
+            {{-- <x-input-error :messages="$errors->get('current_password')" class="mt-1 text-error text-sm" /> --}}
         </div>
 
         <div class="form-control">
             <label class="label" for="update_password_password">
-                <span class="label-text">{{ __('Password Baru') }}</span>
+                <span class="label-text">{{ __('Password Baru') }} <span class="text-error text-sm mt-1">*</span></span>
             </label>
             <input wire:model="password" id="update_password_password" name="password"
                    type="password" autocomplete="new-password"
-                   class="input input-bordered w-full" />
-            <x-input-error :messages="$errors->get('password')" class="mt-1 text-error text-sm" />
+                   class="input input-bordered w-full @error('password') input-error @enderror" />
+                @error('password')
+                    <span class="text-error text-sm mt-1">
+                        Mohon Mengisi Password Baru Anda
+                    </span>
+                @enderror
+            {{-- <x-input-error :messages="$errors->get('password')" class="mt-1 text-error text-sm" /> --}}
         </div>
 
         <div class="form-control">
