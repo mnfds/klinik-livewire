@@ -14,6 +14,7 @@ use App\Livewire\Users\StoreUsers;
 use App\Livewire\Users\UpdateUsers;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Bahan\Riwayat as BahanRiwayat;
+use App\Livewire\Bahanbakubesar\Mutasi;
 use App\Livewire\Barang\Riwayat as BarangRiwayat;
 use App\Livewire\Produkdanobat\Mutasi\Riwayat;
 use App\Models\MutasiProdukDanObat;
@@ -85,6 +86,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::view('/peyimpanan-bahan-baku', 'bahanbaku.data')->name('bahanbaku.data');
     Route::get('/penyimpanan-bahan-baku/riwayat', BahanRiwayat::class)->name('bahanbaku.riwayat');
+
+    Route::view('/peyimpanan-bahan-baku-besar', 'bahanbakubesar.data')->name('bahanbakubesar.data');
+    Route::get('/penyimpanan-bahan-baku-besar/mutasi', Mutasi::class)->name('bahanbakubesar.mutasi');
     // ====== INVENTORY BARANG ====== //
 
     // ====== ANTRIAN PASIEN ====== //

@@ -215,12 +215,12 @@
                         Gate::allows('akses','Persediaan Bahan Baku')
                     )
                     <li 
-                        x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('produk-obat.*') || request()->routeIs('bahanbaku.*') ? 'true' : 'false' }} }"
+                        x-data="{ open: {{ request()->routeIs('barang.*') || request()->routeIs('produk-obat.*') || request()->routeIs('bahanbaku.*') || request()->routeIs('bahanbakubesar.*') ? 'true' : 'false' }} }"
                         >
                         <x-side-link 
                             @click.prevent="open = !open" 
                             class="cursor-pointer" 
-                            :active="request()->routeIs('barang.*', 'bahanbaku.*', 'produk-obat.*')"
+                            :active="request()->routeIs('barang.*', 'bahanbaku.*',  'bahanbakubesar.*', 'produk-obat.*')"
                             >
                             <i class="fa-solid fa-boxes-stacked"></i>
                             <span class="flex-1 ml-3 text-left">Persediaan</span>
@@ -242,24 +242,59 @@
                                 <x-side-link href="{{ route('barang.data') }}" 
                                     :active="request()->routeIs('barang.*')"  
                                     wire:navigate>
+                                    <span class="opacity-[0]">....</span>
                                     Barang
                                 </x-side-link>
                             </li>
                             @endcan
                             @can('akses', 'Persediaan Bahan Baku')
-                            <li>
-                                <x-side-link href="{{ route('bahanbaku.data') }}" 
-                                    :active="request()->routeIs('bahanbaku.*')"  
-                                    wire:navigate>
-                                    Bahan Baku
+                            <li x-data="{
+                                    openBahanBaku: {{ request()->routeIs('bahanbaku.*','bahanbakubesar.*') ? 'true' : 'false' }}
+                                }">
+                                {{-- Parent: Bahan Baku --}}
+                                <x-side-link
+                                    @click.prevent="openBahanBaku = !openBahanBaku"
+                                    class="cursor-pointer"
+                                    :active="request()->routeIs('bahanbaku.*','bahanbakubesar.*')"
+                                    >
+                                    <span class="flex-1 ml-3 text-left">Bahan Baku</span>
 
-                                    @if($jumlahReminder > 0)
-                                        <span class="ml-auto rounded-full text-warning bg-accent-content">
-                                            <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                    {{-- Badge reminder hanya muncul saat tertutup --}}
+                                    <template x-if="!openBahanBaku && {{ $jumlahReminder }} > 0">
+                                        <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
+                                            <i class="fa-solid fa-bell"></i>
                                         </span>
-                                    @endif
+                                    </template>
 
+                                    <i class="fa-solid fa-chevron-right transition-transform duration-200"
+                                    :class="openBahanBaku ? 'rotate-90' : ''"></i>
                                 </x-side-link>
+
+                                {{-- Submenu --}}
+                                <ul x-show="openBahanBaku" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+
+                                    {{-- Bahan Baku Kecil --}}
+                                    <li>
+                                        <x-side-link href="{{ route('bahanbaku.data') }}"
+                                            :active="request()->routeIs('bahanbaku.*')" wire:navigate>
+                                            Stok Kecil
+                                            @if($jumlahReminder > 0)
+                                                <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                                    <i class="fa-solid fa-bell p-1"></i>
+                                                </span>
+                                            @endif
+                                        </x-side-link>
+                                    </li>
+
+                                    {{-- Bahan Baku Besar --}}
+                                    <li>
+                                        <x-side-link href="{{ route('bahanbakubesar.data') }}"
+                                            :active="request()->routeIs('bahanbakubesar.*')" wire:navigate>
+                                            Stok Besar
+                                        </x-side-link>
+                                    </li>
+
+                                </ul>
                             </li>
                             @endcan
                             @can('akses', 'Persediaan Bahan Baku')
@@ -267,8 +302,8 @@
                                 <x-side-link href="{{ route('produk-obat.data') }}" 
                                     :active="request()->routeIs('produk-obat.*')"  
                                     wire:navigate>
+                                    <span class="opacity-[0]">....</span>
                                     Produk & Obat
-
                                     @if($produkHampirExpired === true)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
