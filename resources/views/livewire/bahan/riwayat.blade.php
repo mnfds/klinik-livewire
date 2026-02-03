@@ -11,15 +11,21 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('bahanbaku.data') }}" class="inline-flex items-center gap-1">
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder"></i>
                             Persediaan Bahan Baku
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('bahanbaku.data') }}" class="inline-flex items-center gap-1">
+                            <i class="fa-regular fa-folder"></i>
+                            Bahan Baku Keicl
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('bahanbaku.riwayat') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Riwayat Persediaan Bahan Baku
+                            Riwayat Stok Bahan Baku Kecil
                         </a>
                     </li>
                 </ul>

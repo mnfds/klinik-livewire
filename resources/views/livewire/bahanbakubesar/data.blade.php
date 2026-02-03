@@ -17,9 +17,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('bahanbakubesar.mutasi') }}" class="inline-flex items-center gap-1">
+                        <a href="{{ route('bahanbakubesar.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Riwayat
+                            Bahan Baku Besar
                         </a>
                     </li>
                 </ul>

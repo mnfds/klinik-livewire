@@ -181,10 +181,11 @@
 
                 @php
                     use App\Models\BahanBaku;
+                    use App\Models\BahanBakuBesar;
 
                     $today = Carbon::today();
 
-                    // Cek bahan baku yang sudah masuk periode reminder
+                    // Cek bahan baku kecil yang sudah masuk periode reminder
                     $bahanHampirExpired = BahanBaku::query()
                         ->whereNotNull('expired_at')
                         ->whereNotNull('reminder')
@@ -194,6 +195,17 @@
                             return $today->greaterThanOrEqualTo($reminderDate);
                         });
                     $jumlahReminder = $bahanHampirExpired->count();
+
+                    // Cek bahan baku besar yang sudah masuk periode reminder
+                    $bahanBakuBesarHampirExpired = BahanBakuBesar::query()
+                        ->whereNotNull('expired_at')
+                        ->whereNotNull('reminder')
+                        ->get()
+                        ->filter(function ($row) use ($today) {
+                            $reminderTanggal = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
+                            return $today->greaterThanOrEqualTo($reminderTanggal);
+                        });
+                    $nominalReminder = $bahanBakuBesarHampirExpired->count();
                     
                     $produkHampirExpired = ProdukDanObat::query()
                         ->whereNotNull('expired_at')
@@ -291,6 +303,11 @@
                                         <x-side-link href="{{ route('bahanbakubesar.data') }}"
                                             :active="request()->routeIs('bahanbakubesar.*')" wire:navigate>
                                             Stok Besar
+                                            @if($nominalReminder > 0)
+                                                <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                                    <i class="fa-solid fa-bell p-1"></i>
+                                                </span>
+                                            @endif
                                         </x-side-link>
                                     </li>
 

@@ -25,7 +25,7 @@
                     <li>
                         <a href="{{ route('bahanbakubesar.mutasi') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Riwayat Stock Bahan Baku Besar
+                            Riwayat Stok Bahan Baku Besar
                         </a>
                     </li>
                 </ul>
