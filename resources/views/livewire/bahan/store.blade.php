@@ -8,14 +8,34 @@
 
         <form wire:submit.prevent="store" class="space-y-4">
 
-            <div>
+            {{-- <div>
                 <label class="label font-medium">Nama Bahan Baku</label>
                 <input type="text" class="input input-bordered w-full" wire:model.lazy="nama" required>
+            </div> --}}
+            
+            <div>
+                <label class="label font-medium">Bahan Baku Diambil Dari Stok Besar</label>
+                <select class="select select-bordered w-full" wire:model="bahanbakubesar_id">
+                    <option value="">Pilih Bahan</option>
+                    @foreach ($bahanbakubesar as $besar)
+                        <option value="{{ $besar->id }}">{{ $besar->nama }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div>
-                <label class="label font-medium">Jumlah</label>
-                <input type="number" class="input input-bordered w-full" wire:model.lazy="stok">
+                <label class="label font-medium">Jumlah Unit Diambil Dari Stok Besar</label>
+                <input type="number" class="input input-bordered w-full" wire:model.live="jumlah">
+            </div>
+
+            <div>
+                <label class="label font-medium">Nominal Pengali</label>
+                <input type="number" class="input input-bordered w-full" wire:model.live="pengali">
+            </div>
+
+            <div>
+                <label class="label font-medium">Jumlah Unit Terkecil</label>
+                <input type="number"class="input input-bordered w-full bg-gray-100" wire:model="stok" readonly>
             </div>
 
             <div>
