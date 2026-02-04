@@ -19,7 +19,7 @@
                     <li>
                         <a href="{{ route('bahanbaku.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder"></i>
-                            Bahan Baku Keicl
+                            Bahan Baku Kecil
                         </a>
                     </li>
                     <li>
