@@ -31,7 +31,8 @@ final class MutasiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return MutasiBahanBakuBesar::with(['bahanbakubesar']);
+        return MutasiBahanBakuBesar::with(['bahanbakubesar'])
+        ->latest();
     }
 
     public function relationSearch(): array

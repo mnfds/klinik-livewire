@@ -52,7 +52,8 @@ final class BahanTable extends PowerGridComponent
                         - COALESCE(SUM(CASE WHEN tipe = "keluar" THEN jumlah END), 0))'
                     )
                     ->whereColumn('mutasi_bahan_baku_besars.bahan_baku_besar_id', 'bahan_baku_besars.id');
-            }, 'sisa_stok');
+            }, 'sisa_stok')
+            ->latest();
     }
 
     public function relationSearch(): array

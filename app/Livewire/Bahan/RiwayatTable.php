@@ -33,7 +33,8 @@ final class RiwayatTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return MutasiBahanbaku::with(['bahanbaku']);
+        return MutasiBahanbaku::with(['bahanbaku'])
+            ->latest();
     }
 
     public function relationSearch(): array
