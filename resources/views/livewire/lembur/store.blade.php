@@ -9,14 +9,11 @@
         <form wire:submit.prevent="store" class="space-y-4">
             <div>
                 <label class="label font-medium">Karyawan</label>
-                @php
-                    $users = \App\Models\User::with(['biodata', 'role'])->get();
-                @endphp
                 <select class="select select-bordered w-full" wire:model.lazy="user_id">
                     <option value="">Pilih Karyawan</option>
                     @foreach ($users as $u)
                         <option value="{{ $u->id }}">
-                            {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter }}
+                            {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter ?? '-' }}
                             ({{ $u->role->nama_role ?? '-' }})
                         </option>
                     @endforeach

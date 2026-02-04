@@ -18,7 +18,7 @@
                         <option value="">Pilih Karyawan</option>
                         @foreach ($users as $u)
                             <option value="{{ $u->id }}">
-                                {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter }}
+                                {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter ?? '-'}}
                                 {{ $u->role->nama_role ?? '-' }})
                             </option>
                         @endforeach

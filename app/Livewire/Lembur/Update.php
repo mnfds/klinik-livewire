@@ -3,6 +3,7 @@
 namespace App\Livewire\Lembur;
 
 use App\Models\Lembur;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
@@ -10,10 +11,15 @@ class Update extends Component
 {
     public $pending_id, $approve_id, $history_id;
     public $user_id, $tanggal_lembur, $jam_mulai, $jam_selesai, $keperluan, $status, $disetujui_oleh;
+    public $users;
 
     public function render()
     {
         return view('livewire.lembur.update');
+    }
+
+    public function mount(){
+        $this->users = User::with(['dokter', 'biodata', 'role'])->get();
     }
 
     #[\Livewire\Attributes\On('getPendingLembur')]

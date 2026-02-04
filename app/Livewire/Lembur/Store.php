@@ -3,6 +3,7 @@
 namespace App\Livewire\Lembur;
 
 use App\Models\Lembur;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -12,10 +13,15 @@ class Store extends Component
 {
     public $user_id, $tanggal_lembur, $jam_mulai, $keperluan, $disetujui_oleh;
     public $status = 'pending';
+    public $users;
 
     public function render()
     {
         return view('livewire.lembur.store');
+    }
+    
+    public function mount(){
+        $this->users = User::with(['dokter', 'biodata', 'role'])->get();
     }
 
     public function store()
