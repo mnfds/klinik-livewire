@@ -19,8 +19,13 @@
             </div>
 
             <div>
-                <label class="label font-medium">Jumlah</label>
-                <input type="number" min="0" max="40" class="input input-bordered w-full" wire:model.lazy="jumlah">
+                <label class="label font-medium">Jumlah Unit Diambil Dari Stok Besar</label>
+                <input type="number" class="input input-bordered w-full" wire:model.live="jumlah">
+            </div>
+            
+            <div>
+                <label class="label font-medium">Jumlah Unit Terkecil</label>
+                <input type="number"class="input input-bordered w-full bg-gray-100" wire:model="stok" readonly>
             </div>
 
             <div>
