@@ -179,6 +179,15 @@
                     </li>
                 @endif 
 
+                {{-- @can('akses', 'Jadwal') --}}
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-book"></i>
+                        <span class="ml-3">Dokumen</span>
+                    </x-side-link>
+                </li>
+                {{-- @endcan --}}
+
                 @php
                     use App\Models\BahanBaku;
                     use App\Models\BahanBakuBesar;
