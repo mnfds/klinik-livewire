@@ -190,11 +190,10 @@
 
                 @php
                     use App\Models\BahanBaku;
-                    use App\Models\BahanBakuBesar;
 
                     $today = Carbon::today();
 
-                    // Cek bahan baku kecil yang sudah masuk periode reminder
+                    // Cek bahan baku yang sudah masuk periode reminder
                     $bahanHampirExpired = BahanBaku::query()
                         ->whereNotNull('expired_at')
                         ->whereNotNull('reminder')
@@ -204,17 +203,6 @@
                             return $today->greaterThanOrEqualTo($reminderDate);
                         });
                     $jumlahReminder = $bahanHampirExpired->count();
-
-                    // Cek bahan baku besar yang sudah masuk periode reminder
-                    $bahanBakuBesarHampirExpired = BahanBakuBesar::query()
-                        ->whereNotNull('expired_at')
-                        ->whereNotNull('reminder')
-                        ->get()
-                        ->filter(function ($row) use ($today) {
-                            $reminderTanggal = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
-                            return $today->greaterThanOrEqualTo($reminderTanggal);
-                        });
-                    $nominalReminder = $bahanBakuBesarHampirExpired->count();
                     
                     $produkHampirExpired = ProdukDanObat::query()
                         ->whereNotNull('expired_at')
@@ -263,72 +251,24 @@
                                 <x-side-link href="{{ route('barang.data') }}" 
                                     :active="request()->routeIs('barang.*')"  
                                     wire:navigate>
-                                    <span class="opacity-[0]">....</span>
                                     Barang
                                 </x-side-link>
                             </li>
                             @endcan
                             @can('akses', 'Persediaan Bahan Baku')
-                            <li x-data="{
-                                    openBahanBaku: {{ request()->routeIs('bahanbaku.*','bahanbakubesar.*') ? 'true' : 'false' }}
-                                }">
-                                {{-- Parent: Bahan Baku --}}
-                                <x-side-link
-                                    @click.prevent="openBahanBaku = !openBahanBaku"
-                                    class="cursor-pointer"
-                                    :active="request()->routeIs('bahanbaku.*','bahanbakubesar.*')"
-                                    >
-                                    <span class="flex-1 ml-3 text-left">Bahan Baku</span>
-
-                                    {{-- Badge reminder hanya muncul saat tertutup --}}
-                                    <template x-if="!openBahanBaku && {{ $jumlahReminder }} > 0">
-                                        <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
-                                            <i class="fa-solid fa-bell"></i>
-                                        </span>
-                                    </template>
-
-                                    <i class="fa-solid fa-chevron-right transition-transform duration-200"
-                                    :class="openBahanBaku ? 'rotate-90' : ''"></i>
+                            <li>
+                                <x-side-link href="{{ route('bahanbaku.data') }}" 
+                                    :active="request()->routeIs('bahanbaku.*')"  
+                                    wire:navigate>
+                                    Bahan Baku
                                 </x-side-link>
-
-                                {{-- Submenu --}}
-                                <ul x-show="openBahanBaku" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-
-                                    {{-- Bahan Baku Kecil --}}
-                                    <li>
-                                        <x-side-link href="{{ route('bahanbaku.data') }}"
-                                            :active="request()->routeIs('bahanbaku.*')" wire:navigate>
-                                            Stok Kecil
-                                            @if($jumlahReminder > 0)
-                                                <span class="ml-auto rounded-full text-warning bg-accent-content">
-                                                    <i class="fa-solid fa-bell p-1"></i>
-                                                </span>
-                                            @endif
-                                        </x-side-link>
-                                    </li>
-
-                                    {{-- Bahan Baku Besar --}}
-                                    <li>
-                                        <x-side-link href="{{ route('bahanbakubesar.data') }}"
-                                            :active="request()->routeIs('bahanbakubesar.*')" wire:navigate>
-                                            Stok Besar
-                                            @if($nominalReminder > 0)
-                                                <span class="ml-auto rounded-full text-warning bg-accent-content">
-                                                    <i class="fa-solid fa-bell p-1"></i>
-                                                </span>
-                                            @endif
-                                        </x-side-link>
-                                    </li>
-
-                                </ul>
                             </li>
                             @endcan
-                            @can('akses', 'Persediaan Bahan Baku')
+                            @can('akses', 'Produk & Obat Data')
                             <li>
                                 <x-side-link href="{{ route('produk-obat.data') }}" 
                                     :active="request()->routeIs('produk-obat.*')"  
                                     wire:navigate>
-                                    <span class="opacity-[0]">....</span>
                                     Produk & Obat
                                     @if($produkHampirExpired === true)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">

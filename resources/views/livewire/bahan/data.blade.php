@@ -11,15 +11,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1">
-                            <i class="fa-regular fa-folder"></i>
-                            Persediaan Bahan Baku
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('bahanbaku.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Bahan Baku Kecil
+                            Persediaan Bahan Baku
                         </a>
                     </li>
                 </ul>
@@ -29,7 +23,7 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
                 <i class="fa-solid fa-layer-group"></i>
-                Persediaan Bahan Baku Kecil
+                Persediaan Bahan Baku
             </h1>
         </div>
 
