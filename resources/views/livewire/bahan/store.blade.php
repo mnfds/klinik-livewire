@@ -57,7 +57,7 @@
 
                 <div>
                     <label class="label font-medium">Jumlah Stok Kecil<span class="text-error">*</span></label>
-                    <input type="number" class="input input-bordered w-full bg-gray-100 @error('stok_kecil') input-error @enderror" wire:model.lazy="stok_kecil">
+                    <input type="number" class="input input-bordered w-full bg-gray-100 @error('stok_kecil') input-error @enderror" readonly wire:model.lazy="stok_kecil">
                     @error('stok_kecil')
                         <span class="text-error text-sm">Mohon Mengisi Nominal Stok kecil Dengan Benar</span>
                     @enderror

@@ -55,7 +55,7 @@
 
                 <div>
                     <label class="label font-medium">Jumlah Stok Kecil<span class="text-error">*</span></label>
-                    <input type="number" class="input input-bordered w-full bg-gray-100 @error('stok_kecil') input-error @enderror" wire:model.defer="stok_kecil">
+                    <input type="number" class="input input-bordered w-full bg-gray-100 @error('stok_kecil') input-error @enderror" readonly wire:model.defer="stok_kecil">
                     @error('stok_kecil')
                         <span class="text-error text-sm">Mohon Mengisi Nominal Stok kecil Dengan Benar</span>
                     @enderror
@@ -96,7 +96,7 @@
                 </div>
     
             </div>
-            
+
             <div class="modal-action justify-end pt-4">
                 @can('akses', 'Persediaan Bahan Baku Edit')
                 <button type="submit" class="btn btn-primary">Simpan</button>
