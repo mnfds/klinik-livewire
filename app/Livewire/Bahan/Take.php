@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
 
 class Take extends Component
 {
-    public $bahan_baku_id, $jumlah, $diajukan_oleh, $catatan;
+    public $bahan_baku_id, $jumlah, $satuan, $diajukan_oleh, $catatan;
     public $tipe = 'keluar';
 
     public $bahan = [];
@@ -39,21 +39,27 @@ class Take extends Component
             ]);
             return;
         }
+        $bahanbakukecil = BahanBaku::findOrFail($this->bahan_baku_id);
 
         MutasiBahanbaku::create([
             'bahan_baku_id'   => $this->bahan_baku_id,
             'tipe' => $this->tipe,
             'jumlah'   => $this->jumlah,
-            'catatan'   => $this->catatan,
+            'satuan'   => $bahanbakukecil->satuan_kecil,
             'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap,
+            'catatan'   => $this->catatan,
+            ]);
+            
+        $stokTersisa = $bahanbakukecil->stok_kecil - $this->jumlah;
+        $bahanbakukecil->update([
+            'stok_kecil' => (int) $stokTersisa,
         ]);
-
+        
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data Bahan Baku berhasil Diperbarui.'
         ]);
 
-        
         $this->reset();
 
         $this->dispatch('pg:eventRefresh-DishTable');

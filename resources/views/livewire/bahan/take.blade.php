@@ -9,18 +9,24 @@
         <form wire:submit.prevent="store" class="space-y-4">
 
             <div>
-                <label class="label font-medium">Nama Bahan Baku</label>
-                <select class="select select-bordered w-full" wire:model.lazy="bahan_baku_id">
+                <label class="label font-medium">Nama Bahan Baku<span class="text-error">*</span></label>
+                <select class="select select-bordered w-full @error('bahan_baku_id') input-error @enderror" wire:model.lazy="bahan_baku_id">
                     <option value="">Pilih Bahan Baku</option>
                     @foreach ($bahan as $b)
                         <option value="{{ $b->id }}">{{ $b->nama }}</option>
                     @endforeach
                 </select>
+                @error('bahan_baku_id')
+                    <span class="text-error text-sm">Mohon Memilih Bahan Dengan Benar</span>
+                @enderror
             </div>
 
             <div>
-                <label class="label font-medium">Jumlah</label>
-                <input type="number" min="0" max="40" class="input input-bordered w-full" wire:model.lazy="jumlah">
+                <label class="label font-medium">Jumlah Keluar<span class="text-error">*</span></label>
+                <input type="number" min="0" class="input input-bordered w-full @error('jumlah') input-error @enderror" wire:model.lazy="jumlah">
+                @error('jumlah')
+                    <span class="text-error text-sm">Mohon Mengisi Jumlah Bahan Keluar Dengan Benar</span>
+                @enderror
             </div>
 
             <div>
