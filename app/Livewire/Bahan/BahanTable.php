@@ -33,29 +33,7 @@ final class BahanTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return BahanBaku::query()
-            ->select('bahan_bakus.*')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_bahanbakus')
-                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
-                    ->whereColumn('mutasi_bahanbakus.bahan_baku_id', 'bahan_bakus.id')
-                    ->where('tipe', 'masuk');
-            }, 'stok_masuk')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_bahanbakus')
-                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
-                    ->whereColumn('mutasi_bahanbakus.bahan_baku_id', 'bahan_bakus.id')
-                    ->where('tipe', 'keluar');
-            }, 'stok_keluar')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_bahanbakus')
-                    ->selectRaw(
-                        '(COALESCE(SUM(CASE WHEN tipe = "masuk" THEN jumlah END), 0) 
-                        - COALESCE(SUM(CASE WHEN tipe = "keluar" THEN jumlah END), 0))'
-                    )
-                    ->whereColumn('mutasi_bahanbakus.bahan_baku_id', 'bahan_bakus.id');
-            }, 'sisa_stok')
-            ->latest();
+        return BahanBaku::query()->latest();
     }
 
     public function relationSearch(): array
@@ -68,12 +46,24 @@ final class BahanTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('#')
             ->add('nama')
-            ->add('kode')
-            ->add('satuan')
-            ->add('stok_masuk')
-            ->add('stok_keluar')
-            ->add('sisa_stok')
             ->add('expired_at')
+            ->add('nama_dan_expired', function($row){
+                return strtoupper($row->nama) . '<br><span class="text-sm text-gray-500">Exp : ' . \Carbon\Carbon::parse($row->expired_at)->format('d M Y') . '</span>';
+            })
+
+            // ->add('kode')
+            ->add('stok_besar')
+            ->add('satuan_besar')
+            ->add('stok_besar_satuan', function($row){
+                return strtoupper($row->stok_besar) . ' ' . $row->satuan_besar;
+            })
+
+            ->add('stok_kecil')
+            ->add('satuan_kecil')
+            ->add('stok_kecil_satuan', function($row){
+                return strtoupper($row->stok_kecil) . ' ' . $row->satuan_kecil;
+            })
+
             ->add('lokasi')
             ->add('keterangan');
     }
@@ -82,13 +72,19 @@ final class BahanTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Bahan', 'nama')->searchable(),
-            Column::make('Kode Bahan', 'kode')->searchable(),
-            Column::make('satuan ', 'satuan')->searchable(),
-            Column::make('Stok Masuk ', 'stok_masuk')->sortable(),
-            Column::make('Stok Keluar ', 'stok_keluar')->sortable(),
-            Column::make('Stok Tersisa ', 'sisa_stok')->sortable(),
-            Column::make('Kadaluarsa', 'expired_at')->sortable()->searchable(),
+            Column::make('Bahan', 'nama')->searchable()->hidden(),
+            Column::make('Kadaluarsa', 'expired_at')->sortable()->searchable()->hidden(),
+            Column::make('Nama', 'nama_dan_expired')->bodyAttribute('whitespace-nowrap'),
+            // Column::make('Kode Bahan', 'kode')->searchable(),
+
+            Column::make('Stok_Besar', 'stok_besar')->searchable()->hidden(),
+            Column::make('Satuan_Besar', 'satuan_besar')->searchable()->hidden(),
+            Column::make('Stok Besar', 'stok_besar_satuan')->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Stok_Kecil', 'stok_kecil')->searchable()->hidden(),
+            Column::make('Satuan_Kecil', 'satuan_kecil')->searchable()->hidden(),
+            Column::make('Stok Kecil', 'stok_kecil_satuan')->bodyAttribute('whitespace-nowrap'),
+
             Column::make('Lokasi Disimpan ', 'lokasi')->searchable(),
             Column::make('Keterangan ', 'keterangan'),
             Column::action('Action')
@@ -173,7 +169,7 @@ final class BahanTable extends PowerGridComponent
                     Carbon::parse($row->expired_at)->format('Y-m')
                         <= Carbon::now()->addMonths((int) $row->reminder)->format('Y-m')
                 )
-                ->setAttribute('class', 'text-red-600 font-semibold'),
+                ->setAttribute('class', 'text-red-600'),
         ];
     }
 }

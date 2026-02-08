@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('kode')->unique()->nullable();
-            $table->string('satuan')->default('pcs');
-            $table->integer('stok')->default(0); // disimpan langsung
+            $table->integer('stok_besar')->default(0);
+            $table->string('satuan_besar')->default('Box');
+            $table->integer('pengali')->nullable();
+            $table->integer('stok_kecil')->default(0);
+            $table->string('satuan_kecil')->default('Pcs');
             $table->string('lokasi')->nullable(); // lokasi tujuan/asal
             $table->date('expired_at')->nullable();
             $table->integer('reminder')->nullable();

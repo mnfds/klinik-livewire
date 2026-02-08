@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('bahan_baku_id')->constrained('bahan_bakus')->onDelete('cascade');
             $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('jumlah');
+            $table->string('satuan');
             $table->string('diajukan_oleh')->nullable(); // pegawai yang memasukkan atau megeluarkan barang
             $table->text('catatan')->nullable();
             $table->timestamps();
