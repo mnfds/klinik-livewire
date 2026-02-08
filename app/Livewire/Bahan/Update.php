@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Gate;
 class Update extends Component
 {
     public $bahan_id;
-    public $nama, $kode, $satuan, $lokasi, $expired_at, $reminder, $keterangan;
-    public $bahan;
+    public $nama, $kode, $lokasi, $expired_at, $reminder, $keterangan, $satuan_besar, $satuan_kecil;
+    public $stok_besar = 0;
+    public $pengali = 0;
+    public $stok_kecil = 0;
 
 
     #[\Livewire\Attributes\On('getupdatebahanbaku')]
@@ -20,27 +22,50 @@ class Update extends Component
 
         $bahan = BahanBaku::findOrFail($rowId);
 
-        $this->nama   = $bahan->nama;
-        $this->kode   = $bahan->kode;
-        $this->satuan   = $bahan->satuan;
-        $this->lokasi   = $bahan->lokasi;
+        $this->nama         = $bahan->nama;
+        $this->kode         = $bahan->kode;
+        $this->stok_besar   = $bahan->stok_besar;
+        $this->satuan_besar = $bahan->satuan_besar;
+        $this->pengali      = $bahan->pengali;
+        $this->stok_kecil   = $bahan->stok_kecil;
+        $this->satuan_kecil = $bahan->satuan_kecil;
+        $this->lokasi       = $bahan->lokasi;
         $this->expired_at   = $bahan->expired_at;
-        $this->reminder   = $bahan->reminder;
+        $this->reminder     = $bahan->reminder;
         $this->keterangan   = $bahan->keterangan;
 
         $this->dispatch('openModal');
     }
 
+    public function updatedStokBesar()
+    {
+        $this->hitungStokKecil();
+    }
+
+    public function updatedPengali()
+    {
+        $this->hitungStokKecil();
+    }
+
+    private function hitungStokKecil()
+    {
+        $this->stok_kecil = (int) $this->stok_besar * (int) $this->pengali;
+    }
+    
     public function update()
     {
         $this->validate([
-            'nama' => 'required',
-            'satuan' => 'required',
-            'kode' => 'nullable',
-            'lokasi' => 'nullable',
-            'expired_at' => 'nullable',
-            'reminder' => 'nullable',
-            'keterangan' => 'nullable',
+            'nama'          => 'required',
+            'stok_besar'    => 'numeric|required',
+            'satuan_besar'  => 'required',
+            'pengali'       => 'numeric|required',
+            'stok_kecil'    => 'numeric|required',
+            'satuan_kecil'  => 'required',
+            // 'kode'          => 'nullable',
+            'lokasi'        => 'nullable',
+            'expired_at'    => 'nullable',
+            'reminder'      => 'nullable',
+            'keterangan'    => 'nullable',
         ]);
         if (! Gate::allows('akses', 'Persediaan Bahan Baku Edit')) {
             $this->dispatch('toast', [
@@ -51,13 +76,17 @@ class Update extends Component
         }
 
         BahanBaku::where('id', $this->bahan_id)->update([
-            'nama' => $this->nama,
-            'satuan' => $this->satuan,
-            'kode' => $this->kode,
-            'lokasi' => $this->lokasi,
-            'expired_at' => $this->expired_at,
-            'reminder' => $this->reminder,
-            'keterangan' => $this->keterangan,
+            'nama'            => $this->nama,
+            'stok_besar'      => (int) $this->stok_besar,
+            'satuan_besar'    => $this->satuan_besar,
+            'pengali'         => (int) $this->pengali,
+            'stok_kecil'      => (int) $this->stok_kecil,
+            'satuan_kecil'    => $this->satuan_kecil,
+            // 'kode'         => $this->kode,
+            'lokasi'          => $this->lokasi,
+            'expired_at'      => $this->expired_at,
+            'reminder'        => (int) $this->reminder,
+            'keterangan'      => $this->keterangan,
         ]);
 
         $this->dispatch('toast', [
