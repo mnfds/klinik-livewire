@@ -49,7 +49,7 @@ final class RiwayatTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('tipe')
             ->add('bahanbaku.nama')
-            ->add('bahanbaku.satuan')
+            ->add('satuan')
             ->add('jumlah')
             ->add('diajukan_oleh')
             ->add('catatan');
@@ -66,7 +66,7 @@ final class RiwayatTable extends PowerGridComponent
 
             Column::make('Jumlah', 'jumlah')->sortable(),
             
-            Column::make('Satuan', 'bahanbaku.satuan')->searchable(),
+            Column::make('Satuan', 'satuan')->searchable(),
 
             Column::make('Orang Terkait', 'diajukan_oleh')->searchable(),
             
