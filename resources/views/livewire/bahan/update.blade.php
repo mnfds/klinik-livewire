@@ -22,14 +22,14 @@
                     <label class="label font-medium">Lokasi Disimpan</label>
                     <input type="text" class="input input-bordered w-full" wire:model.defer="lokasi">
                 </div>
-
+{{-- 
                 <div>
                     <label class="label font-medium">Jumlah Stok Besar<span class="text-error">*</span></label>
                     <input type="number" class="input input-bordered w-full @error('stok_besar') input-error @enderror" wire:model.live="stok_besar">
                     @error('stok_besar')
                         <span class="text-error text-sm">Mohon Mengisi Nominal Stok Besar Dengan Benar</span>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div>
                     <label class="label font-medium">Satuan Besar<span class="text-error">*</span></label>
@@ -53,13 +53,13 @@
                     @enderror
                 </div>
 
-                <div>
+                {{-- <div>
                     <label class="label font-medium">Jumlah Stok Kecil<span class="text-error">*</span></label>
                     <input type="number" class="input input-bordered w-full bg-gray-100 @error('stok_kecil') input-error @enderror" readonly wire:model.defer="stok_kecil">
                     @error('stok_kecil')
                         <span class="text-error text-sm">Mohon Mengisi Nominal Stok kecil Dengan Benar</span>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div>
                     <label class="label font-medium">Satuan kecil<span class="text-error">*</span></label>
