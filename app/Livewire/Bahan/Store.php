@@ -12,6 +12,7 @@ class Store extends Component
     // BAHAN VAR
     public $nama, $kode, $lokasi, $expired_at, $reminder, $keterangan, $satuan_besar, $satuan_kecil;
     public $tipe = 'masuk';
+    public $stok_besar_disimpan = 0;
     public $stok_besar = 0;
     public $pengali = 0;
     public $stok_kecil = 0;
@@ -44,6 +45,7 @@ class Store extends Component
     {
         $this->validate([
             'nama'          => 'required',
+            'stok_besar_disimpan'    => 'numeric|required',
             'stok_besar'    => 'numeric|required',
             'satuan_besar'  => 'required',
             'pengali'       => 'numeric|required',
@@ -66,7 +68,7 @@ class Store extends Component
 
         $bahanbaku = BahanBaku::create([
             'nama'            => $this->nama,
-            'stok_besar'      => (int) $this->stok_besar,
+            'stok_besar'      => (int) $this->stok_besar_disimpan,
             'satuan_besar'    => $this->satuan_besar,
             'pengali'         => (int) $this->pengali,
             'stok_kecil'      => (int) $this->stok_kecil,

@@ -26,7 +26,15 @@
                 </div>
 
                 <div>
-                    <label class="label font-medium">Jumlah Stok Besar<span class="text-error">*</span></label>
+                    <label class="label font-medium">Jumlah Stok Besar Disimpan<span class="text-error">*</span></label>
+                    <input type="number" class="input input-bordered w-full @error('stok_besar_disimpan') input-error @enderror" wire:model.live="stok_besar_disimpan">
+                    @error('stok_besar_disimpan')
+                        <span class="text-error text-sm">Mohon Mengisi Nominal Stok Besar Dengan Benar</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="label font-medium">Jumlah Stok Besar Dibuka<span class="text-error">*</span></label>
                     <input type="number" class="input input-bordered w-full @error('stok_besar') input-error @enderror" wire:model.live="stok_besar">
                     @error('stok_besar')
                         <span class="text-error text-sm">Mohon Mengisi Nominal Stok Besar Dengan Benar</span>
