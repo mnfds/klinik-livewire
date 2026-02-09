@@ -54,8 +54,9 @@ final class BahanTable extends PowerGridComponent
             // ->add('kode')
             ->add('stok_besar')
             ->add('satuan_besar')
+            ->add('pengali')
             ->add('stok_besar_satuan', function($row){
-                return strtoupper($row->stok_besar) . ' ' . $row->satuan_besar;
+                return strtoupper($row->stok_besar) . ' ' . $row->satuan_besar . '<br><span class="text-sm text-gray-500"> 1 ' . $row->satuan_besar . ' = ' . $row->pengali . ' ' . $row->satuan_kecil;
             })
 
             ->add('stok_kecil')
