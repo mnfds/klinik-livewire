@@ -197,6 +197,7 @@
                     $bahanHampirExpired = BahanBaku::query()
                         ->whereNotNull('expired_at')
                         ->whereNotNull('reminder')
+                        ->where('reminder', '>', 0)
                         ->get()
                         ->filter(function ($row) use ($today) {
                             $reminderDate = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
@@ -207,15 +208,14 @@
                     $produkHampirExpired = ProdukDanObat::query()
                         ->whereNotNull('expired_at')
                         ->whereNotNull('reminder')
+                        ->where('reminder', '>', 0)
                         ->get()
-                        ->contains(function ($row) use ($today) {
-                            $expired      = Carbon::parse($row->expired_at)->startOfMonth();
-                            $reminderDate = Carbon::parse($row->expired_at)
-                                ->subMonths($row->reminder)
-                                ->startOfMonth();
-
+                        ->filter(function ($row) use ($today) {
+                            // $expired      = Carbon::parse($row->expired_at)->startOfMonth();
+                            $reminderDate = Carbon::parse($row->expired_at)->subMonths($row->reminder)->startOfMonth();
                             return $today->greaterThanOrEqualTo($reminderDate);
                         });
+                        $jumlahReminderProduk = $produkHampirExpired->count();
                     // dd($produkHampirExpired);
                 @endphp
 
@@ -261,11 +261,11 @@
                                     :active="request()->routeIs('bahanbaku.*')"  
                                     wire:navigate>
                                     Bahan Baku
-                                    @if($produkHampirExpired === true)
+                                    @if($jumlahReminder > 0)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
                                         </span>
-                                    @endif
+                                    @endif   
                                 </x-side-link>
                             </li>
                             @endcan
@@ -275,11 +275,12 @@
                                     :active="request()->routeIs('produk-obat.*')"  
                                     wire:navigate>
                                     Produk & Obat
-                                    @if($jumlahReminder > 0)
+                                    @if($jumlahReminderProduk > 0)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
                                         </span>
                                     @endif
+
                                 </x-side-link>
                             </li>
                             @endcan
