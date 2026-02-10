@@ -133,7 +133,7 @@
                         <div>
                             <input type="time" class="input input-bordered w-full @error('jam_kembali') input-error @enderror" wire:model.defer="jam_kembali">
                             <span class="text-xs text-gray-500 ml-1">Jam kembali</span><br>
-                            @error('jam_keluar')
+                            @error('jam_kembali')
                                 <span class="text-error text-sm">
                                     Mohon Mengisi Jam Kembali Dengan Benar
                                 </span>
