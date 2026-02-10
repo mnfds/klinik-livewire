@@ -38,12 +38,12 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex justify-between md:justify-start items-center mb-4 gap-2">
-                        @can('akses', 'Produk & Obat Keluar')
+                        @can('akses', 'Persediaan Produk & Obat Keluar')
                         <button onclick="document.getElementById('outstockModalProdukDanObat').showModal()" class="btn btn-secondary">
                             <i class="fa-solid fa-circle-minus"></i> Keluar
                         </button>
                         @endcan
-                        @can('akses', 'Produk & Obat Masuk')
+                        @can('akses', 'Persediaan Produk & Obat Masuk')
                         <button onclick="document.getElementById('instockModalProdukDanObat').showModal()" class="btn btn-primary">
                             <i class="fa-solid fa-circle-plus"></i> Masuk
                         </button>

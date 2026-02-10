@@ -37,7 +37,7 @@ class Store extends Component
             'supplier' => 'nullable|string',
         ]);
 
-        if (! Gate::allows('akses', 'Produk & Obat Tambah')) {
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

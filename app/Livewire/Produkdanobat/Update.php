@@ -80,7 +80,13 @@ class Update extends Component
             'lokasi'        => 'nullable|string|max:100',
             'supplier'      => 'nullable|string|max:255',
         ]);
-
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         ProdukDanObat::where('id', $this->produkDanObatId)->update([
             'nama_dagang'   => $this->nama_dagang,
             'golongan'      => $this->golongan,
@@ -109,7 +115,7 @@ class Update extends Component
             'message' => 'Data produk berhasil diperbarui.'
         ]);
 
-        $this->dispatch('closeModal');
+        $this->dispatch('closeModalProdukObat');
 
         $this->reset();
 

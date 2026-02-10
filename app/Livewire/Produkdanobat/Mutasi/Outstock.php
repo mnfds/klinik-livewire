@@ -31,7 +31,7 @@ class Outstock extends Component
             'jumlah'   => 'required|numeric',
             'catatan'   => 'nullable',
         ]);
-        if (! Gate::allows('akses', 'Produk & Obat Keluar')) {
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Keluar')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

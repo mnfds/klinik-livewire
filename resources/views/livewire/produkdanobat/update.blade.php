@@ -1,5 +1,5 @@
 <dialog id="modaleditprodukdanobat" class="modal" wire:ignore.self x-data x-init="
-    Livewire.on('closeModal', () => {
+    Livewire.on('closeModalProdukObat', () => {
         document.getElementById('modaleditprodukdanobat')?.close()
     })
 ">
@@ -128,7 +128,7 @@
 
             {{-- Tombol --}}
             <div class="col-span-1 sm:col-span-2 flex justify-end gap-2 mt-4">
-                @can('akses', 'Produk & Obat Edit')
+                @can('akses', 'Persediaan Produk & Obat Edit')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
                 <button type="button" class="btn btn-neutral" onclick="document.getElementById('modaleditprodukdanobat').close()">Batal</button>

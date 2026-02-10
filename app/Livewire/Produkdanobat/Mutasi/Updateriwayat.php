@@ -52,7 +52,7 @@ class Updateriwayat extends Component
             'diajukan_oleh' => 'required',
             'catatan' => 'nullable',
         ]);
-        if (! Gate::allows('akses', 'Riwayat Produk & Obat Edit')) {
+        if (! Gate::allows('akses', 'Persediaan Riwayat Produk & Obat Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

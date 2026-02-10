@@ -86,7 +86,7 @@ final class RiwayatTable extends PowerGridComponent
     {
         $riwayatProdukObatButton = [];
         
-        Gate::allows('akses', 'Riwayat Produk & Obat Edit') && $riwayatProdukObatButton[] =
+        Gate::allows('akses', 'Persediaan Riwayat Produk & Obat Edit') && $riwayatProdukObatButton[] =
         Button::add('updateriwayatprodukdanobat')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -95,7 +95,7 @@ final class RiwayatTable extends PowerGridComponent
             ])
             ->dispatchTo('produkdanobat.mutasi.updateriwayat', 'getupdateriwayatprodukdanobat', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Riwayat Produk & Obat Hapus') && $riwayatProdukObatButton[] =
+        Gate::allows('akses', 'Persediaan Riwayat Produk & Obat Hapus') && $riwayatProdukObatButton[] =
         Button::add('deleteriwayatprodukdanobat')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
@@ -127,7 +127,7 @@ final class RiwayatTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleteriwayatprodukdanobat')]
     public function konfirmasideleteriwayatprodukdanobat($rowId): void
     {
-        if (! Gate::allows('akses', 'Riwayat Produk & Obat Hapus')) {
+        if (! Gate::allows('akses', 'Persediaan Riwayat Produk & Obat Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

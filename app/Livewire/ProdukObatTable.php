@@ -33,7 +33,7 @@ final class ProdukObatTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return ProdukDanObat::query();
+        return ProdukDanObat::query()->latest();
     }
 
     public function relationSearch(): array
@@ -113,7 +113,7 @@ final class ProdukObatTable extends PowerGridComponent
     public function actions(ProdukDanObat $row): array
     {
         $produkButton = [];
-         Gate::allows('akses', 'Produk & Obat Edit') && $produkButton[] =
+         Gate::allows('akses', 'Persediaan Produk & Obat Edit') && $produkButton[] =
          Button::add('updateprodukobat')  
              ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
              ->attributes([
@@ -122,7 +122,7 @@ final class ProdukObatTable extends PowerGridComponent
              ])
              ->dispatchTo('produkdanobat.update', 'getupdateprodukobat', ['rowId' => $row->id]);
              
-          Gate::allows('akses', 'Produk & Obat Hapus') && $produkButton[] =
+          Gate::allows('akses', 'Persediaan Produk & Obat Hapus') && $produkButton[] =
           Button::add('deleteprodukdanobat')
               ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
               ->class('btn btn-error')
@@ -154,7 +154,7 @@ final class ProdukObatTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleteprodukdanobat')]
     public function konfirmasideleteprodukdanobat($rowId): void
     {
-        if (! Gate::allows('akses', 'Produk & Obat Hapus')) {
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

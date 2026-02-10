@@ -29,7 +29,7 @@
             </div>
 
             <div class="modal-action justify-end pt-4">
-                @can('akses', 'Produk & Obat Masuk')
+                @can('akses', 'Persediaan Produk & Obat Masuk')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
                 <button type="button" class="btn btn-error" onclick="document.getElementById('instockModalProdukDanObat').close()">Batal</button>

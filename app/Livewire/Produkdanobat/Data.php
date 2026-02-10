@@ -9,7 +9,7 @@ class Data extends Component
 {
     public function render()
     {
-        if (! Gate::allows('akses', 'Produk & Obat Data')) {
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Data')) {
             session()->flash('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

@@ -35,10 +35,10 @@
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
                         <!-- KIRI: Tambah Barang & Riwayat -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
-                            @can('akses', 'Produk & Obat Tambah')
+                            @can('akses', 'Persediaan Produk & Obat Tambah')
                                 <button onclick="document.getElementById('storeModalProdukDanObat').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Produk & Obat</button>
                             @endcan
-                            @can('akses', 'Riwayat Produk & Obat')
+                            @can('akses', 'Persediaan Riwayat Produk & Obat')
                             <a href="{{ route('produk-obat.riwayat') }}" class="btn btn-warning w-full">
                                 <i class="fa-solid fa-clipboard"></i> Riwayat
                             </a>
@@ -46,12 +46,12 @@
                         </div>
                         <!-- KANAN: Stok Keluar & Masuk -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
-                            @can('akses', 'Produk & Obat Keluar')
+                            @can('akses', 'Persediaan Produk & Obat Keluar')
                             <button onclick="document.getElementById('outstockModalProdukDanObat').showModal()" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-circle-minus"></i> Keluar
                             </button>
                             @endcan
-                            @can('akses', 'Produk & Obat Masuk')
+                            @can('akses', 'Persediaan Produk & Obat Masuk')
                             <button onclick="document.getElementById('instockModalProdukDanObat').showModal()" class="btn btn-primary w-full">
                                 <i class="fa-solid fa-circle-plus"></i> Masuk
                             </button>

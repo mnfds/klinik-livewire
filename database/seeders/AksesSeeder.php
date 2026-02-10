@@ -164,15 +164,15 @@ class AksesSeeder extends Seeder
 
             // Persediaan Produk & Obat
             17 => [
-                'Produk & Obat Data',
-                'Produk & Obat Tambah',
-                'Produk & Obat Hapus',
-                'Produk & Obat Edit',
-                'Produk & Obat Keluar',
-                'Produk & Obat Masuk',
-                'Riwayat Produk & Obat',
-                'Riwayat Produk & Obat Edit',
-                'Riwayat Produk & Obat Hapus',
+                'Persediaan Produk & Obat Data',
+                'Persediaan Produk & Obat Tambah',
+                'Persediaan Produk & Obat Hapus',
+                'Persediaan Produk & Obat Edit',
+                'Persediaan Produk & Obat Keluar',
+                'Persediaan Produk & Obat Masuk',
+                'Persediaan Riwayat Produk & Obat',
+                'Persediaan Riwayat Produk & Obat Edit',
+                'Persediaan Riwayat Produk & Obat Hapus',
             ],
 
             // Pengajuan Izin Keluar

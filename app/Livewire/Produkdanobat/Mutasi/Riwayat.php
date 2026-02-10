@@ -12,7 +12,7 @@ class Riwayat extends Component
 {
     public function render()
     {
-        if (! Gate::allows('akses', 'Riwayat Produk & Obat')) {
+        if (! Gate::allows('akses', 'Persediaan Riwayat Produk & Obat')) {
             session()->flash('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

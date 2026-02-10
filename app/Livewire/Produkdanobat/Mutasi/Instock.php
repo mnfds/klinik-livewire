@@ -32,7 +32,7 @@ class Instock extends Component
             'jumlah'   => 'required|numeric',
             'catatan'   => 'nullable',
         ]);
-        if (! Gate::allows('akses', 'Produk & Obat Masuk')) {
+        if (! Gate::allows('akses', 'Persediaan Produk & Obat Masuk')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

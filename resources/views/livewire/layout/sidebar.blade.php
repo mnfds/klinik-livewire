@@ -264,7 +264,7 @@
                                 </x-side-link>
                             </li>
                             @endcan
-                            @can('akses', 'Produk & Obat Data')
+                            @can('akses', 'Persediaan Produk & Obat Data')
                             <li>
                                 <x-side-link href="{{ route('produk-obat.data') }}" 
                                     :active="request()->routeIs('produk-obat.*')"  
