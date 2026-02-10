@@ -261,6 +261,11 @@
                                     :active="request()->routeIs('bahanbaku.*')"  
                                     wire:navigate>
                                     Bahan Baku
+                                    @if($produkHampirExpired === true)
+                                        <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                            <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                                        </span>
+                                    @endif
                                 </x-side-link>
                             </li>
                             @endcan
@@ -270,12 +275,11 @@
                                     :active="request()->routeIs('produk-obat.*')"  
                                     wire:navigate>
                                     Produk & Obat
-                                    @if($produkHampirExpired === true)
+                                    @if($jumlahReminder > 0)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
                                         </span>
                                     @endif
-
                                 </x-side-link>
                             </li>
                             @endcan
