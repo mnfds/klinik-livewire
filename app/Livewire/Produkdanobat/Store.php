@@ -22,19 +22,19 @@ class Store extends Component
     {
 
         $this->validate([
-            'nama_dagang' => 'required|string',
-            'golongan' => 'required|string',
-            'kode' => 'required|string|unique:produk_dan_obats,kode',
-            'sediaan' => 'required|string',
-            'harga_dasar' => 'required|integer|min:0',
-            'potongan' => 'required|integer|min:0',
-            'diskon' => 'nullable|min:0|max:100',
-            'stok' => 'required|integer|min:0',
-            'expired_at' => 'nullable|date',
-            'reminder' => 'nullable|integer',
-            'batch' => 'nullable|string',
-            'lokasi' => 'nullable|string',
-            'supplier' => 'nullable|string',
+            'nama_dagang'   => 'required|string',
+            'golongan'      => 'required|in:Skincare,Obat Bebas,Obat Bebas Terbatas,Obat Keras,Obat Narkotika,Obat Psikotropika,Obat fitofarmaka,OHT (Obat Herbal Terstandar),Jamu,Lain - Lain',
+            'kode'          => 'required|string|unique:produk_dan_obats,kode',
+            'sediaan'       => 'required|in:pcs,pot,tablet,botol,sachet,strip,box,paket,kapsul,sirup,salep,injeksi,tube',
+            'harga_dasar'   => 'required|integer|min:0',
+            'potongan'      => 'nullable|integer|min:0',
+            'diskon'        => 'nullable|min:0|max:100',
+            'stok'          => 'required|integer|min:0',
+            'expired_at'    => 'nullable|date',
+            'reminder'      => 'nullable|integer',
+            'batch'         => 'nullable|string',
+            'lokasi'        => 'nullable|string',
+            'supplier'      => 'nullable|string',
         ]);
 
         if (! Gate::allows('akses', 'Persediaan Produk & Obat Tambah')) {

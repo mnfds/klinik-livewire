@@ -66,19 +66,19 @@ class Update extends Component
     public function update()
     {
         $this->validate([
-            'nama_dagang'   => 'required|string|max:255',
-            'golongan'      => 'required|string|max:255',
-            'kode'          => 'required|string|max:100',
-            'sediaan'       => 'required|string|max:100',
-            'harga_dasar'   => 'required|numeric|min:0',
-            'potongan'      => 'nullable|numeric|min:0',
+            'nama_dagang'   => 'required|string',
+            'golongan'      => 'required|in:Skincare,Obat Bebas,Obat Bebas Terbatas,Obat Keras,Obat Narkotika,Obat Psikotropika,Obat fitofarmaka,OHT (Obat Herbal Terstandar),Jamu,Lain - Lain',
+            'kode'          => 'required|string',
+            'sediaan'       => 'required|in:pcs,pot,tablet,botol,sachet,strip,box,paket,kapsul,sirup,salep,injeksi,tube',
+            'harga_dasar'   => 'required|integer|min:0',
+            'potongan'      => 'nullable|integer|min:0',
             'diskon'        => 'nullable|min:0|max:100',
             'stok'          => 'required|integer|min:0',
             'expired_at'    => 'nullable|date',
             'reminder'      => 'nullable|integer',
-            'batch'         => 'nullable|string|max:100',
-            'lokasi'        => 'nullable|string|max:100',
-            'supplier'      => 'nullable|string|max:255',
+            'batch'         => 'nullable|string',
+            'lokasi'        => 'nullable|string',
+            'supplier'      => 'nullable|string',
         ]);
         if (! Gate::allows('akses', 'Persediaan Produk & Obat Edit')) {
             $this->dispatch('toast', [
@@ -103,13 +103,6 @@ class Update extends Component
             'lokasi'        => $this->lokasi,
             'supplier'      => $this->supplier,
         ]);
-        if (! Gate::allows('akses', 'Produk & Obat Edit')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
-            return;
-        }
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data produk berhasil diperbarui.'

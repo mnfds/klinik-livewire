@@ -10,20 +10,26 @@
 
             {{-- Nama Dagang --}}
             <div>
-                <label class="label font-semibold">Nama Dagang</label>
-                <input type="text" class="input input-bordered w-full" wire:model="nama_dagang" required>
+                <label class="label font-semibold">Nama Produk/Obat<span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('nama_dagang') input-error @enderror" wire:model="nama_dagang">
+                @error('nama_dagang')
+                    <span class="text-error text-sm">Mohon Mengisi Nama Produk/Obat Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Kode Produk --}}
             <div>
-                <label class="label font-semibold">Kode Produk</label>
-                <input type="text" class="input input-bordered w-full" wire:model="kode" required>
+                <label class="label font-semibold">Kode Produk<span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full @error('kode') input-error @enderror" wire:model="kode">
+                @error('kode')
+                    <span class="text-error text-sm">Mohon Mengisi kode Produk/Obat Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Sediaan --}}
             <div>
-                <label class="label font-semibold">Satuan</label>
-                <select class="select select-bordered w-full" wire:model="sediaan" required>
+                <label class="label font-semibold">Satuan<span class="text-error">*</span></label>
+                <select class="select select-bordered w-full @error('sediaan') input-error @enderror" wire:model="sediaan">
                     <option>Pilih Sediaan</option>
                     <option value="pcs">Pcs</option>
                     <option value="pot">Pot</option>
@@ -39,12 +45,15 @@
                     <option value="injeksi">Injeksi</option>
                     <option value="tube">Tube</option>
                 </select>
+                @error('sediaan')
+                    <span class="text-error text-sm">Mohon Memilih Satuan Produk/Obat Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Golongan --}}
             <div>
-                <label class="label font-semibold">Golongan Produk/Obat</label>
-                <select class="select select-bordered w-full" wire:model.lazy="golongan" required>
+                <label class="label font-semibold">Golongan Produk/Obat<span class="text-error">*</span></label>
+                <select class="select select-bordered w-full @error('golongan') input-error @enderror" wire:model.lazy="golongan">
                     <option>Pilih Golongan</option>
                     <option value="Skincare">Skincare</option>
                     <option value="Obat Bebas">Obat Bebas</option>
@@ -57,13 +66,19 @@
                     <option value="Jamu">Jamu</option>
                     <option value="Lain - Lain">Lain - Lain</option>
                 </select>
+                @error('golongan')
+                    <span class="text-error text-sm">Mohon Memilih Golongan Produk/Obat Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Harga & Diskon --}}
             <div class="form-control">
-                <label class="label font-semibold">Harga Jual</label>
-                <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
+                <label class="label font-semibold">Harga Jual<span class="text-error">*</span></label>
+                <input type="text" id="display_harga_dasar" class="input input-bordered input-rupiah w-full @error('harga_dasar') input-error @enderror" wire:model.defer='harga_dasar_show' placeholder="Rp 0">
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="harga_dasar">
+                @error('harga_dasar')
+                    <span class="text-error text-sm">Mohon Mengisi Harga Jual Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Potongan --}}
@@ -88,8 +103,11 @@
 
             {{-- Stok --}}
             <div>
-                <label class="label font-semibold">Stok</label>
-                <input type="number" class="input input-bordered w-full" wire:model="stok" min="0" required>
+                <label class="label font-semibold">Stok<span class="text-error">*</span></label>
+                <input type="number" class="input input-bordered w-full @error('stok') input-error @enderror" wire:model="stok" min="0">
+                @error('stok')
+                    <span class="text-error text-sm">Mohon Mengisi Stok Dengan Benar</span>
+                @enderror
             </div>
 
             {{-- Expired --}}
@@ -113,7 +131,7 @@
             {{-- Lokasi --}}
             <div>
                 <label class="label font-semibold">Lokasi</label>
-                <select class="select select-bordered w-full" wire:model="lokasi" required>
+                <select class="select select-bordered w-full" wire:model="lokasi">
                     <option>Pilih Lokasi Penyimpanan</option>
                     <option value="Gudang Utama">Gudang Utama</option>
                     <option value="Gudang Kecil">Gudang Kecil</option>
