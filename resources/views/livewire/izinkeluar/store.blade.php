@@ -8,11 +8,11 @@
 
         <form wire:submit.prevent="store" class="space-y-4">
             <div>
-                <label class="label font-medium">Karyawan</label>
+                <label class="label font-medium">Karyawan<span class="text-error">*</span></label>
                 @php
                     $users = \App\Models\User::with(['biodata', 'role'])->get();
                 @endphp
-                <select class="select select-bordered w-full" wire:model.lazy="user_id">
+                <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.lazy="user_id">
                     <option value="">Pilih Karyawan</option>
                     @foreach ($users as $u)
                         <option value="{{ $u->id }}">
@@ -21,6 +21,11 @@
                         </option>
                     @endforeach
                 </select>
+                @error('user_id')
+                    <span class="text-error text-sm">
+                        Mohon Memilih Karyawan Dengan Benar
+                    </span>
+                @enderror
             </div>
 
             {{-- <div>
@@ -30,8 +35,13 @@
             </div> --}}
 
             <div>
-                <label class="label font-medium">Keperluan</label>
-                <textarea wire:model.lazy="keperluan" class="textarea textarea-bordered w-full" rows="3"></textarea>
+                <label class="label font-medium">Keperluan<span class="text-error">*</span></label>
+                <textarea wire:model.lazy="keperluan" class="textarea textarea-bordered w-full @error('keperluan') input-error @enderror" rows="3"></textarea>
+                @error('keperluan')
+                    <span class="text-error text-sm">
+                        Mohon Mengisi Keperluan Yang Dilakukan Hingga Perlu Izin Keluar
+                    </span>
+                @enderror
             </div>
 
             <div class="modal-action justify-end pt-4">
