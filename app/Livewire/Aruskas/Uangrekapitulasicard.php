@@ -84,7 +84,7 @@ class Uangrekapitulasicard extends Component
             ->sum('jumlah_uang');
 
         $totalMasukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
-            ->whereIn('unit_usaha',['Sewa Multifunction', 'Coffeshop', 'Dll'])
+            // ->whereIn('unit_usaha',['Sewa Multifunction', 'Coffeshop', 'Dll'])
             ->whereIn('status',['lunas', 'belum lunas'])
             ->sum('total_tagihan');
         $totalKeluarLainnya = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
