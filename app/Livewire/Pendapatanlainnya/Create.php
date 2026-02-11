@@ -9,7 +9,7 @@ use Livewire\Component;
 class Create extends Component
 {
     public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $status;
-    public $total_tagihan = 0;
+    public $total_tagihan;
 
     public function render()
     {
@@ -17,6 +17,13 @@ class Create extends Component
     }
 
     public function storePendapatan(){
+        $this->validate([
+            'total_tagihan'  => 'required',
+            'status'        => 'required',
+            'keterangan'    => 'required',
+            'unit_usaha'    => 'required',
+        ]);
+
         $this->no_transaksi = 'TRX-' . now()->format('YmdHis');
         $this->tanggal_transaksi = now();
 
@@ -31,14 +38,7 @@ class Create extends Component
         //     "potongan" => $this->potongan,
         //     "total_tagihan_bersih" => $this->total_tagihan_bersih,
         // ]);
-
-        $this->validate([
-            'total_tagihan'  => 'required',
-            'status'        => 'required',
-            'keterangan'    => 'required',
-            'unit_usaha'    => 'required',
-        ]);
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Tambah')) {
+        if (! Gate::allows('akses', 'Pendapatan Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

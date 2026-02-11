@@ -33,7 +33,7 @@ final class DiterimaTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Uangkeluar::query()
-            ->where('status', 'Disetujui');
+            ->where('status', 'Disetujui')->latest();
     }
 
     public function relationSearch(): array
@@ -70,7 +70,7 @@ final class DiterimaTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Tanggal Ajuan ', 'tanggal_pengajuan'),
+            Column::make('Tanggal', 'tanggal_pengajuan'),
 
             Column::make('Pengaju ', 'diajukan_oleh')->searchable()->hidden(),
             Column::make('Divisi ', 'role')->searchable()->hidden(),
@@ -82,7 +82,7 @@ final class DiterimaTable extends PowerGridComponent
 
             Column::make('Jumlah Uang ', 'jumlah_uang')->searchable()->hidden(),
             Column::make('Jenis ', 'jenis_pengeluaran')->searchable()->hidden(),
-            Column::make('Nominal/Kategori ', 'jumlah_dan_jenis')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Total & Kategori ', 'jumlah_dan_jenis')->bodyAttribute('whitespace-nowrap'),
 
             Column::action('Action'),
         ];
@@ -97,6 +97,23 @@ final class DiterimaTable extends PowerGridComponent
     public function actions(Uangkeluar $row): array
     {
         $diterimaTable = [];
+        // INI BUKAN SISTEM PENGAJUAN
+        Gate::allows('akses', 'Pengeluaran Edit') && $diterimaTable[] =
+        Button::add('updatediterima')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditditerima.showModal()',
+                'class' => 'btn btn-primary btn-sm'
+            ])
+        ->dispatchTo('uangkeluar.update', 'getupdatediterima', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Pengeluaran Hapus') && $diterimaTable[] =
+        Button::add('deletediterima')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error btn-sm')
+        ->dispatch('modaldeletediterima', ['rowId' => $row->id]);
+
+        // INI KALAU ADA MENJADI PENGAJUAN 
         Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit') && $diterimaTable[] =
         Button::add('updatediterima')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
@@ -138,7 +155,14 @@ final class DiterimaTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletediterima')]
     public function konfirmasideletediterima($rowId): void
     {
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Hapus')) {
+        // if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Hapus')) {
+        //     $this->dispatch('toast', [
+        //         'type' => 'error',
+        //         'message' => 'Anda tidak memiliki akses.',
+        //     ]);
+        //     return;
+        // }
+        if (! Gate::allows('akses', 'Pengeluaran Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

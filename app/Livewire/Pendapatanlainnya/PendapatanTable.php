@@ -33,7 +33,7 @@ final class PendapatanTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Pendapatanlainnya::query();
+        return Pendapatanlainnya::query()->latest();
     }
 
     public function relationSearch(): array
@@ -47,7 +47,7 @@ final class PendapatanTable extends PowerGridComponent
         ->add('no_transaksi')
         ->add('tanggal_transaksi', fn ($row) => \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i'))
         ->add('no_dan_tanggal', function($row){
-            return ucfirst($row->no_transaksi) . '<br><span class="text-sm text-gray-500">' . $row->tanggal_transaksi . '</span>';
+            return ucfirst($row->no_transaksi) . '<br><span class="text-sm text-gray-500">' . \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i') . '</span>';
         })
 
         ->add('keterangan')
@@ -111,7 +111,7 @@ final class PendapatanTable extends PowerGridComponent
     public function actions(Pendapatanlainnya $row): array
     {
         $pendapatanLainnya = [];
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Edit') && $pendapatanLainnya[] =
+        Gate::allows('akses', 'Pendapatan Edit') && $pendapatanLainnya[] =
         Button::add('updatependapatan')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -120,7 +120,7 @@ final class PendapatanTable extends PowerGridComponent
             ])
         ->dispatchTo('pendapatanlainnya.update', 'getupdatependapatan', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus') && $pendapatanLainnya[] =
+        Gate::allows('akses', 'Pendapatan Hapus') && $pendapatanLainnya[] =
         Button::add('deletependapatan')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error btn-sm')
@@ -152,7 +152,7 @@ final class PendapatanTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideletependapatan')]
     public function konfirmasideletependapatan($rowId): void
     {
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Pending Hapus')) {
+        if (! Gate::allows('akses', 'Pendapatan Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

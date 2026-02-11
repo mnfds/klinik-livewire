@@ -99,23 +99,25 @@ class AksesSeeder extends Seeder
 
             // Pengeluaran Arus Kas
             11 => [
-                'Pengajuan Pengeluaran',
-                'Pengajuan Pengeluaran Tambah',
-                
-                'Pengajuan Pengeluaran Pending',
-                'Pengajuan Pengeluaran Pending Hapus',
-                'Pengajuan Pengeluaran Pending Edit',
-                
-                'Pengajuan Pengeluaran Disetujui',
-                'Pengajuan Pengeluaran Disetujui Tambah',
-                'Pengajuan Pengeluaran Disetujui Hapus',
-                'Pengajuan Pengeluaran Disetujui Edit',
-
-                'Pengajuan Pengeluaran Ditolak',
-                'Pengajuan Pengeluaran Ditolak Hapus',
-                'Pengajuan Pengeluaran Ditolak Edit',
-
-                'Pengajuan Pengeluaran Persetujuan',
+                // === AKSES PENGELUARAN KALAU MENJADI PENGAJUAN ===
+                // 'Pengajuan Pengeluaran',
+                // 'Pengajuan Pengeluaran Tambah',
+                // 'Pengajuan Pengeluaran Pending',
+                // 'Pengajuan Pengeluaran Pending Hapus',
+                // 'Pengajuan Pengeluaran Pending Edit',
+                // 'Pengajuan Pengeluaran Disetujui',
+                // 'Pengajuan Pengeluaran Disetujui Tambah',
+                // 'Pengajuan Pengeluaran Disetujui Hapus',
+                // 'Pengajuan Pengeluaran Disetujui Edit',
+                // 'Pengajuan Pengeluaran Ditolak',
+                // 'Pengajuan Pengeluaran Ditolak Hapus',
+                // 'Pengajuan Pengeluaran Ditolak Edit',
+                // 'Pengajuan Pengeluaran Persetujuan',
+                //  === AKSES PENGELUARAN ===
+                'Pengeluaran',
+                'Pengeluaran Tambah',
+                'Pengeluaran Hapus',
+                'Pengeluaran Edit',
             ],
 
             // Pendapatan Arus Kas

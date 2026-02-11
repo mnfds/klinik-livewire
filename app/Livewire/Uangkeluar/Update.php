@@ -83,18 +83,25 @@ class Update extends Component
     public function updateDiterima()
     {
         $this->validate([
-            'jumlah_uang' => 'nullable',
-            'jenis_pengeluaran' => 'nullable',
-            'keterangan' => 'nullable',
+            'jumlah_uang' => 'required',
+            'jenis_pengeluaran' => 'required',
+            'keterangan' => 'required',
+            'unit_usaha' => 'required',
         ]);
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit')) {
+        // if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit')) {
+        //     $this->dispatch('toast', [
+        //         'type' => 'error',
+        //         'message' => 'Anda tidak memiliki akses.',
+        //     ]);
+        //     return;
+        // }
+        if (! Gate::allows('akses', 'Pengeluaran Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
             ]);
             return;
         }
-
         Uangkeluar::where('id', $this->diterima_id)->update([
             'jumlah_uang' => $this->jumlah_uang,
             'jenis_pengeluaran' => $this->jenis_pengeluaran,

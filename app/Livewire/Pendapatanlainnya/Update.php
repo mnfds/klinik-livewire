@@ -9,7 +9,7 @@ use Livewire\Component;
 class Update extends Component
 {
     public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $status;
-    public $total_tagihan = 0;
+    public $total_tagihan;
     public $pendapatan_id;
 
     public function render()
@@ -40,7 +40,7 @@ class Update extends Component
             'keterangan'    => 'required',
             'unit_usaha'    => 'required',
         ]);
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Pending Edit')) {
+        if (! Gate::allows('akses', 'Pendapatan Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
@@ -59,7 +59,7 @@ class Update extends Component
             'type' => 'success',
             'message' => 'Data berhasil diperbarui.'
         ]);
-        $this->dispatch('closemodaleditpending');
+        $this->dispatch('modaleditpendapatan');
         $this->reset();
         return redirect()->route('aruskas.data');
     }

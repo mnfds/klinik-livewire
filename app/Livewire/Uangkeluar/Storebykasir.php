@@ -17,22 +17,27 @@ class Storebykasir extends Component
 
     public function store()
     {
+        // dd($this->user_id);
+        $this->validate([
+            'user_id'           => 'required|numeric',
+            'jumlah_uang'       => 'required',
+            'jenis_pengeluaran' => 'required',
+            'keterangan'        => 'required',
+            'unit_usaha'        => 'required',
+        ]);
         $user = User::with(['biodata', 'role'])->findOrFail($this->user_id);
 
         $this->diajukan_oleh = $user->biodata->nama_lengkap;
         $this->role = $user->role->nama_role;
-
-        $this->validate([
-            'diajukan_oleh'     => 'required',
-            'role'              => 'required',
-            'keterangan'        => 'required',
-            'jumlah_uang'       => 'required',
-            'jenis_pengeluaran' => 'required',
-            'unit_usaha'        => 'required',
-            'status'            => 'required',
-        ]);
         
-        if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Tambah')) {
+        // if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Tambah')) {
+        //     $this->dispatch('toast', [
+        //         'type' => 'error',
+        //         'message' => 'Anda tidak memiliki akses.',
+        //     ]);
+        //     return;
+        // }
+        if (! Gate::allows('akses', 'Pengeluaran Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
