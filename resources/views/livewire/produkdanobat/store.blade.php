@@ -31,19 +31,19 @@
                 <label class="label font-semibold">Satuan<span class="text-error">*</span></label>
                 <select class="select select-bordered w-full @error('sediaan') input-error @enderror" wire:model.lazy="sediaan">
                     <option>Pilih Sediaan</option>
-                    <option value="pcs">Pcs</option>
-                    <option value="pot">Pot</option>
-                    <option value="tablet">Tablet</option>
-                    <option value="botol">Botol</option>
-                    <option value="sachet">Sachet</option>
-                    <option value="strip">Strip</option>
-                    <option value="box">Box</option>
-                    <option value="paket">Paket</option>
-                    <option value="kapsul">Kapsul</option>
-                    <option value="sirup">Sirup</option>
-                    <option value="salep">Salep</option>
-                    <option value="injeksi">Injeksi</option>
-                    <option value="tube">Tube</option>
+                    <option value="Pcs">Pcs</option>
+                    <option value="Pot">Pot</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="Botol">Botol</option>
+                    <option value="Sachet">Sachet</option>
+                    <option value="Strip">Strip</option>
+                    <option value="Box">Box</option>
+                    <option value="Paket">Paket</option>
+                    <option value="Kapsul">Kapsul</option>
+                    <option value="Sirup">Sirup</option>
+                    <option value="Salep">Salep</option>
+                    <option value="Injeksi">Injeksi</option>
+                    <option value="Tube">Tube</option>
                 </select>
                 @error('sediaan')
                     <span class="text-error text-sm">Mohon Memilih Satuan Produk/Obat Dengan Benar</span>
@@ -81,17 +81,17 @@
                 @enderror
             </div>
 
+            {{-- Diskon --}}
+            <div>
+                <label class="label font-semibold">Diskon (%)</label>
+                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
+            </div>
+
             {{-- Potongan --}}
             <div>
                 <label class="label font-semibold">Potongan</label>
                 <input type="text" class="input input-bordered input-rupiah w-full" placeholder="Rp 0">
                 <input type="hidden" class="input-rupiah-hidden" wire:model.defer="potongan">
-            </div>
-
-            {{-- Diskon --}}
-            <div>
-                <label class="label font-semibold">Diskon (%)</label>
-                <input type="number" min="0" max="100" class="input input-bordered w-full" wire:model.defer="diskon">
             </div>
 
             {{-- Harga Bersih --}}
@@ -172,14 +172,12 @@
             const potongan = parseInt(potonganInput.value.replace(/\D/g, '') || 0);
             const diskon = parseFloat(diskonInput.value || 0);
 
-            // Logika: harga setelah potongan
-            const hargaSetelahPotongan = Math.max(0, harga - potongan);
-
-            // Diskon nominal
-            const diskonNominal = (hargaSetelahPotongan * diskon) / 100;
+            // Logika: Hitung Diskon
+            const diskonNominal = (harga * diskon) / 100;
+            const hargaSetelahDiskon = Math.max(0, harga - diskonNominal);
 
             // Harga bersih akhir
-            const hargaBersih = Math.max(0, Math.round(hargaSetelahPotongan - diskonNominal));
+            const hargaBersih = Math.max(0, Math.round(hargaSetelahDiskon - potongan));
 
             // Update hidden input Livewire
             hargaBersihInput.value = hargaBersih;

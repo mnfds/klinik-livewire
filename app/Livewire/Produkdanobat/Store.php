@@ -25,7 +25,7 @@ class Store extends Component
             'nama_dagang'   => 'required|string',
             'golongan'      => 'required|in:Skincare,Obat Bebas,Obat Bebas Terbatas,Obat Keras,Obat Narkotika,Obat Psikotropika,Obat fitofarmaka,OHT (Obat Herbal Terstandar),Jamu,Lain - Lain',
             'kode'          => 'required|string|unique:produk_dan_obats,kode',
-            'sediaan'       => 'required|in:pcs,pot,tablet,botol,sachet,strip,box,paket,kapsul,sirup,salep,injeksi,tube',
+            'sediaan'       => 'required|in:Pcs,Pot,Tablet,Botol,Sachet,Strip,Box,Paket,Kapsul,Sirup,Salep,Injeksi,Tube',
             'harga_dasar'   => 'required|integer|min:0',
             'potongan'      => 'nullable|integer|min:0',
             'diskon'        => 'nullable|min:0|max:100',
@@ -45,18 +45,14 @@ class Store extends Component
             return;
         }
         // Hitung harga bersih
-        $harga = (float) $this->harga_dasar;
-        $potongan = (float) $this->potongan;
-        $diskon = (float) $this->diskon ?? 0;
+        $harga     = (float) ($this->harga_dasar ?? 0);
+        $potongan  = (float) ($this->potongan ?? 0);
+        $diskon    = (float) ($this->diskon ?? 0);
 
-        // Harga setelah potongan nominal
-        $hargaSetelahPotongan = max(0, $harga - $potongan);
-
-        // Hitung diskon dalam nominal
-        $diskonNominal = ($hargaSetelahPotongan * $diskon) / 100;
-
-        // Harga bersih akhir
-        $this->harga_bersih = max(0, $hargaSetelahPotongan - $diskonNominal);
+        // Hitung diskon
+        $diskonNominal = ($harga * $diskon) / 100;
+        $hargaSetelahDiskon = max(0, $harga - $diskonNominal);
+        $this->harga_bersih = max(0, $hargaSetelahDiskon - $potongan);
 
         ProdukDanObat::create([
             'nama_dagang' => $this->nama_dagang,

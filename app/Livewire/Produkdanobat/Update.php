@@ -55,11 +55,10 @@ class Update extends Component
             $diskon = (int) $this->diskon;
             $potongan = (int) $this->potongan;
 
-            $hargaSetelahPotongan = max(0, $harga - $potongan);
+            $diskonNominal = ($harga * $diskon) / 100;
+            $hargaSetelahDiskon = max(0, $harga - $diskonNominal);
 
-            $diskonNominal = ($hargaSetelahPotongan * $diskon) / 100;
-
-            $this->harga_bersih = max(0, $hargaSetelahPotongan - $diskonNominal);
+            $this->harga_bersih = max(0, $hargaSetelahDiskon - $potongan);
         }
     }
 
@@ -69,7 +68,7 @@ class Update extends Component
             'nama_dagang'   => 'required|string',
             'golongan'      => 'required|in:Skincare,Obat Bebas,Obat Bebas Terbatas,Obat Keras,Obat Narkotika,Obat Psikotropika,Obat fitofarmaka,OHT (Obat Herbal Terstandar),Jamu,Lain - Lain',
             'kode'          => 'required|string',
-            'sediaan'       => 'required|in:pcs,pot,tablet,botol,sachet,strip,box,paket,kapsul,sirup,salep,injeksi,tube',
+            'sediaan'       => 'required|in:Pcs,Pot,Tablet,Botol,Sachet,Strip,Box,Paket,Kapsul,Sirup,Salep,Injeksi,Tube',
             'harga_dasar'   => 'required|integer|min:0',
             'potongan'      => 'nullable|integer|min:0',
             'diskon'        => 'nullable|min:0|max:100',
