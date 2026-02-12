@@ -16,8 +16,12 @@ return new class extends Migration
             $table->string('nama');
             $table->string('kode')->unique()->nullable();
             $table->string('satuan')->default('pcs');
-            $table->integer('stok')->default(0); // disimpan langsung
-            $table->string('lokasi')->nullable(); // lokasi tujuan/asal
+            $table->integer('stok')->default(0);
+            $table->unsignedBigInteger('harga_dasar');
+            $table->unsignedBigInteger('diskon')->nullable();
+            $table->unsignedBigInteger('potongan')->nullable();
+            $table->unsignedBigInteger('harga_bersih')->nullable();
+            $table->string('lokasi')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

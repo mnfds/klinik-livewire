@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\Gate;
 class Update extends Component
 {
     public $barang_id;
-    public $nama, $kode, $satuan, $lokasi, $keterangan;
-    public $barang;
+    public $nama, $kode, $satuan, $lokasi, $harga_dasar, $harga_bersih, $keterangan;
+    public $diskon = 0;
+    public $potongan = 0;
 
+    public $potongan_show;
+    public $harga_dasar_show;
+    public $harga_bersih_show;
 
     #[\Livewire\Attributes\On('getupdatebarang')]
     public function getupdatebarang($rowId): void
@@ -23,10 +27,33 @@ class Update extends Component
         $this->nama   = $barang->nama;
         $this->kode   = $barang->kode;
         $this->satuan   = $barang->satuan;
+        $this->harga_dasar   = $barang->harga_dasar;
+        $this->potongan   = $barang->potongan ?? 0;
+        $this->diskon   = $barang->diskon ?? 0;
+        $this->harga_bersih   = $barang->harga_bersih ?? $barang->harga_dasar;
         $this->lokasi   = $barang->lokasi;
         $this->keterangan   = $barang->keterangan;
 
+        $this->potongan_show = (int) preg_replace('/\D/', '', $this->potongan);
+        $this->harga_dasar_show = (int) preg_replace('/\D/', '', $this->harga_dasar);
+        $this->harga_bersih_show = (int) preg_replace('/\D/', '', $this->harga_bersih);
+
+
         $this->dispatch('openModal');
+    }
+
+    public function updated($property)
+    {
+        if (in_array($property, ['harga_dasar', 'diskon', 'potongan'])) {
+            $harga  = (int) $this->harga_dasar;
+            $diskon = (int) $this->diskon;
+            $potongan = (int) $this->potongan;
+
+            $diskonNominal = ($harga * $diskon) / 100;
+            $hargaSetelahDiskon = max(0, $harga - $diskonNominal);
+
+            $this->harga_bersih = max(0, $hargaSetelahDiskon - $potongan);
+        }
     }
 
     public function update()
@@ -34,6 +61,7 @@ class Update extends Component
         $this->validate([
             'nama' => 'required',
             'satuan' => 'required',
+            'harga_dasar' => 'required',
             'kode' => 'nullable',
             'lokasi' => 'nullable',
             'keterangan' => 'nullable',
@@ -48,8 +76,12 @@ class Update extends Component
 
         Barang::where('id', $this->barang_id)->update([
             'nama' => $this->nama,
-            'satuan' => $this->satuan,
             'kode' => $this->kode,
+            'satuan' => $this->satuan,
+            'harga_dasar' => $this->harga_dasar,
+            'diskon' => $this->diskon,
+            'potongan' => $this->potongan,
+            'harga_bersih' => $this->harga_bersih,
             'lokasi' => $this->lokasi,
             'keterangan' => $this->keterangan,
         ]);

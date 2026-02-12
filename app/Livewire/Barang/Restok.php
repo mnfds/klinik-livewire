@@ -48,6 +48,12 @@ class Restok extends Component
             'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap,
         ]);
 
+        $stokBarang = Barang::findOrFail($this->barang_id);
+        $stokTersisa = $stokBarang->stok + $this->jumlah;
+        $stokBarang->update([
+            'stok' => $stokTersisa,
+        ]);
+
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data Barang berhasil Diperbarui.'

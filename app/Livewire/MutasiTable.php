@@ -33,7 +33,7 @@ final class MutasiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return MutasiBarang::with(['barang']);
+        return MutasiBarang::with(['barang'])->latest();
     }
 
     public function relationSearch(): array
@@ -50,6 +50,9 @@ final class MutasiTable extends PowerGridComponent
             ->add('barang.nama')
             ->add('barang.satuan')
             ->add('jumlah')
+            ->add('jumlah_satuan', function($row){
+                return strtoupper($row->jumlah) . ' ' . $row->barang->satuan . '</span>';
+            })
             ->add('diajukan_oleh')
             ->add('catatan');
     }
@@ -58,23 +61,18 @@ final class MutasiTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-
             Column::make('Tipe', 'tipe')->searchable(),
-            
             Column::make('Nama', 'barang.nama')->searchable(),
 
-            Column::make('Jumlah', 'jumlah')->sortable(),
-            
-            Column::make('Satuan', 'barang.satuan')->searchable(),
+            Column::make('Jumlah', 'jumlah')->sortable()->hidden(),
+            Column::make('Satuan', 'barang.satuan')->searchable()->hidden(),
+            Column::make('Jumlah Item', 'jumlah_satuan')->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Orang Terkait', 'diajukan_oleh')->searchable(),
-            
             Column::make('Keterangan', 'catatan'),
-
             Column::action('Action')
         ];
     }
-
 
     public function filters(): array
     {

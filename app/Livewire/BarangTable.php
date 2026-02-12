@@ -32,28 +32,7 @@ final class BarangTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Barang::query()
-            ->select('barangs.*')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_barangs')
-                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
-                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id')
-                    ->where('tipe', 'masuk');
-            }, 'stok_masuk')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_barangs')
-                    ->selectRaw('COALESCE(SUM(jumlah), 0)')
-                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id')
-                    ->where('tipe', 'keluar');
-            }, 'stok_keluar')
-            ->selectSub(function ($query) {
-                $query->from('mutasi_barangs')
-                    ->selectRaw(
-                        '(COALESCE(SUM(CASE WHEN tipe = "masuk" THEN jumlah END), 0) 
-                        - COALESCE(SUM(CASE WHEN tipe = "keluar" THEN jumlah END), 0))'
-                    )
-                    ->whereColumn('mutasi_barangs.barang_id', 'barangs.id');
-            }, 'sisa_stok');
+        return Barang::query()->latest();
     }
 
     public function relationSearch(): array
@@ -67,10 +46,21 @@ final class BarangTable extends PowerGridComponent
             ->add('#')
             ->add('nama')
             ->add('kode')
+            ->add('nama_kode', function($row){
+                return strtoupper($row->nama) . '<br><span class="text-sm text-gray-500">Kode Item : ' . $row->kode . '</span>';
+            })
+
+            ->add('stok', fn ($row) => number_format($row->stok, 0, ',', '.'))
             ->add('satuan')
-            ->add('stok_masuk')
-            ->add('stok_keluar')
-            ->add('sisa_stok')
+            ->add('stok_satuan', function($row){
+                return strtoupper($row->stok) . ' ' . $row->satuan . '</span>';
+            })
+
+            ->add('harga_dasar', fn ($row) => number_format($row->harga_dasar, 0, ',', '.'))
+            ->add('potongan', fn ($row) => number_format($row->potongan, 0, ',', '.'))
+            ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
+            ->add('harga_bersih', fn ($row) => number_format($row->harga_bersih, 0, ',', '.'))
+            
             ->add('lokasi')
             ->add('keterangan');
     }
@@ -79,12 +69,19 @@ final class BarangTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Barang', 'nama')->searchable(),
-            Column::make('Kode Barang', 'kode')->searchable(),
-            Column::make('satuan ', 'satuan')->searchable(),
-            Column::make('Stok Masuk ', 'stok_masuk')->sortable(),
-            Column::make('Stok Keluar ', 'stok_keluar')->sortable(),
-            Column::make('Stok Tersisa ', 'sisa_stok')->sortable(),
+            Column::make('Barang', 'nama')->searchable()->hidden(),
+            Column::make('Kode Barang', 'kode')->searchable()->hidden(),
+            Column::make('Nama Barang', 'nama_kode')->bodyAttribute('whitespace-nowrap'),
+            
+            Column::make('Stok ', 'stok')->searchable()->hidden(),
+            Column::make('satuan ', 'satuan')->searchable()->hidden(),
+            Column::make('Sisa Stok', 'stok_satuan')->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Harga Jual', 'harga_dasar')->sortable(),
+            Column::make('Potongan', 'potongan')->sortable(),
+            Column::make('Diskon', 'diskon')->sortable(),
+            Column::make('Harga Bersih', 'harga_bersih')->sortable(),
+                
             Column::make('Lokasi Disimpan ', 'lokasi')->searchable(),
             Column::make('Keterangan ', 'keterangan'),
             Column::action('Action')
@@ -110,7 +107,7 @@ final class BarangTable extends PowerGridComponent
             ])
             ->dispatchTo('barang.update', 'getupdatebarang', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Persedian Barang Hapus') && $barangButton[] =
+        Gate::allows('akses', 'Persediaan Barang Hapus') && $barangButton[] =
         Button::add('deletebarang')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
