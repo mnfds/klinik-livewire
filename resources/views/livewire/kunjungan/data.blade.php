@@ -46,6 +46,14 @@
                     <livewire:Kunjungan.Lakilaki.GrafikBulanan />
                     <livewire:Kunjungan.Lakilaki.GrafikTahunan />
                 </div>
+                
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Best Items" style="background-image: none;"/>
+                <div class="tab-content bg-base-200 p-1">
+                    <livewire:Kunjungan.Items.Bundling />
+                    <livewire:Kunjungan.Items.Produk />
+                    <livewire:Kunjungan.Items.Treatment />
+                    <livewire:Kunjungan.Items.Pelayanan />
+                </div>
 
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked/>
                 <div class="tab-content bg-base-200 p-1">
