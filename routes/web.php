@@ -355,6 +355,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/kinerja', 'kinerja.data')->name('kinerja.data');    
     // ====== LAPORAN KINERJA ====== //
 
+    // ====== DOKUMEN ====== //
+    Route::view('/dokumen', 'dokumen.data')->name('dokumen.data');    
+    // ====== DOKUMEN ====== //
+
     // ====== PENGAJUAN UANG KELUAR ====== //
     Route::view('/uangkeluar', 'uangkeluar.data')->name('uangkeluar.data');    
     // ====== PENGAJUAN UANG KELUAR ====== //

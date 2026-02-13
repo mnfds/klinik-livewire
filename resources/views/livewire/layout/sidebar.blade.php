@@ -135,9 +135,11 @@
                 @if (
                     Gate::allows('akses', 'Jadwal') ||
                     Gate::allows('akses', 'Laporan') ||
+                    Gate::allows('akses', 'Dokumen') ||
                     Gate::allows('akses', 'Persediaan') ||
                     Gate::allows('akses', 'Produk & Obat Data') ||
-                    Gate::allows('akses', 'Pengajuan')
+                    Gate::allows('akses', 'Pengajuan') ||
+                    Gate::allows('akses', 'Inventaris')
                 )
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Manajemen Klinik</span>
@@ -179,14 +181,36 @@
                     </li>
                 @endif 
 
-                {{-- @can('akses', 'Jadwal') --}}
+                @php
+                    use App\Models\Dokumen;
+                    $hariIni = Carbon::today();
+
+                    // Cek Dokumen Yang Sudah Mendekati Tidak Berlaku
+                    $dokumenKadaluarsa = Dokumen::query()
+                        ->whereNotNull('tanggal_tidak_berlaku')
+                        ->whereNotNull('reminder')
+                        ->where('reminder', '>', 0)
+                        ->get()
+                        ->filter(function ($row) use ($hariIni) {
+                            $tanggalDokumen = Carbon::parse($row->tanggal_tidak_berlaku)->subMonths($row->reminder)->startOfMonth();
+                            return $hariIni->greaterThanOrEqualTo($tanggalDokumen);
+                        });
+                    $jumlahDokumenNonaktif = $dokumenKadaluarsa->count();
+                @endphp
+
+                @can('akses', 'Dokumen')
                 <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                    <x-side-link href="{{ route('dokumen.data') }}" :active="request()->routeIs('dokumen.*')" wire:navigate>
                         <i class="fa-solid fa-book"></i>
                         <span class="ml-3">Dokumen</span>
+                        @if($jumlahDokumenNonaktif > 0)
+                            <span class="ml-auto rounded-full text-warning bg-accent-content">
+                                <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
+                            </span>
+                        @endif   
                     </x-side-link>
                 </li>
-                {{-- @endcan --}}
+                @endcan
 
                 @php
                     use App\Models\BahanBaku;
