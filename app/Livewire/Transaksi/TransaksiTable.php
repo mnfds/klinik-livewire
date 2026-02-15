@@ -174,7 +174,7 @@ final class TransaksiTable extends PowerGridComponent
             ]);
 
         $transaksiButton[] = Button::add('mutasi')
-            ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Detail')
+            ->slot('<i class="fa-solid fa-file-invoice-dollar"></i> Detail')
             ->tag('button')
             ->attributes([
                 'title' => 'Mutasi',
