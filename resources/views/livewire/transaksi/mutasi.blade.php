@@ -168,17 +168,17 @@
 
                                 {{-- DISKON GLOBAL --}}
                                 @if($transaksi->diskon > 0)
-                                    <div class="flex justify-between text-success">
+                                    <div class="flex justify-between text-error">
                                         <span>Diskon</span>
                                         <span>
-                                            - Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}
+                                            - {{ number_format($transaksi->diskon, 0, ',', '.') }}%
                                         </span>
                                     </div>
                                 @endif
 
                                 {{-- POTONGAN GLOBAL --}}
                                 @if($transaksi->potongan > 0)
-                                    <div class="flex justify-between text-success">
+                                    <div class="flex justify-between text-error">
                                         <span>Potongan</span>
                                         <span>
                                             - Rp {{ number_format($transaksi->potongan, 0, ',', '.') }}
