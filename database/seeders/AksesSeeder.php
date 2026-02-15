@@ -221,7 +221,15 @@ class AksesSeeder extends Seeder
             
             // Inventaris
             22 => [
-                'Inventaris'
+                'Inventaris',
+                'Inventaris Tambah',
+                'Inventaris Hapus',
+                'Inventaris Edit',
+                'Inventaris Masuk',
+                'Inventaris Keluar',
+                'Inventaris Riwayat',
+                'Inventaris Riwayat Hapus',
+                'Inventaris Riwayat Edit',
             ],
 
             // Pasien

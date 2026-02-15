@@ -337,7 +337,7 @@
                 
                 @can('akses', 'Inventaris')
                 <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                    <x-side-link href="{{ route('inventaris.data') }}" :active="request()->routeIs('inventaris.*')" wire:navigate>
                         <i class="fa-solid fa-warehouse"></i>
                         <span class="ml-3">Inventaris</span>
                     </x-side-link>

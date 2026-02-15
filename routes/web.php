@@ -373,6 +373,10 @@ Route::middleware(['auth'])->group(function () {
     // ====== PENGAJUAN LEMBUR ====== //
     Route::view('/lembur', 'lembur.data')->name('lembur.data');    
     // ====== PENGAJUAN LEMBUR ====== //
+
+    // ====== INVENTARIS ====== //
+    Route::view('/inventaris', 'inventaris.data')->name('inventaris.data');    
+    // ====== INVENTARIS ====== //
 });
 
 
