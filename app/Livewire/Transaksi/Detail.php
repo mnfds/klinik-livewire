@@ -594,7 +594,7 @@ class Detail extends Component
         $produk->mutasiproduk()->create([
             'tipe' => 'keluar',
             'jumlah' => $jumlah,
-            'diajukan_oleh' => auth()->user()->name ?? null,
+            'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name,
             'catatan' => trim(($keterangan ?? 'Transaksi') . 
                         ($noTransaksi ? ' - No: ' . $noTransaksi : '')),
         ]);
