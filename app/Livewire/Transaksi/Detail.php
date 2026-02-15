@@ -389,7 +389,7 @@ class Detail extends Component
 
             // ✅ 4. Update status pasien + kurangi stok
             PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
-            $this->kurangiStokProduk();
+            $this->kurangiStokProduk($transaksi->no_transaksi);
             // $this->kurangiStokBahanBaku();
             $this->invoice($transaksi->id);
 
@@ -486,23 +486,26 @@ class Detail extends Component
         return max(0, (int) $total);
     }
 
-    protected function kurangiStokProduk()
+    protected function kurangiStokProduk(string $notransaksi = null)
     {
         // --- Pengurangan Stok Produk Dari Pembelian Produk ---
         foreach ($this->produk as $item) {
             if ($item->produk) {
                 $produk = $item->produk; // relasi ke ProdukDanObat
                 $jumlah = $item->jumlah_produk ?? 0;
-
-                $stokBaru = max($produk->stok - $jumlah, 0);
-                $produk->update(['stok' => $stokBaru]);
+                $this->kurangiStokDanCatatMutasi(
+                    $produk,
+                    $jumlah,
+                    $notransaksi,
+                    'Transaksi Kasir'
+                );
             }
         }
 
         // --- Pengurangan Stok Produk Dari Produk Tambahan ---
         if ($this->showTambahanItem === true) {
             foreach ($this->produktambahan ?? [] as $item) {
-                // 🔒skip jika tidak item tambahan / dibatalkan
+                // skip jika tidak item tambahan / dibatalkan
                 if (!isset($item['produk_id']) || ($item['jumlah_produk'] ?? 0) <= 0) {
                     continue;
                 }
@@ -511,12 +514,13 @@ class Detail extends Component
                 if (! $produk) continue;
 
                 $jumlah = (int) $item['jumlah_produk'];
-                if ($jumlah <= 0) continue;
 
-                $stokBaru = max($produk->stok - $jumlah, 0);
-                $produk->update([
-                    'stok' => $stokBaru,
-                ]);
+                $this->kurangiStokDanCatatMutasi(
+                    $produk,
+                    $jumlah,
+                    $notransaksi,
+                    'Transaksi Kasir'
+                );
             }
         }
 
@@ -528,10 +532,12 @@ class Detail extends Component
             $produk = $nonracik->produk;
             $jumlah = (int) ($nonracik->jumlah_obat ?? 0);
 
-            if (! $produk || $jumlah <= 0) continue;
-
-            $stokBaru = max($produk->stok - $jumlah, 0);
-            $produk->update(['stok' => $stokBaru]);
+            $this->kurangiStokDanCatatMutasi(
+                $produk,
+                $jumlah,
+                $notransaksi,
+                'Transaksi Kasir'
+            );
         }
 
         // --- Pengurangan Stok Produk Dari Obat Racikan ---
@@ -545,10 +551,12 @@ class Detail extends Component
                 if (! $produk) continue;
 
                 $jumlah = (int) ($bahan->jumlah_obat ?? 0);
-                if ($jumlah <= 0) continue;
-
-                $stokBaru = max($produk->stok - $jumlah, 0);
-                $produk->update(['stok' => $stokBaru]);
+                $this->kurangiStokDanCatatMutasi(
+                    $produk,
+                    $jumlah,
+                    $notransaksi,
+                    'Transaksi Kasir'
+                );
             }
         }
 
@@ -562,14 +570,36 @@ class Detail extends Component
                 if (! $produk) continue;
 
                 $jumlah = (int) ($item->jumlah ?? 0); // ← ini sudah benar
-                if ($jumlah <= 0) continue;
-
-                $stokBaru = max($produk->stok - $jumlah, 0);
-
-                $produk->update(['stok' => $stokBaru]);
+                $this->kurangiStokDanCatatMutasi(
+                    $produk,
+                    $jumlah,
+                    $notransaksi,
+                    'Transaksi Kasir'
+                );
             }
         }
     }
+
+    protected function kurangiStokDanCatatMutasi($produk, int $jumlah, ?string $noTransaksi = null, string $keterangan = null)
+    {
+        if (! $produk || $jumlah <= 0) return;
+
+        $stokSebelum = $produk->stok;
+        $stokBaru = max($stokSebelum - $jumlah, 0);
+
+        $produk->update([
+            'stok' => $stokBaru,
+        ]);
+
+        $produk->mutasiproduk()->create([
+            'tipe' => 'keluar',
+            'jumlah' => $jumlah,
+            'diajukan_oleh' => auth()->user()->name ?? null,
+            'catatan' => trim(($keterangan ?? 'Transaksi') . 
+                        ($noTransaksi ? ' - No: ' . $noTransaksi : '')),
+        ]);
+    }
+
 
     // protected function kurangiStokBahanBaku()
     // {
