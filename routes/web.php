@@ -312,6 +312,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/klinik/{id}/detail', function ($id) {
         return view('transaksi.detail', ['id' => $id]);
     })->name('transaksi.detail');
+    Route::get('/transaksi/klinik/{id}/mutasi', function ($id) {
+        return view('transaksi.mutasi', ['id' => $id]);
+    })->name('transaksi.mutasi');
     // ====== KASIR KLINIK ====== //
     
     // ====== RESERVASI ====== //

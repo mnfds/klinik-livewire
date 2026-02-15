@@ -53,7 +53,8 @@ final class TransaksiTable extends PowerGridComponent
             )
             ->orderByDesc('tanggal_kunjungan')
             ->orderByDesc('id') 
-            ->with(['pasien', 'poliklinik', 'dokter']);
+            ->with(['pasien', 'poliklinik', 'dokter'])
+            ->latest();
     }
 
     public function relationSearch(): array
@@ -171,7 +172,16 @@ final class TransaksiTable extends PowerGridComponent
                 'onclick' => "Livewire.navigate('" . route('transaksi.detail', ['id' => $row->id]) . "')",
                 'class' => 'btn btn-secondary',
             ]);
-            
+
+        $transaksiButton[] = Button::add('mutasi')
+            ->slot('<i class="fa-solid fa-hand-holding-dollar"></i> Detail')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Mutasi',
+                'onclick' => "Livewire.navigate('" . route('transaksi.mutasi', ['id' => $row->id]) . "')",
+                'class' => 'btn btn-primary',
+            ]);
+
         $transaksiButton[] =
         Button::add('invoice')
             ->slot('<i class="fa-solid fa-print"></i>Print Invoice')
@@ -197,6 +207,10 @@ final class TransaksiTable extends PowerGridComponent
                 ->hide(),
 
             Rule::button('invoice')
+                ->when(fn($row) => ! in_array($row->status_terdaftar, ['lunas', 'selesai']))
+                ->hide(),
+
+            Rule::button('mutasi')
                 ->when(fn($row) => ! in_array($row->status_terdaftar, ['lunas', 'selesai']))
                 ->hide(),
         ];
