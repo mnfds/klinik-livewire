@@ -497,7 +497,7 @@ class Detail extends Component
                     $produk,
                     $jumlah,
                     $notransaksi,
-                    'Transaksi Kasir'
+                    'Transaksi Klinik'
                 );
             }
         }
@@ -519,7 +519,7 @@ class Detail extends Component
                     $produk,
                     $jumlah,
                     $notransaksi,
-                    'Transaksi Kasir'
+                    'Transaksi Klinik'
                 );
             }
         }
@@ -536,7 +536,7 @@ class Detail extends Component
                 $produk,
                 $jumlah,
                 $notransaksi,
-                'Transaksi Kasir'
+                'Transaksi Klinik'
             );
         }
 
@@ -555,7 +555,7 @@ class Detail extends Component
                     $produk,
                     $jumlah,
                     $notransaksi,
-                    'Transaksi Kasir'
+                    'Transaksi Klinik'
                 );
             }
         }
@@ -574,7 +574,7 @@ class Detail extends Component
                     $produk,
                     $jumlah,
                     $notransaksi,
-                    'Transaksi Kasir'
+                    'Transaksi Klinik'
                 );
             }
         }

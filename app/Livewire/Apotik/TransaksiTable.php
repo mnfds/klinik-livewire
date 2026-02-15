@@ -70,7 +70,8 @@ final class TransaksiTable extends PowerGridComponent
         ->add('total_potongan', fn ($row) => number_format($row->riwayat->sum('potongan'), 0, ',', '.'))
         ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon') ? $row->riwayat->sum('diskon') . '%' : '0%')
         ->add('total_harga')
-        ->add('total_harga_format', fn ($row) => Number::currency($row->total_harga, in: 'IDR', locale: 'id_ID', precision: 0))
+        ->add('total_harga_format', fn ($row) =>'Rp ' . number_format($row->total_harga, 0, ',', '.'))
+        // ->add('total_harga_format', fn ($row) => Number::currency($row->total_harga, in: 'IDR', locale: 'id_ID', precision: 0))
         ->add('tanggal', fn ($row) => \Carbon\Carbon::parse($row->tanggal)->format('d M Y H:i'));
     }
 

@@ -93,43 +93,82 @@ class Create extends Component
             ]);
             return;
         }
-        // Hitung total harga
-        $total = collect($this->obat_estetika)
-            ->sum(fn($item) => (int) $item['subtotal']);
 
-        // Generate no_transaksi unik
-        $noTransaksi = 'TRX-' . now()->format('YmdHis');
+        DB::transaction(function () {
 
-        // Simpan transaksi utama
-        $transaksi = TransaksiApotik::create([
-            'no_transaksi' => $noTransaksi,
-            'kasir_nama'   => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name ?? 'Kasir',
-            'tanggal'      => now(),
-            'total_harga'  => $total,
-            'pasien_id'  => $this->pasien_id,
-        ]);
+            // Hitung total harga
+            $total = collect($this->obat_estetika)
+                ->sum(fn($item) => (int) $item['subtotal']);
 
-        // Simpan riwayat detail
-        foreach ($this->obat_estetika as $row) {
-            $transaksi->riwayat()->create([
-                'produk_id'     => $row['produk_id'],
-                'jumlah_produk' => $row['jumlah_produk'] ?? 0,
-                'potongan'      => $row['potongan'] ?: 0,
-                'diskon'        => $row['diskon'] ?: 0,
-                'subtotal'      => $row['subtotal'] ?? 0,
+            // Generate no_transaksi unik
+            $noTransaksi = 'TRX-' . now()->format('YmdHis');
+
+            // Simpan transaksi utama
+            $transaksi = TransaksiApotik::create([
+                'no_transaksi' => $noTransaksi,
+                'kasir_nama'   => Auth::user()->biodata?->nama_lengkap 
+                                ?? Auth::user()->name 
+                                ?? 'Kasir Apotik',
+                'tanggal'      => now(),
+                'total_harga'  => $total,
+                'pasien_id'    => $this->pasien_id,
             ]);
-        }
 
-        // Reset form setelah simpan
-        $this->reset('obat_estetika');
+            // Simpan detail
+            foreach ($this->obat_estetika as $row) {
+                $transaksi->riwayat()->create([
+                    'produk_id'     => $row['produk_id'],
+                    'jumlah_produk' => $row['jumlah_produk'] ?? 0,
+                    'potongan'      => $row['potongan'] ?: 0,
+                    'diskon'        => $row['diskon'] ?: 0,
+                    'subtotal'      => $row['subtotal'] ?? 0,
+                ]);
+            }
 
-        // Optional: tampilkan notifikasi
+            // 🔥 Kurangi stok + catat mutasi
+            $this->kurangiStokApotik($transaksi, $this->obat_estetika);
+
+            // Reset form
+            $this->reset('obat_estetika');
+        });
+
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Transaksi berhasil disimpan!',
         ]);
 
         return redirect()->route('apotik.kasir');
+    }
+
+    protected function kurangiStokApotik($transaksi, array $items)
+    {
+        foreach ($items as $row) {
+
+            if (!isset($row['produk_id']) || ($row['jumlah_produk'] ?? 0) <= 0) {
+                continue;
+            }
+
+            $produk = ProdukDanObat::lockForUpdate()->find($row['produk_id']);
+            if (! $produk) continue;
+
+            $jumlah = (int) $row['jumlah_produk'];
+            if ($jumlah <= 0) continue;
+
+            $stokBaru = max($produk->stok - $jumlah, 0);
+
+            // Update stok
+            $produk->update([
+                'stok' => $stokBaru,
+            ]);
+
+            // Catat mutasi
+            $produk->mutasiproduk()->create([
+                'tipe' => 'keluar',
+                'jumlah' => $jumlah,
+                'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name,
+                'catatan' => 'Transaksi Apotik - No: ' . $transaksi->no_transaksi,
+            ]);
+        }
     }
 
     public function render()
