@@ -237,6 +237,7 @@
                     <livewire:Aruskas.Rekapitulasi.GrafikHarian />
                     <livewire:Aruskas.Rekapitulasi.GrafikBulanan />
                     <livewire:Aruskas.Rekapitulasi.GrafikTahunan />
+                    <livewire:Aruskas.Rekapitulasi.TableRekap />
                 </div>
 
             </div>
