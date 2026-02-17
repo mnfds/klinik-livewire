@@ -56,27 +56,21 @@ final class PendapatanTable extends PowerGridComponent
             return ucfirst($row->keterangan) . '<br><span class="text-sm text-gray-500">Unit Usaha : ' . $row->unit_usaha . '</span>';
         })
 
-        ->add('total_tagihan', fn ($row) => Number::currency($row->total_tagihan, in: 'IDR', locale: 'id_ID', precision: 0))
+        ->add('total_tagihan')
         ->add('status')
         ->add('total_dan_status', function ($row) {
-            $total = Number::currency(
-                $row->total_tagihan,
-                in: 'IDR',
-                locale: 'id_ID',
-                precision: 0
-            );
-            $color = match ($row->status) {
-                'lunas' => 'text-green-600',
-                'belum lunas' => 'text-yellow-600',
-                'belum bayar' => 'text-red-600',
-                'batal' => 'text-gray-500',
+            $total = 'Rp ' . number_format($row->total_tagihan, 0, ',', '.');
+
+            $statusColor = match ($row->status_pembayaran) {
+                'Lunas' => 'text-success',
+                'Belum Lunas' => 'text-error',
                 default => 'text-gray-500',
             };
-            $status = ucfirst(str_replace('_', ' ', $row->status));
-            return "<div>
-                        <div>{$total}</div>
-                        <span class='text-sm {$color}'>{$status}</span>
-                    </div>";
+
+            return $total . 
+                '<br><span class="text-sm ' . $statusColor . '">' . 
+                e($row->status_pembayaran) . 
+                '</span>';
         });
     }
 

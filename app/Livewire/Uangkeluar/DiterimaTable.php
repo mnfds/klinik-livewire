@@ -61,9 +61,12 @@ final class DiterimaTable extends PowerGridComponent
 
             ->add('jumlah_uang')
             ->add('jenis_pengeluaran')
-            ->add('jumlah_dan_jenis', function($row){
-                return strtoupper(Number::currency($row->jumlah_uang, in: 'IDR', locale: 'id_ID', precision: 0)) . '<br><span class="text-sm text-gray-500">' . $row->jenis_pengeluaran . '</span>';
-            });
+            ->add('jumlah_dan_jenis', fn ($row) => 
+                'Rp ' . number_format($row->jumlah_uang, 0, ',', '.') .
+                '<br><span class="text-sm text-gray-500">' . 
+                $row->jenis_pengeluaran . 
+                '</span>'
+            );
     }
 
     public function columns(): array
