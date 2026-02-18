@@ -69,16 +69,20 @@
 
                                         <td>
                                             <div class="flex flex-col sm:flex-row gap-2">
+                                                @can('akses', 'Arus Kas Unduh')
                                                 <button class="btn btn-info btn-sm w-full sm:w-auto">
                                                     <i class="fa-solid fa-download"></i>
                                                     <span class="hidden sm:inline">Unduh</span>
                                                 </button>
+                                                @endcan
+                                                @can('akses', 'Arus Kas Detail')
                                                 <button 
                                                     wire:click="showDetail('{{ $row['tanggal_raw'] }}')" 
                                                     class="btn btn-primary btn-sm w-full sm:w-auto">
                                                     <i class="fa-solid fa-eye"></i>
                                                     <span class="hidden sm:inline">Detail</span>
                                                 </button>
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>

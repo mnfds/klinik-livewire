@@ -154,7 +154,18 @@
                 </li>
                 @endcan
 
-                @if (Gate::allows('akses','Laporan') || Gate::allows('akses','Laporan'))
+                @if (
+                     Gate::allows('akses','Laporan') ||
+                     Gate::allows('akses','Arus Kas Klinik Harian') ||
+                     Gate::allows('akses','Arus Kas Apotik Harian') ||
+                     Gate::allows('akses','Arus Kas Rekapitulasi Harian') ||
+                     Gate::allows('akses','Arus Kas Table') ||
+                     Gate::allows('akses','Arus Kas Klinik Card') ||
+                     Gate::allows('akses','Pengeluaran') ||
+                     Gate::allows('akses','Pendapatan') ||
+                     Gate::allows('akses','Kunjungan Pasien') ||
+                     Gate::allows('akses','Kinerja Karyawan')
+                    )
                     <li x-data="{ open: {{ request()->routeIs('aruskas.*') || request()->routeIs('kunjungan.*') || request()->routeIs('kinerja.*') ? 'true' : 'false' }} }">
                         <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('aruskas.*', 'kunjungan.*', 'kinerja.*')">
                             <i class="fa-solid fa-chart-column"></i>
@@ -162,17 +173,25 @@
                             <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                         </x-side-link>
                         <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                            @can('akses', 'Laporan')
+                            @if (
+                                Gate::allows('akses','Arus Kas Klinik Harian') ||
+                                Gate::allows('akses','Arus Kas Apotik Harian') ||
+                                Gate::allows('akses','Arus Kas Rekapitulasi Harian') ||
+                                Gate::allows('akses','Arus Kas Table') ||
+                                Gate::allows('akses','Arus Kas Klinik Card') ||
+                                Gate::allows('akses','Pengeluaran') ||
+                                Gate::allows('akses','Pendapatan')
+                                )
                             <li>
                                 <x-side-link href="{{ route('aruskas.data') }}" :active="request()->routeIs('aruskas.*')" wire:navigate>Arus Kas</x-side-link>
                             </li>
-                            @endcan
-                            @can('akses', 'Laporan')
+                            @endif
+                            @can('akses', 'Kunjungan Pasien')
                             <li>
                                 <x-side-link href="{{ route('kunjungan.data') }}" :active="request()->routeIs('kunjungan.*')" wire:navigate>Kunjungan Pasien</x-side-link>
                             </li>
                             @endcan
-                            @can('akses', 'Laporan')
+                            @can('akses', 'Kinerja Karyawan')
                             <li>
                                 <x-side-link href="{{ route('kinerja.data') }}" :active="request()->routeIs('kinerja.*')" wire:navigate>Kinerja Utama</x-side-link>
                             </li>

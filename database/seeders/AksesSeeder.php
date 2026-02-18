@@ -94,7 +94,25 @@ class AksesSeeder extends Seeder
 
             // Laporan Arus Kas
             10 => [
-                'Arus Kas'
+                'Arus Kas Klinik Harian',
+                'Arus Kas Klinik Bulanan',
+                'Arus Kas Klinik Tahunan',
+                
+                'Arus Kas Apotik Harian',
+                'Arus Kas Apotik Bulanan',
+                'Arus Kas Apotik Tahunan',
+                
+                'Arus Kas Rekapitulasi Harian',
+                'Arus Kas Rekapitulasi Bulanan',
+                'Arus Kas Rekapitulasi Tahunan',
+
+                'Arus Kas Table',
+                'Arus Kas Unduh',
+                'Arus Kas Detail',
+
+                'Arus Kas Klinik Card',
+                'Arus Kas Apotik Card',
+                'Arus Kas Rekapitulasi Card',
             ],
 
             // Pengeluaran Arus Kas
