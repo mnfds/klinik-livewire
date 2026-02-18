@@ -145,12 +145,14 @@
                             </span>
                         </div>
                         <div class="mt-2 text-sm space-y-1 ml-4">
-                            <div class="flex justify-between">
-                                <span>Total Tagihan</span>
-                                <span>
-                                    Rp {{ number_format($trx->total_tagihan,0,',','.') }}
-                                </span>
-                            </div>
+                            @if ($trx->diskon > 0 || $trx->potongan > 0)
+                                <div class="flex justify-between">
+                                    <span>Total Tagihan</span>
+                                    <span>
+                                        Rp {{ number_format($trx->total_tagihan,0,',','.') }}
+                                    </span>
+                                </div>
+                            @endif
                             {{-- Diskon --}}
                             @if($trx->diskon > 0)
                                 <div class="flex justify-between text-error">
@@ -174,16 +176,14 @@
                             {{-- Garis --}}
                             @if($trx->diskon > 0 || $trx->potongan > 0)
                                 <div class="border-t my-1"></div>
+
+                                <div class="flex justify-between font-semibold">
+                                    <span>Total Bersih</span>
+                                    <span>
+                                        Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
+                                    </span>
+                                </div>
                             @endif
-
-                            {{-- Total Bersih --}}
-                            <div class="flex justify-between font-semibold">
-                                <span>Total Bersih</span>
-                                <span>
-                                    Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
-                                </span>
-                            </div>
-
                         </div>
                         {{-- Detail Item --}}
                         @php
@@ -243,17 +243,89 @@
                             <span>Rp {{ number_format($trx->total_harga,0,',','.') }}</span>
                         </div>
                         {{-- Detail Item --}}
-                        @foreach($trx->riwayat as $detail)
-                            <div class="flex justify-between text-sm ml-4">
-                                <span>
-                                    {{ $detail->produk->nama_dagang ?? 'Produk tidak ditemukan' }}
-                                    (x{{ $detail->jumlah_produk }} {{ $detail->produk->sediaan ?? 'Pcs' }})
-                                </span>
-                                <span>
-                                    Rp {{ number_format($detail->subtotal,0,',','.') }}
-                                </span>
-                            </div>
-                        @endforeach
+                        @php
+                            $grouped = $trx->riwayat->groupBy('jenis_item');
+                            $labels = [
+                                'produk' => 'Produk',
+                                'pelayanan' => 'Pelayanan',
+                                'treatment' => 'Treatment',
+                                'bundling' => 'Bundling',
+                                'obat_non_racik' => 'Obat Non Racik',
+                                'obat_racik' => 'Obat Racik',
+                                'produk_tambahan' => 'Produk Tambahan',
+                            ];
+                        @endphp
+                        <div class="mt-3 space-y-3">
+                            @foreach($grouped as $jenis => $items)
+                                <div class="ml-4">
+                                    {{-- Header Jenis --}}
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                        {{ $labels[$jenis] ?? ucfirst($jenis) }}
+                                    </div>
+@foreach($items as $detail)
+    @php
+        $produk        = $detail->produk;
+        $harga_dasar   = $produk->harga_dasar;
+        $nama          = $produk->nama_dagang ?? $detail->nama_item ?? 'Item tidak ditemukan';
+        $sediaan       = $produk->sediaan ?? '';
+        $qty           = $detail->jumlah_produk ?? $detail->qty ?? 1;
+        $total         = $harga_dasar * $qty;
+        $subtotal      = $detail->subtotal ?? 0;
+    @endphp
+
+    <div class="text-sm py-2 border-b border-dashed border-base-200">
+        
+        {{-- Baris 1 : Nama & Harga --}}
+        <div class="flex justify-between items-start">
+            <div>
+                <span>
+                    {{ $nama }}
+                    <span class="text-gray-400">
+                        (x{{ $qty }} {{ $sediaan }})
+                    </span>
+                </span>
+            </div>
+
+            <div class="text-right font-medium">
+                Rp {{ number_format($total,0,',','.') }}
+            </div>
+        </div>
+
+        {{-- Diskon % --}}
+        @if(($detail->diskon ?? 0) > 0)
+            <div class="text-right text-xs text-error mt-1">
+                - {{ $detail->diskon }}%
+            </div>
+        @endif
+
+        {{-- Potongan Nominal --}}
+        @if(($detail->potongan ?? 0) > 0)
+            <div class="text-right text-xs text-error">
+                - Rp {{ number_format($detail->potongan,0,',','.') }}
+            </div>
+        @endif
+
+        {{-- Harga Bersih Nominal --}}
+        @if(($detail->potongan ?? 0) > 0 || ($detail->diskon ?? 0) > 0)
+            <div class="text-right text-xs text-success">
+                Rp {{ number_format($subtotal,0,',','.') }}
+            </div>
+        @endif
+
+    </div>
+@endforeach
+
+
+                                    {{-- Subtotal per jenis --}}
+                                    <div class="flex justify-between text-sm font-semibold mt-1">
+                                        <span>Subtotal {{ $labels[$jenis] ?? ucfirst($jenis) }}</span>
+                                        <span>
+                                            Rp {{ number_format($items->sum('subtotal'),0,',','.') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @endforeach
             </div>
