@@ -121,9 +121,9 @@
         x-show="open"
         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-        <div class="bg-base-100 w-11/12 max-w-4xl rounded-box p-6 overflow-y-auto max-h-[90vh]">
+        <div class="bg-base-100 w-11/12 max-w-4xl rounded-box pb-6 px-6 overflow-y-auto max-h-[90vh]">
 
-            <div class="flex justify-between mb-4">
+            <div class="flex justify-between items-center mb-4 sticky top-0 z-10 bg-base-100 py-3 border-b">
                 <h2 class="text-xl font-bold">
                     Detail Keuangan {{ \Carbon\Carbon::parse($detailTanggal)->locale('id')->translatedFormat('d F Y') }}
                 </h2>
@@ -134,16 +134,19 @@
             <div class="divider divider-success text-success font-semibold mt-6 mb-2">Uang Masuk</div>
 
             {{-- Klinik --}}
+            @if(!empty($detailMasuk['klinik']) && count($detailMasuk['klinik']) > 0)
             <div class="mb-4">
-                <h4 class="font-medium">Transaksi Klinik</h4>
+                <h4 class="font-medium mb-2">Transaksi Klinik</h4>
                 @foreach($detailMasuk['klinik'] ?? [] as $trx)
-                    <div class="border rounded p-2 mb-2">
-                        <div class="flex justify-between font-semibold">
+                    <div class="border rounded p-3 mb-3 bg-base-100">
+                        {{-- HEADER TRANSAKSI --}}
+                        <div class="flex justify-between font-semibold text-base">
                             <span>No: {{ $trx->no_transaksi }}</span>
                             <span>
                                 Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
                             </span>
                         </div>
+                        {{-- RINGKASAN TOTAL TRANSAKSI --}}
                         <div class="mt-2 text-sm space-y-1 ml-4">
                             @if ($trx->diskon > 0 || $trx->potongan > 0)
                                 <div class="flex justify-between">
@@ -153,7 +156,7 @@
                                     </span>
                                 </div>
                             @endif
-                            {{-- Diskon --}}
+                            {{-- Diskon Transaksi --}}
                             @if($trx->diskon > 0)
                                 <div class="flex justify-between text-error">
                                     <span>Diskon</span>
@@ -162,8 +165,7 @@
                                     </span>
                                 </div>
                             @endif
-
-                            {{-- Potongan --}}
+                            {{-- Potongan Transaksi --}}
                             @if($trx->potongan > 0)
                                 <div class="flex justify-between text-error">
                                     <span>Potongan</span>
@@ -172,20 +174,17 @@
                                     </span>
                                 </div>
                             @endif
-
-                            {{-- Garis --}}
                             @if($trx->diskon > 0 || $trx->potongan > 0)
-                                <div class="border-t my-1"></div>
-
                                 <div class="flex justify-between font-semibold">
                                     <span>Total Bersih</span>
                                     <span>
                                         Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
                                     </span>
                                 </div>
+                                <div class="border-t my-1"></div>
                             @endif
                         </div>
-                        {{-- Detail Item --}}
+                        {{-- ================= DETAIL ITEM ================= --}}
                         @php
                             $grouped = $trx->riwayatTransaksi->groupBy('jenis_item');
                             $labels = [
@@ -198,42 +197,77 @@
                                 'produk_tambahan' => 'Produk Tambahan',
                             ];
                         @endphp
-                        <div class="mt-2 space-y-3">
+                        <div class="mt-4 space-y-4">
                             @foreach($grouped as $jenis => $items)
                                 <div class="ml-4">
-                                    {{-- Header Jenis --}}
-                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                    {{-- HEADER JENIS --}}
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                                         {{ $labels[$jenis] ?? ucfirst($jenis) }}
                                     </div>
-
+                                    {{-- LIST ITEM --}}
                                     @foreach($items as $detail)
-                                        <div class="flex justify-between text-sm py-1 border-b border-dashed border-base-200">
-                                            <span>
-                                                {{ $detail->nama_item ?? 'Item tidak ditemukan' }}
-                                                <span class="text-gray-400">
-                                                    (x{{ $detail->qty }})
-                                                </span>
-                                            </span>
-                                            <span>
-                                                Rp {{ number_format($detail->subtotal,0,',','.') }}
-                                            </span>
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            {{-- Baris Utama --}}
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    {{ $detail->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $detail->qty }})</span>
+                                                </div>
+                                                <div class="text-right font-medium">
+                                                    Rp {{ number_format($detail->harga_jual,0,',','.') }}
+                                                </div>
+                                            </div>
+                                            {{-- Diskon Item --}}
+                                            @if(($detail->diskon ?? 0) > 0)
+                                                <div class="text-right text-xs text-error mt-1">
+                                                    - {{ $detail->diskon }}%
+                                                </div>
+                                            @endif
+                                            {{-- Potongan Item --}}
+                                            @if(($detail->potongan ?? 0) > 0)
+                                                <div class="text-right text-xs text-error">
+                                                    - Rp {{ number_format($detail->potongan,0,',','.') }}
+                                                </div>
+                                            @endif
+                                            {{-- Harga Bersih --}}
+                                            @if(($detail->subtotal ?? 0) > 0)
+                                                <div class="text-right text-xs text-success">
+                                                    Rp {{ number_format($detail->subtotal,0,',','.') }}
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
-                                    {{-- Subtotal Per Jenis --}}
-                                    <div class="flex justify-between text-sm font-semibold mt-1">
-                                        <span>Subtotal {{ $labels[$jenis] ?? ucfirst($jenis) }}</span>
-                                        <span>
-                                            Rp {{ number_format($items->sum('subtotal'),0,',','.') }}
-                                        </span>
-                                    </div>
                                 </div>
                             @endforeach
+                        </div>
+                        <div class="mt-4 space-y-4">
+                            <div class="ml-4">
+                                {{-- HEADER JENIS --}}
+                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                    Item Tambahan
+                                </div>
+                                {{-- LIST ITEM --}}
+                                @foreach($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
+                                    <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                        {{-- Baris Utama --}}
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                {{ $produk->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $produk->qty }})</span>
+                                            </div>
+                                            <div class="text-right font-medium text-success">
+                                                Rp {{ number_format($produk->subtotal,0,',','.') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+            @endif
 
             {{-- Apotik --}}
+            @if(!empty($detailMasuk['apotik']) && count($detailMasuk['apotik']) > 0)
             <div class="mb-4">
                 <h4 class="font-medium">Transaksi Apotik</h4>
                 @foreach($detailMasuk['apotik'] ?? [] as $trx)
@@ -262,64 +296,62 @@
                                     <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                                         {{ $labels[$jenis] ?? ucfirst($jenis) }}
                                     </div>
-@foreach($items as $detail)
-    @php
-        $produk        = $detail->produk;
-        $harga_dasar   = $produk->harga_dasar;
-        $nama          = $produk->nama_dagang ?? $detail->nama_item ?? 'Item tidak ditemukan';
-        $sediaan       = $produk->sediaan ?? '';
-        $qty           = $detail->jumlah_produk ?? $detail->qty ?? 1;
-        $total         = $harga_dasar * $qty;
-        $subtotal      = $detail->subtotal ?? 0;
-    @endphp
+                                    @foreach($items as $detail)
+                                        @php
+                                            $produk        = $detail->produk;
+                                            $harga_dasar   = $produk->harga_dasar;
+                                            $nama          = $produk->nama_dagang ?? $detail->nama_item ?? 'Item tidak ditemukan';
+                                            $sediaan       = $produk->sediaan ?? '';
+                                            $qty           = $detail->jumlah_produk ?? $detail->qty ?? 1;
+                                            $total         = $harga_dasar * $qty;
+                                            $subtotal      = $detail->subtotal ?? 0;
+                                        @endphp
 
-    <div class="text-sm py-2 border-b border-dashed border-base-200">
-        
-        {{-- Baris 1 : Nama & Harga --}}
-        <div class="flex justify-between items-start">
-            <div>
-                <span>
-                    {{ $nama }}
-                    <span class="text-gray-400">
-                        (x{{ $qty }} {{ $sediaan }})
-                    </span>
-                </span>
-            </div>
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            
+                                            {{-- Baris 1 : Nama & Harga --}}
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <span>
+                                                        {{ $nama }}
+                                                        <span class="text-gray-400">
+                                                            (x{{ $qty }} {{ $sediaan }})
+                                                        </span>
+                                                    </span>
+                                                </div>
 
-            <div class="text-right font-medium">
-                Rp {{ number_format($total,0,',','.') }}
-            </div>
-        </div>
+                                                <div class="text-right font-medium">
+                                                    Rp {{ number_format($total,0,',','.') }}
+                                                </div>
+                                            </div>
 
-        {{-- Diskon % --}}
-        @if(($detail->diskon ?? 0) > 0)
-            <div class="text-right text-xs text-error mt-1">
-                - {{ $detail->diskon }}%
-            </div>
-        @endif
+                                            {{-- Diskon % --}}
+                                            @if(($detail->diskon ?? 0) > 0)
+                                                <div class="text-right text-xs text-error mt-1">
+                                                    - {{ $detail->diskon }}%
+                                                </div>
+                                            @endif
 
-        {{-- Potongan Nominal --}}
-        @if(($detail->potongan ?? 0) > 0)
-            <div class="text-right text-xs text-error">
-                - Rp {{ number_format($detail->potongan,0,',','.') }}
-            </div>
-        @endif
+                                            {{-- Potongan Nominal --}}
+                                            @if(($detail->potongan ?? 0) > 0)
+                                                <div class="text-right text-xs text-error">
+                                                    - Rp {{ number_format($detail->potongan,0,',','.') }}
+                                                </div>
+                                            @endif
 
-        {{-- Harga Bersih Nominal --}}
-        @if(($detail->potongan ?? 0) > 0 || ($detail->diskon ?? 0) > 0)
-            <div class="text-right text-xs text-success">
-                Rp {{ number_format($subtotal,0,',','.') }}
-            </div>
-        @endif
+                                            {{-- Harga Bersih Nominal --}}
+                                            @if(($detail->potongan ?? 0) > 0 || ($detail->diskon ?? 0) > 0)
+                                                <div class="text-right text-xs text-success">
+                                                    Rp {{ number_format($subtotal,0,',','.') }}
+                                                </div>
+                                            @endif
 
-    </div>
-@endforeach
-
-
+                                        </div>
+                                    @endforeach
                                     {{-- Subtotal per jenis --}}
                                     <div class="flex justify-between text-sm font-semibold mt-1">
                                         <span>Subtotal {{ $labels[$jenis] ?? ucfirst($jenis) }}</span>
-                                        <span>
+                                        <span class="text-primary">
                                             Rp {{ number_format($items->sum('subtotal'),0,',','.') }}
                                         </span>
                                     </div>
@@ -329,8 +361,10 @@
                     </div>
                 @endforeach
             </div>
+            @endif
 
             {{-- Lainnya --}}
+            @if(!empty($detailMasuk['lainnya']) && count($detailMasuk['lainnya']) > 0)
             <div class="mb-4">
                 <h4 class="font-medium">Lainnya</h4>
                 @foreach($detailMasuk['lainnya'] ?? [] as $item)
@@ -351,6 +385,18 @@
                     </div>
                 @endforeach
             </div>
+            @endif
+            {{-- MUNCUL KALAU TIDAK ADA PEMASUKAN --}}
+            @if(($detailMasuk['klinik'] ?? collect())->isEmpty() && ($detailMasuk['lainnya'] ?? collect())->isEmpty() && ($detailMasuk['apotik'] ?? collect())->isEmpty())
+                <div class="bg-base-100 border border-dashed border-gray-300 rounded-xl p-8 text-center">
+                    <h3 class="text-lg font-semibold text-gray-600">
+                        Tidak Ada Data
+                    </h3>
+                    <p class="text-sm text-gray-400 mt-1">
+                        Belum ada transaksi yang tercatat.
+                    </p>
+                </div>
+            @endif
 
             {{-- ================= KELUAR ================= --}}
             <div class="divider divider-error text-error font-semibold mt-6 mb-2">Uang Keluar</div>
@@ -370,7 +416,16 @@
                     </div>
                 </div>
             @endforeach
-
+            @if($detailKeluar ?? collect()->isEmpty())
+                <div class="bg-base-100 border border-dashed border-gray-300 rounded-xl p-8 text-center">
+                    <h3 class="text-lg font-semibold text-gray-600">
+                        Tidak Ada Data
+                    </h3>
+                    <p class="text-sm text-gray-400 mt-1">
+                        Belum ada transaksi yang tercatat.
+                    </p>
+                </div>
+            @endif
             {{-- ================= TOTAL ================= --}}
             <div class="divider"></div>
 
@@ -391,5 +446,4 @@
 
         </div>
     </div>
-
 </div>

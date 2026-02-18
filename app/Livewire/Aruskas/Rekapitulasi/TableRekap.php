@@ -166,9 +166,16 @@ class TableRekap extends Component
         // UANG MASUK
         // =====================
 
-        $klinik = TransaksiKlinik::with('riwayatTransaksi')
-            ->whereBetween('tanggal_transaksi', [$start, $end])
-            ->get();
+        $klinik = TransaksiKlinik::with([
+            'rekammedis.rencanaProdukRM.produk',
+            'rekammedis.rencanaLayananRM.pelayanan',
+            'rekammedis.rencanaTreatmentRM.treatment',
+            'rekammedis.rencanaBundlingRM.bundling',
+            'rekammedis.obatFinal.produk',
+            'riwayatTransaksi',
+        ])
+        ->whereBetween('tanggal_transaksi', [$start, $end])
+        ->get();
 
         $apotik = TransaksiApotik::with('riwayat.produk')
             ->whereBetween('tanggal', [$start, $end])
