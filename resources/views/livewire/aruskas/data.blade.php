@@ -251,7 +251,7 @@
                     <livewire:Uangkeluar.Update />
                 </div>  --}}
 
-                @if (Gate::allows('akses', 'Arus Kas Rekapitulasi Harian') || Gate::allows('akses', 'Arus Kas Rekapitulasi Bulanan') || Gate::allows('akses', 'Arus Kas Rekapitulasi Tahunan') || Gate::allows('akses', 'Arus Kas Rekapitulasi Card') || Gate::allows('akses', 'Arus Kas Table'))
+                @if (Gate::allows('akses', 'Arus Kas Rekapitulasi Harian') || Gate::allows('akses', 'Arus Kas Rekapitulasi Bulanan') || Gate::allows('akses', 'Arus Kas Rekapitulasi Tahunan') || Gate::allows('akses', 'Arus Kas Rekapitulasi Card'))
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked />
                 <div class="tab-content bg-base-200 p-1">
                     @can('akses', 'Arus Kas Rekapitulasi Card')
@@ -266,6 +266,12 @@
                     @can('akses', 'Arus Kas Rekapitulasi Tahunan')
                     <livewire:Aruskas.Rekapitulasi.GrafikTahunan />
                     @endcan
+                </div>
+                @endif
+
+                @if (Gate::allows('akses', 'Arus Kas Table'))
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Table" style="background-image: none;" />
+                <div class="tab-content bg-base-200 p-1">
                     @can('akses', 'Arus Kas Table')
                     <livewire:Aruskas.Rekapitulasi.TableRekap />
                     @endcan
