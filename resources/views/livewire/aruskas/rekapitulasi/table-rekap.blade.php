@@ -416,7 +416,7 @@
                     </div>
                 </div>
             @endforeach
-            @if($detailKeluar ?? collect()->isEmpty())
+            @if(collect($detailKeluar)->isEmpty())
                 <div class="bg-base-100 border border-dashed border-gray-300 rounded-xl p-8 text-center">
                     <h3 class="text-lg font-semibold text-gray-600">
                         Tidak Ada Data
