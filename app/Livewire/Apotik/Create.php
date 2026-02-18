@@ -70,7 +70,7 @@ class Create extends Component
         $produk = $this->produk->find($row['produk_id']);
 
         // ⬇️ INI YANG SEBELUMNYA BELUM ADA
-        $hargaSatuan = (int) ($produk->harga_dasar ?? 0);
+        $hargaSatuan = (int) ($produk->harga_bersih ?? 0);
 
         $jumlah   = (int) ($row['jumlah_produk'] ?? 1);
         $potongan = (int) ($row['potongan'] ?? 0);
