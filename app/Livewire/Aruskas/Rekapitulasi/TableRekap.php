@@ -8,6 +8,7 @@ use App\Models\Uangkeluar;
 use Illuminate\Support\Carbon;
 use App\Models\TransaksiApotik;
 use App\Models\TransaksiKlinik;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Pendapatanlainnya;
 
 class TableRekap extends Component
@@ -214,6 +215,65 @@ class TableRekap extends Component
         $this->detailSisa = $this->detailTotalMasuk - $this->detailTotalKeluar;
 
         $this->dispatch('open-detail-modal');
+    }
+
+    public function unduh($tanggal)
+    {
+        $start = Carbon::parse($tanggal)->startOfDay();
+        $end   = Carbon::parse($tanggal)->endOfDay();
+
+        $klinik = TransaksiKlinik::with([
+            'rekammedis.rencanaProdukRM.produk',
+            'rekammedis.rencanaLayananRM.pelayanan',
+            'rekammedis.rencanaTreatmentRM.treatment',
+            'rekammedis.rencanaBundlingRM.bundling',
+            'rekammedis.obatFinal.produk',
+            'riwayatTransaksi',
+        ])
+        ->whereBetween('tanggal_transaksi', [$start, $end])
+        ->get();
+
+        $apotik = TransaksiApotik::with([
+            'riwayat.produk',
+            'pasien'
+        ])
+        ->whereBetween('tanggal', [$start, $end])
+        ->get();
+
+        $lainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+            ->whereIn('status', ['lunas','belum lunas'])
+            ->get();
+
+        $keluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
+            ->where('status', 'Disetujui')
+            ->get();
+
+        $totalKlinik  = $klinik->sum('total_tagihan_bersih');
+        $totalApotik  = $apotik->sum('total_harga');
+        $totalLainnya = $lainnya->sum('total_tagihan');
+
+        $totalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
+        $totalKeluar = $keluar->sum('jumlah_uang');
+        $sisa        = $totalMasuk - $totalKeluar;
+
+        $pdf = Pdf::loadView('pdf.rekap-harian', [
+            'tanggal' => $tanggal,
+            'klinik' => $klinik,
+            'apotik' => $apotik,
+            'lainnya' => $lainnya,
+            'keluar' => $keluar,
+            'totalKlinik' => $totalKlinik,
+            'totalApotik' => $totalApotik,
+            'totalLainnya' => $totalLainnya,
+            'totalMasuk' => $totalMasuk,
+            'totalKeluar' => $totalKeluar,
+            'sisa' => $sisa,
+        ])->setPaper('a4', 'portrait');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "rekap-harian-{$tanggal}.pdf"
+        );
     }
 
 }

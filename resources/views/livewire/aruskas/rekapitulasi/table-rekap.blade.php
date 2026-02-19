@@ -70,7 +70,8 @@
                                         <td>
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 @can('akses', 'Arus Kas Unduh')
-                                                <button class="btn btn-info btn-sm w-full sm:w-auto">
+                                                <button wire:click="unduh('{{ $row['tanggal_raw'] }}')" 
+                                                    class="btn btn-info btn-sm w-full sm:w-auto">
                                                     <i class="fa-solid fa-download"></i>
                                                     <span class="hidden sm:inline">Unduh</span>
                                                 </button>
