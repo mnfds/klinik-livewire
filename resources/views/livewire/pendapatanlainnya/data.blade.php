@@ -18,9 +18,29 @@
                         <i class="fa-solid fa-arrow-trend-up"></i> Pendapatan
                     </h2>
                     <div class="divider my-2"></div>
+                    @can('akses', 'Pendapatan')
                     <livewire:Pendapatanlainnya.Pendapatan-table />
+                    @endcan
                     <livewire:Pendapatanlainnya.Create />
                     <livewire:Pendapatanlainnya.Update />
+                    @if (!Gate::allows('akses','Pendapatan'))
+                        <div class="flex items-center justify-center min-h-[300px]">
+                            <div class="card bg-base-100 shadow-xl max-w-md w-full">
+                                <div class="card-body items-center text-center">
+                                    <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center">
+                                        <i class="fa-solid fa-triangle-exclamation text-3xl text-error"></i>
+                                    </div>
+                                    <h2 class="card-title text-error mt-4">
+                                        Akses Ditolak
+                                    </h2>
+                                    <p class="text-base-content/70 text-sm">
+                                        Anda tidak memiliki izin untuk akses table Pendapatan.
+                                        Silakan hubungi administrator untuk mendapatkan akses.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

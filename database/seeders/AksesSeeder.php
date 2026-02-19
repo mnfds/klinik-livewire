@@ -148,7 +148,23 @@ class AksesSeeder extends Seeder
 
             // Laporan Kunjungan Pasien
             13 => [
-                'Kunjungan Pasien'
+                'Kunjungan Pasien Wanita Harian',
+                'Kunjungan Pasien Wanita Bulanan',
+                'Kunjungan Pasien Wanita Tahunan',
+
+                'Kunjungan Pasien Pria Harian',
+                'Kunjungan Pasien Pria Bulanan',
+                'Kunjungan Pasien Pria Tahunan',
+                
+                'Kunjungan Pasien Rekapitulasi Harian',
+                'Kunjungan Pasien Rekapitulasi Bulanan',
+                'Kunjungan Pasien Rekapitulasi Tahunan',
+
+                'Kunjungan Pasien Wanita Card',
+                'Kunjungan Pasien Pria Card',
+                'Kunjungan Pasien Rekapitulasi Card',
+
+                'Produk Terbaik',
             ],
 
             // Laporan Kinerja Karyawan

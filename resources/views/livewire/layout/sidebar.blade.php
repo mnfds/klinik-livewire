@@ -186,11 +186,17 @@
                                 <x-side-link href="{{ route('aruskas.data') }}" :active="request()->routeIs('aruskas.*')" wire:navigate>Arus Kas</x-side-link>
                             </li>
                             @endif
-                            @can('akses', 'Kunjungan Pasien')
+                            @if (
+                                Gate::allows('akses','Kunjungan Pasien Wanita Harian') ||
+                                Gate::allows('akses','Kunjungan Pasien Pria Harian') ||
+                                Gate::allows('akses','Kunjungan Pasien Rekapitulasi Harian') ||
+                                Gate::allows('akses','Kunjungan Pasien Wanita Card') ||
+                                Gate::allows('akses','Produk Terbaik')
+                                )
                             <li>
                                 <x-side-link href="{{ route('kunjungan.data') }}" :active="request()->routeIs('kunjungan.*')" wire:navigate>Kunjungan Pasien</x-side-link>
                             </li>
-                            @endcan
+                            @endif
                             @can('akses', 'Kinerja Karyawan')
                             <li>
                                 <x-side-link href="{{ route('kinerja.data') }}" :active="request()->routeIs('kinerja.*')" wire:navigate>Kinerja Utama</x-side-link>
