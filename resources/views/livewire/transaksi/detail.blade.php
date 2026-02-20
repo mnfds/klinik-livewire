@@ -736,6 +736,10 @@
                                             "
                                         >
                                     </div>
+                                    <div class="mb-1">
+                                        <label class="label font-medium">Catatan</label>
+                                        <input type="text" class="input input-bordered w-full" wire:model.live="note">
+                                    </div>
 
                                     <button wire:click="create"
                                         class="btn btn-primary btn-sm mt-4 w-full"> Konfirmasi Bayar

@@ -53,6 +53,7 @@ class Detail extends Component
 
     public $diskon = 0;
     public $potongan = 0;
+    public $note;
 
     public function mount($id)
     {
@@ -238,6 +239,7 @@ class Detail extends Component
                 'tanggal_transaksi' => now(),
                 'total_tagihan' => 0, // akan di-update setelah item disimpan
                 'status' => 'belum_bayar',
+                'note' => $this->note,
             ]);
 
             $totalTagihan = 0;

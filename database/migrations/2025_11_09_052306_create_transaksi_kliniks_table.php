@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
             $table->string('no_transaksi')->unique();
+            $table->string('note')->nullable();
             $table->dateTime('tanggal_transaksi')->default(now());
             $table->unsignedBigInteger('total_tagihan')->default(0);
             $table->unsignedBigInteger('diskon')->nullable()->default(0);
