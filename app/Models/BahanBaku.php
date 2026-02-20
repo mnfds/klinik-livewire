@@ -17,6 +17,11 @@ class BahanBaku extends Model
         return $this->hasMany(TreatmentBahan::class, 'bahan_baku_id');
     }
 
+    public function layananbahan()
+    {
+        return $this->hasMany(LayananBahan::class, 'bahan_baku_id');
+    }
+
     public function mutasibahan()
     {
         return $this->hasMany(MutasiBahanbaku::class, 'bahan_baku_id');

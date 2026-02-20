@@ -32,12 +32,12 @@ final class PelayananTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Pelayanan::query();
+        return Pelayanan::query()->with('layananbahan.bahanbaku');
     }
 
     public function relationSearch(): array
     {
-        return [];
+        return [ 'layananbahan.bahanbaku' => ['nama'], ];
     }
 
     public function fields(): PowerGridFields
@@ -48,7 +48,12 @@ final class PelayananTable extends PowerGridComponent
             ->add('potongan', fn ($pelayanan) => number_format($pelayanan->potongan, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih', fn ($pelayanan) => number_format($pelayanan->harga_bersih, 0, ',', '.'))
-            ->add('deskripsi');
+            ->add('deskripsi')
+            ->add('nama_bahan', function ($row) {
+                return $row->layananbahan
+                    ->map(fn($item) => $item->bahanbaku->nama ?? '-')
+                    ->implode(', ');
+            });
     }
 
     public function columns(): array
@@ -73,6 +78,9 @@ final class PelayananTable extends PowerGridComponent
                 ->sortable(),
 
             Column::make('Deskripsi', 'deskripsi'),
+            
+            Column::make('Bahan Baku Terkait', 'nama_bahan')
+                ->searchable(),
 
             Column::action('Action')
         ];
@@ -87,6 +95,16 @@ final class PelayananTable extends PowerGridComponent
     public function actions(Pelayanan $row): array
     {
         $pelayananMedisButton = [];
+
+        Gate::allows('akses', 'Pelayanan Estetika Tambah Bahan') && $pelayananMedisButton[] =
+        Button::add('updatebahanlayanan')  
+            ->slot('<i class="fa-solid fa-pump-medical"></i> Bahan')
+            ->attributes([
+                'onclick' => 'modaleditbahanlayanan.showModal()',
+                'class' => 'btn btn-secondary'
+            ])
+            ->dispatchTo('pelayanan.updatebahanlayanan', 'getupdatebahanlayanan', ['rowId' => $row->id]);
+        
          Gate::allows('akses', 'Pelayanan Medis Edit') && $pelayananMedisButton[] =
          Button::add('editpelayanan')  
              ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')

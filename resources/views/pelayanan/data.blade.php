@@ -5,4 +5,5 @@
     <livewire:Pelayanan.Store-treatment />
     <livewire:Pelayanan.Update-treatment />
     <livewire:Pelayanan.Updatebahan />
+    <livewire:Pelayanan.Updatebahanlayanan />
 </x-app-layout>
