@@ -28,7 +28,7 @@ class Create extends Component
         return [
             'produk_id' => null,
             'jumlah_produk' => 1,
-            'harga_Satuan' => 0,
+            'harga_satuan' => 0,
             'potongan' => 0,
             'diskon' => 0,
             // 'harga_asli' => 0,
@@ -68,13 +68,22 @@ class Create extends Component
         }
 
         $produk = $this->produk->find($row['produk_id']);
+        if (!$produk) return;
 
-        // ⬇️ INI YANG SEBELUMNYA BELUM ADA
-        $hargaSatuan = (int) ($produk->harga_bersih ?? 0);
+        // ✅ Ambil dari DB
+        $hargaSatuan = (int) ($produk->harga_dasar ?? 0);
+        $defaultDiskon = (float) ($produk->diskon ?? 0);
+        $defaultPotongan = (int) ($produk->potongan ?? 0);
 
-        $jumlah   = (int) ($row['jumlah_produk'] ?? 1);
-        $potongan = (int) ($row['potongan'] ?? 0);
-        $diskon   = (float) ($row['diskon'] ?? 0);
+        // 🔥 HANYA set default saat produk dipilih
+        if ($field === 'produk_id') {
+            $this->obat_estetika[$uuid]['diskon'] = $defaultDiskon;
+            $this->obat_estetika[$uuid]['potongan'] = $defaultPotongan;
+        }
+
+        $jumlah   = (int) ($this->obat_estetika[$uuid]['jumlah_produk'] ?? 1);
+        $potongan = (int) ($this->obat_estetika[$uuid]['potongan'] ?? 0);
+        $diskon   = (float) ($this->obat_estetika[$uuid]['diskon'] ?? 0);
 
         $total = $hargaSatuan * $jumlah;
         $total -= ($total * $diskon / 100);
@@ -82,6 +91,7 @@ class Create extends Component
 
         $this->obat_estetika[$uuid]['harga_satuan'] = $hargaSatuan;
         $this->obat_estetika[$uuid]['subtotal'] = max(0, (int) $total);
+        // dd($this->obat_estetika);
     }
 
     public function create()

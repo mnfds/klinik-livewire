@@ -276,7 +276,7 @@ Route::middleware(['auth'])->group(function () {
                 $query->where('nama_dagang', 'like', "%{$search}%")
                     ->orWhere('kode', 'like', "%{$search}%");
             })
-            ->select('id', 'nama_dagang', 'sediaan', 'harga_bersih', 'stok')
+            ->select('id', 'nama_dagang', 'sediaan', 'harga_bersih', 'stok', 'diskon', 'potongan')
             ->limit(20)
             ->get();
 

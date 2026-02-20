@@ -89,12 +89,12 @@
                             @foreach($obat_estetika as $uuid => $item)
                                 <div wire:key="row-{{ $uuid }}"
                                     x-data="{
-                                        produk_id: @entangle("obat_estetika.$uuid.produk_id"),
-                                        jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk"),
-                                        potongan: @entangle("obat_estetika.$uuid.potongan"),
-                                        diskon: @entangle("obat_estetika.$uuid.diskon"),
-                                        harga_satuan: @entangle("obat_estetika.$uuid.harga_satuan"),
-                                        subtotal: @entangle("obat_estetika.$uuid.subtotal"),
+                                        produk_id: @entangle("obat_estetika.$uuid.produk_id").live,
+                                        jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk").live,
+                                        potongan: @entangle("obat_estetika.$uuid.potongan").live,
+                                        diskon: @entangle("obat_estetika.$uuid.diskon").live,
+                                        harga_satuan: @entangle("obat_estetika.$uuid.harga_satuan").live,
+                                        subtotal: @entangle("obat_estetika.$uuid.subtotal").live,
 
                                         query: '',
                                         results: [],
@@ -175,8 +175,28 @@
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-                                            <input type="text" class="input input-bordered w-full input-rupiah-transaksi" placeholder="Rp 0">
-                                            <input type="hidden" class="input-rupiah-hidden-transaksi" wire:model.defer="obat_estetika.{{ $uuid }}.potongan">
+                                            <input type="text"
+                                                class="input input-bordered w-full input-rupiah-transaksi"
+                                                x-model="potongan"
+                                                x-init="
+                                                    $nextTick(() => {
+                                                        let cleave = new Cleave($el, {
+                                                            numeral: true,
+                                                            numeralThousandsGroupStyle: 'thousand',
+                                                            numeralDecimalMark: ',',
+                                                            delimiter: '.',
+                                                        });
+
+                                                        $watch('potongan', value => {
+                                                            cleave.setRawValue(value || 0);
+                                                        });
+
+                                                        $el.addEventListener('input', () => {
+                                                            potongan = cleave.getRawValue();
+                                                        });
+                                                    });
+                                                "
+                                            >
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Subtotal</label>
