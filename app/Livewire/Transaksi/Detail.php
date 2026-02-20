@@ -306,7 +306,7 @@ class Detail extends Component
                         'harga' => $item['harga_satuan'],
                         'subtotal' => $subtotalProdukDiTambah,
                     ]);
-                    $totalTagihan += $subtotalproduk;
+                    $totalTagihan += $subtotalProdukDiTambah;
                 }
             }
 
