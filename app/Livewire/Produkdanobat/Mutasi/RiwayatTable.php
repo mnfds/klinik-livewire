@@ -49,8 +49,13 @@ final class RiwayatTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('tipe')
             ->add('produkdanobat.nama_dagang')
-            ->add('produkdanobat.sediaan')
+
             ->add('jumlah')
+            ->add('produkdanobat.sediaan')
+            ->add('jumlah_dan_sediaan', function($row){
+                return strtoupper($row->jumlah) . ' ' . $row->produkdanobat->sediaan;
+            })
+
             ->add('diajukan_oleh')
             ->add('catatan');
     }
@@ -64,9 +69,10 @@ final class RiwayatTable extends PowerGridComponent
             
             Column::make('Nama', 'produkdanobat.nama_dagang')->searchable(),
 
-            Column::make('Jumlah', 'jumlah')->sortable(),
+            Column::make('Jumlah Stok', 'jumlah')->sortable()->hidden(),
+            Column::make('Satuan', 'produkdanobat.sediaan')->searchable()->hidden(),
+            Column::make('Jumlah', 'jumlah_dan_sediaan')->bodyAttribute('whitespace-nowrap'),
             
-            Column::make('Satuan', 'produkdanobat.sediaan')->searchable(),
 
             Column::make('Orang Terkait', 'diajukan_oleh')->searchable(),
             

@@ -45,7 +45,12 @@
                             @endcan
                         </div>
                         <!-- KANAN: Stok Keluar & Masuk -->
-                        <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
+                        <div class="w-full md:w-auto grid grid-cols-3 gap-[2px] mt-2 md:mt-0">
+                            @can('akses', 'Persediaan Produk & Obat Keluar')
+                            <button onclick="document.getElementById('transferModal').showModal()" class="btn btn-info w-full">
+                                <i class="fa-solid fa-dolly"></i> Transfer
+                            </button>
+                            @endcan
                             @can('akses', 'Persediaan Produk & Obat Keluar')
                             <button onclick="document.getElementById('outstockModalProdukDanObat').showModal()" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-circle-minus"></i> Keluar

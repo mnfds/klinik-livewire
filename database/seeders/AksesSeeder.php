@@ -214,6 +214,7 @@ class AksesSeeder extends Seeder
                 'Persediaan Produk & Obat Edit',
                 'Persediaan Produk & Obat Keluar',
                 'Persediaan Produk & Obat Masuk',
+                'Persediaan Produk & Obat Transfer',
                 'Persediaan Riwayat Produk & Obat',
                 'Persediaan Riwayat Produk & Obat Edit',
                 'Persediaan Riwayat Produk & Obat Hapus',

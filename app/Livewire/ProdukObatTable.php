@@ -47,12 +47,17 @@ final class ProdukObatTable extends PowerGridComponent
             ->add('nama_dagang')
             ->add('golongan')
             ->add('kode')
-            ->add('sediaan')
             ->add('harga_dasar', fn ($produkdanobat) => number_format($produkdanobat->harga_dasar, 0, ',', '.'))
             ->add('potongan', fn ($produkdanobat) => number_format($produkdanobat->potongan, 0, ',', '.'))
             ->add('diskon', fn ($row) => $row->diskon ? $row->diskon . '%' : '0%')
             ->add('harga_bersih', fn ($produkdanobat) => number_format($produkdanobat->harga_bersih, 0, ',', '.'))
+
             ->add('stok', fn ($produkdanobat) => number_format($produkdanobat->stok, 0, ',', '.'))
+            ->add('sediaan')
+            ->add('jumlah_satuan', function($row){
+                return strtoupper($row->stok) . ' ' . $row->sediaan;
+            })
+
             ->add('expired_at')
             ->add('reminder')
             ->add('batch')
@@ -72,8 +77,6 @@ final class ProdukObatTable extends PowerGridComponent
                 ->searchable(),
             Column::make('Kode', 'kode')
                 ->searchable(),
-            Column::make('Satuan', 'sediaan')
-                ->searchable(),
 
             // Harga
             Column::make('Harga Jual', 'harga_dasar')
@@ -86,12 +89,15 @@ final class ProdukObatTable extends PowerGridComponent
                 ->sortable(),
 
             // Ketersediaan
-            Column::make('Stok Tersisa', 'stok')
-                ->sortable(),
+            Column::make('Stok', 'stok')
+                ->hidden()->sortable(),
+            Column::make('Satuan', 'sediaan')
+                ->hidden()->searchable(),
+            Column::make('Stok Tersisa', 'jumlah_satuan')->bodyAttribute('whitespace-nowrap'),
+
             Column::make('Kadaluarsa', 'expired_at')
                 ->sortable()
                 ->searchable(),
-
             // Info tambahan
             Column::make('Batch', 'batch')
                 ->searchable(),
