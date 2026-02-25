@@ -53,7 +53,7 @@
                             @foreach($transaksi->riwayat as $item)
                                 <div class="border-b pb-2">
                                     <div class="flex justify-between items-center">
-                                        <span>{{ $item->produk->nama_dagang }} ({{ $item->jumlah_produk }}x)</span>
+                                        <span>{{ $item->produk->nama_dagang }} ({{ number_format($item->produk->harga_dasar, 0, ',', '.')}} x {{ $item->jumlah_produk }} {{ $item->produk->sediaan }})</span>
                                         @php
                                             $harga_produk = $item->produk->harga_dasar;
                                             $jumlah_dibeli = $item->jumlah_produk;
@@ -71,12 +71,12 @@
                                     </div>
 
                                     @if($item->potongan || $item->diskon)
-                                        <div class="ml-4 text-sm text-gray-600 space-y-1">
+                                        <div class="ml-4 text-sm text-gray-600 space-y-1 text-right">
                                             @if($item->potongan)
-                                                <div>Potongan: Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
+                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
                                             @endif
                                             @if($item->diskon)
-                                                <div>Diskon: {{ $item->diskon }}%</div>
+                                                <div class="text-error">- {{ $item->diskon }}%</div>
                                             @endif
                                             <div class="font-semibold text-base-content">
                                                 Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
