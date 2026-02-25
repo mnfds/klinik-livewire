@@ -83,6 +83,27 @@ Route::middleware(['auth'])->group(function () {
     // ====== INVENTORY BARANG ====== //
     Route::view('/peyimpanan-barang', 'barang.data')->name('barang.data');
     Route::get('/penyimpanan-barang/riwayat', BarangRiwayat::class)->name('barang.riwayat');
+    Route::get('/search-barang', function (\Illuminate\Http\Request $request) {
+        $search = $request->q;
+
+        $barang = \App\Models\Barang::query()
+            ->when($search, function ($query, $search) {
+                $query->where('nama', 'like', "%{$search}%")
+                    ->orWhere('kode', 'like', "%{$search}%");
+            })
+            ->select('id', 'nama', 'satuan', 'harga_dasar', 'stok', 'diskon', 'potongan')
+            ->limit(20)
+            ->get();
+
+        return response()->json($barang->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => "{$item->nama} {$item->satuan} - Rp " . number_format($item->harga_dasar) . " sisa: ({$item->stok})",
+                'satuan' => $item->satuan,
+                'harga' => $item->harga_dasar,
+            ];
+        }));
+    })->name('search.Barang');
 
     Route::view('/peyimpanan-bahan-baku', 'bahanbaku.data')->name('bahanbaku.data');
     Route::get('/penyimpanan-bahan-baku/riwayat', BahanRiwayat::class)->name('bahanbaku.riwayat');

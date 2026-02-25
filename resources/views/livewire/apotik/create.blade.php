@@ -38,6 +38,7 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
+                        {{-- FORM PRODUK/OBAT/SKINCARE --}}
                         <div class="bg-base-100 shadow rounded-box p-6"
                             x-data="{
                                 items: @entangle('obat_estetika'),
@@ -236,6 +237,160 @@
                                 Tambah Produk
                             </button>
                         </div>
+
+                        {{-- FORM BARANG --}}
+                        <div class="bg-base-100 shadow rounded-box p-6">
+                            <div class="divider">Pembelian</div>
+                            @foreach($barang_terjual as $uid => $item)
+                                <div wire:key="row-{{ $uid }}"
+                                    x-data="{
+                                        barang_id: @entangle("barang_terjual.$uid.barang_id").live,
+                                        jumlah_barang: @entangle("barang_terjual.$uid.jumlah_barang").live,
+                                        potongan: @entangle("barang_terjual.$uid.potongan").live,
+                                        diskon: @entangle("barang_terjual.$uid.diskon").live,
+                                        harga_satuan: @entangle("barang_terjual.$uid.harga_satuan").live,
+                                        subtotal: @entangle("barang_terjual.$uid.subtotal").live,
+
+                                        query: '',
+                                        results: [],
+                                        open: false,
+
+                                        async searchBarang() {
+                                            if (this.query.length < 2) {
+                                                this.results = [];
+                                                return;
+                                            }
+
+                                            const res = await fetch(`/search-barang?q=${this.query}`);
+                                            const data = await res.json();
+                                            this.results = data;
+                                        },
+
+                                        selectBarang(item) {
+                                            this.query = item.text;
+                                            this.barang_id = item.id;
+                                            this.harga_satuan = item.harga; // langsung assign harga dari API
+                                            this.results = [];
+                                            this.open = false;
+                                            this.hitung();
+                                        },
+
+                                        hitung() {
+                                            let base = (this.harga_satuan || 0) * (this.jumlah_barang || 1);
+                                            let diskon = Number(this.diskon) || 0;
+                                            let potongan = Number(this.potongan) || 0;
+                                            let afterDiskon = base - (base * diskon / 100);
+                                            let subtotal = afterDiskon - potongan;
+                                            this.subtotal = subtotal < 0 ? 0 : subtotal;
+                                        },
+
+                                        formatRupiah(val) {
+                                            return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
+                                        }
+                                    }"
+                                    x-init="hitung()"
+                                    @input="hitung()"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Produk</label>
+                                            <input type="text"
+                                                placeholder="Ketik nama produk..."
+                                                class="input input-bordered w-full"
+                                                x-model="query"
+                                                @input.debounce.300ms="searchBarang()"
+                                                @focus="open = true"
+                                            >
+
+                                            <div x-show="open && results.length > 0"
+                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
+
+                                                <template x-for="item in results" :key="item.id">
+                                                    <div @click="selectBarang(item)"
+                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                        x-text="item.text">
+                                                    </div>
+                                                </template>
+
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Jumlah</label>
+                                            <input type="number"
+                                                min="1"
+                                                class="input input-bordered w-full"
+                                                x-model.number="jumlah_barang"
+                                                @input="hitung()">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
+
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                                            <input type="text"
+                                                class="input input-bordered w-full bg-base-200"
+                                                :value="formatRupiah(harga_satuan)"
+                                                readonly>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                            <input type="number"
+                                                min="0"
+                                                max="100"
+                                                class="input input-bordered w-full"
+                                                x-model.number="diskon"
+                                                @input="hitung()">
+                                        </div>
+
+                                        {{-- 🔥 POTONGAN FIX TOTAL --}}
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+
+                                            <input type="text"
+                                                class="input input-bordered w-full"
+
+                                                :value="(potongan || 0).toLocaleString('id-ID')"
+
+                                                @input="
+                                                    const raw = $event.target.value.replace(/\D/g,'');
+                                                    potongan = raw === '' ? 0 : parseInt(raw);
+                                                    hitung();
+                                                "
+                                            >
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                                            <input type="text"
+                                                class="input input-bordered w-full bg-base-200"
+                                                :value="formatRupiah(subtotal)"
+                                                readonly>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="flex justify-end mt-3">
+                                        <button type="button"
+                                            class="btn btn-error btn-sm"
+                                            wire:click="removeRowBarang('{{ $uid }}')"
+                                            @if(count($barang_terjual) === 1) disabled @endif>
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                    <hr class="my-4">
+                                    </div>
+                                @endforeach
+
+                            <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRowBarang">
+                                Tambah Produk
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -245,12 +400,29 @@
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
 
-                            <div class="space-y-2" x-data="{ items: @entangle('obat_estetika') }">
-                                <template x-for="row in Object.values(items)" :key="row.uuid">
+                            <div class="space-y-2"
+                                x-data="{
+                                    obat: @entangle('obat_estetika'),
+                                    barang: @entangle('barang_terjual'),
+
+                                    get semuaItems() {
+                                        return [
+                                            ...Object.values(this.obat || {}),
+                                            ...Object.values(this.barang || {})
+                                        ];
+                                    }
+                                }">
+                                <template x-for="row in semuaItems" :key="row.uid ?? row.uuid">
                                     <div class="border-b pb-2 mb-2">
                                         <div class="flex justify-between">
                                             <span>
-                                                <span x-text="(row.produk_id ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang) : '-')"></span>
+                                                <span x-text="
+                                                    row.produk_id
+                                                        ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang)
+                                                        : row.barang_id
+                                                            ? ({{ Js::from($barang) }}.find(b => b.id == row.barang_id)?.nama_barang)
+                                                            : '-'
+                                                "></span>
                                                 (<span x-text="row.jumlah_produk"></span>x)
                                             </span>
 
@@ -286,7 +458,7 @@
 
                                 <div class="flex justify-between font-bold my-4 border-t pt-2">
                                     <span>Total:</span>
-                                    <span x-text="Object.values(items).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
+                                    <span x-text="semuaItems.reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
                                 </div>
                             </div>
                             @can('akses', 'Transaksi Apotik Tambah')

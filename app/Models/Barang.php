@@ -16,4 +16,9 @@ class Barang extends Model
     {
         return $this->hasMany(MutasiBarang::class);
     }
+
+    public function riwayatTransaksi()
+    {
+        return $this->hasMany(RiwayatTransaksiApotik::class, 'barang_id');
+    }
 }
