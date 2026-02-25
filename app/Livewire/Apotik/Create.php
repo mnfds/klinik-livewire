@@ -196,9 +196,10 @@ class Create extends Component
             //     "barang" => $this->barang_terjual,
             // ]);
             // Hitung total harga
-            $total = collect($this->obat_estetika)
-                ->sum(fn($item) => (int) $item['subtotal']);
-
+            $totalproduk = collect($this->obat_estetika)->sum(fn($item) => (int) $item['subtotal']);
+            $totalbarang = collect($this->barang_terjual)->sum(fn($item) => (int) $item['subtotal']);
+            $total = $totalproduk + $totalbarang;
+            
             // Generate no_transaksi unik
             $noTransaksi = 'TRX-' . now()->format('YmdHis');
 
