@@ -12,7 +12,7 @@ class Detail extends Component
 
     public function mount($id)
     {
-        $this->transaksi = TransaksiApotik::with(['riwayat.produk'])->findOrFail($id);
+        $this->transaksi = TransaksiApotik::with(['riwayat.produk','riwayatBarang.barang'])->findOrFail($id);
     }
 
     public function render()

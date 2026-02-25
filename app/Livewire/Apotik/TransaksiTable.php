@@ -52,13 +52,17 @@ final class TransaksiTable extends PowerGridComponent
         )
         ->orderByDesc('tanggal')
         ->orderByDesc('id') 
-        ->with(['riwayat', 'riwayat.produk']);
+        ->with([
+            'riwayat', 'riwayat.produk',
+            'riwayatBarang', 'riwayatBarang.barang'
+            ]);
     }
 
     public function relationSearch(): array
     {
         return [
             'riwayat' => ['potongan', 'diskon'],
+            'riwayatBarang' => ['potongan', 'diskon'],
         ];
     }
 
@@ -67,8 +71,8 @@ final class TransaksiTable extends PowerGridComponent
         return PowerGrid::fields()
         ->add('no_transaksi')
         ->add('kasir_nama')
-        ->add('total_potongan', fn ($row) => number_format($row->riwayat->sum('potongan'), 0, ',', '.'))
-        ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon') ? $row->riwayat->sum('diskon') . '%' : '0%')
+        // ->add('total_potongan', fn ($row) => number_format($row->riwayat->sum('potongan'), 0, ',', '.'))
+        // ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon') ? $row->riwayat->sum('diskon') . '%' : '0%')
         ->add('total_harga')
         ->add('total_harga_format', fn ($row) =>'Rp ' . number_format($row->total_harga, 0, ',', '.'))
         // ->add('total_harga_format', fn ($row) => Number::currency($row->total_harga, in: 'IDR', locale: 'id_ID', precision: 0))
@@ -87,11 +91,11 @@ final class TransaksiTable extends PowerGridComponent
             Column::make('Kasir', 'kasir_nama')
                 ->searchable(),
 
-            Column::make('Potongan Harga', 'total_potongan')
-                ->sortable(),
+            // Column::make('Potongan Harga', 'total_potongan')
+            //     ->sortable(),
 
-            Column::make('Diskon', 'total_diskon')
-                ->sortable(),
+            // Column::make('Diskon', 'total_diskon')
+            //     ->sortable(),
 
             Column::make('Bayar', 'total_harga_format', 'total_harga')
                 ->withSum('Total', header: false, footer: true)
