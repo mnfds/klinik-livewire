@@ -641,6 +641,12 @@
                         <span class="ml-3">Pertanyaan Umum</span>
                     </x-side-link>
                 </li>
+                <li>
+                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                        <i class="fa-solid fa-gears"></i>
+                        <span class="ml-3">Pengaturan</span>
+                    </x-side-link>
+                </li>
 
             </ul>
         </div>
