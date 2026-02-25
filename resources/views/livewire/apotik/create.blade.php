@@ -137,84 +137,100 @@
                                     @input="hitung()"
                                 >
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                                        <div x-data>
+
+                                        <div>
                                             <label class="block text-sm font-semibold mb-1">Produk</label>
                                             <input type="text"
                                                 placeholder="Ketik nama produk..."
                                                 class="input input-bordered w-full"
                                                 x-model="query"
                                                 @input.debounce.300ms="searchProduk()"
-                                                @click="open = true"
+                                                @focus="open = true"
                                             >
 
                                             <div x-show="open && results.length > 0"
-                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full">
+                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
+
                                                 <template x-for="item in results" :key="item.id">
                                                     <div @click="selectProduk(item)"
                                                         class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                                                         x-text="item.text">
                                                     </div>
                                                 </template>
+
                                             </div>
                                         </div>
 
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                                            <input type="number" min="1" class="input input-bordered w-full" x-model="jumlah_produk" @input="hitung()">
+                                            <input type="number"
+                                                min="1"
+                                                class="input input-bordered w-full"
+                                                x-model.number="jumlah_produk"
+                                                @input="hitung()">
                                         </div>
+
                                     </div>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
+
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_satuan)" readonly>
+                                            <input type="text"
+                                                class="input input-bordered w-full bg-base-200"
+                                                :value="formatRupiah(harga_satuan)"
+                                                readonly>
                                         </div>
+
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                                            <input type="number"
+                                                min="0"
+                                                max="100"
+                                                class="input input-bordered w-full"
+                                                x-model.number="diskon"
+                                                @input="hitung()">
                                         </div>
+
+                                        {{-- 🔥 POTONGAN FIX TOTAL --}}
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+
                                             <input type="text"
-                                                class="input input-bordered w-full input-rupiah-transaksi"
-                                                x-model="potongan"
-                                                x-init="
-                                                    $nextTick(() => {
-                                                        let cleave = new Cleave($el, {
-                                                            numeral: true,
-                                                            numeralThousandsGroupStyle: 'thousand',
-                                                            numeralDecimalMark: ',',
-                                                            delimiter: '.',
-                                                        });
+                                                class="input input-bordered w-full"
 
-                                                        $watch('potongan', value => {
-                                                            cleave.setRawValue(value || 0);
-                                                        });
+                                                :value="(potongan || 0).toLocaleString('id-ID')"
 
-                                                        $el.addEventListener('input', () => {
-                                                            potongan = cleave.getRawValue();
-                                                        });
-                                                    });
+                                                @input="
+                                                    const raw = $event.target.value.replace(/\D/g,'');
+                                                    potongan = raw === '' ? 0 : parseInt(raw);
+                                                    hitung();
                                                 "
                                             >
                                         </div>
+
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Subtotal</label>
-                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(subtotal)" readonly>
+                                            <input type="text"
+                                                class="input input-bordered w-full bg-base-200"
+                                                :value="formatRupiah(subtotal)"
+                                                readonly>
                                         </div>
+
                                     </div>
 
-                                    <div class="flex justify-end mt-2">
-                                        <button type="button" class="btn btn-error btn-sm"
-                                                wire:click="removeRow('{{ $uuid }}')"
-                                                @if(count($obat_estetika) === 1) disabled @endif>
+                                    <div class="flex justify-end mt-3">
+                                        <button type="button"
+                                            class="btn btn-error btn-sm"
+                                            wire:click="removeRow('{{ $uuid }}')"
+                                            @if(count($obat_estetika) === 1) disabled @endif>
                                             Hapus
                                         </button>
                                     </div>
 
-                                    <hr class="my-2">
-                                </div>
-                            @endforeach
+                                    <hr class="my-4">
+                                    </div>
+                                @endforeach
 
                             <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
                                 Tambah Produk

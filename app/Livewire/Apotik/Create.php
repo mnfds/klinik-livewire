@@ -105,7 +105,7 @@ class Create extends Component
         }
 
         DB::transaction(function () {
-
+            // dd($this->obat_estetika);
             // Hitung total harga
             $total = collect($this->obat_estetika)
                 ->sum(fn($item) => (int) $item['subtotal']);
