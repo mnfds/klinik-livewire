@@ -76,7 +76,14 @@
                                                 @php
                                                     $nama = $item->nama_item ?? $item->produk->nama_dagang ?? '-';
                                                     $qty = $item->qty ?? $item->jumlah ?? 1;
-                                                    $harga = $item->harga ?? 0;
+                                                    // $harga = $item->harga ?? 0;
+                                                    $harga = $item->harga 
+                                                    ?? $item->harga_dasar 
+                                                    ?? $item->harga_pelayanan
+                                                    ?? $item->harga_treatment
+                                                    ?? $item->harga_jual 
+                                                    ?? $item->harga_satuan 
+                                                    ?? 0;
                                                     $hargaTotal = $harga * $qty;
                                                 @endphp
 
@@ -84,7 +91,7 @@
 
                                                     <div class="flex justify-between items-center">
                                                         <span>
-                                                            {{ $nama }} ({{ $qty }}x)
+                                                            {{ $nama }} ({{ number_format($harga, 0, ',', '.') }} x {{ $qty }})
                                                         </span>
 
                                                         @if($item->potongan || $item->diskon)
@@ -99,25 +106,16 @@
                                                     </div>
 
                                                     @if($item->potongan || $item->diskon)
-                                                        <div class="ml-4 text-sm text-gray-600 space-y-1">
-
-                                                            @if($item->potongan)
-                                                                <div>
-                                                                    Potongan: Rp {{ number_format($item->potongan, 0, ',', '.') }}
-                                                                </div>
-                                                            @endif
-
+                                                        <div class="ml-4 text-sm text-gray-600 space-y-1 text-right">
                                                             @if($item->diskon)
-                                                                <div>
-                                                                    Diskon: {{ $item->diskon }}%
-                                                                </div>
+                                                                <div class="text-error">- {{ $item->diskon }}%</div>
                                                             @endif
-
-                                                            <div class="font-semibold">
-                                                                Subtotal:
-                                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                                            @if($item->potongan)
+                                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
+                                                            @endif
+                                                            <div class="font-semibold text-base-content">
+                                                                Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                                                             </div>
-
                                                         </div>
                                                     @endif
 
@@ -149,7 +147,7 @@
                                             <span>
                                                 {{ $item->nama_item }} ({{ $item->qty }}x)
                                             </span>
-                                            <span>
+                                            <span class="text-success">
                                                 Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                                             </span>
                                         </div>

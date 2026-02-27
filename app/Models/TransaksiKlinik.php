@@ -16,7 +16,7 @@ class TransaksiKlinik extends Model
     
     public function riwayatTransaksi()
     {
-        return $this->hasMany(RiwayatTransaksiKlinik::class);
+        return $this->hasMany(RiwayatTransaksiKlinik::class, 'transaksi_klinik_id');
     }
 
     public function getRiwayatTransaksiAttribute()

@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Transaksi;
 
-use App\Models\TransaksiKlinik;
+use App\Models\PasienTerdaftar;
+// use App\Models\TransaksiKlinik;
 use Livewire\Component;
 
 class Mutasi extends Component
@@ -22,7 +23,10 @@ class Mutasi extends Component
     }
 
     public function mount($id){
-        $this->transaksi = TransaksiKlinik::with(['riwayatTransaksi'])->findOrFail($id);
+        $pasien = PasienTerdaftar::with([
+            'rekamMedis.transaksi.riwayatTransaksi'
+        ])->findOrFail($id);
+        $this->transaksi = $pasien->rekamMedis->transaksi;
         $this->bundling =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'bundling')->values();
         $this->produk =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'produk')->values();
         $this->layanan =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'pelayanan')->values();

@@ -11,6 +11,6 @@ class RiwayatTransaksiKlinik extends Model
 
     public function transaksi()
     {
-        return $this->belongsTo(TransaksiKlinik::class);
+        return $this->belongsTo(TransaksiKlinik::class, 'transaksi_klinik_id');
     }
 }

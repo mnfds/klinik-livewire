@@ -133,7 +133,7 @@
                             <div class="space-y-2">
                                 @foreach($transaksi->riwayat as $item)
                                     <div class="flex justify-between">
-                                        <span>{{ $item->produk->nama_dagang }}</span>
+                                        <span>{{ $item->produk->nama_dagang }} ({{ $item->jumlah_produk }} {{ $item->produk->sediaan }})</span>
                                         <span class="text-success">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
                                     </div>
                                 @endforeach
