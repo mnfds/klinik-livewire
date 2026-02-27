@@ -72,11 +72,11 @@
 
                                     @if($item->potongan || $item->diskon)
                                         <div class="ml-4 text-sm text-gray-600 space-y-1 text-right">
-                                            @if($item->potongan)
-                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
-                                            @endif
                                             @if($item->diskon)
                                                 <div class="text-error">- {{ $item->diskon }}%</div>
+                                            @endif
+                                            @if($item->potongan)
+                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
                                             @endif
                                             <div class="font-semibold text-base-content">
                                                 Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
@@ -107,11 +107,11 @@
 
                                     @if($item->potongan || $item->diskon)
                                         <div class="ml-4 text-sm text-gray-600 space-y-1 text-right">
-                                            @if($item->potongan)
-                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
-                                            @endif
                                             @if($item->diskon)
                                                 <div class="text-error">- {{ $item->diskon }}%</div>
+                                            @endif
+                                            @if($item->potongan)
+                                                <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
                                             @endif
                                             <div class="font-semibold text-base-content">
                                                 Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
