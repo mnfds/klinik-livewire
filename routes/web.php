@@ -183,6 +183,9 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
     Route::view('/rekam-medis-pasien/detail', 'rekammedis.detail')->name('rekam-medis-pasien.detail');
+    Route::get('/rekam-medis-pasien/pengurangan-stok/{pasien_terdaftar_id}', function ($pasien_terdaftar_id) {
+            return view('rekammedis.penguranganstok', compact('pasien_terdaftar_id'));
+    })->name('rekam-medis-pasien.pengurangan');
 
     Route::get('/ajax/icd_10', function (Request $request) {
         $query = $request->get('q', '');

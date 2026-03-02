@@ -1226,8 +1226,20 @@ class Create extends Component
                 $this->dispatch('closeStoreModal');
 
                 $this->reset();
+                
+                $rekammedis->load([
+                    'rencanaLayananRM',
+                    'rencanaTreatmentRM',
+                    'rencanaBundlingRM'
+                ]);
 
-                return redirect()->route('pendaftaran.data');
+                if ($rekammedis->rencanaLayananRM->isNotEmpty() || $rekammedis->rencanaTreatmentRM->isNotEmpty() || $rekammedis->rencanaBundlingRM->isNotEmpty()) {
+                    return redirect()->route('rekam-medis-pasien.pengurangan', [
+                        'pasien_terdaftar_id' => $this->pasien_terdaftar_id
+                    ]);
+                }else{
+                    return redirect()->route('pendaftaran.data');
+                }
             } catch (\Exception $e) {
                 DB::rollBack();
                 $this->dispatch('toast', [
