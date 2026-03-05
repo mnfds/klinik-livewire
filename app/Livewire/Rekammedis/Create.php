@@ -1223,19 +1223,15 @@ class Create extends Component
                     ]);
                 }
 
-                $this->dispatch('closeStoreModal');
-
-                $this->reset();
-                
+                $this->dispatch('closeStoreModal');                
                 $rekammedis->load([
                     'rencanaLayananRM',
                     'rencanaTreatmentRM',
                     'rencanaBundlingRM'
                 ]);
-
                 if ($rekammedis->rencanaLayananRM->isNotEmpty() || $rekammedis->rencanaTreatmentRM->isNotEmpty() || $rekammedis->rencanaBundlingRM->isNotEmpty()) {
                     return redirect()->route('rekam-medis-pasien.pengurangan', [
-                        'pasien_terdaftar_id' => $this->pasien_terdaftar_id
+                        'pasien_terdaftar_id' => $this->pasien_terdaftar_id[0] ?? $this->pasien_terdaftar_id
                     ]);
                 }else{
                     return redirect()->route('pendaftaran.data');
@@ -1247,6 +1243,7 @@ class Create extends Component
                     'message' => 'Gagal Menyimpan Data: ' . $e->getMessage()
                 ]);
             }
+            $this->reset();
 
     }
 

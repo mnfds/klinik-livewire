@@ -159,6 +159,8 @@ class Penguranganstok extends Component
                     'tindakan'   => $layanan['nama_pelayanan'],
                     'kategori'   => 'pelayanan',
                     'rekam_medis_id' => $this->rekammedis?->id,
+                    'nama_pasien' => $this->pasien?->nama,
+                    'no_pasien' => $this->pasien?->no_register,
                 ];
             }
         }
@@ -176,6 +178,8 @@ class Penguranganstok extends Component
                     'tindakan'   => $treatment['nama_treatment'],
                     'kategori'   => 'treatment',
                     'rekam_medis_id' => $this->rekammedis?->id,
+                    'nama_pasien' => $this->pasien?->nama,
+                    'no_pasien' => $this->pasien?->no_register,
                 ];
             }
         }
@@ -195,6 +199,8 @@ class Penguranganstok extends Component
                         'tindakan' => $bundling['nama_bundling'] . ' - ' . $treatment['nama_treatment'],
                         'kategori' => 'bundling',
                         'rekam_medis_id' => $this->rekammedis?->id,
+                        'nama_pasien' => $this->pasien?->nama,
+                        'no_pasien' => $this->pasien?->no_register,
                     ];
                 }
             }
@@ -211,6 +217,8 @@ class Penguranganstok extends Component
                         'tindakan' => $bundling['nama_bundling'] . ' - ' . $pelayanan['nama_pelayanan'],
                         'kategori' => 'bundling',
                         'rekam_medis_id' => $this->rekammedis?->id,
+                        'nama_pasien' => $this->pasien?->nama,
+                        'no_pasien' => $this->pasien?->no_register,
                     ];
                 }
             }
@@ -310,8 +318,7 @@ class Penguranganstok extends Component
 
     protected function simpanMutasi(int $bahanId, string $jenis, int $jumlah, string $satuan, array $item) {
         $catatan = "Bahan digunakan untuk tindakan '{$item['tindakan']}' "
-            . "pada rekam medis '{$item['rekam_medis_id']}' "
-            . "kategori : '{$item['kategori']}'";
+            . "pada pasien '{$item['nama_pasien']}' - '{$item['no_pasien']}' ";
 
         MutasiBahanbaku::create([
             'bahan_baku_id' => $bahanId,

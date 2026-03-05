@@ -70,11 +70,11 @@
                             <div class="grid grid-cols-2 gap-x-6">
                                 <div class="flex">
                                     <div class="w-32 font-bold">Nama</div>
-                                    <div>: {{ $pasienTerdaftar->pasien->nama }}</div>
+                                    <div>: {{ $pasienTerdaftar?->pasien?->nama }}</div>
                                 </div>
                                 <div class="flex">
                                     <div class="w-32 font-bold">No. RM / No. IHS</div>
-                                    <div>: {{ $pasienTerdaftar->pasien->no_register }} / {{ $pasienTerdaftar->pasien->no_ihs }}</div>
+                                    <div>: {{ $pasienTerdaftar?->pasien?->no_register }} / {{ $pasienTerdaftar?->pasien?->no_ihs }}</div>
                                 </div>
                             </div>
 
@@ -82,11 +82,11 @@
                             <div class="grid grid-cols-2 gap-x-6">
                                 <div class="flex">
                                     <div class="w-32 font-bold">Jenis Kelamin</div>
-                                    <div>: {{ $pasienTerdaftar->pasien->jenis_kelamin }}</div>
+                                    <div>: {{ $pasienTerdaftar?->pasien?->jenis_kelamin }}</div>
                                 </div>
                                 <div class="flex">
                                     <div class="w-32 font-bold">Tanggal Lahir</div>
-                                    <div>: {{ \Carbon\Carbon::parse($pasienTerdaftar->pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
+                                    <div>: {{ \Carbon\Carbon::parse($pasienTerdaftar?->pasien?->tanggal_lahir)->translatedFormat('d F Y') }}</div>
                                 </div>
                                 {{-- <div class="flex">
                                     <div class="w-32 font-bold">No. IHS</div>
@@ -506,12 +506,12 @@
                                         <div wire:ignore>
                                             <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                             <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectSubjective">
-                                                @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                                    <option value="data-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
-                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
-                                                    <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Data Kesehatan</option>
-                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
-                                                    <option value="data-kesehatan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Data Kesehatan</option>
+                                                @if ($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')
+                                                    <option value="data-estetika" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Data Estetika</option>
+                                                @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')
+                                                    <option value="data-kesehatan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Data Kesehatan</option>
+                                                @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')
+                                                    <option value="data-kesehatan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Data Kesehatan</option>
                                                 @endif
                                             </select>
                                         </div>
@@ -545,14 +545,14 @@
                                         <div wire:ignore>
                                             <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                             <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelectObjective">
-                                            @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                                <option value="pemeriksaan-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
-                                            @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
-                                                <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
-                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
-                                            @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
-                                                <option value="tanda-vital" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Tanda Vital Pasien</option>
-                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Pemeriksaan Fisik</option>
+                                            @if ($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')
+                                                <option value="pemeriksaan-estetika" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
+                                            @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')
+                                                <option value="tanda-vital" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
+                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
+                                            @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')
+                                                <option value="tanda-vital" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Tanda Vital Pasien</option>
+                                                <option value="pemeriksaan-fisik" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Pemeriksaan Fisik</option>
                                             @endif
                                             </select>
                                         </div>
@@ -685,18 +685,18 @@
                                         <div wire:ignore>
                                             <label class="label font-semibold">Pilih Form yang Ingin Ditampilkan:</label>
                                             <select id="formSelect" multiple class="w-full hidden select" x-ref="formSelect">
-                                                @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
-                                                    <option value="rencana-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
-                                                    <option value="rencana-bundling" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
-                                                    <option value="obat-estetika" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')>Produk Estetika</option>
-                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')
-                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Obat Non Racikan</option>
-                                                    <option value="obat-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Obat Racikan</option>
-                                                    <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
-                                                @elseif($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')
-                                                    <option value="rencana-layanan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Rencana Tindakan Medis</option>
-                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Obat Non Racikan</option>
-                                                    <option value="obat-racikan" @selected($pasienTerdaftar->poliklinik->nama_poli == 'Poli Gigi')>Obat Racikan</option>
+                                                @if ($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')
+                                                    <option value="rencana-estetika" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Rencana Tindakan Estetika</option>
+                                                    <option value="rencana-bundling" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Paket bundling</option>
+                                                    <option value="obat-estetika" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Produk Estetika</option>
+                                                @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')
+                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Obat Non Racikan</option>
+                                                    <option value="obat-racikan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Obat Racikan</option>
+                                                    <option value="rencana-layanan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Rencana Tindakan Medis</option>
+                                                @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')
+                                                    <option value="rencana-layanan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Rencana Tindakan Medis</option>
+                                                    <option value="obat-non-racikan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Obat Non Racikan</option>
+                                                    <option value="obat-racikan" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Obat Racikan</option>
                                                 @endif
                                             </select>
                                         </div>
@@ -833,12 +833,12 @@
                             </button>
                             @endcan
                             @can('akses', 'Pasien Riwayat Rekam Medis')
-                            <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasienTerdaftar->pasien->id]) }}"
+                            <a wire:navigate href="{{ route('rekam-medis-pasien.data', ['pasien_id' => $pasienTerdaftar?->pasien?->id]) }}"
                                 class="btn btn-info mb-1 w-full" >
                                 <i class="fa-solid fa-book-medical"></i> Riwayat Rekam Medis
                             </a>
                             @endcan
-                            @if ($pasienTerdaftar->poliklinik->nama_poli == 'Poli Kecantikan')
+                            @if ($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')
                                 <div class="btn w-full btn-success mb-1 ">
                                     <i class="fa-solid fa-money-bill-1-wave"></i>
                                     Grand Total: 
