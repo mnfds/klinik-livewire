@@ -91,7 +91,7 @@ class Take extends Component
                     'keluar',
                     1,
                     $bahan->satuan_besar,
-                    'Konversi stok besar ke kecil'
+                    $this->catatan . ' (Konversi stok besar ke kecil)'
                 );
 
                 // stok kecil masuk sesuai pengali
@@ -102,7 +102,7 @@ class Take extends Component
                     'masuk',
                     $pengali,
                     $bahan->satuan_kecil,
-                    'Hasil konversi dari stok besar'
+                    $this->catatan . ' (Hasil konversi dari stok besar)'
                 );
             }
 
@@ -114,7 +114,7 @@ class Take extends Component
                 'keluar',
                 $jumlahKeluar,
                 $bahan->satuan_kecil,
-                'Bahan Baku Outstock'
+                $this->catatan . ' (Bahan Baku Outstock)'
             );
 
             // 4️⃣ Update stok akhir di tabel bahan
@@ -132,7 +132,7 @@ class Take extends Component
         string $satuan,    // besar | kecil
         string $keterangan,
     ) {
-        MutasiBahanBaku::create([
+        MutasiBahanbaku::create([
             'bahan_baku_id' => $bahanId,
             'tipe'         => $jenis,
             'jumlah'        => $jumlah,
