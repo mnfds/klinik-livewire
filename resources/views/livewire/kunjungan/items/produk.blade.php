@@ -16,6 +16,13 @@
                     </p>
                 </div>
             </div>
+            <div class="flex justify-end">
+                <select wire:model.live="filter" class="select select-md select-bordered w-full sm:w-auto mb-1">
+                    <option value="all">Sepanjang Waktu</option>
+                    <option value="weekly">Minggu Ini</option>
+                    <option value="monthly">Bulan Ini</option>
+                </select>
+            </div>
             {{-- List Bundling --}}
             <div class="space-y-3">
                 @forelse ($topProduk as $index => $produk)

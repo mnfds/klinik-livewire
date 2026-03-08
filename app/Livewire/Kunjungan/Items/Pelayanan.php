@@ -9,29 +9,51 @@ use Livewire\Component;
 class Pelayanan extends Component
 {
     public $topPelayanan = [];
+    public $filter = 'all';
 
     public function mount()
     {
-        // 1️⃣ Pelayanan langsung
+        $this->loadTopPelayanan();
+    }
+
+    public function updatedFilter()
+    {
+        $this->loadTopPelayanan();
+    }
+
+    private function loadTopPelayanan()
+    {
         $directPelayanan = DB::table('rencana_layanan_r_m_s')
             ->select(
                 'pelayanan_id as pelayanan_ref_id',
                 DB::raw('SUM(COALESCE(jumlah_pelayanan,0)) as total')
-            )
-            ->groupBy('pelayanan_id');
+            );
 
-        // 2️⃣ Pelayanan dari bundling
         $bundlingPelayanan = DB::table('pelayanan_bundling_r_m_s')
             ->select(
                 'pelayanan_id as pelayanan_ref_id',
                 DB::raw('SUM(COALESCE(jumlah_awal,0)) as total')
-            )
-            ->groupBy('pelayanan_id');
+            );
 
-        // 3️⃣ UNION
+        // FILTER WAKTU
+        if ($this->filter === 'weekly') {
+            $directPelayanan->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            $bundlingPelayanan->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        }
+
+        if ($this->filter === 'monthly') {
+            $directPelayanan->whereMonth('created_at', now()->month)
+                            ->whereYear('created_at', now()->year);
+
+            $bundlingPelayanan->whereMonth('created_at', now()->month)
+                            ->whereYear('created_at', now()->year);
+        }
+
+        $directPelayanan->groupBy('pelayanan_id');
+        $bundlingPelayanan->groupBy('pelayanan_id');
+
         $union = $directPelayanan->unionAll($bundlingPelayanan);
 
-        // 4️⃣ SUM ulang & join master
         $this->topPelayanan = DB::query()
             ->fromSub($union, 'pelayanan_totals')
             ->join('pelayanans', 'pelayanan_totals.pelayanan_ref_id', '=', 'pelayanans.id')
