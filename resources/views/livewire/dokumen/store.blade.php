@@ -22,11 +22,11 @@
             </div>
 
             <div class="space-y-2">
-                <label class="label font-medium">Tanggal Kadaluarsa<span class="text-error">*</span></label>
+                <label class="label font-medium">Tanggal Kadaluarsa {{-- <span class="text-error">*</span> --}}</label>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <input type="date" class="input input-bordered w-full @error('tanggal_berlaku') input-error @enderror" wire:model.lazy="tanggal_berlaku" >
-                        <span class="text-xs text-gray-500 ml-1">Tanggal Aktif</span><br>
+                        <span class="text-xs text-gray-500 ml-1">Tanggal Aktif<span class="text-error">*</span></span><br>
                         @error('tanggal_berlaku')
                             <span class="text-error text-sm">
                                 Mohon Mengisi Tanggal Berlaku/Aktif Dengan Benar
