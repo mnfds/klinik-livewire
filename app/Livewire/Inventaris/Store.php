@@ -32,6 +32,10 @@ class Store extends Component
             return;
         }
 
+        $kodeTerakhir = Inventaris::latest('id')->first();
+        $nomor = $kodeTerakhir ? $kodeTerakhir->id + 1 : 1;
+        $this->kode_inventaris = 'BRG-INV' . str_pad($nomor, 5, '0', STR_PAD_LEFT);
+
         Inventaris::create([
             'kode_inventaris'   => $this->kode_inventaris,
             'nama_barang'       => $this->nama_barang,

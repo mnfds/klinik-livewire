@@ -42,10 +42,13 @@ final class InventarisTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('nama_barang')
-            ->add('jumlah')
             ->add('kode_inventaris')
+            ->add('nama_dan_kode', function($row){
+                return strtoupper($row->nama_barang) . '<br><span class="text-sm text-gray-500">' . $row->kode_inventaris . '</span>';
+            })
+            ->add('jumlah')
             ->add('lokasi')
-            ->add('tanggal_perolehan')
+            ->add('tanggal_perolehan',fn ($row) => \Carbon\Carbon::parse($row->tanggal_perolehan)->format('d M Y'))
             ->add('kondisi')
             ->add('keterangan');
     }
@@ -55,9 +58,10 @@ final class InventarisTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Nama', 'nama_barang')->searchable(),
+            Column::make('Nama Barang', 'nama_barang')->searchable()->hidden(),
+            Column::make('Kode', 'kode_inventaris')->searchable()->hidden(),
+            Column::make('Nama', 'nama_dan_kode')->bodyAttribute('whitespace-nowrap'),
             Column::make('Jumlah', 'jumlah')->searchable(),
-            Column::make('Kode', 'kode_inventaris')->hidden(),
             Column::make('lokasi', 'lokasi')->searchable(),
             Column::make('Tanggal Perolehan', 'tanggal_perolehan')->searchable(),
             Column::make('kondisi', 'kondisi')->searchable(),
