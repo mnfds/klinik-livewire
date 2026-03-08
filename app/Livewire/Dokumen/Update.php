@@ -38,7 +38,7 @@ class Update extends Component
         $this->validate([
             'nama' => 'required',
             'tanggal_berlaku' => 'required|date',
-            'tanggal_tidak_berlaku' => 'required|date'
+            // 'tanggal_tidak_berlaku' => 'required|date'
         ]);
 
         if (! Gate::allows('akses', 'Dokumen Edit')) {
