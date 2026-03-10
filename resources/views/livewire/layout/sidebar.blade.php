@@ -527,7 +527,8 @@
                             @endcan
                         </ul>
                     </li>
-                @endif                
+                @endif   
+
                 @if (
                     Gate::allows('akses','Transaksi Klinik') ||
                     Gate::allows('akses','Transaksi Apotik')
@@ -551,7 +552,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endif                    
+                @endif  
+                                  
                 @can('akses', 'Resep Obat')
                 <li>
                     <x-side-link href="{{ route('resep.data') }}" :active="request()->routeIs('resep.*')" wire:navigate>
@@ -560,6 +562,28 @@
                     </x-side-link>
                 </li>
                 @endcan
+
+                @if (Gate::allows('akses','Transaksi Klinik') || Gate::allows('akses','Transaksi Apotik'))
+                <li x-data="{ open: {{ request()->routeIs('apotik.*') || request()->routeIs('transaksi.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('apotik.*', 'transaksi.*')">
+                        <i class="fa-solid fa-file-medical"></i>
+                        <span class="flex-1 ml-3 text-left">Surat Keterangan</span>
+                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
+                    </x-side-link>
+                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @can('akses', 'Transaksi Klinik')
+                        <li>
+                            <x-side-link href="{{ route('transaksi.kasir') }}" :active="request()->routeIs('transaksi.kasir*')" wire:navigate>Surat Sehat</x-side-link>
+                        </li>
+                        @endcan
+                        @can('akses', 'Transaksi Apotik')
+                        <li>
+                            <x-side-link href="{{ route('apotik.kasir') }}" :active="request()->routeIs('apotik.*')" wire:navigate>Surat Sakit</x-side-link>
+                        </li>
+                        @endcan
+                    </ul>
+                </li>
+                @endif 
 
 
                 <li class="pt-2">
