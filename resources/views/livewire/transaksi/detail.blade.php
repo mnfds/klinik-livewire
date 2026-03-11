@@ -591,6 +591,7 @@
                         @endif
                         @if ($showTambahanItem)
                         @include('transaksi.partials.tambahproduk')
+                        @include('transaksi.partials.tambahbarang')
                             {{-- <x-transaksi.tambahproduk /> --}}
                             <button wire:click="$set('showTambahanItem', false)" class="btn btn-error btn-sm mt-4 w-full">
                                 Batal
@@ -608,42 +609,65 @@
                             <div class="space-y-2 text-sm">
                                 {{-- {{  $produk }} --}}
 
-                                {{-- === Pelayanan, Treatment, Produk, Bundling, Produk Tambahan === --}}
-                                @foreach([$pelayanan, $treatment, $produk, $bundling, $produktambahan] as $collection)
+                                {{-- === Pelayanan, Treatment, Produk, Bundling === --}}
+                                @foreach([$pelayanan, $treatment, $produk, $bundling] as $collection)
                                     @foreach($collection as $item)
-                                        @if(is_array($item) && (!$showTambahanItem || empty($item['produk_id']) || ($item['subtotal'] ?? 0) <= 0))
-                                            @continue
-                                        @endif
                                         @php
-                                            // === KHUSUS PRODUK TAMBAHAN (ARRAY) ===
-                                            if (is_array($item)) {
-                                                $produkTambahan = $produksearch->firstWhere('id', $item['produk_id']);
+                                            $nama = $item->pelayanan->nama_pelayanan
+                                                ?? $item->treatment->nama_treatment
+                                                ?? $item->produk->nama_dagang
+                                                ?? $item->bundling->nama
+                                                ?? '-';
 
-                                                $nama = $produkTambahan?->nama_dagang ?? 'Produk Tambahan';
-                                                $harga = $item['subtotal'] ?? 0;
-                                            } else {
-                                                // === KHUSUS PELAYANAN, PRODUK, TREATMENT, BUNDLING ===
-                                                $nama = $item->pelayanan->nama_pelayanan
-                                                    ?? $item->treatment->nama_treatment
-                                                    ?? $item->produk->nama_dagang
-                                                    ?? $item->bundling->nama
-                                                    ?? '-';
-
-                                                $harga = $item->subtotal
-                                                    ?? $item->pelayanan->harga_pelayanan
-                                                    ?? $item->treatment->harga_treatment
-                                                    ?? $item->produk->harga_jual
-                                                    ?? $item->bundling->harga_bundling
-                                                    ?? 0;
-                                            }
+                                            $harga = $item->subtotal
+                                                ?? $item->pelayanan->harga_pelayanan
+                                                ?? $item->treatment->harga_treatment
+                                                ?? $item->produk->harga_jual
+                                                ?? $item->bundling->harga_bundling
+                                                ?? 0;
                                         @endphp
-
                                         <div class="flex justify-between">
                                             <span>{{ $nama }}</span>
                                             <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
                                         </div>
                                     @endforeach
                                 @endforeach
+
+                                {{-- === Produk Tambahan === --}}
+                                @if($showTambahanItem)
+                                    @foreach($produktambahan as $item)
+                                        @if(empty($item['produk_id']) || ($item['subtotal'] ?? 0) <= 0)
+                                            @continue
+                                        @endif
+                                        @php
+                                            $produkTambahan = $produksearch->firstWhere('id', $item['produk_id']);
+                                            $nama = $produkTambahan?->nama_dagang ?? 'Produk Tambahan';
+                                            $harga = $item['subtotal'] ?? 0;
+                                        @endphp
+                                        <div class="flex justify-between">
+                                            <span>{{ $nama }}</span>
+                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                {{-- === Barang Tambahan === --}}
+                                @if($showTambahanBarang)
+                                    @foreach($barangtambahan as $item)
+                                        @if(empty($item['barang_id']) || ($item['subtotal'] ?? 0) <= 0)
+                                            @continue
+                                        @endif
+                                        @php
+                                            $barangTambahan = $barangsearch->firstWhere('id', $item['barang_id']);
+                                            $nama = $barangTambahan?->nama ?? 'Barang Tambahan';
+                                            $harga = $item['subtotal'] ?? 0;
+                                        @endphp
+                                        <div class="flex justify-between">
+                                            <span>{{ $nama }}</span>
+                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
 
                                 {{-- === Obat Non Racikan & Racikan === --}}
                                 @foreach($obatapoteker as $obat)

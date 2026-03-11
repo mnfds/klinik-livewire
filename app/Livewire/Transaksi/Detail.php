@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Transaksi;
 
+use App\Models\Barang;
 use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\RekamMedis;
@@ -47,9 +48,13 @@ class Detail extends Component
 
     public bool $showPaymentForm = false;
     public bool $showTambahanItem = false;
+    public bool $showTambahanBarang = false;
 
     public $produksearch;
     public $produktambahan = [];
+
+    public $barangsearch;
+    public $barangtambahan = [];
 
     public $diskon = 0;
     public $potongan = 0;
@@ -118,6 +123,11 @@ class Detail extends Component
         $this->produksearch = ProdukDanObat::all();
         $uuid = (string) Str::uuid();
         $this->produktambahan[$uuid] = $this->emptyRowWithUuid($uuid);
+
+        // DINAMIS BARANG TAMBAHAN
+        $this->barangsearch = ProdukDanObat::all();
+        $uuidBarang = (string) Str::uuid();
+        $this->barangtambahan[$uuidBarang] = $this->emptyRowBarangWithUuid($uuidBarang);
     
     }
 
@@ -312,6 +322,30 @@ class Detail extends Component
                 }
             }
 
+            // --- Barang Tambahan ---
+            if($this->showTambahanBarang === true){
+                foreach ($this->barangtambahan ?? [] as $item) {
+                    // SKIP JIKA TIDAK ADA BARANG / DIBATALKAN
+                    if (
+                        !isset($item['barang_id']) ||
+                        ($item['subtotal'] ?? 0) <= 0
+                    ) {
+                        continue;
+                    }
+                    $barangDitambah = $this->barangsearch->firstWhere('id', $item['barang_id']);
+                    $subtotalBarangDiTambah = (int) $item['subtotal'];
+                    RiwayatTransaksiKlinik::create([
+                        'transaksi_klinik_id' => $transaksi->id,
+                        'jenis_item' => 'barang_tambahan',
+                        'nama_item' => $barangDitambah?->nama ?? '-',
+                        'qty' => $item['jumlah_produk'],
+                        'harga' => $item['harga_satuan'],
+                        'subtotal' => $subtotalBarangDiTambah,
+                    ]);
+                    $totalTagihan += $subtotalBarangDiTambah;
+                }
+            }
+
             // --- Bundling ---
             foreach ($this->bundling as $item) {
                 $subtotalbundling = (int) ($item->subtotal ?? 0);
@@ -429,19 +463,16 @@ class Detail extends Component
     public function tambahItem()
     {
         $this->showTambahanItem = true;
+        $this->showTambahanBarang = true;
     }
 
     public function getTotalKotorProperty()
     {
         $total = 0;
 
-        foreach ([$this->pelayanan, $this->treatment, $this->produk, $this->bundling, $this->produktambahan] as $collection) {
+        // === Koleksi Eloquent (bukan array) ===
+        foreach ([$this->pelayanan, $this->treatment, $this->produk, $this->bundling] as $collection) {
             foreach ($collection ?? [] as $item) {
-                // === PRODUK TAMBAHAN (ARRAY) ===
-                if (is_array($item) && $this->showTambahanItem === true) {
-                    $total += (int) ($item['subtotal'] ?? 0);
-                    continue;
-                }
                 $total += (int) (
                     $item->subtotal
                     ?? $item->pelayanan->harga_pelayanan
@@ -453,8 +484,21 @@ class Detail extends Component
             }
         }
 
-        foreach ($this->obatapoteker ?? [] as $obat) {
+        // === Produk Tambahan ===
+        if ($this->showTambahanItem === true) {
+            foreach ($this->produktambahan ?? [] as $item) {
+                $total += (int) ($item['subtotal'] ?? 0);
+            }
+        }
 
+        // === Barang Tambahan ===
+        if ($this->showTambahanBarang === true) {
+            foreach ($this->barangtambahan ?? [] as $item) {
+                $total += (int) ($item['subtotal'] ?? 0);
+            }
+        }
+
+        foreach ($this->obatapoteker ?? [] as $obat) {
             $total +=
                 ($obat->obatNonRacikanFinals?->whereIn('id', $this->selectedObat ?? [])->sum('total_obat') ?? 0) +
                 ($obat->obatRacikanFinals?->whereIn('id', $this->selectedRacikan ?? [])->sum('total_racikan') ?? 0);
@@ -519,6 +563,28 @@ class Detail extends Component
 
                 $this->kurangiStokDanCatatMutasi(
                     $produk,
+                    $jumlah,
+                    $notransaksi,
+                    'Transaksi Klinik'
+                );
+            }
+        }
+
+        // --- Pengurangan Stok Barang Dari Barang Tambahan ---
+        if ($this->showTambahanBarang === true) {
+            foreach ($this->barangtambahan ?? [] as $item) {
+                // skip jika tidak item tambahan / dibatalkan
+                if (!isset($item['barang_id']) || ($item['jumlah_produk'] ?? 0) <= 0) {
+                    continue;
+                }
+
+                $barang = Barang::lockForUpdate()->find($item['barang_id']);
+                if (! $barang) continue;
+
+                $jumlah = (int) $item['jumlah_produk'];
+
+                $this->kurangiStokDanCatatMutasiBarang(
+                    $barang,
                     $jumlah,
                     $notransaksi,
                     'Transaksi Klinik'
@@ -594,6 +660,26 @@ class Detail extends Component
         ]);
 
         $produk->mutasiproduk()->create([
+            'tipe' => 'keluar',
+            'jumlah' => $jumlah,
+            'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name,
+            'catatan' => trim(($keterangan ?? 'Transaksi') . 
+                        ($noTransaksi ? ' - No: ' . $noTransaksi : '')),
+        ]);
+    }
+
+    protected function kurangiStokDanCatatMutasiBarang($barang, int $jumlah, ?string $noTransaksi = null, string $keterangan = null)
+    {
+        if (! $barang || $jumlah <= 0) return;
+
+        $stokSebelum = $barang->stok;
+        $stokBaru = max($stokSebelum - $jumlah, 0);
+
+        $barang->update([
+            'stok' => $stokBaru,
+        ]);
+
+        $barang->mutasi()->create([
             'tipe' => 'keluar',
             'jumlah' => $jumlah,
             'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap ?? Auth::user()->name,
@@ -694,6 +780,32 @@ class Detail extends Component
         unset($this->produktambahan[$uuid]);
     }
     // ===== DINAMIS PRODUK/OBAT TAMBAHAN ===== //
+
+    // ===== DINAMIS BARANG TAMBAHAN ===== //
+    private function emptyRowBarangWithUuid($uuid)
+    {
+        return [
+            'barang_id' => null,
+            'jumlah_produk' => 1,
+            'harga_satuan' => 0,
+            'potongan_harga' => 0,
+            'diskon' => 0,
+            'subtotal' => 0,
+            'uuid' => $uuid,
+        ];
+    }
+
+    public function addRowBarang()
+    {
+        $uuidBarang = (string) Str::uuid();
+        $this->barangtambahan[$uuidBarang] = $this->emptyRowBarangWithUuid($uuidBarang);
+    }
+
+    public function removeRowBarang($uuidBarang)
+    {
+        unset($this->barangtambahan[$uuidBarang]);
+    }
+    // ===== DINAMIS BARANG TAMBAHAN ===== //
 
     protected function invoice(int $transaksiId)
     {
