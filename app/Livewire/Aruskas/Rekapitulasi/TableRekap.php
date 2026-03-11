@@ -178,7 +178,10 @@ class TableRekap extends Component
         ->whereBetween('tanggal_transaksi', [$start, $end])
         ->get();
 
-        $apotik = TransaksiApotik::with('riwayat.produk')
+        $apotik = TransaksiApotik::with([
+            'riwayat.produk',
+            'riwayatBarang.barang',
+            ])
             ->whereBetween('tanggal', [$start, $end])
             ->get();
 
@@ -235,6 +238,7 @@ class TableRekap extends Component
 
         $apotik = TransaksiApotik::with([
             'riwayat.produk',
+            'riwayatBarang.barang',
             'pasien'
         ])
         ->whereBetween('tanggal', [$start, $end])

@@ -283,7 +283,14 @@
                         </div>
                         {{-- Detail Item --}}
                         @php
-                            $grouped = $trx->riwayat->groupBy('jenis_item');
+                            $items = collect();
+                            if($trx->riwayat){
+                                $items = $items->merge($trx->riwayat);
+                            }
+                            if($trx->riwayatBarang){
+                                $items = $items->merge($trx->riwayatBarang);
+                            }
+                            $grouped = $items->groupBy('jenis_item');
                             $labels = [
                                 'produk' => 'Produk',
                                 'pelayanan' => 'Pelayanan',
@@ -292,6 +299,7 @@
                                 'obat_non_racik' => 'Obat Non Racik',
                                 'obat_racik' => 'Obat Racik',
                                 'produk_tambahan' => 'Produk Tambahan',
+                                'barang' => 'Barang',
                             ];
                         @endphp
                         <div class="mt-3 space-y-3">
@@ -303,13 +311,14 @@
                                     </div>
                                     @foreach($items as $detail)
                                         @php
-                                            $produk        = $detail->produk;
-                                            $harga_dasar   = $produk->harga_dasar;
-                                            $nama          = $produk->nama_dagang ?? $detail->nama_item ?? 'Item tidak ditemukan';
-                                            $sediaan       = $produk->sediaan ?? '';
-                                            $qty           = $detail->jumlah_produk ?? $detail->qty ?? 1;
-                                            $total         = $harga_dasar * $qty;
-                                            $subtotal      = $detail->subtotal ?? 0;
+                                            $produk = $detail->produk ?? null;
+                                            $barang = $detail->barang ?? null;
+                                            $harga_dasar = $produk->harga_dasar ?? $barang->harga_dasar ?? 0;
+                                            $nama = $produk->nama_dagang ?? $barang->nama ?? $detail->nama_item ?? 'Item tidak ditemukan';
+                                            $sediaan = $produk->sediaan ?? $barang->satuan ?? '';
+                                            $qty = $detail->jumlah_produk ?? $detail->qty ?? 1;
+                                            $total = $harga_dasar * $qty;
+                                            $subtotal = $detail->subtotal ?? 0;
                                         @endphp
 
                                         <div class="text-sm py-2 border-b border-dashed border-base-200">

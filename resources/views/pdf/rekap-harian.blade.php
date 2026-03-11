@@ -28,14 +28,17 @@
         .small {
             font-size: 11px;
         }
+        .text-error {
+            color: red;
+        }
     </style>
 </head>
 <body>
 
-<h3>Laporan Pendapatan & Pengeluaran Harian</h3>
-<h5>
+<h2>Laporan Pendapatan & Pengeluaran Harian</h2>
+<h2 class="text-error">
     {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}
-</h5>
+</h2>
 <hr>
 
 {{-- ================= PENDAPATAN KLINIK ================= --}}
@@ -155,32 +158,30 @@
             <td>{{ $trx->pasien->nama ?? '-' }}</td>
             <td>{{ $trx->no_transaksi }}</td>
             <td class="small">
-                @foreach($trx->riwayat as $item)
+                @php
+                    $items = collect()->merge($trx->riwayat ?? [])->merge($trx->riwayatBarang ?? []);
+                @endphp
+                @foreach($items as $item)
                     @php
-                        $produk      = $item->produk;
-                        $nama        = $produk->nama_dagang ?? $item->nama_item ?? 'Item tidak ditemukan';
-                        $harga       = $produk->harga_dasar ?? 0;
-                        $qty         = $item->jumlah_produk ?? 1;
-                        $sediaan     = $produk->sediaan ?? '';
-                        $subtotal    = $harga * $qty;
-                        $diskon      = $item->diskon ?? 0;
-                        $potongan    = $item->potongan ?? 0;
-                        $total       = $item->subtotal;
+                        $produk = $item->produk ?? null;
+                        $barang = $item->barang ?? null;
+                        $nama = $produk->nama_dagang ?? $barang->nama ?? $item->nama_item ?? 'Item tidak ditemukan';
+                        $harga = $produk->harga_dasar ?? $barang->harga_dasar ?? 0;
+                        $sediaan = $produk->sediaan ?? $barang->satuan ?? '';
+                        $qty = $item->jumlah_produk ?? $item->qty ?? 1;
+                        $subtotal = $harga * $qty;
+                        $diskon = $item->diskon ?? 0;
+                        $potongan = $item->potongan ?? 0;
+                        $total = $item->subtotal ?? $subtotal;
                     @endphp
-
                     <div style="margin-bottom:6px;">
                         <strong>{{ $nama }}</strong><br>
                         {{ $qty }} {{ $sediaan }} x Rp {{ number_format($harga,0,',','.') }}
                         = Rp {{ number_format($subtotal,0,',','.') }}<br>
-                        @if($diskon > 0)
-                            (-) Diskon: {{ number_format($diskon,0,',','.') }}%<br>
-                        @endif
-                        @if($potongan > 0)
-                            (-) Potongan: Rp {{ number_format($potongan,0,',','.') }}<br>
-                        @endif
-                        @if($diskon > 0 || $potongan > 0)
-                            <strong>Total: Rp {{ number_format($total,0,',','.') }}</strong>
-                        @endif
+
+                        @if($diskon > 0)(-) Diskon: {{ $diskon }}%<br>@endif
+                        @if($potongan > 0)(-) Potongan: Rp {{ number_format($potongan,0,',','.') }}<br>@endif
+                        @if($diskon > 0 || $potongan > 0)<strong>Total: Rp {{ number_format($total,0,',','.') }}</strong>@endif
                     </div>
                 @endforeach
             </td>
