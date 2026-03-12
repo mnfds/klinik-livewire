@@ -583,27 +583,45 @@
                                 </div>
                             @endif
                         @endif
-                        
-                        @if (!$showTambahanItem)
-                            <button wire:click="tambahItem" class="btn btn-success btn-sm mt-4 w-full">
-                                <i class="fa-solid fa-plus"></i> Item Pembelian
-                            </button>
-                        @endif
                         @if ($showTambahanItem)
-                        @include('transaksi.partials.tambahproduk')
-                        @include('transaksi.partials.tambahbarang')
-                            {{-- <x-transaksi.tambahproduk /> --}}
+                            @include('transaksi.partials.tambahproduk')
                             <button wire:click="$set('showTambahanItem', false)" class="btn btn-error btn-sm mt-4 w-full">
                                 Batal
                             </button>
                         @endif
-
+                        @if ($showTambahanBarang)
+                            @include('transaksi.partials.tambahbarang')
+                            <button wire:click="$set('showTambahanBarang', false)" class="btn btn-error btn-sm mt-4 w-full">
+                                Batal
+                            </button>
+                        @endif
                     </div>
                 </div>
 
                 {{-- Kolom Kanan: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
+                        @if (!$showTambahanItem || !$showTambahanBarang)
+                            <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
+                                <div class="text-sm font-semibold text-base-content/70">
+                                    Tambah Item
+                                </div>
+                                @if (!$showTambahanItem)
+                                    <button wire:click="tambahItem"
+                                        class="btn btn-primary btn-sm w-full flex items-center justify-start gap-2">
+                                        <i class="fa-solid fa-pills"></i>
+                                        <span>Produk / Obat</span>
+                                    </button>
+                                @endif
+                                @if (!$showTambahanBarang)
+                                    <button wire:click="tambahItemBarang"
+                                        class="btn btn-secondary btn-sm w-full flex items-center justify-start gap-2">
+                                        <i class="fa-solid fa-gifts"></i>
+                                        <span>Barang / Souvenir</span>
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
                         <div class="bg-base-100 border-t-3 border-t-info shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
                             <div class="space-y-2 text-sm">
@@ -632,42 +650,6 @@
                                         </div>
                                     @endforeach
                                 @endforeach
-
-                                {{-- === Produk Tambahan === --}}
-                                @if($showTambahanItem)
-                                    @foreach($produktambahan as $item)
-                                        @if(empty($item['produk_id']) || ($item['subtotal'] ?? 0) <= 0)
-                                            @continue
-                                        @endif
-                                        @php
-                                            $produkTambahan = $produksearch->firstWhere('id', $item['produk_id']);
-                                            $nama = $produkTambahan?->nama_dagang ?? 'Produk Tambahan';
-                                            $harga = $item['subtotal'] ?? 0;
-                                        @endphp
-                                        <div class="flex justify-between">
-                                            <span>{{ $nama }}</span>
-                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
-                                        </div>
-                                    @endforeach
-                                @endif
-
-                                {{-- === Barang Tambahan === --}}
-                                @if($showTambahanBarang)
-                                    @foreach($barangtambahan as $item)
-                                        @if(empty($item['barang_id']) || ($item['subtotal'] ?? 0) <= 0)
-                                            @continue
-                                        @endif
-                                        @php
-                                            $barangTambahan = $barangsearch->firstWhere('id', $item['barang_id']);
-                                            $nama = $barangTambahan?->nama ?? 'Barang Tambahan';
-                                            $harga = $item['subtotal'] ?? 0;
-                                        @endphp
-                                        <div class="flex justify-between">
-                                            <span>{{ $nama }}</span>
-                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
-                                        </div>
-                                    @endforeach
-                                @endif
 
                                 {{-- === Obat Non Racikan & Racikan === --}}
                                 @foreach($obatapoteker as $obat)
@@ -715,6 +697,42 @@
 
                                 @endforeach
 
+                                {{-- === Produk Tambahan === --}}
+                                @if($showTambahanItem)
+                                    @foreach($produktambahan as $item)
+                                        @if(empty($item['produk_id']) || ($item['subtotal'] ?? 0) <= 0)
+                                            @continue
+                                        @endif
+                                        @php
+                                            $produkTambahan = $produksearch->firstWhere('id', $item['produk_id']);
+                                            $nama = $produkTambahan?->nama_dagang ?? 'Produk Tambahan';
+                                            $harga = $item['subtotal'] ?? 0;
+                                        @endphp
+                                        <div class="flex justify-between">
+                                            <span>{{ $nama }}</span>
+                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                {{-- === Barang Tambahan === --}}
+                                @if($showTambahanBarang)
+                                    @foreach($barangtambahan as $item)
+                                        @if(empty($item['barang_id']) || ($item['subtotal'] ?? 0) <= 0)
+                                            @continue
+                                        @endif
+                                        @php
+                                            $barangTambahan = $barangsearch->firstWhere('id', $item['barang_id']);
+                                            $nama = $barangTambahan?->nama ?? 'Barang Tambahan';
+                                            $harga = $item['subtotal'] ?? 0;
+                                        @endphp
+                                        <div class="flex justify-between">
+                                            <span>{{ $nama }}</span>
+                                            <span>Rp {{ number_format($harga, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
+
                                 <hr class="my-2 border-base-300">
 
                                 <div class="flex justify-between">
@@ -743,40 +761,40 @@
 
                                 @if ($pasienTerdaftar->status_terdaftar == "pembayaran")
                                     @can('akses', 'Transaksi Klinik Selesai')
-                                    @if ($showPaymentForm)
-                                    <div class="mb-1">
-                                        <label class="label font-medium">Diskon (%)</label>
-                                        <input type="number" class="input input-bordered w-full" wire:model.live="diskon" min="0" max="100">
-                                    </div>
+                                        @if ($showPaymentForm)
+                                            <div class="mb-1">
+                                                <label class="label font-medium">Diskon (%)</label>
+                                                <input type="number" class="input input-bordered w-full" wire:model.live="diskon" min="0" max="100">
+                                            </div>
 
-                                    <div class="mb-1">
-                                        <label class="label font-medium">Potongan (Rp)</label>
-                                        <input type="text" class="input input-bordered w-full" wire:model.live="potongan" placeholder="0"
-                                            x-data
-                                            x-on:input="
-                                                let v = $el.value.replace(/\D/g,'');
-                                                $el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                                                $wire.set('potongan', v);
-                                            "
-                                        >
-                                    </div>
-                                    <div class="mb-1">
-                                        <label class="label font-medium">Catatan</label>
-                                        <input type="text" class="input input-bordered w-full" wire:model.live="note">
-                                    </div>
+                                            <div class="mb-1">
+                                                <label class="label font-medium">Potongan (Rp)</label>
+                                                <input type="text" class="input input-bordered w-full" wire:model.live="potongan" placeholder="0"
+                                                    x-data
+                                                    x-on:input="
+                                                        let v = $el.value.replace(/\D/g,'');
+                                                        $el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                        $wire.set('potongan', v);
+                                                    "
+                                                >
+                                            </div>
+                                            <div class="mb-1">
+                                                <label class="label font-medium">Catatan</label>
+                                                <input type="text" class="input input-bordered w-full" wire:model.live="note">
+                                            </div>
 
-                                    <button wire:click="create"
-                                        class="btn btn-primary btn-sm mt-4 w-full"> Konfirmasi Bayar
-                                    </button>
-                                    <button wire:click="$set('showPaymentForm', false)"
-                                        class="btn btn-error btn-sm mt-4 w-full">Batal
-                                    </button>
-                                    @endif
-                                    @if (!$showPaymentForm)
-                                    <button wire:click="openPayment" class="btn btn-success btn-sm mt-4 w-full">
-                                        <i class="fa-solid fa-plus"></i> Bayar
-                                    </button>
-                                    @endif
+                                            <button wire:click="create"
+                                                class="btn btn-primary btn-sm mt-4 w-full"> Konfirmasi Bayar
+                                            </button>
+                                            <button wire:click="$set('showPaymentForm', false)"
+                                                class="btn btn-error btn-sm mt-4 w-full">Batal
+                                            </button>
+                                        @endif
+                                        @if (!$showPaymentForm)
+                                            <button wire:click="openPayment" class="btn btn-success btn-sm mt-4 w-full">
+                                                <i class="fa-solid fa-plus"></i> Bayar
+                                            </button>
+                                        @endif
                                     @endcan
                                 @else
                                     <button class="btn btn-warning btn-sm mt-4 w-full">

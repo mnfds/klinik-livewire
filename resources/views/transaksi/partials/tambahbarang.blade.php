@@ -1,7 +1,7 @@
 <div class="pt-1 pb-12">
     {{-- Kolom Kanan: Form Dinamis --}}
     <div class="lg:col-span-4 space-y-6">
-        <div class="divider">Barang Tambahan</div>
+        <div class="divider">Barang/Souvenir Tambahan</div>
         @foreach($barangtambahan as $uuidBarang => $item)
             <div wire:key="row-barang-{{ $uuidBarang }}"
                 x-data="{

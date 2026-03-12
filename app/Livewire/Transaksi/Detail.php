@@ -125,23 +125,44 @@ class Detail extends Component
         $this->produktambahan[$uuid] = $this->emptyRowWithUuid($uuid);
 
         // DINAMIS BARANG TAMBAHAN
-        $this->barangsearch = ProdukDanObat::all();
+        $this->barangsearch = Barang::all();
         $uuidBarang = (string) Str::uuid();
         $this->barangtambahan[$uuidBarang] = $this->emptyRowBarangWithUuid($uuidBarang);
     
     }
-
-    public function render()
-    {
-        if (! Gate::allows('akses', 'Transaksi Klinik Detail')) {
-            session()->flash('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
-            $this->redirectRoute('dashboard');
-        }
-        return view('livewire.transaksi.detail');
+public function render()
+{
+    if (! Gate::allows('akses', 'Transaksi Klinik Detail')) {
+        session()->flash('toast', [
+            'type' => 'error',
+            'message' => 'Anda tidak memiliki akses.',
+        ]);
+        $this->redirectRoute('dashboard');
     }
+
+    // Reload semua data yang tidak ter-hydrate dengan benar
+    if ($this->rekammedis_id) {
+        $rekamMedis = RekamMedis::with([
+            'obatFinal.obatNonRacikanFinals.produk',
+            'obatFinal.obatRacikanFinals',
+            'rencanaLayananRM.pelayanan',
+            'rencanaTreatmentRM.treatment',
+            'rencanaProdukRM.produk',
+            'rencanaBundlingRM.bundling',
+        ])->find($this->rekammedis_id);
+
+        $this->obatapoteker  = $rekamMedis?->obatFinal ?? collect();
+        $this->pelayanan     = $rekamMedis?->rencanaLayananRM ?? collect();
+        $this->treatment     = $rekamMedis?->rencanaTreatmentRM ?? collect();
+        $this->produk        = $rekamMedis?->rencanaProdukRM ?? collect();
+        $this->bundling      = $rekamMedis?->rencanaBundlingRM ?? collect();
+    }
+
+    $this->produksearch = ProdukDanObat::all();
+    $this->barangsearch = Barang::all();
+
+    return view('livewire.transaksi.detail');
+}
 
     public function create()
     {
@@ -463,6 +484,9 @@ class Detail extends Component
     public function tambahItem()
     {
         $this->showTambahanItem = true;
+    }
+    public function tambahItemBarang()
+    {
         $this->showTambahanBarang = true;
     }
 
@@ -782,7 +806,7 @@ class Detail extends Component
     // ===== DINAMIS PRODUK/OBAT TAMBAHAN ===== //
 
     // ===== DINAMIS BARANG TAMBAHAN ===== //
-    private function emptyRowBarangWithUuid($uuid)
+    private function emptyRowBarangWithUuid($uuidBarang)
     {
         return [
             'barang_id' => null,
@@ -791,7 +815,7 @@ class Detail extends Component
             'potongan_harga' => 0,
             'diskon' => 0,
             'subtotal' => 0,
-            'uuid' => $uuid,
+            'uuid' => $uuidBarang,
         ];
     }
 
