@@ -101,6 +101,8 @@ Route::middleware(['auth'])->group(function () {
                 'text' => "{$item->nama} {$item->satuan} - Rp " . number_format($item->harga_dasar) . " sisa: ({$item->stok})",
                 'satuan' => $item->satuan,
                 'harga' => $item->harga_dasar,
+                'diskon'   => $item->diskon ?? 0,
+                'potongan' => $item->potongan ?? 0,
             ];
         }));
     })->name('search.Barang');
