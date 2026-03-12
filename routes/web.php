@@ -313,7 +313,29 @@ Route::middleware(['auth'])->group(function () {
             ];
         }));
     })->name('search.ProdukObat');
+    Route::get('/search-produk-obat-klinik', function (\Illuminate\Http\Request $request) {
+        $search = $request->q;
 
+        $obat = \App\Models\ProdukDanObat::query()
+            ->when($search, function ($query, $search) {
+                $query->where('nama_dagang', 'like', "%{$search}%")
+                    ->orWhere('kode', 'like', "%{$search}%");
+            })
+            ->select('id', 'nama_dagang', 'sediaan', 'harga_dasar', 'stok', 'diskon', 'potongan')
+            ->limit(20)
+            ->get();
+
+        return response()->json($obat->map(function ($item) {
+            return [
+                'id'       => $item->id,
+                'text'     => "{$item->nama_dagang} {$item->sediaan} - Rp " . number_format($item->harga_dasar) . " sisa: ({$item->stok})",
+                'satuan'   => $item->sediaan,
+                'harga'    => $item->harga_dasar,
+                'diskon'   => $item->diskon ?? 0,
+                'potongan' => $item->potongan ?? 0,
+            ];
+        }));
+    })->name('search.ProdukObatKlinik');
     // ====== RESEP OBAT ====== //
 
 

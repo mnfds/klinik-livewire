@@ -1,5 +1,4 @@
 <div class="pt-1 pb-12">
-    {{-- Kolom Kanan: Form Dinamis --}}
     <div class="lg:col-span-4 space-y-6">
         <div class="divider">Produk/Obat Tambahan</div>
         @foreach($produktambahan as $uuid => $item)
@@ -11,50 +10,54 @@
                     diskon: @entangle("produktambahan.$uuid.diskon"),
                     harga_satuan: @entangle("produktambahan.$uuid.harga_satuan"),
                     subtotal: @entangle("produktambahan.$uuid.subtotal"),
-    
+
                     query: '',
                     results: [],
                     open: false,
-    
+
                     async searchProduk() {
                         if (this.query.length < 2) {
                             this.results = [];
                             return;
                         }
-    
-                        const res = await fetch(`/search-produk-obat?q=${this.query}`);
+                        const res = await fetch(`/search-produk-obat-klinik?q=${this.query}`);
                         const data = await res.json();
                         this.results = data;
                     },
-    
+
                     selectProduk(item) {
                         this.query = item.text;
                         this.produk_id = item.id;
-                        this.harga_satuan = item.harga; // langsung assign harga dari API
+                        this.harga_satuan = item.harga;
+                        this.diskon = item.diskon ?? 0;
+                        this.potongan_harga = item.potongan ?? 0;
+
+                        // Dispatch event ke div potongan agar Cleave update tampilannya
+                        this.$dispatch('set-potongan-{{ $uuid }}', { value: item.potongan ?? 0 });
+
                         this.results = [];
                         this.open = false;
                         this.hitung();
                     },
-    
+
                     hitung() {
                         const qty = Number(this.jumlah_produk) || 1;
                         const harga = Number(this.harga_satuan) || 0;
                         const diskon = Number(this.diskon) || 0;
                         const potongan = Number(this.potongan_harga) || 0;
-    
+
                         let base = harga * qty;
                         let afterDiskon = base - (base * diskon / 100);
                         let subtotal = afterDiskon - potongan;
-    
+
                         this.subtotal = subtotal > 0 ? subtotal : 0;
                         $wire.set('produktambahan.{{ $uuid }}.subtotal', this.subtotal);
                     },
-    
+
                     formatRupiah(val) {
                         return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
                     }
                 }"
-                x-init="hitung()"
                 @input="hitung()"
             >
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
@@ -67,7 +70,6 @@
                             @input.debounce.300ms="searchProduk()"
                             @click="open = true"
                         >
-    
                         <div x-show="open && results.length > 0"
                             class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full">
                             <template x-for="item in results" :key="item.id">
@@ -78,70 +80,82 @@
                             </template>
                         </div>
                     </div>
-    
+
                     <div>
                         <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                        <input type="number" min="1" class="input input-bordered w-full" x-model="jumlah_produk" @input="hitung()">
+                        <input type="number" min="1" class="input input-bordered w-full"
+                            x-model.number="jumlah_produk"
+                            @input="hitung()">
                     </div>
                 </div>
-    
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
                     <div>
                         <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                        <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_satuan)" readonly>
+                        <input type="text" class="input input-bordered w-full bg-base-200"
+                            :value="formatRupiah(harga_satuan)" readonly>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                        <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                        <input type="number" min="0" max="100" class="input input-bordered w-full"
+                            x-model.number="diskon"
+                            @input="hitung()">
                     </div>
-                    <div x-data x-init="
-                                const cleave = new Cleave($refs.input, {
-                                    numeral: true,
-                                    numeralThousandsGroupStyle: 'thousand',
-                                    delimiter: '.',
-                                    numeralDecimalMark: ',',
-                                });
-    
-                                $refs.input.addEventListener('input', () => {
-                                    potongan_harga = Number(cleave.getRawValue()) || 0;
-                                    hitung();
-                                });
-                            "
-                        >
+
+                    {{-- Potongan: hanya 1 Cleave, pakai event dispatch dari parent --}}
+                    <div
+                        x-data="{ cleave: null }"
+                        x-init="
+                            cleave = new Cleave($refs.potonganInput, {
+                                numeral: true,
+                                numeralThousandsGroupStyle: 'thousand',
+                                delimiter: '.',
+                                numeralDecimalMark: ',',
+                            });
+
+                            $refs.potonganInput.addEventListener('input', () => {
+                                potongan_harga = Number(cleave.getRawValue()) || 0;
+                                hitung();
+                            });
+                        "
+                        @set-potongan-{{ $uuid }}.window="
+                            cleave.setRawValue($event.detail.value);
+                            potongan_harga = $event.detail.value;
+                            hitung();
+                        "
+                    >
                         <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-    
                         <input
-                            x-ref="input"
+                            x-ref="potonganInput"
                             type="text"
                             class="input input-bordered w-full"
                             placeholder="Rp 0"
                         >
-    
-                        <!-- sinkron ke Livewire -->
                         <input
                             type="hidden"
                             x-model="potongan_harga"
                             wire:model.defer="produktambahan.{{ $uuid }}.potongan_harga"
                         >
                     </div>
+
                     <div>
                         <label class="block text-sm font-semibold mb-1">Subtotal</label>
-                        <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(subtotal)" readonly>
+                        <input type="text" class="input input-bordered w-full bg-base-200"
+                            :value="formatRupiah(subtotal)" readonly>
                     </div>
                 </div>
-    
+
                 <div class="flex justify-end mt-2">
                     <button type="button" class="btn btn-error btn-sm"
                             wire:click="removeRow('{{ $uuid }}')">
-                            {{-- @if(count($produktambahan) === 1) disabled @endif> --}}
                         Hapus
                     </button>
                 </div>
-    
+
                 <hr class="my-2">
             </div>
         @endforeach
-    
+
         <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
             Tambah Produk
         </button>
