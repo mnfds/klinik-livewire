@@ -200,6 +200,7 @@
                                 'obat_non_racik' => 'Obat Non Racik',
                                 'obat_racik' => 'Obat Racik',
                                 'produk_tambahan' => 'Produk Tambahan',
+                                'barang_tambahan' => 'Barang Tambahan',
                             ];
                         @endphp
                         <div class="mt-4 space-y-4">
@@ -260,6 +261,20 @@
                                             </div>
                                             <div class="text-right font-medium text-success">
                                                 Rp {{ number_format($produk->subtotal,0,',','.') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                {{-- LIST ITEM --}}
+                                @foreach($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
+                                    <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                        {{-- Baris Utama --}}
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                {{ $barang->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $barang->qty }})</span>
+                                            </div>
+                                            <div class="text-right font-medium text-success">
+                                                Rp {{ number_format($barang->subtotal,0,',','.') }}
                                             </div>
                                         </div>
                                     </div>

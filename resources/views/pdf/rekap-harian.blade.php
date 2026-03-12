@@ -72,6 +72,7 @@
                         'obat_non_racik' => 'Obat Non Racik',
                         'obat_racik' => 'Obat Racik',
                         'produk_tambahan' => 'Produk Tambahan',
+                        'barang_tambahan' => 'Barang Tambahan',
                     ];
                 @endphp
                 @foreach($grouped as $jenis => $items)
@@ -125,12 +126,31 @@
                     @endif
                 </div>
                 @endforeach
+                @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
+                <div style="margin-left:8px; margin-bottom:6px;">
+                    <strong>{{ $barang->nama_item }}</strong><br>
+                    {{ $barang->qty }} x Rp {{ number_format($barang->harga,0,',','.') }}
+                    @php
+                        $total_kotor = $barang->qty * $barang->harga;
+                    @endphp
+                    = Rp {{ number_format($total_kotor,0,',','.') }}<br>
+                    @if($barang->diskon > 0)
+                        (-) Diskon: {{ number_format($barang->diskon,0,',','.') }}%<br>
+                    @endif
+                    @if($barang->potongan > 0)
+                        (-) Potongan: Rp {{ number_format($barang->potongan,0,',','.') }}<br>
+                    @endif
+                    @if($barang->diskon > 0 || $barang->potongan > 0)
+                        <strong>Total: Rp {{ number_format($barang->subtotal,0,',','.') }}</strong>
+                    @endif
+                </div>
+                @endforeach
             </td>
 
             <td class="text-right">
                 Rp {{ number_format($trx->total_tagihan,0,',','.') }}<br>
                 (-) {{ $trx->diskon }}%<br>
-                (-)Rp {{ number_format($trx->potongan,0,',','.') }}<br>
+                (-) Rp {{ number_format($trx->potongan,0,',','.') }}<br>
                 Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}<br>
             </td>
         </tr>
