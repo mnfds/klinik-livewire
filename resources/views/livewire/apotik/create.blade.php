@@ -420,10 +420,10 @@
                                                     row.produk_id
                                                         ? ({{ Js::from($produk) }}.find(p => p.id == row.produk_id)?.nama_dagang)
                                                         : row.barang_id
-                                                            ? ({{ Js::from($barang) }}.find(b => b.id == row.barang_id)?.nama_barang)
+                                                            ? ({{ Js::from($barang) }}.find(b => b.id == row.barang_id)?.nama)
                                                             : '-'
                                                 "></span>
-                                                (<span x-text="row.jumlah_produk"></span>x)
+                                                (<span x-text="row.jumlah_produk ?? row.jumlah_barang"></span>x)
                                             </span>
 
                                             <!-- Harga asli (coret kalau ada potongan/diskon) -->
