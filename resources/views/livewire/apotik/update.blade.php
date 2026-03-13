@@ -37,8 +37,9 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="update" class="space-y-6">
+
                         <div class="bg-base-100 shadow rounded-box p-6">
-                            <div class="divider">Pembelian</div>
+                            <div class="divider">Produk/Obat</div>
 
                             @foreach($obat_estetika as $uuid => $item)
                                 <div wire:key="row-{{ $uuid }}"
@@ -56,8 +57,8 @@
                                         hitung() {
                                             let base = this.hargaProduk * (this.jumlah_produk || 1);
                                             this.harga_asli = base;
-                                            let afterPotongan = base - (this.potongan || 0);
-                                            this.subtotal = afterPotongan - (afterPotongan * (this.diskon || 0)/100);
+                                            let afterDiskon = base - (base * (this.diskon || 0) / 100);
+                                            this.subtotal = afterDiskon - (this.potongan || 0);
                                         },
                                         formatRupiah(val) {
                                             return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
@@ -88,13 +89,13 @@
                                             <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_asli)" readonly>
                                         </div>
                                         <div>
+                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                                        </div>
+                                        <div>
                                             <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
                                             <input type="text" class="input input-bordered w-full input-rupiah-transaksi" placeholder="Rp 0">
                                             <input type="hidden" class="input-rupiah-hidden-transaksi" wire:model.defer="obat_estetika.{{ $uuid }}.potongan">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold mb-1">Subtotal</label>
@@ -104,7 +105,7 @@
 
                                     <div class="flex justify-end mt-2">
                                         <button type="button" class="btn btn-error btn-sm"
-                                                wire:click="removeRow('{{ $uuid }}')"
+                                                wire:click="removeRow('{{ $item['uuid'] }}')"
                                                 @if(count($obat_estetika) === 1) disabled @endif>
                                             Hapus
                                         </button>
@@ -116,6 +117,90 @@
 
                             <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
                                 Tambah Produk
+                            </button>
+                        </div>
+
+                        {{-- Section Barang --}}
+                        <div class="bg-base-100 shadow rounded-box p-6">
+                            <div class="divider">Barang/Souvenir</div>
+
+                            @foreach($barang_transaksi as $uuid => $item)
+                                <div wire:key="row-barang-{{ $uuid }}"
+                                    x-data="{
+                                        barang_id:   @entangle('barang_transaksi.' . $loop->index . '.barang_id'),
+                                        jumlah:      @entangle('barang_transaksi.' . $loop->index . '.jumlah'),
+                                        potongan:    @entangle('barang_transaksi.' . $loop->index . '.potongan'),
+                                        diskon:      @entangle('barang_transaksi.' . $loop->index . '.diskon'),
+                                        harga_asli:  @entangle('barang_transaksi.' . $loop->index . '.harga_asli'),
+                                        subtotal:    @entangle('barang_transaksi.' . $loop->index . '.subtotal'),
+                                        get hargaBarang() {
+                                            let b = {{ Js::from($barang_list) }}.find(b => b.id == this.barang_id);
+                                            return b ? b.harga_dasar : 0;
+                                        },
+                                        hitung() {
+                                            let base = this.hargaBarang * (this.jumlah || 1);
+                                            this.harga_asli = base;
+                                            let afterDiskon = base - (base * (this.diskon || 0) / 100);
+                                            this.subtotal = afterDiskon - (this.potongan || 0);
+                                        },
+                                        formatRupiah(val) {
+                                            return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                                        }
+                                    }"
+                                    x-init="hitung()"
+                                    @input="hitung()">
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Barang</label>
+                                            <select class="select select-bordered w-full" x-model="barang_id" @change="hitung()">
+                                                <option value="">-- Pilih Barang --</option>
+                                                @foreach($barang_list as $b)
+                                                    <option value="{{ $b->id }}">{{ $b->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Jumlah</label>
+                                            <input type="number" min="1" class="input input-bordered w-full" x-model="jumlah" @input="hitung()">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-2">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(harga_asli)" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                            <input type="number" min="0" max="100" class="input input-bordered w-full" x-model="diskon" @input="hitung()">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                                            <input type="text" class="input input-bordered w-full input-rupiah-barang" placeholder="Rp 0">
+                                            <input type="hidden" class="input-rupiah-hidden-barang"
+                                                wire:model.defer="barang_transaksi.{{ $loop->index }}.potongan">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                                            <input type="text" class="input input-bordered w-full bg-base-200" :value="formatRupiah(subtotal)" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end mt-2">
+                                        <button type="button" class="btn btn-error btn-sm"
+                                                wire:click="removeRowBarang('{{ $item['uuid'] }}')"
+                                                @if(count($barang_transaksi) === 1) disabled @endif>
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                    <hr class="my-2">
+                                </div>
+                            @endforeach
+
+                            <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRowBarang">
+                                Tambah Barang
                             </button>
                         </div>
                     </form>
@@ -141,17 +226,17 @@
                                             </span>
                                         </div>
 
-                                        <template x-if="row.potongan && row.potongan > 0">
-                                            <div class="flex justify-between text-sm text-red-600">
-                                                <span>Potongan:</span>
-                                                <span x-text="Number(row.potongan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
-                                            </div>
-                                        </template>
-
                                         <template x-if="row.diskon && row.diskon > 0">
                                             <div class="flex justify-between text-sm text-blue-600">
                                                 <span>Diskon:</span>
                                                 <span x-text="row.diskon + '%'"></span>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="row.potongan && row.potongan > 0">
+                                            <div class="flex justify-between text-sm text-red-600">
+                                                <span>Potongan:</span>
+                                                <span x-text="Number(row.potongan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
                                             </div>
                                         </template>
 
@@ -161,13 +246,55 @@
                                         </div>
                                     </div>
                                 </template>
-
-                                <div class="flex justify-between font-bold my-4 border-t pt-2">
-                                    <span>Total:</span>
-                                    <span x-text="Object.values(items).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 })"></span>
-                                </div>
-
                             </div>
+                            <div class="space-y-2 mt-4" x-data="{ barangItems: @entangle('barang_transaksi') }">
+                                <template x-for="row in Object.values(barangItems)" :key="row.uuid">
+                                    <div class="pb-2 mb-2">
+                                        <div class="flex justify-between">
+                                            <span>
+                                                <span x-text="row.barang_id ? ({{ Js::from($barang_list) }}.find(b => b.id == row.barang_id)?.nama ?? '-') : '-'"></span>
+                                                (<span x-text="row.jumlah"></span>x)
+                                            </span>
+                                            <span :class="(row.potongan > 0 || row.diskon > 0) ? 'line-through text-gray-500' : ''"
+                                                x-text="(row.harga_asli || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })">
+                                            </span>
+                                        </div>
+                                        
+                                        <template x-if="row.diskon && row.diskon > 0">
+                                            <div class="flex justify-between text-sm text-blue-600">
+                                                <span>Diskon:</span>
+                                                <span x-text="row.diskon + '%'"></span>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="row.potongan && row.potongan > 0">
+                                            <div class="flex justify-between text-sm text-red-600">
+                                                <span>Potongan:</span>
+                                                <span x-text="Number(row.potongan || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })"></span>
+                                            </div>
+                                        </template>
+
+                                        <div class="flex justify-between font-semibold text-green-600">
+                                            <span>Subtotal:</span>
+                                            <span x-text="(row.subtotal || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="space-y-2 mt-4">
+                                <div class="flex justify-between font-bold my-4 border-t pt-2"
+                                    x-data="{
+                                        produkItems: @entangle('obat_estetika'),
+                                        barangItems: @entangle('barang_transaksi')
+                                    }">
+                                    <span>Total:</span>
+                                    <span x-text="(
+                                        Object.values(produkItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0) +
+                                        Object.values(barangItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0)
+                                    ).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })"></span>
+                                </div>
+                            </div>
+
                             @can('akses', 'Transaksi Apotik Edit')
                             <button wire:click.prevent="update"
                                     class="btn btn-success w-full mt-4"
@@ -195,18 +322,54 @@
     });
 
     function initTransaksiRupiah() {
+        // Produk
         document.querySelectorAll('.input-rupiah-transaksi').forEach(function(input) {
             if (!input.cleave) {
+                // Ambil nilai awal dari hidden field
+                let hidden = input.closest('div').querySelector('.input-rupiah-hidden-transaksi');
+                let initialValue = hidden ? hidden.value : '';
+
                 input.cleave = new Cleave(input, {
                     numeral: true,
                     numeralThousandsGroupStyle: 'thousand',
                     numeralDecimalMark: ',',
                     delimiter: '.',
+                    rawValueTrimPrefix: true,
                 });
+
+                // Set nilai awal ke input Cleave
+                if (initialValue && initialValue != '0') {
+                    input.cleave.setRawValue(initialValue);
+                }
 
                 input.addEventListener('input', function() {
                     let rawValue = input.cleave.getRawValue();
-                    let hidden = input.closest('div').querySelector('.input-rupiah-hidden-transaksi');
+                    if (hidden) hidden.value = rawValue;
+                    hidden.dispatchEvent(new Event('input'));
+                });
+            }
+        });
+
+        // Barang
+        document.querySelectorAll('.input-rupiah-barang').forEach(function(input) {
+            if (!input.cleave) {
+                let hidden = input.closest('div').querySelector('.input-rupiah-hidden-barang');
+                let initialValue = hidden ? hidden.value : '';
+
+                input.cleave = new Cleave(input, {
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand',
+                    numeralDecimalMark: ',',
+                    delimiter: '.',
+                    rawValueTrimPrefix: true,
+                });
+
+                if (initialValue && initialValue != '0') {
+                    input.cleave.setRawValue(initialValue);
+                }
+
+                input.addEventListener('input', function() {
+                    let rawValue = input.cleave.getRawValue();
                     if (hidden) hidden.value = rawValue;
                     hidden.dispatchEvent(new Event('input'));
                 });
