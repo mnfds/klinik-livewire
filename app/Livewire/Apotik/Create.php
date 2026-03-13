@@ -23,6 +23,9 @@ class Create extends Component
     public $barang;
     public $barang_terjual = [];
 
+    public bool $showProduk = true; // form terbuka
+    public bool $showBarang = false; // form tertutup
+
     public function mount()
     {
         $this->produk = ProdukDanObat::all();
@@ -323,5 +326,15 @@ class Create extends Component
             $this->redirectRoute('dashboard');
         }
         return view('livewire.apotik.create');
+    }
+
+    public function formProdukOpen()
+    {
+        $this->showProduk = true;
+    }
+
+    public function formBarangOpen()
+    {
+        $this->showBarang = true;
     }
 }

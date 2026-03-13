@@ -38,365 +38,402 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="create" class="space-y-6">
-                        {{-- FORM PRODUK/OBAT/SKINCARE --}}
-                        <div class="bg-base-100 shadow rounded-box p-6"
-                            x-data="{
-                                items: @entangle('obat_estetika'),
-                                produkList: {{ Js::from($produk) }},
-                                get showPasienInput() {
-                                    // cek apakah ada row yang produknya masuk golongan wajib pasien
-                                    return Object.values(this.items).some(row => {
-                                        let p = this.produkList.find(pr => pr.id == row.produk_id);
-                                        if (!p) return false;
-                                        return ['Obat Bebas Terbatas','Obat Keras','Skincare','Obat Narkotika']
-                                            .includes(p.golongan);
-                                    });
-                                }
-                            }"
-                        >
-                            <!-- hanya tampil kalau perlu -->
-                            <template x-if="showPasienInput">
-                                <div class="mb-4" x-data="searchPasien()">
-                                    <label class="block text-sm font-semibold mb-1">Nama Pasien</label>
+                        @if ($showProduk)
+                            {{-- FORM PRODUK/OBAT/SKINCARE --}}
+                            <div class="bg-base-100 shadow rounded-box p-6"
+                                x-data="{
+                                    items: @entangle('obat_estetika'),
+                                    produkList: {{ Js::from($produk) }},
+                                    get showPasienInput() {
+                                        // cek apakah ada row yang produknya masuk golongan wajib pasien
+                                        return Object.values(this.items).some(row => {
+                                            let p = this.produkList.find(pr => pr.id == row.produk_id);
+                                            if (!p) return false;
+                                            return ['Obat Bebas Terbatas','Obat Keras','Skincare','Obat Narkotika']
+                                                .includes(p.golongan);
+                                        });
+                                    }
+                                }"
+                            >
+                                <!-- hanya tampil kalau perlu -->
+                                <template x-if="showPasienInput">
+                                    <div class="mb-4" x-data="searchPasien()">
+                                        <label class="block text-sm font-semibold mb-1">Nama Pasien</label>
 
-                                    <input 
-                                        type="text" 
-                                        placeholder="Ketik nama atau no register..."
-                                        class="input input-bordered w-full"
-                                        x-model="query"
-                                        @input.debounce.300ms="search()"
-                                        @click="open = true"
-                                    >
+                                        <input 
+                                            type="text" 
+                                            placeholder="Ketik nama atau no register..."
+                                            class="input input-bordered w-full"
+                                            x-model="query"
+                                            @input.debounce.300ms="search()"
+                                            @click="open = true"
+                                        >
 
-                                    <div 
-                                        x-show="open && results.length > 0" 
-                                        class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full"
-                                    >
-                                        <template x-for="item in results" :key="item.id">
-                                            <div 
-                                                @click="select(item)" 
-                                                class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                                                x-text="item.text">
-                                            </div>
-                                        </template>
+                                        <div 
+                                            x-show="open && results.length > 0" 
+                                            class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto z-50 w-full"
+                                        >
+                                            <template x-for="item in results" :key="item.id">
+                                                <div 
+                                                    @click="select(item)" 
+                                                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                    x-text="item.text">
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <input type="hidden" name="pasien_id" x-model="selectedId" x-ref="pasienId">
                                     </div>
+                                </template>
 
-                                    <input type="hidden" name="pasien_id" x-model="selectedId" x-ref="pasienId">
-                                </div>
-                            </template>
+                                <div class="divider">Produk / Obat</div>
 
-                            <div class="divider">Pembelian</div>
+                                @foreach($obat_estetika as $uuid => $item)
+                                    <div wire:key="row-{{ $uuid }}"
+                                        x-data="{
+                                            produk_id: @entangle("obat_estetika.$uuid.produk_id").live,
+                                            jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk").live,
+                                            potongan: @entangle("obat_estetika.$uuid.potongan").live,
+                                            diskon: @entangle("obat_estetika.$uuid.diskon").live,
+                                            harga_satuan: @entangle("obat_estetika.$uuid.harga_satuan").live,
+                                            subtotal: @entangle("obat_estetika.$uuid.subtotal").live,
 
-                            @foreach($obat_estetika as $uuid => $item)
-                                <div wire:key="row-{{ $uuid }}"
-                                    x-data="{
-                                        produk_id: @entangle("obat_estetika.$uuid.produk_id").live,
-                                        jumlah_produk: @entangle("obat_estetika.$uuid.jumlah_produk").live,
-                                        potongan: @entangle("obat_estetika.$uuid.potongan").live,
-                                        diskon: @entangle("obat_estetika.$uuid.diskon").live,
-                                        harga_satuan: @entangle("obat_estetika.$uuid.harga_satuan").live,
-                                        subtotal: @entangle("obat_estetika.$uuid.subtotal").live,
+                                            query: '',
+                                            results: [],
+                                            open: false,
 
-                                        query: '',
-                                        results: [],
-                                        open: false,
+                                            async searchProduk() {
+                                                if (this.query.length < 2) {
+                                                    this.results = [];
+                                                    return;
+                                                }
 
-                                        async searchProduk() {
-                                            if (this.query.length < 2) {
+                                                const res = await fetch(`/search-produk-obat?q=${this.query}`);
+                                                const data = await res.json();
+                                                this.results = data;
+                                            },
+
+                                            selectProduk(item) {
+                                                this.query = item.text;
+                                                this.produk_id = item.id;
+                                                this.harga_satuan = item.harga; // langsung assign harga dari API
                                                 this.results = [];
-                                                return;
+                                                this.open = false;
+                                                this.hitung();
+                                            },
+
+                                            hitung() {
+                                                let base = (this.harga_satuan || 0) * (this.jumlah_produk || 1);
+                                                let diskon = Number(this.diskon) || 0;
+                                                let potongan = Number(this.potongan) || 0;
+                                                let afterDiskon = base - (base * diskon / 100);
+                                                let subtotal = afterDiskon - potongan;
+                                                this.subtotal = subtotal < 0 ? 0 : subtotal;
+                                            },
+
+                                            formatRupiah(val) {
+                                                return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
                                             }
+                                        }"
+                                        x-init="hitung()"
+                                        @input="hitung()"
+                                    >
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
 
-                                            const res = await fetch(`/search-produk-obat?q=${this.query}`);
-                                            const data = await res.json();
-                                            this.results = data;
-                                        },
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Produk</label>
+                                                <input type="text"
+                                                    placeholder="Ketik nama produk..."
+                                                    class="input input-bordered w-full"
+                                                    x-model="query"
+                                                    @input.debounce.300ms="searchProduk()"
+                                                    @focus="open = true"
+                                                >
 
-                                        selectProduk(item) {
-                                            this.query = item.text;
-                                            this.produk_id = item.id;
-                                            this.harga_satuan = item.harga; // langsung assign harga dari API
-                                            this.results = [];
-                                            this.open = false;
-                                            this.hitung();
-                                        },
+                                                <div x-show="open && results.length > 0"
+                                                    class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
 
-                                        hitung() {
-                                            let base = (this.harga_satuan || 0) * (this.jumlah_produk || 1);
-                                            let diskon = Number(this.diskon) || 0;
-                                            let potongan = Number(this.potongan) || 0;
-                                            let afterDiskon = base - (base * diskon / 100);
-                                            let subtotal = afterDiskon - potongan;
-                                            this.subtotal = subtotal < 0 ? 0 : subtotal;
-                                        },
+                                                    <template x-for="item in results" :key="item.id">
+                                                        <div @click="selectProduk(item)"
+                                                            class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                            x-text="item.text">
+                                                        </div>
+                                                    </template>
 
-                                        formatRupiah(val) {
-                                            return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
-                                        }
-                                    }"
-                                    x-init="hitung()"
-                                    @input="hitung()"
-                                >
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Produk</label>
-                                            <input type="text"
-                                                placeholder="Ketik nama produk..."
-                                                class="input input-bordered w-full"
-                                                x-model="query"
-                                                @input.debounce.300ms="searchProduk()"
-                                                @focus="open = true"
-                                            >
-
-                                            <div x-show="open && results.length > 0"
-                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
-
-                                                <template x-for="item in results" :key="item.id">
-                                                    <div @click="selectProduk(item)"
-                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                                                        x-text="item.text">
-                                                    </div>
-                                                </template>
-
+                                                </div>
                                             </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Jumlah</label>
+                                                <input type="number"
+                                                    min="1"
+                                                    class="input input-bordered w-full"
+                                                    x-model.number="jumlah_produk"
+                                                    @input="hitung()">
+                                            </div>
+
                                         </div>
 
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                                            <input type="number"
-                                                min="1"
-                                                class="input input-bordered w-full"
-                                                x-model.number="jumlah_produk"
-                                                @input="hitung()">
+                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                                                <input type="text"
+                                                    class="input input-bordered w-full bg-base-200"
+                                                    :value="formatRupiah(harga_satuan)"
+                                                    readonly>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                                <input type="number"
+                                                    min="0"
+                                                    max="100"
+                                                    class="input input-bordered w-full"
+                                                    x-model.number="diskon"
+                                                    @input="hitung()">
+                                            </div>
+
+                                            {{-- 🔥 POTONGAN FIX TOTAL --}}
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+
+                                                <input type="text"
+                                                    class="input input-bordered w-full"
+
+                                                    :value="(potongan || 0).toLocaleString('id-ID')"
+
+                                                    @input="
+                                                        const raw = $event.target.value.replace(/\D/g,'');
+                                                        potongan = raw === '' ? 0 : parseInt(raw);
+                                                        hitung();
+                                                    "
+                                                >
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                                                <input type="text"
+                                                    class="input input-bordered w-full bg-base-200"
+                                                    :value="formatRupiah(subtotal)"
+                                                    readonly>
+                                            </div>
+
                                         </div>
 
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
-
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                            <input type="text"
-                                                class="input input-bordered w-full bg-base-200"
-                                                :value="formatRupiah(harga_satuan)"
-                                                readonly>
+                                        <div class="flex justify-end mt-3">
+                                            <button type="button"
+                                                class="btn btn-error btn-sm"
+                                                wire:click="removeRow('{{ $uuid }}')"
+                                                @if(count($obat_estetika) === 1) disabled @endif>
+                                                Hapus
+                                            </button>
                                         </div>
 
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                                            <input type="number"
-                                                min="0"
-                                                max="100"
-                                                class="input input-bordered w-full"
-                                                x-model.number="diskon"
-                                                @input="hitung()">
+                                        <hr class="my-4">
                                         </div>
+                                    @endforeach
 
-                                        {{-- 🔥 POTONGAN FIX TOTAL --}}
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+                                <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
+                                    Tambah Produk
+                                </button>
+                            </div>
+                        @endif                      
+                        @if ($showBarang)                        
+                            {{-- FORM BARANG --}}
+                            <div class="bg-base-100 shadow rounded-box p-6">
+                                <div class="divider">Barang / Souvenir</div>
+                                @foreach($barang_terjual as $uid => $item)
+                                    <div wire:key="row-{{ $uid }}"
+                                        x-data="{
+                                            barang_id: @entangle("barang_terjual.$uid.barang_id").live,
+                                            jumlah_barang: @entangle("barang_terjual.$uid.jumlah_barang").live,
+                                            potongan: @entangle("barang_terjual.$uid.potongan").live,
+                                            diskon: @entangle("barang_terjual.$uid.diskon").live,
+                                            harga_satuan: @entangle("barang_terjual.$uid.harga_satuan").live,
+                                            subtotal: @entangle("barang_terjual.$uid.subtotal").live,
 
-                                            <input type="text"
-                                                class="input input-bordered w-full"
+                                            query: '',
+                                            results: [],
+                                            open: false,
 
-                                                :value="(potongan || 0).toLocaleString('id-ID')"
+                                            async searchBarang() {
+                                                if (this.query.length < 2) {
+                                                    this.results = [];
+                                                    return;
+                                                }
 
-                                                @input="
-                                                    const raw = $event.target.value.replace(/\D/g,'');
-                                                    potongan = raw === '' ? 0 : parseInt(raw);
-                                                    hitung();
-                                                "
-                                            >
-                                        </div>
+                                                const res = await fetch(`/search-barang?q=${this.query}`);
+                                                const data = await res.json();
+                                                this.results = data;
+                                            },
 
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
-                                            <input type="text"
-                                                class="input input-bordered w-full bg-base-200"
-                                                :value="formatRupiah(subtotal)"
-                                                readonly>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="flex justify-end mt-3">
-                                        <button type="button"
-                                            class="btn btn-error btn-sm"
-                                            wire:click="removeRow('{{ $uuid }}')"
-                                            @if(count($obat_estetika) === 1) disabled @endif>
-                                            Hapus
-                                        </button>
-                                    </div>
-
-                                    <hr class="my-4">
-                                    </div>
-                                @endforeach
-
-                            <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRow">
-                                Tambah Produk
-                            </button>
-                        </div>
-
-                        {{-- FORM BARANG --}}
-                        <div class="bg-base-100 shadow rounded-box p-6">
-                            <div class="divider">Pembelian</div>
-                            @foreach($barang_terjual as $uid => $item)
-                                <div wire:key="row-{{ $uid }}"
-                                    x-data="{
-                                        barang_id: @entangle("barang_terjual.$uid.barang_id").live,
-                                        jumlah_barang: @entangle("barang_terjual.$uid.jumlah_barang").live,
-                                        potongan: @entangle("barang_terjual.$uid.potongan").live,
-                                        diskon: @entangle("barang_terjual.$uid.diskon").live,
-                                        harga_satuan: @entangle("barang_terjual.$uid.harga_satuan").live,
-                                        subtotal: @entangle("barang_terjual.$uid.subtotal").live,
-
-                                        query: '',
-                                        results: [],
-                                        open: false,
-
-                                        async searchBarang() {
-                                            if (this.query.length < 2) {
+                                            selectBarang(item) {
+                                                this.query = item.text;
+                                                this.barang_id = item.id;
+                                                this.harga_satuan = item.harga; // langsung assign harga dari API
                                                 this.results = [];
-                                                return;
+                                                this.open = false;
+                                                this.hitung();
+                                            },
+
+                                            hitung() {
+                                                let base = (this.harga_satuan || 0) * (this.jumlah_barang || 1);
+                                                let diskon = Number(this.diskon) || 0;
+                                                let potongan = Number(this.potongan) || 0;
+                                                let afterDiskon = base - (base * diskon / 100);
+                                                let subtotal = afterDiskon - potongan;
+                                                this.subtotal = subtotal < 0 ? 0 : subtotal;
+                                            },
+
+                                            formatRupiah(val) {
+                                                return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
                                             }
+                                        }"
+                                        x-init="hitung()"
+                                        @input="hitung()"
+                                    >
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
 
-                                            const res = await fetch(`/search-barang?q=${this.query}`);
-                                            const data = await res.json();
-                                            this.results = data;
-                                        },
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Produk</label>
+                                                <input type="text"
+                                                    placeholder="Ketik nama produk..."
+                                                    class="input input-bordered w-full"
+                                                    x-model="query"
+                                                    @input.debounce.300ms="searchBarang()"
+                                                    @focus="open = true"
+                                                >
 
-                                        selectBarang(item) {
-                                            this.query = item.text;
-                                            this.barang_id = item.id;
-                                            this.harga_satuan = item.harga; // langsung assign harga dari API
-                                            this.results = [];
-                                            this.open = false;
-                                            this.hitung();
-                                        },
+                                                <div x-show="open && results.length > 0"
+                                                    class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
 
-                                        hitung() {
-                                            let base = (this.harga_satuan || 0) * (this.jumlah_barang || 1);
-                                            let diskon = Number(this.diskon) || 0;
-                                            let potongan = Number(this.potongan) || 0;
-                                            let afterDiskon = base - (base * diskon / 100);
-                                            let subtotal = afterDiskon - potongan;
-                                            this.subtotal = subtotal < 0 ? 0 : subtotal;
-                                        },
+                                                    <template x-for="item in results" :key="item.id">
+                                                        <div @click="selectBarang(item)"
+                                                            class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                                            x-text="item.text">
+                                                        </div>
+                                                    </template>
 
-                                        formatRupiah(val) {
-                                            return (val || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0 });
-                                        }
-                                    }"
-                                    x-init="hitung()"
-                                    @input="hitung()"
-                                >
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Produk</label>
-                                            <input type="text"
-                                                placeholder="Ketik nama produk..."
-                                                class="input input-bordered w-full"
-                                                x-model="query"
-                                                @input.debounce.300ms="searchBarang()"
-                                                @focus="open = true"
-                                            >
-
-                                            <div x-show="open && results.length > 0"
-                                                class="border bg-white mt-1 rounded shadow max-h-60 overflow-y-auto w-full">
-
-                                                <template x-for="item in results" :key="item.id">
-                                                    <div @click="selectBarang(item)"
-                                                        class="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                                                        x-text="item.text">
-                                                    </div>
-                                                </template>
-
+                                                </div>
                                             </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Jumlah</label>
+                                                <input type="number"
+                                                    min="1"
+                                                    class="input input-bordered w-full"
+                                                    x-model.number="jumlah_barang"
+                                                    @input="hitung()">
+                                            </div>
+
                                         </div>
 
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Jumlah</label>
-                                            <input type="number"
-                                                min="1"
-                                                class="input input-bordered w-full"
-                                                x-model.number="jumlah_barang"
-                                                @input="hitung()">
+                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Harga Asli</label>
+                                                <input type="text"
+                                                    class="input input-bordered w-full bg-base-200"
+                                                    :value="formatRupiah(harga_satuan)"
+                                                    readonly>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
+                                                <input type="number"
+                                                    min="0"
+                                                    max="100"
+                                                    class="input input-bordered w-full"
+                                                    x-model.number="diskon"
+                                                    @input="hitung()">
+                                            </div>
+
+                                            {{-- 🔥 POTONGAN FIX TOTAL --}}
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
+
+                                                <input type="text"
+                                                    class="input input-bordered w-full"
+
+                                                    :value="(potongan || 0).toLocaleString('id-ID')"
+
+                                                    @input="
+                                                        const raw = $event.target.value.replace(/\D/g,'');
+                                                        potongan = raw === '' ? 0 : parseInt(raw);
+                                                        hitung();
+                                                    "
+                                                >
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                                                <input type="text"
+                                                    class="input input-bordered w-full bg-base-200"
+                                                    :value="formatRupiah(subtotal)"
+                                                    readonly>
+                                            </div>
+
                                         </div>
 
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
-
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Harga Asli</label>
-                                            <input type="text"
-                                                class="input input-bordered w-full bg-base-200"
-                                                :value="formatRupiah(harga_satuan)"
-                                                readonly>
+                                        <div class="flex justify-end mt-3">
+                                            <button type="button"
+                                                class="btn btn-error btn-sm"
+                                                wire:click="removeRowBarang('{{ $uid }}')"
+                                                @if(count($barang_terjual) === 1) disabled @endif>
+                                                Hapus
+                                            </button>
                                         </div>
 
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Diskon (%)</label>
-                                            <input type="number"
-                                                min="0"
-                                                max="100"
-                                                class="input input-bordered w-full"
-                                                x-model.number="diskon"
-                                                @input="hitung()">
+                                        <hr class="my-4">
                                         </div>
+                                    @endforeach
 
-                                        {{-- 🔥 POTONGAN FIX TOTAL --}}
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Potongan (Rp)</label>
-
-                                            <input type="text"
-                                                class="input input-bordered w-full"
-
-                                                :value="(potongan || 0).toLocaleString('id-ID')"
-
-                                                @input="
-                                                    const raw = $event.target.value.replace(/\D/g,'');
-                                                    potongan = raw === '' ? 0 : parseInt(raw);
-                                                    hitung();
-                                                "
-                                            >
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
-                                            <input type="text"
-                                                class="input input-bordered w-full bg-base-200"
-                                                :value="formatRupiah(subtotal)"
-                                                readonly>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="flex justify-end mt-3">
-                                        <button type="button"
-                                            class="btn btn-error btn-sm"
-                                            wire:click="removeRowBarang('{{ $uid }}')"
-                                            @if(count($barang_terjual) === 1) disabled @endif>
-                                            Hapus
-                                        </button>
-                                    </div>
-
-                                    <hr class="my-4">
-                                    </div>
-                                @endforeach
-
-                            <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRowBarang">
-                                Tambah Produk
-                            </button>
-                        </div>
+                                <button type="button" class="btn btn-primary btn-sm mt-2" wire:click="addRowBarang">
+                                    Tambah Produk
+                                </button>
+                            </div>
+                        @endif
                     </form>
                 </div>
 
                 {{-- Kolom Kiri: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
+                        <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
+                            <div class="text-sm font-semibold text-base-content/70">
+                                Tambah Item
+                            </div>
+                            @if (!$showProduk)
+                                <button wire:click="formProdukOpen"
+                                    class="btn btn-success btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-pills"></i>
+                                    <span>Tampilkan Produk / Obat</span>
+                                </button>
+                            @endif
+                            @if ($showProduk)
+                                <button wire:click="$set('showProduk', false)"
+                                    class="btn btn-error btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-pills"></i>
+                                    <span>Tutup Produk / Obat</span>
+                                </button>
+                            @endif
+    
+                            @if (!$showBarang)
+                                <button wire:click="formBarangOpen"
+                                    class="btn btn-success btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-gifts"></i>
+                                    <span>Tampilkan Barang / Souvenir</span>
+                                </button>
+                            @endif
+                            @if ($showBarang)
+                                <button wire:click="$set('showBarang', false)"
+                                    class="btn btn-error btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-gifts"></i>
+                                    <span>Tutup Barang / Souvenir</span>
+                                </button>
+                            @endif
+                        </div>
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
 
