@@ -218,24 +218,28 @@ class Create extends Component
             ]);
 
             // Simpan detail
-            foreach ($this->obat_estetika as $row) {
-                $transaksi->riwayat()->create([
-                    'produk_id'     => $row['produk_id'],
-                    'jumlah_produk' => $row['jumlah_produk'] ?? 0,
-                    'potongan'      => $row['potongan'] ?: 0,
-                    'diskon'        => $row['diskon'] ?: 0,
-                    'subtotal'      => $row['subtotal'] ?? 0,
-                ]);
+            if($this->showProduk){
+                foreach ($this->obat_estetika as $row) {
+                    $transaksi->riwayat()->create([
+                        'produk_id'     => $row['produk_id'],
+                        'jumlah_produk' => $row['jumlah_produk'] ?? 0,
+                        'potongan'      => $row['potongan'] ?: 0,
+                        'diskon'        => $row['diskon'] ?: 0,
+                        'subtotal'      => $row['subtotal'] ?? 0,
+                    ]);
+                }
             }
 
-            foreach ($this->barang_terjual as $row) {
-                $transaksi->riwayatBarang()->create([
-                    'barang_id'     => $row['barang_id'],
-                    'jumlah_barang' => $row['jumlah_barang'] ?? 0,
-                    'potongan'      => $row['potongan'] ?: 0,
-                    'diskon'        => $row['diskon'] ?: 0,
-                    'subtotal'      => $row['subtotal'] ?? 0,
-                ]);
+            if($this->showBarang){
+                foreach ($this->barang_terjual as $row) {
+                    $transaksi->riwayatBarang()->create([
+                        'barang_id'     => $row['barang_id'],
+                        'jumlah_barang' => $row['jumlah_barang'] ?? 0,
+                        'potongan'      => $row['potongan'] ?: 0,
+                        'diskon'        => $row['diskon'] ?: 0,
+                        'subtotal'      => $row['subtotal'] ?? 0,
+                    ]);
+                }
             }
 
             // Kurangi stok + catat mutasi

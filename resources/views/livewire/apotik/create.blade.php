@@ -141,7 +141,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
 
                                             <div>
-                                                <label class="block text-sm font-semibold mb-1">Produk</label>
+                                                <label class="block text-sm font-semibold mb-1">Produk / Obat</label>
                                                 <input type="text"
                                                     placeholder="Ketik nama produk..."
                                                     class="input input-bordered w-full"
@@ -296,7 +296,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
 
                                             <div>
-                                                <label class="block text-sm font-semibold mb-1">Produk</label>
+                                                <label class="block text-sm font-semibold mb-1">Barang / Souvenir</label>
                                                 <input type="text"
                                                     placeholder="Ketik nama produk..."
                                                     class="input input-bordered w-full"
@@ -395,6 +395,12 @@
                             </div>
                         @endif
                     </form>
+                    @if (!$showProduk && !$showBarang)
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Pilih "Tampilkan Produk/Obat" atau "Tampilkan Barang/Souvenir" untuk menambahkan item ke transaksi.
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Kolom Kiri: Invoice --}}
@@ -402,7 +408,7 @@
                     <div class="sticky top-20 space-y-6">
                         <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
                             <div class="text-sm font-semibold text-base-content/70">
-                                Tambah Item
+                                Tambah Item Transaksi
                             </div>
                             @if (!$showProduk)
                                 <button wire:click="formProdukOpen"
@@ -499,12 +505,14 @@
                                 </div>
                             </div>
                             @can('akses', 'Transaksi Apotik Tambah')
+                            @if ($showProduk || $showBarang)
                             <button wire:click.prevent="create"
                                 class="btn btn-success w-full mt-4"
                                 wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-plus"></i> Simpan</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endif
                             @endcan
                         </div>
                     </div>
