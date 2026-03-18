@@ -37,7 +37,8 @@
                 {{-- Kolom Kanan: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="update" class="space-y-6">
-
+                        @if ($showProduk)  
+                        {{-- Section Produk --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <div class="divider">Produk/Obat</div>
 
@@ -119,7 +120,9 @@
                                 Tambah Produk
                             </button>
                         </div>
+                        @endif
 
+                        @if ($showBarang)                            
                         {{-- Section Barang --}}
                         <div class="bg-base-100 shadow rounded-box p-6">
                             <div class="divider">Barang/Souvenir</div>
@@ -203,15 +206,56 @@
                                 Tambah Barang
                             </button>
                         </div>
+                        @endif
                     </form>
+                    @if (!$showProduk && !$showBarang)
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Pilih "Tampilkan Produk/Obat" atau "Tampilkan Barang/Souvenir" untuk menambahkan item ke transaksi.
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Kolom Kiri: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
+                        <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
+                            <div class="text-sm font-semibold text-base-content/70">
+                                Tambah Item Transaksi
+                            </div>
+                            @if (!$showProduk)
+                                <button wire:click="formProdukOpen"
+                                    class="btn btn-success btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-pills"></i>
+                                    <span>Tampilkan Produk / Obat</span>
+                                </button>
+                            @endif
+                            @if ($showProduk)
+                                <button wire:click="$set('showProduk', false)"
+                                    class="btn btn-error btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-pills"></i>
+                                    <span>Tutup Produk / Obat</span>
+                                </button>
+                            @endif
+    
+                            @if (!$showBarang)
+                                <button wire:click="formBarangOpen"
+                                    class="btn btn-success btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-gifts"></i>
+                                    <span>Tampilkan Barang / Souvenir</span>
+                                </button>
+                            @endif
+                            @if ($showBarang)
+                                <button wire:click="$set('showBarang', false)"
+                                    class="btn btn-error btn-sm w-full flex items-center justify-start gap-2">
+                                    <i class="fa-solid fa-gifts"></i>
+                                    <span>Tutup Barang / Souvenir</span>
+                                </button>
+                            @endif
+                        </div>
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
-
+                            @if ($showProduk)                                
                             <div class="space-y-2" x-data="{ items: @entangle('obat_estetika') }">
                                 <template x-for="row in Object.values(items)" :key="row.uuid">
                                     <div class="border-b pb-2 mb-2">
@@ -247,6 +291,8 @@
                                     </div>
                                 </template>
                             </div>
+                            @endif
+                            @if ($showBarang)                                
                             <div class="space-y-2 mt-4" x-data="{ barangItems: @entangle('barang_transaksi') }">
                                 <template x-for="row in Object.values(barangItems)" :key="row.uuid">
                                     <div class="pb-2 mb-2">
@@ -281,27 +327,32 @@
                                     </div>
                                 </template>
                             </div>
+                            @endif
                             <div class="space-y-2 mt-4">
                                 <div class="flex justify-between font-bold my-4 border-t pt-2"
                                     x-data="{
                                         produkItems: @entangle('obat_estetika'),
-                                        barangItems: @entangle('barang_transaksi')
+                                        barangItems: @entangle('barang_transaksi'),
+                                        showProduk: @entangle('showProduk'),
+                                        showBarang: @entangle('showBarang')
                                     }">
                                     <span>Total:</span>
                                     <span x-text="(
-                                        Object.values(produkItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0) +
-                                        Object.values(barangItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0)
+                                        (showProduk ? Object.values(produkItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0) : 0) +
+                                        (showBarang ? Object.values(barangItems).reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0) : 0)
                                     ).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })"></span>
                                 </div>
                             </div>
 
                             @can('akses', 'Transaksi Apotik Edit')
+                            @if ($showProduk || $showBarang)
                             <button wire:click.prevent="update"
                                     class="btn btn-success w-full mt-4"
                                     wire:loading.attr="disabled">
                                 <span wire:loading.remove><i class="fa-solid fa-pen-to-square"></i> Update</span>
                                 <span wire:loading.inline>Loading...</span>
                             </button>
+                            @endif
                             @endcan
                         </div>
                     </div>

@@ -243,8 +243,12 @@ class Create extends Component
             }
 
             // Kurangi stok + catat mutasi
-            $this->kurangiStokApotik($transaksi, $this->obat_estetika);
-            $this->kurangiStokBarang($transaksi, $this->barang_terjual);
+            if($this->showBarang){
+                $this->kurangiStokApotik($transaksi, $this->obat_estetika);
+            }
+            if($this->showProduk){
+                $this->kurangiStokBarang($transaksi, $this->barang_terjual);
+            }
 
             // Reset form
             $this->reset('obat_estetika');

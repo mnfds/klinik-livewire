@@ -17,6 +17,10 @@ class Update extends Component
     public $barang_list = []; // data master barang
     public $barang_transaksi = []; // array dinamis row barang
 
+    // Simpan Value Boolean Form Ditampilkan(True) atau Hide (false)
+    public bool $showProduk = false;
+    public bool $showBarang = false;
+
     public function mount($id)
     {
         $this->produk = ProdukDanObat::all();
@@ -35,6 +39,9 @@ class Update extends Component
                 'subtotal' => $item->subtotal
             ];
         }
+        if(!empty($this->obat_estetika)) {
+            $this->showProduk = true;
+        }
         foreach ($this->transaksi->riwayatBarang as $item) {
             $this->barang_transaksi[] = [
                 'uuid'         => uniqid(),
@@ -45,6 +52,9 @@ class Update extends Component
                 'diskon'       => $item->diskon,
                 'subtotal'     => $item->subtotal,
             ];
+        }
+        if(!empty($this->barang_transaksi)) {
+            $this->showBarang = true;
         }
     }
 
@@ -120,50 +130,59 @@ class Update extends Component
         }
 
         $totalHarga = 0;
-
-        // Hapus riwayat lama dulu
-        $this->transaksi->riwayat()->delete();
-
-        foreach ($this->obat_estetika as $item) {
-            $harga_asli    = (float) ($item['harga_asli'] ?? 0);
-            $diskon        = (float) ($item['diskon']     ?? 0);
-            $potongan      = (float) ($item['potongan']   ?? 0);
-            $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
-
-            // Simpan riwayat baru
-            $this->transaksi->riwayat()->create([
-                'produk_id' => $item['produk_id'],
-                'jumlah_produk' => $item['jumlah_produk'],
-                'harga_asli' => $harga_asli,
-                'potongan' => $potongan,
-                'diskon' => $diskon,
-                'subtotal' => round($subtotalFinal), // dibulatkan ke integer
-            ]);
-
-            $totalHarga += $subtotalFinal;
+        // Hapus riwayat lama dulu kalau form di close waktu submit
+        if (!$this->showProduk) {
+            $this->transaksi->riwayat()->delete();
+        }
+        if($this->showProduk){
+            // Hapus riwayat lama dulu
+            $this->transaksi->riwayat()->delete();
+            foreach ($this->obat_estetika as $item) {
+                $harga_asli    = (float) ($item['harga_asli'] ?? 0);
+                $diskon        = (float) ($item['diskon']     ?? 0);
+                $potongan      = (float) ($item['potongan']   ?? 0);
+                $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
+    
+                // Simpan riwayat baru
+                $this->transaksi->riwayat()->create([
+                    'produk_id' => $item['produk_id'],
+                    'jumlah_produk' => $item['jumlah_produk'],
+                    'harga_asli' => $harga_asli,
+                    'potongan' => $potongan,
+                    'diskon' => $diskon,
+                    'subtotal' => round($subtotalFinal), // dibulatkan ke integer
+                ]);
+    
+                $totalHarga += $subtotalFinal;
+            }
         }
 
-        // Hapus riwayat barang lama
-        $this->transaksi->riwayatBarang()->delete();
-
-        foreach ($this->barang_transaksi as $item) {
-            if (empty($item['barang_id'])) continue; // skip row kosong
-
-            $harga_asli    = (float) ($item['harga_asli'] ?? 0);
-            $diskon        = (float) ($item['diskon']     ?? 0);
-            $potongan      = (float) ($item['potongan']   ?? 0);
-            $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
-
-            $this->transaksi->riwayatBarang()->create([
-                'barang_id'     => $item['barang_id'],
-                'jumlah_barang' => $item['jumlah'],
-                'harga_asli'    => $harga_asli,
-                'potongan'      => $potongan,
-                'diskon'        => $diskon,
-                'subtotal'      => round($subtotalFinal),
-            ]);
-
-            $totalHarga += $subtotalFinal;
+        // Hapus riwayat barang lama dulu kalau form di close waktu submit
+        if (!$this->showBarang) {
+            $this->transaksi->riwayatBarang()->delete();
+        }
+        if($this->showBarang){
+            // Hapus riwayat barang lama
+            $this->transaksi->riwayatBarang()->delete();
+            foreach ($this->barang_transaksi as $item) {
+                if (empty($item['barang_id'])) continue; // skip row kosong
+    
+                $harga_asli    = (float) ($item['harga_asli'] ?? 0);
+                $diskon        = (float) ($item['diskon']     ?? 0);
+                $potongan      = (float) ($item['potongan']   ?? 0);
+                $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
+    
+                $this->transaksi->riwayatBarang()->create([
+                    'barang_id'     => $item['barang_id'],
+                    'jumlah_barang' => $item['jumlah'],
+                    'harga_asli'    => $harga_asli,
+                    'potongan'      => $potongan,
+                    'diskon'        => $diskon,
+                    'subtotal'      => round($subtotalFinal),
+                ]);
+    
+                $totalHarga += $subtotalFinal;
+            }
         }
 
         // Update total harga transaksi
@@ -171,7 +190,10 @@ class Update extends Component
             'total_harga' => round($totalHarga),
         ]);
 
-        session()->flash('success', 'Transaksi berhasil diperbarui!');
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Transaksi berhasil Diedit!',
+        ]);
         return redirect()->route('apotik.kasir');
     }
 
@@ -181,6 +203,16 @@ class Update extends Component
         return $afterDiskon - $potongan;
     }
 
+    public function formProdukOpen()
+    {
+        $this->showProduk = true;
+    }
+
+    public function formBarangOpen()
+    {
+        $this->showBarang = true;
+    }
+    
     public function render()
     {
         if (! Gate::allows('akses', 'Transaksi Apotik Edit')) {
