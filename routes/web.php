@@ -425,6 +425,11 @@ Route::middleware(['auth'])->group(function () {
     // ====== INVENTARIS ====== //
     Route::view('/inventaris', 'inventaris.data')->name('inventaris.data');    
     // ====== INVENTARIS ====== //
+
+    // ====== INVENTARIS ====== //
+    Route::view('/surat-sehat', 'surat.sehat.data')->name('surat-sehat.data');    
+    Route::view('/surat-sakit', 'surat.sakit.data')->name('surat-sakit.data');    
+    // ====== INVENTARIS ====== //
 });
 
 
