@@ -748,7 +748,7 @@ class Create extends Component
                 // SIMPAN DATA RENCANA LAYANAN REKAM MEDIS
                 if (in_array('rencana-estetika', $this->selected_forms_plan)) {
                     foreach ($this->rencana_estetika['treatments_id'] as $index => $treatmentId) {
-
+                        if (empty($treatmentId)) continue;
                         RencanaTreatmentRM::create([
                             'rekam_medis_id' => $rekammedis->id,
                             'treatments_id' => $treatmentId,

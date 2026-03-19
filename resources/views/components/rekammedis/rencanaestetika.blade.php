@@ -45,24 +45,34 @@
                     <div x-data="singleSelectTreatment(
                         () => item.treatments_id,
                         (val) => { 
-                            item.treatments_id = val.id; 
-                            item.nama_treatment = val.text; 
-                            item.harga = val.harga; 
-                            item.potongan = val.potongan; 
-                            item.diskon = val.diskon; 
+                            if (!val) {
+                                item.treatments_id = '';
+                                item.nama_treatment = '';
+                                item.harga = 0;
+                                item.potongan = 0;
+                                item.diskon = 0;
+                                item.search_label = '';
+                            } else {
+                                item.treatments_id = val.id; 
+                                item.nama_treatment = val.text; 
+                                item.harga = val.harga; 
+                                item.potongan = val.potongan; 
+                                item.diskon = val.diskon;
+                                item.search_label = val.text;
+                            }
                             syncItemTreatment(index); 
                         }
-                        )" x-init="init()">
+                    )" x-init="init()">
                         <label class="block text-sm font-semibold mb-1">Treatment</label>
                         <div class="relative">
                             <input type="text"
                                 class="input input-bordered w-full"
                                 placeholder="Ketik untuk cari treatment..."
-                                x-model="search"
-                                @input.debounce.300ms="fetchOptions(); open = true"
+                                :value="item.search_label || search"
+                                @input.debounce.300ms="item.search_label = ''; search = $event.target.value; fetchOptions(); open = true"
                                 @focus="open = true"
                             >
-                            <div x-show="open" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
+                            <div x-show="open" @click.outside="open = false" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
                                 <template x-for="opt in filteredOptions" :key="opt.id">
                                     <div @click="choose(opt)" class="p-2 hover:bg-primary/20 cursor-pointer">
                                         <span x-text="opt.text"></span>
@@ -168,7 +178,16 @@
     function treatmentForm() {
         return {
             // state
-            treatmentItems: [{ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+            treatmentItems: [{ 
+                treatments_id: '', 
+                nama_treatment: '',
+                harga: 0,
+                search_label: '',
+                jumlah_treatment: 1, 
+                potongan: 0, 
+                diskon: 0, 
+                subtotal: 0 
+            }],
             treatments: @json($layanandanbundling['treatment']),
 
             // helpers
@@ -224,15 +243,23 @@
 
             // aksi
             addTreatment() {
-                this.treatmentItems.push({ treatments_id: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 });
-                this.syncTreatmentToLivewire();
+                this.treatmentItems.push({ 
+                    treatments_id: '', 
+                    nama_treatment: '',
+                    harga: 0,
+                    search_label: '',
+                    jumlah_treatment: 1, 
+                    potongan: 0, 
+                    diskon: 0, 
+                    subtotal: 0 
+                });
+                this.fullSyncToLivewire();
             },
 
             removeTreatment(index) {
                 this.treatmentItems.splice(index, 1);
                 this.reindexTreatment();
-                this.syncTreatmentToLivewire();
-                this.cleanupTreatmentLivewire();
+                this.fullSyncToLivewire();
             },
 
             reindexTreatment() {
@@ -244,7 +271,6 @@
                 let subtotal = this.calcSubtotal(item);
                 item.subtotal = subtotal;
 
-                // Ganti $wire.set dengan @this.set
                 @this.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
                 @this.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
                 @this.set(`rencana_estetika.potongan.${i}`, item.potongan);
@@ -252,20 +278,26 @@
                 @this.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
             },
 
-            syncTreatmentToLivewire() {
-                this.treatmentItems.forEach((item, i) => this.syncItemTreatment(i));
-            },
+            fullSyncToLivewire() {
+                // Reset dulu semua ke array kosong
+                @this.set('rencana_estetika.treatments_id', []);
+                @this.set('rencana_estetika.jumlah_treatment', []);
+                @this.set('rencana_estetika.potongan', []);
+                @this.set('rencana_estetika.diskon', []);
+                @this.set('rencana_estetika.subtotal', []);
 
-            cleanupTreatmentLivewire() {
-                let length = this.treatmentItems.length;
-                for (let i = length; i < 100; i++) {
-                    @this.set(`rencana_estetika.treatments_id.${i}`, null);
-                    @this.set(`rencana_estetika.jumlah_treatment.${i}`, null);
-                    @this.set(`rencana_estetika.potongan.${i}`, null);
-                    @this.set(`rencana_estetika.diskon.${i}`, null);
-                    @this.set(`rencana_estetika.subtotal.${i}`, null);
-                }
-            }
+                // Isi ulang hanya dari item yang aktif
+                this.treatmentItems.forEach((item, i) => {
+                    let subtotal = this.calcSubtotal(item);
+                    item.subtotal = subtotal;
+
+                    @this.set(`rencana_estetika.treatments_id.${i}`, item.treatments_id);
+                    @this.set(`rencana_estetika.jumlah_treatment.${i}`, item.jumlah_treatment);
+                    @this.set(`rencana_estetika.potongan.${i}`, item.potongan);
+                    @this.set(`rencana_estetika.diskon.${i}`, item.diskon);
+                    @this.set(`rencana_estetika.subtotal.${i}`, item.subtotal);
+                });
+            },
         }
     }
     function singleSelectTreatment(getModel, setModel) {
