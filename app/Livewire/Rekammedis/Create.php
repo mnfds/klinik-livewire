@@ -761,8 +761,8 @@ class Create extends Component
                 }
 
                 if (in_array('rencana-layanan', $this->selected_forms_plan)) {
-
                     foreach ($this->rencana_layanan['pelayanan_id'] as $index => $pelayananId) {
+                        if (empty($pelayananId)) continue;
                         RencanaLayananRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'pelayanan_id'     => $pelayananId,

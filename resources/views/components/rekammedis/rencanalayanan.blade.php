@@ -1,30 +1,28 @@
 <div class="bg-base-200 p-4 rounded border border-base-200"
     x-data="{
-        layananItems: [{ uid: Date.now(), pelayanan_id: '', jumlah_pelayanan: 1 }],
+        layananItems: [{ uid: Date.now(), pelayanan_id: '', jumlah_pelayanan: 1, search_label: '' }],
 
         addLayanan() {
-            this.layananItems.push({ uid: Date.now() + Math.random(), pelayanan_id: '', jumlah_pelayanan: 1 });
-            this.syncLayananToLivewire();
+            this.layananItems.push({ uid: Date.now() + Math.random(), pelayanan_id: '', jumlah_pelayanan: 1, search_label: '' });
+            this.fullSyncToLivewire();
         },
         removeLayanan(index) {
             this.layananItems.splice(index, 1);
-            this.syncLayananToLivewire();
-            this.cleanupLayananLivewire();
+            this.fullSyncToLivewire();
         },
         syncItemLayanan(i) {
             let item = this.layananItems[i];
             $wire.set(`rencana_layanan.pelayanan_id.${i}`, item.pelayanan_id);
             $wire.set(`rencana_layanan.jumlah_pelayanan.${i}`, item.jumlah_pelayanan);
         },
-        syncLayananToLivewire() {
-            this.layananItems.forEach((item, i) => this.syncItemLayanan(i));
-        },
-        cleanupLayananLivewire() {
-            let length = this.layananItems.length;
-            for (let i = length; i < 100; i++) {
-                $wire.set(`rencana_layanan.pelayanan_id.${i}`, null);
-                $wire.set(`rencana_layanan.jumlah_pelayanan.${i}`, null);
-            }
+        fullSyncToLivewire() {
+            $wire.set('rencana_layanan.pelayanan_id', []);
+            $wire.set('rencana_layanan.jumlah_pelayanan', []);
+
+            this.layananItems.forEach((item, i) => {
+                $wire.set(`rencana_layanan.pelayanan_id.${i}`, item.pelayanan_id);
+                $wire.set(`rencana_layanan.jumlah_pelayanan.${i}`, item.jumlah_pelayanan);
+            });
         },
     }"
 >
@@ -77,6 +75,7 @@
                         },
                         selectLayanan(l) {
                             item.pelayanan_id = l.id;
+                            item.search_label = l.nama;
                             this.search = l.nama;
                             this.show = false;
                             syncItemLayanan(index);
@@ -87,8 +86,8 @@
                     <input type="text"
                         class="input input-bordered w-full"
                         placeholder="Cari Layanan..."
-                        x-model="search"
-                        @input.debounce.300ms="searchLayanan"
+                        :value="item.search_label || search"
+                        @input.debounce.300ms="item.search_label = ''; search = $event.target.value; searchLayanan()"
                     >
 
                     <!-- Hidden field simpan ID -->
@@ -110,7 +109,7 @@
                         </template>
                     </div>
 
-                    <!-- Input jumlah (opsional, hidden default) -->
+                    <!-- Input jumlah -->
                     <input type="number" min="1"
                         class="input input-bordered w-32 hidden"
                         :name="`rencanaLayanan[jumlah_pelayanan][${index}]`"
