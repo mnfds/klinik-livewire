@@ -39,7 +39,8 @@ final class ResepTable extends PowerGridComponent
                 'dokter',
                 'rekamMedis.obatNonRacikanRM', 
                 'rekamMedis.obatRacikanRM.bahanRacikan'
-            ]);
+                ])
+            ->orderByDesc('id');
     }
 
     public function relationSearch(): array
