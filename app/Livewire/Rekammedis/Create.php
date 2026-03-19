@@ -772,8 +772,8 @@ class Create extends Component
                 }
 
                 if (in_array('obat-estetika', $this->selected_forms_plan)) {
-
                     foreach ($this->obat_estetika['produk_id'] as $index => $produkId) {
+                        if (empty($produkId)) continue;
                         RencanaProdukRM::create([
                             'rekam_medis_id'   => $rekammedis->id,
                             'produk_id'     => $produkId,

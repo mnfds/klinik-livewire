@@ -8,7 +8,6 @@
             );
         })
     "
-
 >
     @props([
         'obatEstetika' => [
@@ -46,18 +45,35 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <div x-data="singleSelectProduk(
                         () => item.produk_id,
-                        (val) => { item.produk_id = val.id; item.nama_produk = val.text; item.harga = val.harga; item.potongan = val.potongan; item.diskon = val.diskon; syncItemProduk(index); }
-                        )" x-init="init()">
+                        (val) => { 
+                            if (!val) {
+                                item.produk_id = '';
+                                item.nama_produk = '';
+                                item.harga = 0;
+                                item.potongan = 0;
+                                item.diskon = 0;
+                                item.search_label = '';
+                            } else {
+                                item.produk_id = val.id;
+                                item.nama_produk = val.text;
+                                item.harga = val.harga;
+                                item.potongan = val.potongan;
+                                item.diskon = val.diskon;
+                                item.search_label = val.text;
+                            }
+                            syncItemProduk(index);
+                        }
+                    )" x-init="init()">
                         <label class="block text-sm font-semibold mb-1">Produk</label>
                         <div class="relative">
                             <input type="text"
                                 class="input input-bordered w-full"
                                 placeholder="Ketik untuk cari produk..."
-                                x-model="search"
-                                @input.debounce.300ms="fetchOptions(); open = true"
+                                :value="item.search_label || search"
+                                @input.debounce.300ms="item.search_label = ''; search = $event.target.value; fetchOptions(); open = true"
                                 @focus="open = true"
                             >
-                            <div x-show="open" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
+                            <div x-show="open" @click.outside="open = false" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
                                 <template x-for="opt in filteredOptions" :key="opt.id">
                                     <div @click="choose(opt)" class="p-2 hover:bg-primary/20 cursor-pointer">
                                         <span x-text="opt.text"></span>
@@ -67,21 +83,6 @@
                         </div>
                     </div>
 
-                    {{-- <div>
-                        <label class="block text-sm font-semibold mb-1">Produk</label>
-                        <select class="select select-bordered w-full"
-                            :name="`obatEstetika[produk_id][${index}]`"
-                            x-model="item.produk_id"
-                            @change="syncItemProduk(index)"
-                        >
-                            <option value="">-- Pilih Produk --</option>
-                            @foreach($layanandanbundling['skincare'] as $skincare)
-                                <option value="{{ $skincare['id'] }}">
-                                    {{ $skincare['nama_dagang'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
                     <div>
                         <label class="block text-sm font-semibold mb-1">Jumlah</label>
                         <input type="number" min="1"
@@ -163,7 +164,7 @@
 function obatEstetikaForm() {
     return {
         // state
-        produkItems: [{ produk_id: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+        produkItems: [{ produk_id: '', nama_produk: '', harga: 0, search_label: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 }],
         produk: @json($layanandanbundling['skincare']),
 
         // helpers
@@ -219,15 +220,14 @@ function obatEstetikaForm() {
 
         // aksi
         addproduk() {
-            this.produkItems.push({ produk_id: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 });
-            this.syncProdukToLivewire();
+            this.produkItems.push({ produk_id: '', nama_produk: '', harga: 0, search_label: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 });
+            this.fullSyncToLivewire();
         },
 
         removeProduk(index) {
             this.produkItems.splice(index, 1);
             this.reindexProduk();
-            this.syncProdukToLivewire();
-            this.cleanupProdukLivewire();
+            this.fullSyncToLivewire();
         },
 
         reindexProduk() {
@@ -239,7 +239,6 @@ function obatEstetikaForm() {
             let subtotal = this.calcSubtotal(item);
             item.subtotal = subtotal;
 
-            // Ganti $wire.set dengan @this.set
             @this.set(`obat_estetika.produk_id.${i}`, item.produk_id);
             @this.set(`obat_estetika.jumlah_produk.${i}`, item.jumlah_produk);
             @this.set(`obat_estetika.potongan.${i}`, item.potongan);
@@ -247,27 +246,36 @@ function obatEstetikaForm() {
             @this.set(`obat_estetika.subtotal.${i}`, item.subtotal);
         },
 
-        syncProdukToLivewire() {
-            this.produkItems.forEach((item, i) => this.syncItemProduk(i));
-        },
+        fullSyncToLivewire() {
+            // Reset dulu semua ke array kosong
+            @this.set('obat_estetika.produk_id', []);
+            @this.set('obat_estetika.jumlah_produk', []);
+            @this.set('obat_estetika.potongan', []);
+            @this.set('obat_estetika.diskon', []);
+            @this.set('obat_estetika.subtotal', []);
 
-        cleanupProdukLivewire() {
-            let length = this.produkItems.length;
-            for (let i = length; i < 100; i++) {
-                @this.set(`obat_estetika.produk_id.${i}`, null);
-                @this.set(`obat_estetika.jumlah_produk.${i}`, null);
-                @this.set(`obat_estetika.diskon.${i}`, null);
-                @this.set(`obat_estetika.subtotal.${i}`, null);
-            }
-        }
+            // Isi ulang hanya dari item yang aktif
+            this.produkItems.forEach((item, i) => {
+                let subtotal = this.calcSubtotal(item);
+                item.subtotal = subtotal;
+
+                @this.set(`obat_estetika.produk_id.${i}`, item.produk_id);
+                @this.set(`obat_estetika.jumlah_produk.${i}`, item.jumlah_produk);
+                @this.set(`obat_estetika.potongan.${i}`, item.potongan);
+                @this.set(`obat_estetika.diskon.${i}`, item.diskon);
+                @this.set(`obat_estetika.subtotal.${i}`, item.subtotal);
+            });
+        },
     }
 }
+
 function singleSelectProduk(getModel, setModel) {
     return {
         open: false,
         selected: null,
         search: '',
         filteredOptions: [],
+        init() {},
         fetchOptions() {
             if (this.search.trim() === '') { this.filteredOptions = []; return; }
             fetch(`/ajax/produk?q=${encodeURIComponent(this.search)}`)
@@ -284,6 +292,7 @@ function singleSelectProduk(getModel, setModel) {
         remove() {
             this.selected = null;
             setModel(null);
+            this.search = '';
         }
     }
 }
