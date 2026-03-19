@@ -44,11 +44,20 @@
                     <div x-data="singleSelectBundling(
                             () => item.bundling_id,
                             (val) => { 
-                                item.bundling_id = val.id;
-                                item.nama_bundling = val.text;
-                                item.potongan = val.potongan;
-                                item.diskon = val.diskon;
-                                onChangeBundling(index); // reset & sync detail
+                                if (!val) {
+                                    item.bundling_id = '';
+                                    item.nama_bundling = '';
+                                    item.potongan = 0;
+                                    item.diskon = 0;
+                                    item.search_label = '';
+                                } else {
+                                    item.bundling_id = val.id;
+                                    item.nama_bundling = val.text;
+                                    item.potongan = val.potongan;
+                                    item.diskon = val.diskon;
+                                    item.search_label = val.text;
+                                }
+                                onChangeBundling(index);
                             }
                             )" x-init="init()">
 
@@ -57,11 +66,11 @@
                             <input type="text"
                                 class="input input-bordered w-full"
                                 placeholder="Ketik untuk cari bundling..."
-                                x-model="search"
-                                @input.debounce.300ms="fetchOptions(); open = true"
+                                :value="item.search_label || search"
+                                @input.debounce.300ms="item.search_label = ''; search = $event.target.value; fetchOptions(); open = true"
                                 @focus="open = true"
                             >
-                            <div x-show="open" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
+                            <div x-show="open" @click.outside="open = false" class="absolute z-10 bg-white border w-full max-h-40 overflow-y-auto">
                                 <template x-for="opt in filteredOptions" :key="opt.id">
                                     <div @click="choose(opt)" class="p-2 hover:bg-primary/20 cursor-pointer">
                                         <span x-text="opt.text"></span>
@@ -71,21 +80,6 @@
                         </div>
                     </div>
 
-                    {{-- <div>
-                        <label class="block text-sm font-semibold mb-1">Bundling</label>
-                        <select class="select select-bordered w-full"
-                            :name="`rencanaBundling[bundling_id][${index}]`"
-                            x-model="item.bundling_id"
-                            @change="onChangeBundling(index)"
-                        >
-                            <option value="">-- Pilih Bundling --</option>
-                            @foreach($layanandanbundling['bundling'] as $bundle)
-                                <option value="{{ $bundle['id'] }}">
-                                    {{ $bundle['nama'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
                     <div>
                         <label class="block text-sm font-semibold mb-1">Jumlah</label>
                         <input type="number" min="1"
@@ -389,28 +383,28 @@
     </div>
 </div>
 
+
 <script>
     function bundlingForm() {
         return {
             // state
             bundlingItems: [{
                 bundling_id: '',
+                nama_bundling: '',
+                search_label: '',
                 jumlah_bundling: 1,
                 potongan: 0,
                 diskon: 0,
                 subtotal: 0,
-                // unified details container (per bundling row)
                 details: {
-                    treatments: {},   // keyed by treatmentBundling id
-                    pelayanans: {},   // keyed by pelayananBundling id
-                    produks: {}       // keyed by produkBundling id
+                    treatments: {},
+                    pelayanans: {},
+                    produks: {}
                 }
             }],
 
-            // server-provided list of bundlings (contains nested treatment/pelayanan/produk info)
             bundlings: @json($layanandanbundling['bundling']),
 
-            // helpers
             getBundling(id) {
                 return this.bundlings.find(b => String(b.id) === String(id));
             },
@@ -424,14 +418,12 @@
                 }).format(Number(value));
             },
 
-            // update potongan
             updatePotongan(i, val) {
                 let number = parseInt((val||'').toString().replace(/[^\d]/g, '')) || 0;
                 this.bundlingItems[i].potongan = number;
                 this.syncItemBundling(i);
             },
 
-            // update diskon
             updateDiskon(i, val) {
                 let number = parseInt(val) || 0;
                 if (number < 0) number = 0;
@@ -440,7 +432,6 @@
                 this.syncItemBundling(i);
             },
 
-            // calc harga
             calcHargaAsli(item) {
                 let bundling = this.getBundling(item.bundling_id);
                 let harga = bundling ? Number(bundling.harga || 0) : 0;
@@ -461,7 +452,6 @@
                 return this.bundlingItems.reduce((total, item) => total + this.calcSubtotal(item), 0);
             },
 
-            // action helpers for details
             initDetailIfMissing(item, type, key, opts) {
                 if (!item.details[type] || Array.isArray(item.details[type])) item.details[type] = {};
 
@@ -484,7 +474,6 @@
                 if (!detail) return;
                 let maxVal = (Number(item.jumlah_bundling) || 0) * (Number(detail.jumlah_per_bundle) || 0);
                 detail.jumlah_terpakai = Math.min((detail.jumlah_terpakai || 0) + 1, maxVal);
-                // sync after change
                 this.syncItemBundling(index);
             },
 
@@ -492,53 +481,34 @@
                 let detail = item.details[type][key];
                 if (!detail) return;
                 detail.jumlah_terpakai = Math.max((detail.jumlah_terpakai || 0) - 1, 0);
-                // sync after change
                 this.syncItemBundling(index);
             },
 
-            // when user selects bundling, we want to reset details and optionally prefill jumlah_awal if needed
             onChangeBundling(index) {
-                // keep existing counts? currently we'll reset detail container to empty (but header values persist)
                 let item = this.bundlingItems[index];
                 item.details = { treatments: {}, pelayanans: {}, produks: {} };
-                // sync header and details to Livewire
                 this.syncItemBundling(index);
             },
 
             onChangeJumlahBundling(index) {
-                // Recalculate jumlah_awal for any existing details of this bundling
                 let item = this.bundlingItems[index];
-                Object.keys(item.details.treatments || {}).forEach(k => {
-                    let d = item.details.treatments[k];
-                    if (d && 'jumlah_per_bundle' in d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(d.jumlah_per_bundle || 0);
-                        // ensure terpakai <= awal
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
+                ['treatments', 'pelayanans', 'produks'].forEach(type => {
+                    Object.keys(item.details[type] || {}).forEach(k => {
+                        let d = item.details[type][k];
+                        if (d && 'jumlah_per_bundle' in d) {
+                            d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(d.jumlah_per_bundle || 0);
+                            if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
+                        }
+                    });
                 });
-                Object.keys(item.details.pelayanans || {}).forEach(k => {
-                    let d = item.details.pelayanans[k];
-                    if (d && 'jumlah_per_bundle' in d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(d.jumlah_per_bundle || 0);
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
-                });
-                Object.keys(item.details.produks || {}).forEach(k => {
-                    let d = item.details.produks[k];
-                    if (d && 'jumlah_per_bundle' in d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * Number(d.jumlah_per_bundle || 0);
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
-                });
-
-                // then sync
                 this.syncItemBundling(index);
             },
 
-            // aksi add/remove bundling
             addBundling() {
                 this.bundlingItems.push({
                     bundling_id: '',
+                    nama_bundling: '',
+                    search_label: '',
                     jumlah_bundling: 1,
                     potongan: 0,
                     diskon: 0,
@@ -549,91 +519,68 @@
                         produks: {}
                     }
                 });
-                this.syncBundlingToLivewire();
+                this.fullSyncToLivewire();
             },
 
             removeBundling(index) {
                 this.bundlingItems.splice(index, 1);
                 this.reindexBundling();
-                this.syncBundlingToLivewire();
-                this.cleanupBundlingLivewire();
+                this.fullSyncToLivewire();
             },
 
             reindexBundling() {
                 this.bundlingItems = this.bundlingItems.map(item => ({ ...item }));
             },
 
-            // sync a single item (header + details) to Livewire
             syncItemBundling(i) {
                 let item = this.bundlingItems[i];
                 let subtotal = this.calcSubtotal(item);
                 item.subtotal = subtotal;
 
-                // ensure details jumlah_awal kept up-to-date (in case header changed)
-                // treatments
-                Object.keys(item.details.treatments || {}).forEach(k => {
-                    let d = item.details.treatments[k];
-                    if (d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * (Number(d.jumlah_per_bundle) || 0);
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
-                });
-                // pelayanans
-                Object.keys(item.details.pelayanans || {}).forEach(k => {
-                    let d = item.details.pelayanans[k];
-                    if (d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * (Number(d.jumlah_per_bundle) || 0);
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
-                });
-                // produks
-                Object.keys(item.details.produks || {}).forEach(k => {
-                    let d = item.details.produks[k];
-                    if (d) {
-                        d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * (Number(d.jumlah_per_bundle) || 0);
-                        if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
-                    }
+                ['treatments', 'pelayanans', 'produks'].forEach(type => {
+                    Object.keys(item.details[type] || {}).forEach(k => {
+                        let d = item.details[type][k];
+                        if (d) {
+                            d.jumlah_awal = (Number(item.jumlah_bundling) || 0) * (Number(d.jumlah_per_bundle) || 0);
+                            if ((d.jumlah_terpakai || 0) > d.jumlah_awal) d.jumlah_terpakai = d.jumlah_awal;
+                        }
+                    });
                 });
 
-                // sync header
                 @this.set(`rencana_bundling.bundling_id.${i}`, item.bundling_id);
                 @this.set(`rencana_bundling.jumlah_bundling.${i}`, item.jumlah_bundling);
                 @this.set(`rencana_bundling.potongan.${i}`, item.potongan);
                 @this.set(`rencana_bundling.diskon.${i}`, item.diskon);
                 @this.set(`rencana_bundling.subtotal.${i}`, item.subtotal);
-
-                // sync details into nested details.* arrays on Livewire
                 @this.set(`rencana_bundling.details.treatments.${i}`, item.details.treatments);
                 @this.set(`rencana_bundling.details.pelayanans.${i}`, item.details.pelayanans);
                 @this.set(`rencana_bundling.details.produks.${i}`, item.details.produks);
             },
 
-            // full sync for all items
-            syncBundlingToLivewire() {
+            fullSyncToLivewire() {
+                // Reset dulu semua ke array kosong
+                @this.set('rencana_bundling.bundling_id', []);
+                @this.set('rencana_bundling.jumlah_bundling', []);
+                @this.set('rencana_bundling.potongan', []);
+                @this.set('rencana_bundling.diskon', []);
+                @this.set('rencana_bundling.subtotal', []);
+                @this.set('rencana_bundling.details.treatments', []);
+                @this.set('rencana_bundling.details.pelayanans', []);
+                @this.set('rencana_bundling.details.produks', []);
+
+                // Isi ulang hanya dari item yang aktif
                 this.bundlingItems.forEach((item, i) => this.syncItemBundling(i));
             },
-
-            cleanupBundlingLivewire() {
-                let length = this.bundlingItems.length;
-                for (let i = length; i < 100; i++) {
-                    @this.set(`rencana_bundling.bundling_id.${i}`, null);
-                    @this.set(`rencana_bundling.jumlah_bundling.${i}`, null);
-                    @this.set(`rencana_bundling.potongan.${i}`, null);
-                    @this.set(`rencana_bundling.diskon.${i}`, null);
-                    @this.set(`rencana_bundling.subtotal.${i}`, null);
-                    @this.set(`rencana_bundling.details.treatments.${i}`, {});
-                    @this.set(`rencana_bundling.details.pelayanans.${i}`, {});
-                    @this.set(`rencana_bundling.details.produks.${i}`, {});
-                }
-            }
         }
     }
+
     function singleSelectBundling(getModel, setModel) {
         return {
             open: false,
             selected: null,
             search: '',
             filteredOptions: [],
+            init() {},
             fetchOptions() {
                 if (this.search.trim() === '') {
                     this.filteredOptions = [];

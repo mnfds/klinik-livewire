@@ -841,6 +841,7 @@ class Create extends Component
                 // SIMPAN DATA PAKET BUNDLING REKAM MEDIS KETIKA PERTAMA DIBELI
                 if (in_array('rencana-bundling', $this->selected_forms_plan)) {
                     foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
+                        if (empty($bundlingId)) continue;
                         $rekamMedisId = $rekammedis->id;
 
                         $bundlingRecord = RencananaBundlingRM::create([
