@@ -92,16 +92,33 @@ class TransaksiKlinik extends Model
         // ======================
         // OBAT FINAL
         // ======================
-        foreach ($rm->obatFinal ?? [] as $item) {
-            $items->push((object)[
-                'jenis_item' => 'obat_non_racik',
-                'nama_item'  => $item->produk->nama_dagang ?? '-',
-                'qty'        => $item->qty ?? 1,
-                'harga_jual'   => $item->produk->harga_dasar ?? 0,
-                'subtotal'   => $item->subtotal ?? 0,
-                'diskon'     => $item->diskon ?? 0,
-                'potongan'   => $item->potongan ?? 0,
-            ]);
+        // Obat Non Racik
+        foreach ($rm->obatFinal ?? [] as $obatFinal) {
+            // Obat Non Racik
+            foreach ($obatFinal->obatNonRacikanFinals ?? [] as $item) {
+                $items->push((object)[
+                    'jenis_item' => 'obat_non_racik',
+                    'nama_item'  => $item->produk->nama_dagang ?? '-',
+                    'qty'        => $item->jumlah_obat ?? 1,
+                    'harga_jual' => $item->harga_obat ?? 0,
+                    'subtotal'   => $item->total_obat ?? 0,
+                    'diskon'     => 0,
+                    'potongan'   => 0,
+                ]);
+            }
+
+            // Obat Racik
+            foreach ($obatFinal->obatRacikanFinals ?? [] as $item) {
+                $items->push((object)[
+                    'jenis_item' => 'obat_racik',
+                    'nama_item'  => $item->nama_racikan ?? '-',
+                    'qty'        => $item->jumlah_racikan ?? 1,
+                    'harga_jual' => $item->total_racikan ?? 0,
+                    'subtotal'   => $item->total_racikan ?? 0,
+                    'diskon'     => 0,
+                    'potongan'   => 0,
+                ]);
+            }
         }
 
         return $items;

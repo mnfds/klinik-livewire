@@ -172,7 +172,8 @@ class TableRekap extends Component
             'rekammedis.rencanaLayananRM.pelayanan',
             'rekammedis.rencanaTreatmentRM.treatment',
             'rekammedis.rencanaBundlingRM.bundling',
-            'rekammedis.obatFinal.produk',
+            'rekammedis.obatFinal.obatNonRacikanFinals.produk',
+            'rekammedis.obatFinal.obatRacikanFinals.bahanRacikanFinals.produk',
             'riwayatTransaksi',
         ])
         ->whereBetween('tanggal_transaksi', [$start, $end])
@@ -230,7 +231,8 @@ class TableRekap extends Component
             'rekammedis.rencanaLayananRM.pelayanan',
             'rekammedis.rencanaTreatmentRM.treatment',
             'rekammedis.rencanaBundlingRM.bundling',
-            'rekammedis.obatFinal.produk',
+            'rekammedis.obatFinal.obatNonRacikanFinals.produk',
+            'rekammedis.obatFinal.obatRacikanFinals.bahanRacikanFinals.produk',
             'riwayatTransaksi',
         ])
         ->whereBetween('tanggal_transaksi', [$start, $end])
