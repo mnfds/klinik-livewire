@@ -32,7 +32,11 @@ class Invoice extends Component
                 'rekammedis.rencanaBundlingRM.bundling.pelayananBundlingRM.pelayanan',
                 'rekammedis.rencanaBundlingRM.bundling.produkObatBundlingRM',
                 'rekammedis.rencanaBundlingRM.bundling.produkObatBundlingRM.produk',
-            ])->findOrFail($rowId);
+            ])
+            ->whereHas('rekammedis', function ($q) use ($rowId) {
+                $q->where('pasien_terdaftar_id', $rowId);
+            })
+            ->firstOrFail();
 
             $rm     = $data_transaksi->rekammedis;
             $pasien = $rm?->pasienTerdaftar?->pasien;

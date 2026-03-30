@@ -130,39 +130,39 @@ class Detail extends Component
         $this->barangtambahan[$uuidBarang] = $this->emptyRowBarangWithUuid($uuidBarang);
     
     }
-public function render()
-{
-    if (! Gate::allows('akses', 'Transaksi Klinik Detail')) {
-        session()->flash('toast', [
-            'type' => 'error',
-            'message' => 'Anda tidak memiliki akses.',
-        ]);
-        $this->redirectRoute('dashboard');
+    public function render()
+    {
+        if (! Gate::allows('akses', 'Transaksi Klinik Detail')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
+
+        // Reload semua data yang tidak ter-hydrate dengan benar
+        if ($this->rekammedis_id) {
+            $rekamMedis = RekamMedis::with([
+                'obatFinal.obatNonRacikanFinals.produk',
+                'obatFinal.obatRacikanFinals',
+                'rencanaLayananRM.pelayanan',
+                'rencanaTreatmentRM.treatment',
+                'rencanaProdukRM.produk',
+                'rencanaBundlingRM.bundling',
+            ])->find($this->rekammedis_id);
+
+            $this->obatapoteker  = $rekamMedis?->obatFinal ?? collect();
+            $this->pelayanan     = $rekamMedis?->rencanaLayananRM ?? collect();
+            $this->treatment     = $rekamMedis?->rencanaTreatmentRM ?? collect();
+            $this->produk        = $rekamMedis?->rencanaProdukRM ?? collect();
+            $this->bundling      = $rekamMedis?->rencanaBundlingRM ?? collect();
+        }
+
+        $this->produksearch = ProdukDanObat::all();
+        $this->barangsearch = Barang::all();
+
+        return view('livewire.transaksi.detail');
     }
-
-    // Reload semua data yang tidak ter-hydrate dengan benar
-    if ($this->rekammedis_id) {
-        $rekamMedis = RekamMedis::with([
-            'obatFinal.obatNonRacikanFinals.produk',
-            'obatFinal.obatRacikanFinals',
-            'rencanaLayananRM.pelayanan',
-            'rencanaTreatmentRM.treatment',
-            'rencanaProdukRM.produk',
-            'rencanaBundlingRM.bundling',
-        ])->find($this->rekammedis_id);
-
-        $this->obatapoteker  = $rekamMedis?->obatFinal ?? collect();
-        $this->pelayanan     = $rekamMedis?->rencanaLayananRM ?? collect();
-        $this->treatment     = $rekamMedis?->rencanaTreatmentRM ?? collect();
-        $this->produk        = $rekamMedis?->rencanaProdukRM ?? collect();
-        $this->bundling      = $rekamMedis?->rencanaBundlingRM ?? collect();
-    }
-
-    $this->produksearch = ProdukDanObat::all();
-    $this->barangsearch = Barang::all();
-
-    return view('livewire.transaksi.detail');
-}
 
     public function create()
     {
