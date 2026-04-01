@@ -22,52 +22,33 @@ class GrafikHarian extends Component
 
     public function mount()
     {
-        $this->loadDefaultData();
+        $this->startDate = now()->startOfMonth()->format('Y-m-d');
+        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
+    }
+
+    public function loadGrafik()
+    {
+        $start = Carbon::parse($this->startDate)->startOfDay();
+        $end   = Carbon::parse($this->endDate)->endOfDay();
+
+        [$apotikPieMasuk, $apotikPieKeluar] = $this->hitungApotikPieHarian($start, $end);
+        [$labelsTanggal, $apotikBarMasuk, $apotikBarKeluar] = $this->hitungApotikBarHarian($start, $end);
+
+        $this->dispatch('update-apotik-harian-pie', [
+            'apotikHarianPieMasuk'  => $apotikPieMasuk,
+            'apotikHarianPieKeluar' => $apotikPieKeluar,
+        ]);
+
+        $this->dispatch('update-apotik-harian-bar', [
+            'labelstanggal'         => $labelsTanggal,
+            'apotikHarianBarMasuk'  => $apotikBarMasuk,
+            'apotikHarianBarKeluar' => $apotikBarKeluar,
+        ]);
     }
 
     public function tanggalDipilih()
     {
-        $start = Carbon::parse($this->startDate)->startOfDay();
-        $end   = Carbon::parse($this->endDate)->endOfDay();
-
-        [$apotikPieMasuk, $apotikPieKeluar] = $this->hitungApotikPieHarian($start, $end);
-        [$labelsTanggal, $apotikBarMasuk, $apotikBarKeluar] = $this->hitungApotikBarHarian($start, $end);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-apotik-harian-pie', [
-            'apotikHarianPieMasuk'  => $apotikPieMasuk,
-            'apotikHarianPieKeluar' => $apotikPieKeluar,
-        ]);
-
-        $this->dispatch('update-apotik-harian-bar', [
-            'labelstanggal'  => $labelsTanggal,
-            'apotikHarianBarMasuk'  => $apotikBarMasuk,
-            'apotikHarianBarKeluar' => $apotikBarKeluar,
-        ]);
-    }
-
-    private function loadDefaultData()
-    {
-        $this->startDate = now()->startOfMonth()->format('Y-m-d');
-        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
-
-        $start = Carbon::parse($this->startDate)->startOfDay();
-        $end   = Carbon::parse($this->endDate)->endOfDay();
-
-        [$apotikPieMasuk, $apotikPieKeluar] = $this->hitungApotikPieHarian($start, $end);
-        [$labelsTanggal, $apotikBarMasuk, $apotikBarKeluar] = $this->hitungApotikBarHarian($start, $end);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-apotik-harian-pie', [
-            'apotikHarianPieMasuk'  => $apotikPieMasuk,
-            'apotikHarianPieKeluar' => $apotikPieKeluar,
-        ]);
-        
-        $this->dispatch('update-apotik-harian-bar', [
-            'labelstanggal'  => $labelsTanggal,
-            'apotikHarianBarMasuk'  => $apotikBarMasuk,
-            'apotikHarianBarKeluar' => $apotikBarKeluar,
-        ]);
+        $this->loadGrafik();
     }
 
     private function hitungApotikPieHarian(Carbon $start, Carbon $end)
@@ -134,6 +115,8 @@ class GrafikHarian extends Component
 
     public function resetData()
     {
-        $this->loadDefaultData();
+        $this->startDate = now()->startOfMonth()->format('Y-m-d');
+        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
+        $this->loadGrafik();
     }
 }

@@ -3,27 +3,15 @@
 namespace App\Livewire\Aruskas\Rekapitulasi;
 
 use Livewire\Component;
-use Carbon\CarbonPeriod;
 use App\Models\Uangkeluar;
 use Illuminate\Support\Carbon;
 use App\Models\TransaksiApotik;
 use App\Models\TransaksiKlinik;
 use App\Models\Pendapatanlainnya;
-use Illuminate\Support\Facades\DB;
 
 class GrafikTahunan extends Component
 {
-    public function render()
-    {
-        return view('livewire.aruskas.rekapitulasi.grafik-tahunan');
-    }
-
-    public function mount()
-    {
-        $this->loadDefaultData();
-    }
-
-    private function loadDefaultData()
+    public function loadGrafik()
     {
         [$rekapBarMasuk, $rekapBarKeluar] = $this->hitungRekapBarTahunan();
 
@@ -46,11 +34,9 @@ class GrafikTahunan extends Component
         $rekapKeluar = [];
 
         for ($year = $startYear; $year <= $endYear; $year++) {
-
             $start = Carbon::create($year, 1, 1)->startOfDay();
             $end   = Carbon::create($year, 12, 31)->endOfDay();
 
-            // === PEMASUKAN ===
             $masukKlinik = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
                 ->sum('total_tagihan_bersih');
 
@@ -61,7 +47,6 @@ class GrafikTahunan extends Component
                 ->whereIn('status', ['lunas', 'belum lunas'])
                 ->sum('total_tagihan');
 
-            // === PENGELUARAN ===
             $keluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
                 ->where('status', 'Disetujui')
                 ->sum('jumlah_uang');
@@ -71,5 +56,10 @@ class GrafikTahunan extends Component
         }
 
         return [$rekapMasuk, $rekapKeluar];
+    }
+
+    public function render()
+    {
+        return view('livewire.aruskas.rekapitulasi.grafik-tahunan');
     }
 }

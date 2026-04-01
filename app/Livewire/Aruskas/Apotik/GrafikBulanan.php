@@ -19,42 +19,23 @@ class GrafikBulanan extends Component
 
     public function mount()
     {
-        $this->loadDefaultData();
+        $this->tahun = now()->year;
+    }
+
+    public function loadGrafik()
+    {
+        [$apotikBarMasuk, $apotikBarKeluar] = $this->hitungRekapBarBulanan((int) $this->tahun);
+
+        $this->dispatch('update-apotik-bulanan-bar', [
+            'labelsBulan' => ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
+            'apotikBulananBarMasuk'  => $apotikBarMasuk,
+            'apotikBulananBarKeluar' => $apotikBarKeluar,
+        ]);
     }
 
     public function tahunDipilih()
     {
-        $year = $this->tahun;
-
-        [$apotikBarMasuk, $apotikBarKeluar] = $this->hitungRekapBarBulanan((int) $year);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-apotik-bulanan-bar', [
-            'labelsBulan' => [
-                'Jan','Feb','Mar','Apr','Mei','Jun',
-                'Jul','Agu','Sep','Okt','Nov','Des'
-            ],
-            'apotikBulananBarMasuk' => $apotikBarMasuk,
-            'apotikBulananBarKeluar' => $apotikBarKeluar,
-        ]);
-    }
-
-    private function loadDefaultData()
-    {
-        $this->tahun = now()->year;
-        $year = $this->tahun;
-
-        [$apotikBarMasuk, $apotikBarKeluar] = $this->hitungRekapBarBulanan((int) $year);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-apotik-bulanan-bar', [
-            'labelsBulan' => [
-                'Jan','Feb','Mar','Apr','Mei','Jun',
-                'Jul','Agu','Sep','Okt','Nov','Des'
-            ],
-            'apotikBulananBarMasuk' => $apotikBarMasuk,
-            'apotikBulananBarKeluar' => $apotikBarKeluar,
-        ]);
+        $this->loadGrafik();
     }
 
     private function hitungRekapBarBulanan(int $year): array
@@ -100,6 +81,7 @@ class GrafikBulanan extends Component
 
     public function resetData()
     {
-        $this->loadDefaultData();
+        $this->tahun = now()->year;
+        $this->loadGrafik();
     }
 }

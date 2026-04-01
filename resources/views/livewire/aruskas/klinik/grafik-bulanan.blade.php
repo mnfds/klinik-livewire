@@ -1,104 +1,113 @@
-<div class="mt-4">
-    <div class="mb-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-base-100 p-4 rounded-lg shadow-sm border border-primary/50">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-calendar-days text-primary"></i>
-                <h2 class="text-sm font-semibold uppercase tracking-wide">
-                    Set Tahun Grafik Bulanan
-                </h2>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                <select class="select select-bordered select-primary w-full sm:w-40" wire:model.lazy="tahun" wire:change="tahunDipilih">
-                    <option value="">Pilih Tahun</option>
-                    @for ($y = now()->year; $y >= now()->year - 10; $y--)
-                        <option value="{{ $y }}">{{ $y }}</option>
-                    @endfor
-                </select>
+<div wire:init="loadGrafik" class="mt-4">
 
-                <button type="button" class="btn btn-error btn-sm flex items-center gap-1" wire:click="resetData">
-                    <i class="fa-solid fa-trash-can"></i>
-                    Clear
-                </button>
-            </div>
-        </div>
+    {{-- Spinner Loading Awal --}}
+    <div wire:loading wire:target="loadGrafik" class="flex flex-col items-center justify-center min-h-[200px] gap-3">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="text-base-content/50 text-sm">Memuat grafik bulanan...</p>
     </div>
 
-    {{-----  CHART BULANAN BAR  -----}}
-    <div class="grid grid-cols-1 gap-4">
-        <div class="card bg-base-100 shadow-md border border-info/50">
-            <div class="card-body">
-                <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-column text-info"></i>
-                    Grafik Klinik Bulanan
-                </h3>
-                <div class="relative w-full h-[120px] sm:h-[160px]">
-                    <canvas wire:ignore class="w-full" id="grafikKlinikBulananBar"></canvas>
+    {{-- Konten Utama --}}
+    <div wire:loading.remove wire:target="loadGrafik">
+        <div class="mb-4">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-base-100 p-4 rounded-lg shadow-sm border border-primary/50">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                    <h2 class="text-sm font-semibold uppercase tracking-wide">
+                        Set Tahun Grafik Bulanan
+                    </h2>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <select class="select select-bordered select-primary w-full sm:w-40" wire:model.lazy="tahun" wire:change="tahunDipilih">
+                        <option value="">Pilih Tahun</option>
+                        @for ($y = now()->year; $y >= now()->year - 10; $y--)
+                            <option value="{{ $y }}">{{ $y }}</option>
+                        @endfor
+                    </select>
+                    <button type="button" class="btn btn-error btn-sm flex items-center gap-1" wire:click="resetData">
+                        <i class="fa-solid fa-trash-can"></i>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <div class="card bg-base-100 shadow-md border border-info/50">
+                <div class="card-body">
+                    <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-info"></i>
+                        Grafik Klinik Bulanan
+                    </h3>
+                    {{-- Spinner saat ganti tahun --}}
+                    <div wire:loading wire:target="tahunDipilih,resetData" class="flex items-center justify-center h-[120px] sm:h-[160px]">
+                        <span class="loading loading-spinner loading-md text-info"></span>
+                    </div>
+                    <div wire:loading.remove wire:target="tahunDipilih,resetData" class="relative w-full h-[120px] sm:h-[160px]">
+                        <canvas id="grafikKlinikBulananBar" class="absolute inset-0 w-full h-full"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const ctxKlinikBulananBar = document.getElementById('grafikKlinikBulananBar');
+        let dataKlinikBulananBar = null;
 
-        const dataKlinikBulananBar = new Chart(ctxKlinikBulananBar, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'Pendapatan',
-                        data: [],
-                        backgroundColor: 'rgba(34,197,94,0.6)',
-                        borderColor: 'rgba(34,197,94,1)',
-                        borderWidth: 2,
-                        borderRadius: 3,
-                        maxBarThickness: 50
-                    },
-                    {
-                        label: 'Pengeluaran',
-                        data: [],
-                        backgroundColor: 'rgba(239,68,68,0.6)',
-                        borderColor: 'rgba(239,68,68,1)',
-                        borderWidth: 2,
-                        borderRadius: 3,
-                        maxBarThickness: 50
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => 'Rp ' + value.toLocaleString('id-ID')
+        Livewire.on('update-klinik-bulanan-bar', data => {
+            const payload = data[0];
+            const ctxBar = document.getElementById('grafikKlinikBulananBar');
+            if (!ctxBar) return;
+
+            if (dataKlinikBulananBar) dataKlinikBulananBar.destroy();
+
+            dataKlinikBulananBar = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: payload.labelsBulan,
+                    datasets: [
+                        {
+                            label: 'Pendapatan',
+                            data: payload.klinikBulananBarMasuk,
+                            backgroundColor: 'rgba(34,197,94,0.6)',
+                            borderColor: 'rgba(34,197,94,1)',
+                            borderWidth: 2,
+                            borderRadius: 3,
+                            maxBarThickness: 50
+                        },
+                        {
+                            label: 'Pengeluaran',
+                            data: payload.klinikBulananBarKeluar,
+                            backgroundColor: 'rgba(239,68,68,0.6)',
+                            borderColor: 'rgba(239,68,68,1)',
+                            borderWidth: 2,
+                            borderRadius: 3,
+                            maxBarThickness: 50
                         }
-                    }
+                    ]
                 },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: ctx =>
-                                `${ctx.dataset.label}: Rp ${ctx.raw.toLocaleString('id-ID')}`
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => 'Rp ' + value.toLocaleString('id-ID')
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.dataset.label}: Rp ${ctx.raw.toLocaleString('id-ID')}`
+                            }
                         }
                     }
                 }
-            }
-        });
-
-        Livewire.on('update-klinik-bulanan-bar', data => {
-            console.log('DATA BAR BULANAN:', data);
-
-            const payload = data[0];
-
-            dataKlinikBulananBar.data.labels = payload.labelsBulan;
-            dataKlinikBulananBar.data.datasets[0].data = payload.klinikBulananBarMasuk;
-            dataKlinikBulananBar.data.datasets[1].data = payload.klinikBulananBarKeluar;
-
-            dataKlinikBulananBar.update();
+            });
         });
     });
 </script>

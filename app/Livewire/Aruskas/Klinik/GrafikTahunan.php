@@ -15,12 +15,7 @@ class GrafikTahunan extends Component
         return view('livewire.aruskas.klinik.grafik-tahunan');
     }
 
-    public function mount()
-    {
-        $this->loadDefaultData();
-    }
-
-    private function loadDefaultData()
+    public function loadGrafik()
     {
         [$klinikBarMasuk, $klinikBarKeluar] = $this->hitungKlinikBarTahunan();
 
