@@ -20,7 +20,7 @@ class Store extends Component
         $this->validate([
             'nama' => 'required',
             'tanggal_berlaku' => 'required|date',
-            // 'tanggal_tidak_berlaku' => 'required|date'
+            'tanggal_tidak_berlaku' => 'nullable|date'
         ]);
 
         if (! Gate::allows('akses', 'Dokumen Tambah')) {
@@ -35,7 +35,7 @@ class Store extends Component
             'nama'                  => $this->nama,
             'lembaga'               => $this->lembaga,
             'tanggal_berlaku'       => $this->tanggal_berlaku,
-            'tanggal_tidak_berlaku' => $this->tanggal_tidak_berlaku,
+            'tanggal_tidak_berlaku' => $this->tanggal_tidak_berlaku ?: null,
             'reminder'              => $this->reminder,
             'keterangan'            => $this->keterangan,
         ]);

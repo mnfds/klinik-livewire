@@ -50,7 +50,9 @@ final class DokumenTable extends PowerGridComponent
             ->add('tanggal_berlaku')
             ->add('tanggal_tidak_berlaku')
             ->add('kadaluarsa', function ($row) {
-                return \Carbon\Carbon::parse($row->tanggal_berlaku)->format('d M Y') . ' - ' . \Carbon\Carbon::parse($row->tanggal_tidak_berlaku)->format('d M Y');
+                $berlaku = $row->tanggal_berlaku ? \Carbon\Carbon::parse($row->tanggal_berlaku)->format('d M Y') : 'x';
+                $tidakBerlaku = $row->tanggal_tidak_berlaku ? \Carbon\Carbon::parse($row->tanggal_tidak_berlaku)->format('d M Y') : 'x';
+                return $berlaku . ' - ' . $tidakBerlaku;
             })
 
             ->add('keterangan');
