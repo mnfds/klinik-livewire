@@ -38,7 +38,6 @@ class Detail extends Component
             'rekamMedis.rencanaLayananRM',
             'rekamMedis.rencanaTreatmentRM',
             'rekamMedis.rencanaProdukRM',
-            'rekamMedis.rencanaLayananRM',
             'rekamMedis.rencanaBundlingRM',
             'rekamMedis.obatNonRacikanRM',
             'rekamMedis.obatRacikanRM',
