@@ -137,7 +137,7 @@
                     @endif
                 </div>
 
-                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;" checked/>
+                <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Rekapitulasi" style="background-image: none;"checked />
                 <div class="tab-content bg-base-200 p-1">
                     @can('akses', 'Kunjungan Pasien Rekapitulasi Card')
                     <livewire:Kunjungan.Card.Rekapitulasi />

@@ -20,49 +20,32 @@ class GrafikHarian extends Component
 
     public function mount()
     {
-        $this->loadDefaultData();
+        $this->startDate = now()->startOfMonth()->format('Y-m-d');
+        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
+    }
+
+    public function loadGrafik()
+    {
+        $start = Carbon::parse($this->startDate)->startOfDay();
+        $end   = Carbon::parse($this->endDate)->endOfDay();
+
+        [$labelsTanggal, $datasets] = $this->kunjunganLakiBarHarian($start, $end);
+        $pieData = $this->kunjunganLakiPieHarian($start, $end);
+
+        $this->dispatch('update-kunjungan-laki-harian-bar', [
+            'labelstanggal' => $labelsTanggal,
+            'datasets'      => $datasets,
+        ]);
+
+        $this->dispatch('update-kunjungan-laki-harian-pie', [
+            'labels'   => $pieData['labels'],
+            'datasets' => $pieData['datasets'],
+        ]);
     }
 
     public function tanggalDipilih()
     {
-        $start = Carbon::parse($this->startDate)->startOfDay();
-        $end   = Carbon::parse($this->endDate)->endOfDay();
-
-        [$labelsTanggal, $datasets] = $this->kunjunganLakiBarHarian($start, $end);
-        $pieData = $this->kunjunganLakiPieHarian($start, $end);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-kunjungan-laki-harian-bar', [
-            'labelstanggal'  => $labelsTanggal,
-            'datasets'  => $datasets,
-        ]);
-
-        $this->dispatch('update-kunjungan-laki-harian-pie', [
-            'labels'   => $pieData['labels'],
-            'datasets' => $pieData['datasets'],
-        ]);
-    }
-
-    private function loadDefaultData()
-    {
-        $this->startDate = now()->startOfMonth()->format('Y-m-d');
-        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
-
-        $start = Carbon::parse($this->startDate)->startOfDay();
-        $end   = Carbon::parse($this->endDate)->endOfDay();
-
-        [$labelsTanggal, $datasets] = $this->kunjunganLakiBarHarian($start, $end);
-        $pieData = $this->kunjunganLakiPieHarian($start, $end);
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-kunjungan-laki-harian-bar', [
-            'labelstanggal'  => $labelsTanggal,
-            'datasets'  => $datasets,
-        ]);
-
-        $this->dispatch('update-kunjungan-laki-harian-pie', [
-            'labels'   => $pieData['labels'],
-            'datasets' => $pieData['datasets'],
-        ]);
+        $this->loadGrafik();
     }
 
     private function kunjunganLakiBarHarian(Carbon $start, Carbon $end)
@@ -173,6 +156,8 @@ class GrafikHarian extends Component
 
     public function resetData()
     {
-        $this->loadDefaultData();
+        $this->startDate = now()->startOfMonth()->format('Y-m-d');
+        $this->endDate   = now()->endOfMonth()->format('Y-m-d');
+        $this->loadGrafik();
     }
 }

@@ -17,12 +17,7 @@ class GrafikTahunan extends Component
         return view('livewire.kunjungan.wanita.grafik-tahunan');
     }
 
-    public function mount()
-    {
-        $this->loadDefaultData();
-    }
-
-    private function loadDefaultData()
+    public function loadGrafik()
     {
         $datasets = $this->kunjunganWanitaBarTahunan();
 
@@ -31,7 +26,7 @@ class GrafikTahunan extends Component
                 '2024','2025','2026','2027','2028','2029',
                 '2030','2031','2032','2033','2034','2035'
             ],
-            'datasets'  => $datasets,
+            'datasets' => $datasets,
         ]);
     }
 

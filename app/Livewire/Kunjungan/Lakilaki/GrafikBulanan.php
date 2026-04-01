@@ -18,39 +18,22 @@ class GrafikBulanan extends Component
 
     public function mount()
     {
-        $this->loadDefaultData();
+        $this->tahun = now()->year;
+    }
+
+    public function loadGrafik()
+    {
+        [$datasets] = $this->kunjunganLakiBarBulanan((int) $this->tahun);
+
+        $this->dispatch('update-kunjungan-laki-bulanan-bar', [
+            'labelsBulan' => ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
+            'datasets'    => $datasets,
+        ]);
     }
 
     public function tahunDipilih()
     {
-        $year = $this->tahun;
-
-        [$datasets] = $this->kunjunganLakiBarBulanan((int) $year);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-kunjungan-laki-bulanan-bar', [
-            'labelsBulan' => [
-                'Jan','Feb','Mar','Apr','Mei','Jun',
-                'Jul','Agu','Sep','Okt','Nov','Des'
-            ],
-            'datasets'  => $datasets,
-        ]);
-    }
-
-    private function loadDefaultData()
-    {
-        $this->tahun = now()->year;
-        $year = $this->tahun;
-        [$datasets] = $this->kunjunganLakiBarBulanan((int) $year);
-
-        // ===== KIRIM KE JS =====
-        $this->dispatch('update-kunjungan-laki-bulanan-bar', [
-            'labelsBulan' => [
-                'Jan','Feb','Mar','Apr','Mei','Jun',
-                'Jul','Agu','Sep','Okt','Nov','Des'
-            ],
-            'datasets'  => $datasets,
-        ]);
+        $this->loadGrafik();
     }
 
     private function kunjunganLakiBarBulanan(int $year)
@@ -111,6 +94,7 @@ class GrafikBulanan extends Component
 
     public function resetData()
     {
-        $this->loadDefaultData();
+        $this->tahun = now()->year;
+        $this->loadGrafik();
     }
 }
