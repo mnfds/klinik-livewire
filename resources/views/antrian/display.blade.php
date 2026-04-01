@@ -83,7 +83,15 @@
                     <livewire:antrian.display />
                 </div>
             </main>
-
+            
+            <div class="navbar-end gap-2">
+                <button onclick="toggleFullscreen()" 
+                    title="Fullscreen"
+                    class="fixed bottom-6 right-6 z-50 btn btn-primary btn-circle shadow-lg">
+                    <i id="icon-fullscreen" class="fa-solid fa-maximize text-lg"></i>
+                    <i id="icon-exitfullscreen" class="fa-solid fa-minimize text-lg" style="display:none"></i>
+                </button>
+            </div>
         </div>
         @livewireScripts
 
@@ -124,8 +132,23 @@
             updateClock();
             setInterval(updateClock, 1000);
         </script>
-
         
+        <script>
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+
+            document.addEventListener('fullscreenchange', () => {
+                const isFullscreen = !!document.fullscreenElement;
+                document.getElementById('icon-fullscreen').style.display = isFullscreen ? 'none' : '';
+                document.getElementById('icon-exitfullscreen').style.display = isFullscreen ? '' : 'none';
+            });
+        </script>
+
         <script>
             Livewire.on('toast', (data) => {
                 const toast = Array.isArray(data) ? data[0] : data;
