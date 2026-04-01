@@ -71,12 +71,7 @@ class Rekapitulasi extends Component
             ->leftJoin('pasiens', 'pasiens.id', '=', 'pasien_terdaftars.pasien_id')
             ->selectRaw("
                 poli_kliniks.nama_poli,
-                COUNT(
-                    CASE
-                        WHEN pasiens.jenis_kelamin = 'Laki-laki'
-                        THEN pasien_terdaftars.id
-                    END
-                ) as total
+                COUNT(pasien_terdaftars.id) as total
             ")
             ->groupBy('poli_kliniks.nama_poli')
             ->pluck('total', 'nama_poli');
