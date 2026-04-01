@@ -81,7 +81,7 @@ final class PendaftaranTable extends PowerGridComponent
                 return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
             })
             ->add('status', fn ($row) => match ($row->status_terdaftar) {
-                'terdaftar' => '<span class="badge badge-primary">Registrasi</span>',
+                'terdaftar' => '<span class="badge badge-primary">Terdaftar</span>',
                 'selesai'   => '<span class="badge badge-success">Selesai</span>',
                 default     => $row->status_terdaftar ?? '-',
             })

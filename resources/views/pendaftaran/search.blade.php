@@ -90,46 +90,14 @@
                                     Cari Pasien
                                 </h1>
                             </div>
-
-                            <!-- Main Content -->
+                            {{-- MAIN --}}
                             <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
                                 <div class="bg-base-100 shadow rounded-box">
-                                    <div class="p-6 space-y-6">
-                                        @if ($antrian)
-                                        <ul class="menu bg-base-200 rounded-box w-56">
-                                            <li>Nomor Antrian : {{ $antrian->kode}}-{{ $antrian->nomor_antrian }}</li>
-                                            <li>Poli Dituju   : {{ $antrian->poli->nama_poli }}</li>
-                                        </ul>
-                                        @endif
-                                        <!-- Form Group -->
-                                        <form id="pasien-form" method="GET" action="{{ route('pendaftaran.create') }}" 
-                                            class="form-control w-full max-w-4xl mx-auto space-y-4">
-
-                                            @if ($antrian)
-                                                <input type="hidden" name="antrian_id" value="{{ $antrian->id }}">
-                                            @endif
-
-                                            <label for="pasien-select" class="label">
-                                                <span class="label-text text-base font-semibold">Cari Pasien</span>
-                                            </label>
-
-                                            <select id="pasien-select" name="pasien_id" required class="w-full">
-                                                <option value="">-- Pilih Pasien --</option>
-                                            </select>
-
-                                            <!-- Tombol Aksi -->
-                                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2">
-                                                <button type="submit" class="btn btn-primary w-full sm:w-auto">
-                                                    Lanjutkan Pendaftaran
-                                                </button>
-                                                <a href="{{ route('pasien.create') }}" class="btn btn-success w-full sm:w-auto">
-                                                    Tambah Pasien
-                                                </a>
-                                            </div>
-                                        </form>
+                                    <div class="p-6">
+                                        <livewire:pendaftaran.search :id="request('id')" />
                                     </div>
                                 </div>
-                            </div>                  
+                            </div>                 
                         </div>
                     </div>
                 </div>
@@ -199,10 +167,7 @@
 
             function formatPasien(pasien) {
                 if (!pasien.id) return pasien.text;
-
-                let foto = pasien.foto || '{{ asset("default.png") }}';
                 let noReg = pasien.no_register || '-';
-
                 return $(` 
                     <div class="flex items-center gap-2">
                         <div class="font-medium">${pasien.text}</div>
@@ -212,13 +177,9 @@
             }
 
             function initSelect2() {
-                if (typeof $.fn === 'undefined' || typeof $.fn.select2 === 'undefined') {
-                    console.warn("jQuery/Select2 belum siap, skip init...");
-                    return;
-                }
-
                 let $select = $('#pasien-select');
                 if ($select.length === 0) return;
+                if (typeof $.fn.select2 === 'undefined') return;
 
                 if ($select.hasClass("select2-hidden-accessible")) {
                     $select.select2('destroy');
@@ -240,18 +201,12 @@
                     templateSelection: formatPasien,
                     escapeMarkup: m => m
                 });
-
-                $select.on('change', function () {
-                    Livewire.emit('setPasien', $(this).val());
-                });
             }
 
-            // Init pertama kali
-            document.addEventListener("DOMContentLoaded", initSelect2);
-
-            // Re-init setelah Livewire update DOM
-            Livewire.hook('message.processed', initSelect2);
-
+            // Langsung init tanpa tunggu Livewire
+            $(document).ready(function () {
+                initSelect2();
+            });
         </script>
 
     </body>

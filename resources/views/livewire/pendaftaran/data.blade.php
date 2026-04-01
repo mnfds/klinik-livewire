@@ -45,7 +45,7 @@
                             <div class="flex justify-between items-center mb-4">
                                 @can('akses', 'Pasien Registrasi')
                                 <a wire:navigate href="{{ route('pendaftaran.search') }}" class="btn btn-primary">
-                                    <i class="fa-solid fa-laptop-medical"></i>Registrasi
+                                    <i class="fa-solid fa-laptop-medical"></i>Daftar
                                 </a>
                                 @endcan
                             </div>
