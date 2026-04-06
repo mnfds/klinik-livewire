@@ -90,7 +90,7 @@ final class Masuk extends PowerGridComponent
         Button::add('deleteButton')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
-            ->dispatch('deleteModalNomorAntrian', ['rowId' => $row->id]);
+            ->dispatch('deleteModalNomorAntrianMasuk', ['rowId' => $row->id]);
         
         return $antrianMasukButton;
     }
@@ -128,8 +128,8 @@ final class Masuk extends PowerGridComponent
         ]);
     }
 
-    #[\Livewire\Attributes\On('deleteModalNomorAntrian')]
-    public function deleteModalNomorAntrian($rowId): void
+    #[\Livewire\Attributes\On('deleteModalNomorAntrianMasuk')]
+    public function deleteModalNomorAntrianMasuk($rowId): void
     {
         $this->js(<<<JS
             Swal.fire({
@@ -142,14 +142,14 @@ final class Masuk extends PowerGridComponent
                 confirmButtonText: 'Ya, hapus!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('KonfirmasiDeleteNomorAntrian', { rowId: $rowId });
+                    Livewire.dispatch('KonfirmasiDeleteNomorAntrianMasuk', { rowId: $rowId });
                 }
             });
         JS);
     }
 
-    #[\Livewire\Attributes\On('KonfirmasiDeleteNomorAntrian')]
-    public function KonfirmasiDeleteNomorAntrian($rowId): void
+    #[\Livewire\Attributes\On('KonfirmasiDeleteNomorAntrianMasuk')]
+    public function KonfirmasiDeleteNomorAntrianMasuk($rowId): void
     {
         NomorAntrian::findOrFail($rowId)->delete();
 
