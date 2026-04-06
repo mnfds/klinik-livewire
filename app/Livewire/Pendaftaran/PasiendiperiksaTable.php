@@ -171,7 +171,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 'class' => 'btn btn-secondary',
             ]);
 
-        Gate::allows('akses', 'Rekam Medis') && $diperiksaButton[] =
+        Gate::allows('akses', 'Rekam Medis Hapus') && $diperiksaButton[] =
         Button::add('deleterekammedispasien')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
@@ -210,7 +210,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasideleterekammedispasien')]
     public function konfirmasideleterekammedispasien($rowId): void
     {
-        if (! Gate::allows('akses', 'Rekam Medis')) {
+        if (! Gate::allows('akses', 'Rekam Medis Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

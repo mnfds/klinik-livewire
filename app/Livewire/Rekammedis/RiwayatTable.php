@@ -34,6 +34,7 @@ final class RiwayatTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return PasienTerdaftar::with(['pasien', 'poliklinik', 'dokter'])
+            ->orderByDesc('tanggal_kunjungan')
             ->when($this->pasien_id, fn ($q) => $q->where('pasien_id', $this->pasien_id));
     }
 
@@ -74,12 +75,6 @@ final class RiwayatTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
-    }
-
     public function actions(PasienTerdaftar $row): array
     {
         $riwayatRekamMedis = [];
@@ -93,9 +88,56 @@ final class RiwayatTable extends PowerGridComponent
                 'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.detail', ['pasien_terdaftar_id' => $row->id]) . "')",
                 'class' => 'btn btn-primary',
             ]);
+        Gate::allows('akses', 'Rekam Medis Hapus') && $riwayatRekamMedis[] =
+        Button::add('deleterekammedispasien')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeleterekammedispasien', ['rowId' => $row->id]);
+        
         return $riwayatRekamMedis;
     }
 
+    #[\Livewire\Attributes\On('modaldeleterekammedispasien')]
+    public function modaldeleterekammedispasien($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasideleterekammedispasien', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasideleterekammedispasien')]
+    public function konfirmasideleterekammedispasien($rowId): void
+    {
+        if (! Gate::allows('akses', 'Rekam Medis Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
+        PasienTerdaftar::findOrFail($rowId)->delete();
+
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
+    }
+    
     /*
     public function actionRules($row): array
     {
