@@ -33,7 +33,8 @@ class Create extends Component
     public $status, $foto_pasien, $deskripsi;
     public $waktu_tiba;
 
-    public $jenis_kunjungan, $tanggal_kunjungan, $status_terdaftar;
+    public $jenis_kunjungan, $tanggal_kunjungan;
+    public $status_terdaftar = null;
     public $poli_id, $dokter_id;
     public $foto_pasien_preview; //show
 
@@ -135,7 +136,11 @@ class Create extends Component
                 'loc_ihs'    => $location_satusehat,
             ]);
         }
-
+        if($this->poli_id === 3){
+            $this->status_terdaftar = 'konsultasi';
+        }else{
+            $this->status_terdaftar = 'terdaftar';
+        }
         //  SIMPAN DATA LOKAL
         $success = PasienTerdaftar::create([
             'pasien_id'         => $this->pasien_id,
@@ -144,7 +149,7 @@ class Create extends Component
             'tanggal_kunjungan' => $this->tanggal_kunjungan,
             'waktu_tiba'        => $this->waktu_tiba,
             'jenis_kunjungan'   => $this->jenis_kunjungan,
-            'status_terdaftar'  => 'terdaftar',
+            'status_terdaftar'  => $this->status_terdaftar,
             'encounter_id'      => $encounterId, // null kalau tidak dikirim ke satusehat
         ]);
 
