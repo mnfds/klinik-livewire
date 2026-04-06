@@ -320,8 +320,10 @@ class AksesSeeder extends Seeder
             30 => [
                 'Rekam Medis',
                 'Rekam Medis Tambah',
-                'Riwayat Rekam Medis',
+                'Rekam Medis Hapus',
+                'Rekam Medis Edit',
                 'Detail Rekam Medis',
+                'Riwayat Rekam Medis',
             ],
 
             // Transaksi Klinik

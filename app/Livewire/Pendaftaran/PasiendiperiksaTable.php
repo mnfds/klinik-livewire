@@ -171,6 +171,12 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 'class' => 'btn btn-secondary',
             ]);
 
+        Gate::allows('akses', 'Rekam Medis') && $diperiksaButton[] =
+        Button::add('deleterekammedispasien')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modaldeleterekammedispasien', ['rowId' => $row->id]);
+
         $diperiksaButton[] = Button::add('selesai')
             ->slot('<i class="fa-regular fa-circle-check"></i> Selesai')
             ->tag('button')
@@ -179,6 +185,47 @@ final class PasiendiperiksaTable extends PowerGridComponent
             ]);
 
         return $diperiksaButton;
+    }
+
+    #[\Livewire\Attributes\On('modaldeleterekammedispasien')]
+    public function modaldeleterekammedispasien($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasideleterekammedispasien', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasideleterekammedispasien')]
+    public function konfirmasideleterekammedispasien($rowId): void
+    {
+        if (! Gate::allows('akses', 'Rekam Medis')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
+        PasienTerdaftar::findOrFail($rowId)->delete();
+
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
     }
 
     public function actionRules($row): array
@@ -190,6 +237,10 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 ->hide(),
 
             Rule::button('rekammedisbutton')
+                ->when(fn($row) => $row->status_terdaftar !== 'konsultasi')
+                ->hide(),
+
+            Rule::button('deleterekammedispasien')
                 ->when(fn($row) => $row->status_terdaftar !== 'konsultasi')
                 ->hide(),
         ];
