@@ -136,7 +136,8 @@ class Create extends Component
                 'loc_ihs'    => $location_satusehat,
             ]);
         }
-        if($this->poli_id === 3){
+
+        if((int) $this->poli_id === 3){
             $this->status_terdaftar = 'konsultasi';
         }else{
             $this->status_terdaftar = 'terdaftar';
