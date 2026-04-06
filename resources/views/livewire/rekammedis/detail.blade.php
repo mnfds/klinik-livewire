@@ -416,7 +416,7 @@
                             <div class="mt-2">
                                 <div class="grid grid-cols-[200px_1fr] gap-y-1">
                                     <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $rekammedis->nama_dokter ?? '-' }}</div>
+                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
 
                                     <div>Keluhan Utama</div>
                                     <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
@@ -504,7 +504,7 @@
                             <div class="mt-2">
                                 <div class="grid grid-cols-[200px_1fr] gap-y-1">
                                     <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $rekammedis->nama_dokter ?? '-' }}</div>
+                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
 
                                     <div>Keluhan Utama</div>
                                     <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
@@ -563,7 +563,7 @@
                             <div class="mt-2">
                                 <div class="grid grid-cols-[200px_1fr] gap-y-1">
                                     <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $rekammedis->nama_dokter ?? '-' }}</div>
+                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
 
                                     <div>Keluhan Utama</div>
                                     <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
