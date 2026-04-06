@@ -171,6 +171,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ====== KAJIAN AWAL ====== //
     Route::view('/kajian-awal/create', 'kajian.create')->name('kajian.create');
+    Route::view('/kajian-awal/update', 'kajian.update')->name('kajian.update');
     Route::get('/ajax/obat-kfa', function (Request $request) {
         $query = $request->get('q', '');
         return \App\Models\KfaObat::where('nama_obat_aktual', 'like', "%{$query}%")

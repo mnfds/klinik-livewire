@@ -78,15 +78,21 @@
                             <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Kajian Awal (Anamnesa)" style="background-image: none;" />
                             <div class="tab-content bg-base-100 border-base-300 p-6">
                                 <div class="mt-2">
-                                    <div class="grid grid-cols-[200px_1fr] gap-y-1">
-                                        <div>Nakes Pengkaji</div>
-                                        <div>: {{ $kajian->nama_pengkaji ?? '-' }}</div>
-    
-                                        <div>Keluhan Utama</div>
-                                        <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
-    
-                                        <div>Tingkat Kesadaran</div>
-                                        <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                    <div class="flex justify-between items-start">
+                                        <div class="grid grid-cols-[200px_1fr] gap-y-1">
+                                            <div>Nakes Pengkaji</div>
+                                            <div>: {{ $kajian->nama_pengkaji ?? '-' }}</div>
+
+                                            <div>Keluhan Utama</div>
+                                            <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
+
+                                            <div>Tingkat Kesadaran</div>
+                                            <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                        </div>
+
+                                        <a href="{{ route('kajian.update', ['pasien_terdaftar_id' => $pasienTerdaftar->id]) }}" wire:navigate class="btn btn-primary btn-circle btn-sm">
+                                            <i class="fa-solid fa-pen-clip"></i>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="divider">Hasil Kajian Awal (Anamnesa)</div>
@@ -262,15 +268,21 @@
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Subjective" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="mt-2">
-                                <div class="grid grid-cols-[200px_1fr] gap-y-1">
-                                    <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
-
-                                    <div>Keluhan Utama</div>
-                                    <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
-
-                                    <div>Tingkat Kesadaran</div>
-                                    <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                <div class="flex justify-between items-start">
+                                    <div class="grid grid-cols-[200px_1fr] gap-y-1">
+                                        <div>Nakes Pemeriksa</div>
+                                        <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
+    
+                                        <div>Keluhan Utama</div>
+                                        <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
+    
+                                        <div>Tingkat Kesadaran</div>
+                                        <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                    </div>
+                                        
+                                    <a href="#" class="btn btn-primary btn-circle btn-sm">
+                                        <i class="fa-solid fa-pen-clip"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Subjective</div>
@@ -414,15 +426,20 @@
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Objective" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="mt-2">
-                                <div class="grid grid-cols-[200px_1fr] gap-y-1">
-                                    <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
-
-                                    <div>Keluhan Utama</div>
-                                    <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
-
-                                    <div>Tingkat Kesadaran</div>
-                                    <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                <div class="flex justify-between items-start">
+                                    <div class="grid grid-cols-[200px_1fr] gap-y-1">
+                                        <div>Nakes Pemeriksa</div>
+                                        <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
+    
+                                        <div>Keluhan Utama</div>
+                                        <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
+    
+                                        <div>Tingkat Kesadaran</div>
+                                        <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                    </div>
+                                    <a href="#" class="btn btn-primary btn-circle btn-sm">
+                                        <i class="fa-solid fa-pen-clip"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Objective</div>
@@ -502,15 +519,20 @@
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Assessment" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="mt-2">
-                                <div class="grid grid-cols-[200px_1fr] gap-y-1">
-                                    <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
-
-                                    <div>Keluhan Utama</div>
-                                    <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
-
-                                    <div>Tingkat Kesadaran</div>
-                                    <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                <div class="flex justify-between items-start">
+                                    <div class="grid grid-cols-[200px_1fr] gap-y-1">
+                                        <div>Nakes Pemeriksa</div>
+                                        <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
+    
+                                        <div>Keluhan Utama</div>
+                                        <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
+    
+                                        <div>Tingkat Kesadaran</div>
+                                        <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                    </div>
+                                    <a href="#" class="btn btn-primary btn-circle btn-sm">
+                                        <i class="fa-solid fa-pen-clip"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Assessment</div>
@@ -561,15 +583,20 @@
                         <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Plan" style="background-image: none;" />
                         <div class="tab-content bg-base-100 border-base-300 p-6">
                             <div class="mt-2">
-                                <div class="grid grid-cols-[200px_1fr] gap-y-1">
-                                    <div>Nakes Pemeriksa</div>
-                                    <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
-
-                                    <div>Keluhan Utama</div>
-                                    <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
-
-                                    <div>Tingkat Kesadaran</div>
-                                    <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                <div class="flex justify-between items-start">
+                                    <div class="grid grid-cols-[200px_1fr] gap-y-1">
+                                        <div>Nakes Pemeriksa</div>
+                                        <div>: {{ $pasienTerdaftar->dokter->nama_dokter ?? '-' }}</div>
+    
+                                        <div>Keluhan Utama</div>
+                                        <div>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
+    
+                                        <div>Tingkat Kesadaran</div>
+                                        <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
+                                    </div>
+                                    <a href="#" class="btn btn-primary btn-circle btn-sm">
+                                        <i class="fa-solid fa-pen-clip"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Plan</div>
