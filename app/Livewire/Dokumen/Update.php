@@ -48,7 +48,6 @@ class Update extends Component
             ]);
             return;
         }
-        dd($this->tanggal_tidak_berlaku);
         Dokumen::where('id', $this->dokumen_id)->update([
             'nama'                  => $this->nama,
             'lembaga'               => $this->lembaga,

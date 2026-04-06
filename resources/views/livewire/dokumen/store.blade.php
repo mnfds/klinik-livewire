@@ -59,7 +59,7 @@
                 @can('akses', 'Dokumen Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
-                <button type="button" class="btn btn-error" onclick="document.getElementById('closestoreModalDokumen').close()">Batal</button>
+                <button type="button" class="btn btn-error" onclick="document.getElementById('storeModalDokumen').close()">Batal</button>
             </div>
         </form>
     </div>
