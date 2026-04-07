@@ -148,14 +148,36 @@ class Detail extends Component
                 'rencanaLayananRM.pelayanan',
                 'rencanaTreatmentRM.treatment',
                 'rencanaProdukRM.produk',
-                'rencanaBundlingRM.bundling',
+                'rencanaBundlingRM.bundling', // hanya load bundling-nya saja
             ])->find($this->rekammedis_id);
+
+            $rencanaBundling = $rekamMedis?->rencanaBundlingRM ?? collect();
+
+            foreach ($rencanaBundling as $rencana) {
+                $groupBundling = $rencana->group_bundling;
+                $pasienId      = $this->pasien->id;
+
+                $rencana->bundling->load([
+                    'treatmentBundlingRM' => fn($q) => $q
+                        ->where('pasien_id', $pasienId)
+                        ->where('group_bundling', $groupBundling),
+                    'treatmentBundlingRM.treatment',
+                    'pelayananBundlingRM' => fn($q) => $q
+                        ->where('pasien_id', $pasienId)
+                        ->where('group_bundling', $groupBundling),
+                    'pelayananBundlingRM.pelayanan',
+                    'produkObatBundlingRM' => fn($q) => $q
+                        ->where('pasien_id', $pasienId)
+                        ->where('group_bundling', $groupBundling),
+                    'produkObatBundlingRM.produk',
+                ]);
+            }
 
             $this->obatapoteker  = $rekamMedis?->obatFinal ?? collect();
             $this->pelayanan     = $rekamMedis?->rencanaLayananRM ?? collect();
             $this->treatment     = $rekamMedis?->rencanaTreatmentRM ?? collect();
             $this->produk        = $rekamMedis?->rencanaProdukRM ?? collect();
-            $this->bundling      = $rekamMedis?->rencanaBundlingRM ?? collect();
+            $this->bundling      = $rencanaBundling;
         }
 
         $this->produksearch = ProdukDanObat::all();

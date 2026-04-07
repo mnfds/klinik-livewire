@@ -843,6 +843,7 @@ class Create extends Component
                     foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
                         if (empty($bundlingId)) continue;
                         $rekamMedisId = $rekammedis->id;
+                        $group_bundling = 'GB-' . Str::random(4);
 
                         $bundlingRecord = RencananaBundlingRM::create([
                             'rekam_medis_id'   => $rekamMedisId,
@@ -851,11 +852,11 @@ class Create extends Component
                             'potongan' => $this->rencana_bundling['potongan'][$index] ?? 0,
                             'diskon' => $this->rencana_bundling['diskon'][$index] ?? 0,
                             'subtotal' => $this->rencana_bundling['subtotal'][$index] ?? 0,
+                            'group_bundling'   => $group_bundling,
                         ]);
                         
                         // Ambil pasien_id
                         $pasienId = $this->pasien_id;
-                        $group_bundling = 'GB-' . Str::random(4);
                         /**
                          * ==========================
                          * SIMPAN DETAIL TREATMENT

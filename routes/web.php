@@ -18,11 +18,16 @@ use App\Livewire\Bahanbakubesar\Mutasi;
 use App\Livewire\Barang\Riwayat as BarangRiwayat;
 use App\Livewire\Produkdanobat\Mutasi\Riwayat;
 use App\Models\MutasiProdukDanObat;
+use Illuminate\Support\Facades\Cache;
 
 // Route::view('/', 'welcome');
 
 Route::get('/', function () {
     return redirect()->route('login');
+});
+Route::get('/debug/flush-satusehat-token', function () {
+    Cache::forget('satusehat_access_token');
+    return 'Token cache cleared';
 });
 
 Route::view('dashboard', 'dashboard')

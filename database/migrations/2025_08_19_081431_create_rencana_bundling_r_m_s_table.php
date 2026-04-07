@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
 
             $table->foreignId('bundling_id')->constrained('bundlings')->onDelete('cascade');
+            $table->string('group_bundling')->nullable()->index();
             $table->integer('jumlah_bundling')->nullable();
             $table->integer('potongan')->nullable();
             $table->integer('diskon')->nullable();

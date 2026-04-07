@@ -53,7 +53,7 @@ class PasienSeeder extends Seeder
             [
                 'no_register' => 'REG-' . Str::upper(Str::random(6)),
                 'nik' => '3201010101010003',
-                'no_ihs' => 'IHS-003',
+                'no_ihs' => null,
                 'nama' => 'Budi Santoso',
                 'alamat' => 'Jl. Melati No.7, Surabaya',
                 'no_telp' => '083456789012',
@@ -70,7 +70,7 @@ class PasienSeeder extends Seeder
             [
                 'no_register' => 'REG-' . Str::upper(Str::random(6)),
                 'nik' => '3201010101010004',
-                'no_ihs' => 'IHS-004',
+                'no_ihs' => null,
                 'nama' => 'Dewi Lestari',
                 'alamat' => 'Jl. Anggrek No.12, Yogyakarta',
                 'no_telp' => '084567890123',
@@ -87,7 +87,7 @@ class PasienSeeder extends Seeder
             [
                 'no_register' => 'REG-' . Str::upper(Str::random(6)),
                 'nik' => '3201010101010005',
-                'no_ihs' => 'IHS-005',
+                'no_ihs' => null,
                 'nama' => 'Rudi Hartono',
                 'alamat' => 'Jl. Sakura No.9, Semarang',
                 'no_telp' => '085678901234',
