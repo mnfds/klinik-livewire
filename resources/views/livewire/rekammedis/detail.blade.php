@@ -70,6 +70,7 @@
                                 <div><span class="font-medium">Jenis Kelamin</span> : {{ $pasien->jenis_kelamin }}</div>
                                 <div><span class="font-medium">Tanggal Lahir</span> : {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
                                 <div><span class="font-medium">Poliklinik</span> : {{ $pasienTerdaftar->poliklinik->nama_poli }}</div>
+                                <div><span class="font-medium">No. Transaksi</span> : {{ $rekammedis->transaksi->no_transaksi }}</div>
                             </div>
                         </div>
 
@@ -286,6 +287,7 @@
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Subjective</div>
+                            <div><span class="font-bold">Keluhan Utama</span>: {{ $rekammedis->keluhan_utama ?? '-' }}</div>
                             @if ($rekammedis?->dataKesehatanRM || $rekammedis?->dataEstetikaRM)
                                 @if ($rekammedis->dataKesehatanRM)
                                     <div class="mt-1">
@@ -443,6 +445,7 @@
                                 </div>
                             </div>
                             <div class="divider">Hasil Pemeriksaan Objective</div>
+                            <div><span class="font-bold">Tingkat Kesadaran</span>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
                             @if ($rekammedis?->tandaVitalRM || $rekammedis?->pemeriksaanFisikRM || $rekammedis?->pemeriksaanKulitRM)
                                 @if ($rekammedis->tandaVitalRM)
                                     <div class="mt-2">
@@ -602,7 +605,7 @@
                             <div class="divider">Hasil Pemeriksaan Plan</div>
                             @if ($rekammedis?->rencanaLayananRM || $rekammedis?->rencanaTreatmentRM || $rekammedis?->rencanaProdukRM || $rekammedis?->rencanaBundlingRM || $rekammedis?->obatNonRacikanRM || $rekammedis?->obatRacikanRM)
                             
-                                @if ($rekammedis->rencanaLayananRM)
+                                @if ($rekammedis->rencanaLayananRM && $rekammedis->rencanaLayananRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold">Layanan Medis</div>
 
@@ -627,7 +630,7 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->rencanaTreatmentRM)
+                                @if ($rekammedis->rencanaTreatmentRM && $rekammedis->rencanaTreatmentRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold">Layanan Estetika</div>
 
@@ -652,7 +655,7 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->rencanaProdukRM)
+                                @if ($rekammedis->rencanaProdukRM && $rekammedis->rencanaProdukRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold">Produk Estetika</div>
 
@@ -677,7 +680,7 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->rencanaBundlingRM)
+                                @if ($rekammedis->rencanaBundlingRM && $rekammedis->rencanaBundlingRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold">Bundling</div>
 
@@ -748,7 +751,7 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->obatNonRacikanRM)
+                                @if ($rekammedis->obatNonRacikanRM && $rekammedis->obatNonRacikanRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold mb-1">Obat Non Racik</div>
 
@@ -789,7 +792,7 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->obatRacikanRM)
+                                @if ($rekammedis->obatRacikanRM && $rekammedis->obatRacikanRM->isNotEmpty())
                                     <div class="mt-1">
                                         <div class="font-semibold mb-1">Obat Racikan</div>
 

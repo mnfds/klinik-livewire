@@ -41,6 +41,7 @@ class Detail extends Component
             'rekamMedis.rencanaBundlingRM',
             'rekamMedis.obatNonRacikanRM',
             'rekamMedis.obatRacikanRM',
+            'rekamMedis.transaksi',
         ])->find($this->pasien_terdaftar_id);
 
         // Simpan shortcut ke variabel agar gampang dipakai di blade
