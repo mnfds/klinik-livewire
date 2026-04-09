@@ -322,16 +322,19 @@
 
                                     foreach ($bundlingPasien['treatments'] as $t) {
                                         $grouped[$t->bundling_id]['nama'] = $t->bundling->nama;
+                                        $grouped[$t->bundling_id]['group_bundling_lama'] = $t->group_bundling;
                                         $grouped[$t->bundling_id]['treatments'][] = $t;
                                     }
 
                                     foreach ($bundlingPasien['pelayanans'] as $p) {
                                         $grouped[$p->bundling_id]['nama'] = $p->bundling->nama;
+                                        $grouped[$p->bundling_id]['group_bundling_lama'] = $p->group_bundling;
                                         $grouped[$p->bundling_id]['pelayanans'][] = $p;
                                     }
 
                                     foreach ($bundlingPasien['produks'] as $pr) {
                                         $grouped[$pr->bundling_id]['nama'] = $pr->bundling->nama;
+                                        $grouped[$pr->bundling_id]['group_bundling_lama'] = $pr->group_bundling;
                                         $grouped[$pr->bundling_id]['produks'][] = $pr;
                                     }
                                 @endphp
@@ -373,7 +376,8 @@
                                                                             'treatment',
                                                                             '{{ addslashes($t->treatment->nama_treatment) }}',
                                                                             {{ $sisatreatment }},
-                                                                            '{{ addslashes($t->bundling->nama) }}'
+                                                                            '{{ addslashes($t->bundling->nama) }}',
+                                                                            '{{ addslashes($t->group_bundling) }}',
                                                                         )"
                                                                         @if($sudahDipilihTreatment && $sisatreatment == 1) disabled @endif
                                                                     >
@@ -417,7 +421,8 @@
                                                                         'pelayanan',
                                                                         '{{ addslashes($p->pelayanan->nama_pelayanan) }}',
                                                                         {{ $sisapelayanan }},
-                                                                        '{{ addslashes($p->bundling->nama) }}'
+                                                                        '{{ addslashes($p->bundling->nama) }}',
+                                                                        '{{ addslashes($p->group_bundling) }}',
                                                                         )"
                                                                         @if($sudahDipilihPelayanan && $sisapelayanan == 1) disabled @endif
                                                                     >
@@ -460,7 +465,8 @@
                                                                         {{ $pr->id }}, 'produk',
                                                                         '{{ addslashes($pr->produk->nama_dagang) }}',
                                                                         {{ $sisaproduk }},
-                                                                        '{{ addslashes($pr->bundling->nama) }}'
+                                                                        '{{ addslashes($pr->bundling->nama) }}',
+                                                                        '{{ addslashes($pr->group_bundling) }}',
                                                                         )"
                                                                         @if($sudahDipilihProduk && $sisaproduk == 1) disabled @endif
                                                                     >

@@ -218,7 +218,7 @@ class Create extends Component
         ];
     //PLAN
 
-    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName)
+    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName, $group_bundling_lama)
     {
         // pastikan bundling sudah ada di array
         if (!isset($this->layananTerpilih[$bundlingName])) {
@@ -243,6 +243,7 @@ class Create extends Component
                 'nama' => $nama,
                 'sisa' => $sisa,
                 'dipakai' => 1,
+                'group_bundling_lama' => $group_bundling_lama,
             ];
         }
     }
@@ -879,6 +880,7 @@ class Create extends Component
                                         'pasien_id'       => $pasienId,
                                         'rekam_medis_id'  => $rekamMedisId,
                                         'bundling_id'     => $bundlingId,
+                                        'group_bundling'   => $group_bundling,
                                         'treatments_id'   => $t['treatments_id'],
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
@@ -909,6 +911,7 @@ class Create extends Component
                                         'pasien_id'       => $pasienId,
                                         'rekam_medis_id'  => $rekamMedisId,
                                         'bundling_id'     => $bundlingId,
+                                        'group_bundling'   => $group_bundling,
                                         'pelayanan_id'    => $t['pelayanan_id'],
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
@@ -928,10 +931,10 @@ class Create extends Component
                                 $produkRM = ProdukObatBundlingRM::create([
                                     'pasien_id'       => $pasienId,
                                     'bundling_id'     => $bundlingId,
+                                    'group_bundling'   => $group_bundling,
                                     'produk_obat_id'  => $t['produk_obat_id'],
                                     'jumlah_awal'     => $t['jumlah_awal'],
                                     'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                    'group_bundling'   => $group_bundling,
                                 ]);
 
                                 if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
@@ -939,6 +942,7 @@ class Create extends Component
                                         'pasien_id'       => $pasienId,
                                         'rekam_medis_id'  => $rekamMedisId,
                                         'bundling_id'     => $bundlingId,
+                                        'group_bundling'   => $group_bundling,
                                         'produk_obat_id'  => $t['produk_obat_id'],
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
@@ -1074,27 +1078,22 @@ class Create extends Component
                     foreach ($this->layananTerpilih as $namaBundling => $items) {
                         foreach ($items as $item) {
                             $jumlahDipakai = (int) ($item['dipakai'] ?? 0);
+                            $group_bundling_lama = $item['group_bundling_lama'];
                             if ($jumlahDipakai <= 0) continue;
 
                             switch ($item['tipe']) {
                                 case 'treatment':
                                     $record = \App\Models\TreatmentBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)
-                                        ->first();
+                                        ->where('pasien_id', $pasienId)->first();
                                     break;
-
                                 case 'produk':
                                     $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)
-                                        ->first();
+                                        ->where('pasien_id', $pasienId)->first();
                                     break;
-
                                 case 'pelayanan':
                                     $record = \App\Models\PelayananBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)
-                                        ->first();
+                                        ->where('pasien_id', $pasienId)->first();
                                     break;
-
                                 default:
                                     $record = null;
                             }
@@ -1121,6 +1120,7 @@ class Create extends Component
                                 'pasien_id' => $pasienId,
                                 'rekam_medis_id' => $rekammedis->id,
                                 'bundling_id' => $record->bundling_id ?? null,
+                                'group_bundling' => $group_bundling_lama ?? null,
                                 'jumlah_dipakai' => $jumlahDipakai,
                             ]);
 
@@ -1131,6 +1131,7 @@ class Create extends Component
                                             'pasien_id' => $pasienId,
                                             'rekam_medis_id' => $rekammedis->id,
                                             'bundling_id' => $record->bundling_id,
+                                            'group_bundling' => $group_bundling_lama,
                                             'treatments_id' => $record->treatments_id,
                                             'jumlah_dipakai' => $jumlahDipakai,
                                             'is_pembelian_baru' => false,
@@ -1142,6 +1143,7 @@ class Create extends Component
                                             'pasien_id' => $pasienId,
                                             'rekam_medis_id' => $rekammedis->id,
                                             'bundling_id' => $record->bundling_id,
+                                            'group_bundling' => $group_bundling_lama,
                                             'produk_obat_id' => $record->produk_obat_id,
                                             'jumlah_dipakai' => $jumlahDipakai,
                                             'is_pembelian_baru' => false,
@@ -1153,6 +1155,7 @@ class Create extends Component
                                             'pasien_id' => $pasienId,
                                             'rekam_medis_id' => $rekammedis->id,
                                             'bundling_id' => $record->bundling_id,
+                                            'group_bundling' => $group_bundling_lama,
                                             'pelayanan_id' => $record->pelayanan_id,
                                             'jumlah_dipakai' => $jumlahDipakai,
                                             'is_pembelian_baru' => false,

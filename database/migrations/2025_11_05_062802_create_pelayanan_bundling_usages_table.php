@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
             $table->boolean('is_pembelian_baru')->default(false);
             $table->foreignId('bundling_id')->constrained('bundlings')->cascadeOnDelete();
+            $table->string('group_bundling')->nullable()->index();
             $table->foreignId('pelayanan_id')->constrained('pelayanans')->cascadeOnDelete();
             $table->integer('jumlah_dipakai')->default(1);
             $table->timestamps();

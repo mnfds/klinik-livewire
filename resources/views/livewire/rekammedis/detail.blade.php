@@ -70,7 +70,7 @@
                                 <div><span class="font-medium">Jenis Kelamin</span> : {{ $pasien->jenis_kelamin }}</div>
                                 <div><span class="font-medium">Tanggal Lahir</span> : {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->translatedFormat('d F Y') }}</div>
                                 <div><span class="font-medium">Poliklinik</span> : {{ $pasienTerdaftar->poliklinik->nama_poli }}</div>
-                                <div><span class="font-medium">No. Transaksi</span> : {{ $rekammedis->transaksi->no_transaksi }}</div>
+                                <div><span class="font-medium">No. Transaksi</span> : {{ $rekammedis->transaksi->no_transaksi ?? '-' }}</div>
                             </div>
                         </div>
 
@@ -680,11 +680,11 @@
                                     </div>
                                 @endif
 
-                                @if ($rekammedis->rencanaBundlingRM && $rekammedis->rencanaBundlingRM->isNotEmpty())
+                                {{-- Bundling Baru --}}
+                                @if ($rekammedis->rencanaBundlingBaru && $rekammedis->rencanaBundlingBaru->isNotEmpty())
                                     <div class="mt-1">
-                                        <div class="font-semibold">Bundling</div>
-
-                                        @foreach ($rekammedis->rencanaBundlingRM as $bundlings)
+                                        <div class="font-semibold">Bundling Baru</div>
+                                        @foreach ($rekammedis->rencanaBundlingBaru as $bundlings)
                                             @php
                                                 $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
                                                 $bundling = $decode($bundlings->bundling->nama ?? null);
@@ -696,9 +696,8 @@
                                                 @else
                                                     <ul class="ml-4 list-disc">
                                                         @foreach ($bundling as $index => $bund)
-                                                            <li>{{ $bund }}  {{ $jumlah_bundling[$index] ?? '0' }}x</li>
+                                                            <li>{{ $bund }} {{ $jumlah_bundling[$index] ?? '0' }}x</li>
                                                             <ul class="list-disc list-inside space-y-2">
-                                                                {{-- Treatments --}}
                                                                 <li>
                                                                     <span class="font-semibold text-sm">Treatment</span>
                                                                     <ul class="ml-4 list-disc list-inside text-sm space-y-1">
@@ -706,14 +705,12 @@
                                                                             <li>
                                                                                 {{ $tb->treatment->nama_treatment ?? '-' }}
                                                                                 <span class="text-gray-500">
-                                                                                    (Tersedia: {{ $tb->jumlah_awal }}, Digunakan: {{ $tb->jumlah_terpakai }}, Tersisa: {{ $tb->jumlah_awal - $tb->jumlah_terpakai }})
+                                                                                    (Tersedia: {{ $tb->jumlah_tersedia_rm }}, Digunakan: {{ $tb->jumlah_terpakai_rm }}, Tersisa: {{ $tb->jumlah_sisa_rm }})
                                                                                 </span>
                                                                             </li>
                                                                         @endforeach
                                                                     </ul>
                                                                 </li>
-
-                                                                {{-- Pelayanan --}}
                                                                 <li>
                                                                     <span class="font-semibold text-sm">Pelayanan</span>
                                                                     <ul class="ml-4 list-disc list-inside text-sm space-y-1">
@@ -721,14 +718,12 @@
                                                                             <li>
                                                                                 {{ $pb->pelayanan->nama_pelayanan ?? '-' }}
                                                                                 <span class="text-gray-500">
-                                                                                    (Tersedia: {{ $pb->jumlah_awal }}, Digunakan: {{ $pb->jumlah_terpakai }}, Tersisa: {{ $pb->jumlah_awal - $pb->jumlah_terpakai }})
+                                                                                    (Tersedia: {{ $pb->jumlah_tersedia_rm }}, Digunakan: {{ $pb->jumlah_terpakai_rm }}, Tersisa: {{ $pb->jumlah_sisa_rm }})
                                                                                 </span>
                                                                             </li>
                                                                         @endforeach
                                                                     </ul>
                                                                 </li>
-
-                                                                {{-- Produk & Obat --}}
                                                                 <li>
                                                                     <span class="font-semibold text-sm">Produk & Obat</span>
                                                                     <ul class="ml-4 list-disc list-inside text-sm space-y-1">
@@ -736,7 +731,73 @@
                                                                             <li>
                                                                                 {{ $pob->produk->nama_dagang ?? '-' }}
                                                                                 <span class="text-gray-500">
-                                                                                    (Tersedia: {{ $pob->jumlah_awal }}, Digunakan: {{ $pob->jumlah_terpakai }}, Tersisa: {{ $pob->jumlah_awal - $pob->jumlah_terpakai }})
+                                                                                    (Tersedia: {{ $pob->jumlah_tersedia_rm }}, Digunakan: {{ $pob->jumlah_terpakai_rm }}, Tersisa: {{ $pob->jumlah_sisa_rm }})
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                {{-- Bundling Digunakan (stok lama) --}}
+                                @if ($rekammedis->rencanaBundlingLama && $rekammedis->rencanaBundlingLama->isNotEmpty())
+                                    <div class="mt-1">
+                                        <div class="font-semibold">Bundling Lama Digunakan</div>
+                                        @foreach ($rekammedis->rencanaBundlingLama as $bundlings)
+                                            @php
+                                                $decode = fn($v) => $v ? (is_array(json_decode($v, true)) ? json_decode($v, true) : [$v]) : [];
+                                                $bundling = $decode($bundlings->bundling->nama ?? null);
+                                                $jumlah_bundling = $decode($bundlings->jumlah_bundling ?? null);
+                                            @endphp
+                                            <div class="mb-2">
+                                                @if(empty($bundling))
+                                                    -
+                                                @else
+                                                    <ul class="ml-4 list-disc">
+                                                        @foreach ($bundling as $index => $bund)
+                                                            <li>{{ $bund }} {{ $jumlah_bundling[$index] ?? '0' }}x</li>
+                                                            <ul class="list-disc list-inside space-y-2">
+                                                                <li>
+                                                                    <span class="font-semibold text-sm">Treatment</span>
+                                                                    <ul class="ml-4 list-disc list-inside text-sm space-y-1">
+                                                                        @foreach ($bundlings->bundling->treatmentBundlingRM as $tb)
+                                                                            <li>
+                                                                                {{ $tb->treatment->nama_treatment ?? '-' }}
+                                                                                <span class="text-gray-500">
+                                                                                    (Tersedia: {{ $tb->jumlah_tersedia_rm }}, Digunakan: {{ $tb->jumlah_terpakai_rm }}, Tersisa: {{ $tb->jumlah_sisa_rm }})
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                                <li>
+                                                                    <span class="font-semibold text-sm">Pelayanan</span>
+                                                                    <ul class="ml-4 list-disc list-inside text-sm space-y-1">
+                                                                        @foreach ($bundlings->bundling->pelayananBundlingRM as $pb)
+                                                                            <li>
+                                                                                {{ $pb->pelayanan->nama_pelayanan ?? '-' }}
+                                                                                <span class="text-gray-500">
+                                                                                    (Tersedia: {{ $pb->jumlah_tersedia_rm }}, Digunakan: {{ $pb->jumlah_terpakai_rm }}, Tersisa: {{ $pb->jumlah_sisa_rm }})
+                                                                                </span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                                <li>
+                                                                    <span class="font-semibold text-sm">Produk & Obat</span>
+                                                                    <ul class="ml-4 list-disc list-inside text-sm space-y-1">
+                                                                        @foreach ($bundlings->bundling->produkObatBundlingRM as $pob)
+                                                                            <li>
+                                                                                {{ $pob->produk->nama_dagang ?? '-' }}
+                                                                                <span class="text-gray-500">
+                                                                                    (Tersedia: {{ $pob->jumlah_tersedia_rm }}, Digunakan: {{ $pob->jumlah_terpakai_rm }}, Tersisa: {{ $pob->jumlah_sisa_rm }})
                                                                                 </span>
                                                                             </li>
                                                                         @endforeach
