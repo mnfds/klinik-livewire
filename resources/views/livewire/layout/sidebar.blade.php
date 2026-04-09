@@ -550,6 +550,11 @@
                             <x-side-link href="{{ route('apotik.kasir') }}" :active="request()->routeIs('apotik.*')" wire:navigate>Apotik</x-side-link>
                         </li>
                         @endcan
+                        {{-- @can('akses', 'Simulasi Transaksi Klinik') --}}
+                        <li>
+                            <x-side-link href="{{ route('transaksi.simulasi') }}" :active="request()->routeIs('transaksi.simulasi*')" wire:navigate>Simulasi</x-side-link>
+                        </li>
+                        {{-- @endcan --}}
                     </ul>
                 </li>
                 @endif  
