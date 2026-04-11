@@ -16,6 +16,8 @@ class Mutasi extends Component
     public $obatNonRacik;
     public $obatRacik;
     public $produkTambahan;
+    public $bundlingUsageTreatment;
+    public $bundlingUsagePelayanan;
 
     public function render()
     {
@@ -24,8 +26,15 @@ class Mutasi extends Component
 
     public function mount($id){
         $pasien = PasienTerdaftar::with([
-            'rekamMedis.transaksi.riwayatTransaksi'
+            'rekamMedis.transaksi.riwayatTransaksi',
+            'rekamMedis.treatmentBundlingUsages.bundling',
+            'rekamMedis.treatmentBundlingUsages.treatment',
+            'rekamMedis.pelayananBundlingUsages.bundling',
+            'rekamMedis.pelayananBundlingUsages.pelayanan',
         ])->findOrFail($id);
+        
+        $rekamMedis = $pasien->rekamMedis;
+
         $this->transaksi = $pasien->rekamMedis->transaksi;
         $this->bundling =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'bundling')->values();
         $this->produk =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'produk')->values();
@@ -34,5 +43,10 @@ class Mutasi extends Component
         $this->obatNonRacik =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'obat_non_racik')->values();
         $this->obatRacik =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'obat_racik')->values();
         $this->produkTambahan =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'produk_tambahan')->values();
+        
+        // Item sisa bundling — tidak masuk riwayatTransaksi, diambil langsung dari rekamMedis
+        $this->bundlingUsageTreatment = $rekamMedis->treatmentBundlingUsages;
+        $this->bundlingUsagePelayanan = $rekamMedis->pelayananBundlingUsages;
+        
     }
 }
