@@ -61,10 +61,7 @@
                                             @foreach($layanan['bahan_baku'] as $bahan)
                                                 @if($bahan['bahan_id'])
                                                     <li class="flex items-center gap-2 mt-1">
-                                                        <span class="flex-1">
-                                                            {{ $bahan['nama_bahan'] }}
-                                                        </span>
-
+                                                        <span class="flex-1">{{ $bahan['nama_bahan'] }}</span>
                                                         <input
                                                             type="number"
                                                             min="0"
@@ -72,7 +69,6 @@
                                                             class="input input-sm input-bordered w-24 text-right"
                                                         >
                                                     </li>
-
                                                     @php $bahanCounter++; @endphp
                                                 @endif
                                             @endforeach
@@ -98,10 +94,7 @@
                                             @foreach($treatment['bahan_baku'] as $bahan)
                                                 @if($bahan['bahan_id'])
                                                     <li class="flex items-center gap-2 mt-1">
-                                                        <span class="flex-1">
-                                                            {{ $bahan['nama_bahan'] }}
-                                                        </span>
-
+                                                        <span class="flex-1">{{ $bahan['nama_bahan'] }}</span>
                                                         <input
                                                             type="number"
                                                             min="0"
@@ -109,7 +102,6 @@
                                                             class="input input-sm input-bordered w-24 text-right"
                                                         >
                                                     </li>
-
                                                     @php $bahanCounter++; @endphp
                                                 @endif
                                             @endforeach
@@ -120,85 +112,80 @@
                         @endif
 
 
-                        {{-- ================= RENCANA BUNDLING ================= --}}
-                        @if($rencanaDetail['rencana_bundling']->count())
+                        {{-- ================= BUNDLING USAGE: TREATMENT ================= --}}
+                        {{-- Item treatment dari sisa bundling yang diambil pada kunjungan ini --}}
+                        @if($rencanaDetail['bundling_usage_treatment']->count())
                             <div class="p-4 border-base-300 rounded-lg shadow bg-base-100">
-                                <h2 class="text-lg font-bold mb-3">Bundling</h2>
+                                <h2 class="text-lg font-bold mb-1">Item Bundling — Treatment</h2>
+                                <p class="text-xs text-gray-500 mb-3">
+                                    Bahan berikut diambil dari sisa bundling pada kunjungan ini.
+                                </p>
 
-                                @foreach($rencanaDetail['rencana_bundling'] as $bundling)
-                                    <div class="mb-6 border-b pb-4">
+                                @foreach($rencanaDetail['bundling_usage_treatment'] as $usage)
+                                    <div class="mb-4 border-b pb-3">
                                         <p class="font-semibold">
-                                            {{ $bundling['nama_bundling'] }} ({{ $bundling['jumlah_bundling'] }}x)
+                                            {{ $usage['nama_bundling'] }}
+                                            <span class="font-normal text-gray-500 text-sm">
+                                                — {{ $usage['nama_treatment'] }}
+                                            </span>
                                         </p>
 
-                                        {{-- Treatment dalam Bundling --}}
-                                        @if($bundling['treatments']->count())
-                                            <div class="ml-4 mt-2">
-                                                <p class="font-medium">Treatment:</p>
-
-                                                @foreach($bundling['treatments'] as $treatment)
-                                                    <div class="ml-4 mb-2">
-                                                        <p>{{ $treatment['nama_treatment'] }}</p>
-
-                                                        <ul class="ml-5 list-disc text-sm text-gray-700">
-                                                            @foreach($treatment['bahan_baku'] as $bahan)
-                                                                @if($bahan['bahan_id'])
-                                                                    <li class="flex items-center gap-2 mt-1">
-                                                                        <span class="flex-1">
-                                                                            {{ $bahan['nama_bahan'] }}
-                                                                        </span>
-
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            wire:model.defer="bahanInputs.{{ $bahanCounter }}.qty"
-                                                                            class="input input-sm input-bordered w-24 text-right"
-                                                                        >
-                                                                    </li>
-
-                                                                    @php $bahanCounter++; @endphp
-                                                                @endif
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
+                                        <ul class="ml-5 list-disc text-sm text-gray-700">
+                                            @foreach($usage['bahan_baku'] as $bahan)
+                                                @if($bahan['bahan_id'])
+                                                    <li class="flex items-center gap-2 mt-1">
+                                                        <span class="flex-1">{{ $bahan['nama_bahan'] }}</span>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            wire:model.defer="bahanInputs.{{ $bahanCounter }}.qty"
+                                                            class="input input-sm input-bordered w-24 text-right"
+                                                        >
+                                                    </li>
+                                                    @php $bahanCounter++; @endphp
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
 
 
-                                        {{-- Pelayanan dalam Bundling --}}
-                                        @if($bundling['pelayanans']->count())
-                                            <div class="ml-4 mt-2">
-                                                <p class="font-medium">Pelayanan:</p>
+                        {{-- ================= BUNDLING USAGE: PELAYANAN ================= --}}
+                        {{-- Item pelayanan dari sisa bundling yang diambil pada kunjungan ini --}}
+                        @if($rencanaDetail['bundling_usage_pelayanan']->count())
+                            <div class="p-4 border-base-300 rounded-lg shadow bg-base-100">
+                                <h2 class="text-lg font-bold mb-1">Item Bundling — Pelayanan</h2>
+                                <p class="text-xs text-gray-500 mb-3">
+                                    Bahan berikut diambil dari sisa bundling pada kunjungan ini.
+                                </p>
 
-                                                @foreach($bundling['pelayanans'] as $pelayanan)
-                                                    <div class="ml-4 mb-2">
-                                                        <p>{{ $pelayanan['nama_pelayanan'] }}</p>
+                                @foreach($rencanaDetail['bundling_usage_pelayanan'] as $usage)
+                                    <div class="mb-4 border-b pb-3">
+                                        <p class="font-semibold">
+                                            {{ $usage['nama_bundling'] }}
+                                            <span class="font-normal text-gray-500 text-sm">
+                                                — {{ $usage['nama_pelayanan'] }}
+                                            </span>
+                                        </p>
 
-                                                        <ul class="ml-5 list-disc text-sm text-gray-700">
-                                                            @foreach($pelayanan['bahan_baku'] as $bahan)
-                                                                @if($bahan['bahan_id'])
-                                                                    <li class="flex items-center gap-2 mt-1">
-                                                                        <span class="flex-1">
-                                                                            {{ $bahan['nama_bahan'] }}
-                                                                        </span>
-
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            wire:model.defer="bahanInputs.{{ $bahanCounter }}.qty"
-                                                                            class="input input-sm input-bordered w-24 text-right"
-                                                                        >
-                                                                    </li>
-
-                                                                    @php $bahanCounter++; @endphp
-                                                                @endif
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
+                                        <ul class="ml-5 list-disc text-sm text-gray-700">
+                                            @foreach($usage['bahan_baku'] as $bahan)
+                                                @if($bahan['bahan_id'])
+                                                    <li class="flex items-center gap-2 mt-1">
+                                                        <span class="flex-1">{{ $bahan['nama_bahan'] }}</span>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            wire:model.defer="bahanInputs.{{ $bahanCounter }}.qty"
+                                                            class="input input-sm input-bordered w-24 text-right"
+                                                        >
+                                                    </li>
+                                                    @php $bahanCounter++; @endphp
+                                                @endif
+                                            @endforeach
+                                        </ul>
                                     </div>
                                 @endforeach
                             </div>
@@ -209,10 +196,11 @@
                         @if(
                             !$rencanaDetail['rencana_layanan']->count() &&
                             !$rencanaDetail['rencana_treatment']->count() &&
-                            !$rencanaDetail['rencana_bundling']->count()
+                            !$rencanaDetail['bundling_usage_treatment']->count() &&
+                            !$rencanaDetail['bundling_usage_pelayanan']->count()
                         )
                             <div class="p-6 text-center text-gray-500 border rounded-lg">
-                                Tidak ada rencana layanan, treatment, atau bundling.
+                                Tidak ada rencana layanan, treatment, maupun item bundling yang diambil.
                             </div>
                         @endif
 

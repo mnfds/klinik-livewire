@@ -1232,9 +1232,11 @@ class Create extends Component
                 $rekammedis->load([
                     'rencanaLayananRM',
                     'rencanaTreatmentRM',
-                    'rencanaBundlingRM'
+                    'rencanaBundlingRM',
+                    'treatmentBundlingUsages',
+                    'pelayananBundlingUsages',
                 ]);
-                if ($rekammedis->rencanaLayananRM->isNotEmpty() || $rekammedis->rencanaTreatmentRM->isNotEmpty() || $rekammedis->rencanaBundlingRM->isNotEmpty()) {
+                if ($rekammedis->rencanaLayananRM->isNotEmpty() || $rekammedis->rencanaTreatmentRM->isNotEmpty() || $rekammedis->rencanaBundlingRM->isNotEmpty() || $rekammedis->treatmentBundlingUsages->isNotEmpty() || $rekammedis->pelayananBundlingUsages->isNotEmpty()) {
                     return redirect()->route('rekam-medis-pasien.pengurangan', [
                         'pasien_terdaftar_id' => $this->pasien_terdaftar_id[0] ?? $this->pasien_terdaftar_id
                     ]);
