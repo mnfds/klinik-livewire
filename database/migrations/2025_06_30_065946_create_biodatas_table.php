@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('telepon')->nullable();
             $table->date('mulai_bekerja')->nullable();
             $table->string('foto_wajah')->nullable();
+            $table->string('telepon_kerabat')->nullable();
+            $table->string('nama_kerabat')->nullable();
+            $table->string('status_kerabat')->nullable();
             $table->timestamps();
         });
     }

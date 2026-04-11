@@ -13,7 +13,8 @@ class ManageBiodata extends Component
 {
     use WithFileUploads;
 
-    public $nama_lengkap, $nik, $ihs, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $telepon, $mulai_bekerja;
+    public $nama_lengkap, $nik, $ihs, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin;
+    public $telepon, $mulai_bekerja, $telepon_kerabat, $nama_kerabat, $status_kerabat;
 
     public $foto_wajah; // untuk file upload baru
     public $foto_wajah_preview; // untuk tampilan foto lama
@@ -33,6 +34,9 @@ class ManageBiodata extends Component
             $this->telepon = $biodata->telepon;
             $this->mulai_bekerja = $biodata->mulai_bekerja;
             $this->foto_wajah_preview = $biodata->foto_wajah;
+            $this->telepon_kerabat = $biodata->telepon_kerabat;
+            $this->nama_kerabat = $biodata->nama_kerabat;
+            $this->status_kerabat = $biodata->status_kerabat;
         }
     }
 
@@ -49,6 +53,9 @@ class ManageBiodata extends Component
             'telepon'        => 'nullable|string|max:20',
             'mulai_bekerja'  => 'nullable|date',
             'foto_wajah'     => 'nullable|image|max:1024', // max 1MB
+            'nama_kerabat'   => 'nullable|string|max:225',
+            'telepon_kerabat'=> 'nullable|string|max:20',
+            'status_kerabat' => 'nullable|string',
         ]);
 
         $user = Auth::user();
@@ -64,6 +71,9 @@ class ManageBiodata extends Component
             'jenis_kelamin'  => $this->jenis_kelamin,
             'telepon'        => $this->telepon,
             'mulai_bekerja'  => $this->mulai_bekerja,
+            'nama_kerabat'   => $this->nama_kerabat,
+            'telepon_kerabat'=> $this->telepon_kerabat,
+            'status_kerabat' => $this->status_kerabat,
         ];
 
         // Simpan file foto jika diunggah

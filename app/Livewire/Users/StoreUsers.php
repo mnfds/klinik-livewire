@@ -21,6 +21,7 @@ class StoreUsers extends Component
 
     // Untuk tabel biodata
     public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
+    public $nama_kerabat, $telepon_kerabat, $status_kerabat;
 
     // Foto
     public $foto_wajah;
@@ -69,6 +70,10 @@ class StoreUsers extends Component
             'mulai_bekerja'  => ['nullable', 'date'],
 
             'foto_wajah'     => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+
+            'nama_kerabat'   => ['nullable', 'string', 'max:255'],
+            'telepon_kerabat'=> ['nullable', 'string', 'max:20'],
+            'status_kerabat' => ['nullable', 'string'],
         ]);
         
         if (! Gate::allows('akses', 'Staff Tambah')) {
@@ -106,6 +111,9 @@ class StoreUsers extends Component
             'jenis_kelamin' => $this->jenis_kelamin,
             'mulai_bekerja' => $this->mulai_bekerja,
             'foto_wajah'    => $fotoPath,
+            'nama_kerabat'  => $this->nama_kerabat,
+            'telepon_kerabat'=> $this->telepon_kerabat,
+            'status_kerabat' => $this->status_kerabat,
         ]);
 
         // Flash message & reset
@@ -128,6 +136,7 @@ class StoreUsers extends Component
             'jenis_kelamin', 'mulai_bekerja',
             'foto_wajah', 'foto_wajah_preview',
             'nik', 'ihs',
+            'nama_kerabat', 'telepon_kerabat', 'status_kerabat',
         ]);
     }
 }

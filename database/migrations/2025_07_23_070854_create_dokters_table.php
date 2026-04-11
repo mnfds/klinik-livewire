@@ -33,6 +33,11 @@ return new class extends Migration
             $table->string('surat_izin_pratik')->nullable();
             $table->string('masa_berlaku_sip')->nullable();
             $table->string('ttd_digital')->nullable();
+            
+            $table->string('telepon_kerabat')->nullable();
+            $table->string('nama_kerabat')->nullable();
+            $table->string('status_kerabat')->nullable();
+            
             $table->timestamps();
         });
     }

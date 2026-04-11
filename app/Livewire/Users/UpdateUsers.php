@@ -21,6 +21,7 @@ class UpdateUsers extends Component
     public $name, $email, $password, $role_id;
     public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
     public $foto_wajah, $foto_wajah_preview;
+    public $nama_kerabat, $status_kerabat, $telepon_kerabat;
     public $roles = [];
 
     public function mount(User $user): void
@@ -41,6 +42,9 @@ class UpdateUsers extends Component
         $this->jenis_kelamin = $biodata->jenis_kelamin ?? '';
         $this->mulai_bekerja = $biodata->mulai_bekerja ?? null;
         $this->foto_wajah_preview = $biodata->foto_wajah ?? null;
+        $this->nama_kerabat = $biodata->nama_kerabat ?? '';
+        $this->telepon_kerabat = $biodata->telepon_kerabat ?? '';
+        $this->status_kerabat = $biodata->status_kerabat ?? '';
 
         $this->roles = \App\Models\Role::orderBy('nama_role')->pluck('nama_role', 'id')->toArray();
         // dd([$user,$biodata]);
@@ -67,6 +71,9 @@ class UpdateUsers extends Component
             'jenis_kelamin' => 'required|in:L,P',
             'mulai_bekerja' => 'nullable|date',
             'foto_wajah' => 'nullable|image|max:2048',
+            'nama_kerabat'   => 'nullable|string|max:255',
+            'telepon_kerabat'=> 'nullable|string|max:20',
+            'status_kerabat' => 'nullable|string',
         ]);
 
         if (! Gate::allows('akses', 'Staff Edit')) {
@@ -111,6 +118,9 @@ class UpdateUsers extends Component
             'jenis_kelamin'  => $this->jenis_kelamin,
             'mulai_bekerja'  => $this->mulai_bekerja,
             'foto_wajah'     => $fotoPath,
+            'nama_kerabat'   => $this->nama_kerabat,
+            'telepon_kerabat'=> $this->telepon_kerabat,
+            'status_kerabat' => $this->status_kerabat,
         ]);
 
         session()->flash('toast', [

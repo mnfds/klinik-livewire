@@ -173,6 +173,30 @@
                                 <x-input-error :messages="$errors->get('mulai_bekerja')" class="text-error text-sm mt-1" />
                             </div>
 
+                            {{-- Nama Kerabat --}}
+                            <div class="form-control">
+                                <label for="nama_kerabat" class="label"><span class="label-text">Nama Kerabat</span></label>
+                                <input wire:model="nama_kerabat" type="text" id="nama_kerabat" name="nama_kerabat"
+                                    class="input input-bordered w-full" />
+                            </div>
+
+                            {{-- Telepon Kerabat --}}
+                            <div class="form-control">
+                                <label class="label"><span class="label-text">Telepon Kerabat</span></label>
+                                <input wire:model.defer="telepon_kerabat" type="text" inputmode="numeric" pattern="[0-9]*" class="input input-bordered w-full" />
+                                <x-input-error :messages="$errors->get('telepon_kerabat')" class="text-error text-sm mt-1" />
+                            </div>
+
+                            {{-- Status Kerabat --}}
+                            <div class="form-control">
+                                <label class="label"><span class="label-text">Status Kerabat</span></label>
+                                <select wire:model.defer="status_kerabat" class="select select-bordered w-full">
+                                    <option value="">Pilih Status Kerabat</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+
                             {{-- Upload Foto --}}
                             <div class="form-control">
                                 <label class="label"><span class="label-text">Unggah Foto</span></label>
