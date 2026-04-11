@@ -25,6 +25,7 @@ class Update extends Component
     public $no_str, $ihs,$surat_izin_pratik, $masa_berlaku_sip;
     public $new_ttd_digital, $new_foto_wajah;
     public $ttd_digital_preview, $foto_wajah_preview;
+    public $nama_kerabat, $telepon_kerabat, $status_kerabat;
 
     public function mount($id)
     {
@@ -53,6 +54,10 @@ class Update extends Component
         $this->foto_wajah_preview = $dokter->foto_wajah;
         $this->poli_id = $poli_id;
 
+        $this->nama_kerabat = $dokter->nama_kerabat;
+        $this->telepon_kerabat = $dokter->telepon_kerabat;
+        $this->status_kerabat = $dokter->status_kerabat;
+
     }
 
     public function update()
@@ -77,6 +82,10 @@ class Update extends Component
             'new_ttd_digital' => 'nullable|file|max:1024',
 
             'poli_id' => 'required|exists:poli_kliniks,id',
+            
+            'nama_kerabat'   => 'nullable|string|max:255',
+            'telepon_kerabat'=> 'nullable|string|max:20',
+            'status_kerabat' => 'nullable|string',
         ]);
         
         if (! Gate::allows('akses', 'Dokter Edit')) {
@@ -128,6 +137,10 @@ class Update extends Component
 
             'foto_wajah' => $fotoWajahPath,
             'ttd_digital' => $ttdPath,
+            
+            'nama_kerabat'  => $this->nama_kerabat,
+            'telepon_kerabat'=> $this->telepon_kerabat,
+            'status_kerabat' => $this->status_kerabat,
         ]);
 
         // Update relasi dokter-poli

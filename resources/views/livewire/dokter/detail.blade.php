@@ -58,6 +58,12 @@
                         </div>
 
                         <div>
+                            <p><strong>Nama Kerabat:</strong> {{ $dokter->nama_kerabat ?? '-' }}</p>
+                            <p><strong>Telepon Kerabat:</strong> {{ $dokter->telepon_kerabat ?? '-' }}</p>
+                            <p><strong>Status Kerabat:</strong> {{ $dokter->status_kerabat ?? '-' }}</p>
+                        </div>
+
+                        <div>
                             <p><strong>Nomor IHS:</strong> {{ $dokter->ihs ?? '-' }}</p>
                             <p><strong>Nomor STR:</strong> {{ $dokter->no_str ?? '-' }}</p>
                             <p><strong>Surat Izin Praktik:</strong> {{ $dokter->surat_izin_pratik ?? '-' }}</p>

@@ -46,6 +46,10 @@ class Create extends Component
     public $surat_izin_pratik;
     public $masa_berlaku_sip;
 
+    public $nama_kerabat;
+    public $telepon_kerabat;
+    public $status_kerabat;
+
     public function mount()
     {
         $this->poli = PoliKlinik::orderBy('nama_poli')->pluck('nama_poli', 'id')->toArray();
@@ -78,6 +82,10 @@ class Create extends Component
 
             'foto_wajah' => 'nullable|image|max:1024',
             'ttd_digital' => 'nullable|file|max:1024',
+
+            'nama_kerabat'   => 'nullable|string|max:255',
+            'telepon_kerabat'=> 'nullable|string|max:20',
+            'status_kerabat' => 'nullable|string',
         ]);
         
         if (! Gate::allows('akses', 'Dokter Tambah')) {
@@ -124,6 +132,9 @@ class Create extends Component
             'masa_berlaku_sip' => $this->masa_berlaku_sip,
             'foto_wajah' => $fotoPath,
             'ttd_digital' => $ttdPath,
+            'nama_kerabat'  => $this->nama_kerabat,
+            'telepon_kerabat'=> $this->telepon_kerabat,
+            'status_kerabat' => $this->status_kerabat,
         ]);
 
         DokterPoli::create([
@@ -150,6 +161,7 @@ class Create extends Component
             'no_str', 'ihs', 'surat_izin_pratik', 'masa_berlaku_sip',
             'foto_wajah', 'foto_wajah_preview',
             'ttd_digital', 'ttd_digital_preview',
+            'nama_kerabat', 'status_kerabat', 'telepon_kerabat'
         ]);
     }
 
