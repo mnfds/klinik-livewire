@@ -173,6 +173,7 @@
                             <input wire:model="nama_kerabat" type="text" id="nama_kerabat" name="nama_kerabat"
                                 class="input input-bordered w-full" />
                         </div>
+
                         {{-- Telepon Kerabat --}}
                         <div class="form-control">
                             <label class="label"><span class="label-text">Telepon Kerabat</span></label>
@@ -185,8 +186,18 @@
                             <label class="label"><span class="label-text">Status Kerabat</span></label>
                             <select wire:model.defer="status_kerabat" class="select select-bordered w-full">
                                 <option value="">Pilih Status Kerabat</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
+                                <option value="ayah">Ayah</option>
+                                <option value="ibu">Ibu</option>
+                                <option value="kakak">Kakak</option>
+                                <option value="adik">Adik</option>
+                                <option value="suami">Suami</option>
+                                <option value="istri">Istri</option>
+                                <option value="paman">Paman</option>
+                                <option value="bibi">Bibi</option>
+                                <option value="kakek">Kakek</option>
+                                <option value="nenek">Nenek</option>
+                                <option value="teman">Teman</option>
+                                <option value="lainnya">Lainnya</option>
                             </select>
                         </div>
 
