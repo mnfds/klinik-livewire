@@ -506,7 +506,65 @@ class Create extends Component
                 if (in_array('obat-racikan', $this->selected_forms_plan)) {
                     $status = 'peresepan';
                 }
-                
+
+                // STATUS MENJADI PERESEPAN KALAU PADA ITEM BUNDLING TERDAPAT OBAT
+                if (in_array('rencana-bundling', $this->selected_forms_plan)) {
+                    $golonganObat = [
+                        'Obat Bebas',
+                        'Obat Bebas Terbatas',
+                        'Obat Keras',
+                        'Obat Narkotika',
+                        'Obat Psikotropika',
+                        'Obat fitofarmaka',
+                        'OHT (Obat Herbal Terstandar)',
+                        'Jamu',
+                        'Lain - Lain',
+                    ];
+
+                    // ✅ Cek apakah ada produk bundling usage dengan golongan obat
+                    $adaObat = \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rekammedis->id)
+                                ->with('produk')
+                                ->get();
+
+                    if ($adaObat) {
+                        $status = 'peresepan';
+                    }
+                }
+
+                // STATUS MENJADI PERESEPAN KALAU PADA SISA ITEM BUNDLING YANG DIPAKAI
+                if (!empty($this->layananTerpilih)) {
+                    $golonganObat = [
+                        'Obat Bebas',
+                        'Obat Bebas Terbatas',
+                        'Obat Keras',
+                        'Obat Narkotika',
+                        'Obat Psikotropika',
+                        'Obat fitofarmaka',
+                        'OHT (Obat Herbal Terstandar)',
+                        'Jamu',
+                        'Lain - Lain',
+                    ];
+                    $pasien_Id = $this->pasien_id ?? null;
+
+                    $adaObatSisa = collect($this->layananTerpilih)
+                        ->flatten(1)
+                        ->filter(fn($item) => 
+                            $item['tipe'] === 'produk' && 
+                            (int)($item['dipakai'] ?? 0) > 0
+                        )
+                        ->contains(function ($item) use ($golonganObat, $pasien_Id) {
+                            $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
+                                ->where('pasien_id', $pasien_Id)
+                                ->with('produk')
+                                ->first();
+
+                            return $record && in_array($record->produk?->golongan, $golonganObat);
+                        });
+
+                    if ($adaObatSisa) {
+                        $status = 'peresepan';
+                    }
+                }
                 PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
                     ->update([
                         'status_terdaftar' => $status,
