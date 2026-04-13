@@ -57,6 +57,7 @@
                                 'Obat Non Racik' => $obatNonRacik,
                                 'Obat Racik' => $obatRacik,
                                 'Produk Tambahan' => $produkTambahan,
+                                'Barang Tambahan' => $barangTambahan,
                             ];
                         @endphp
 

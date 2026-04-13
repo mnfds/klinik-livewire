@@ -16,6 +16,7 @@ class Mutasi extends Component
     public $obatNonRacik;
     public $obatRacik;
     public $produkTambahan;
+    public $barangTambahan;
     public $bundlingUsageTreatment;
     public $bundlingUsagePelayanan;
 
@@ -24,29 +25,31 @@ class Mutasi extends Component
         return view('livewire.transaksi.mutasi');
     }
 
-    public function mount($id){
+    public function mount($id)
+    {
         $pasien = PasienTerdaftar::with([
-            'rekamMedis.transaksi.riwayatTransaksi',
+            'rekamMedis.transaksi',
             'rekamMedis.treatmentBundlingUsages.bundling',
             'rekamMedis.treatmentBundlingUsages.treatment',
             'rekamMedis.pelayananBundlingUsages.bundling',
             'rekamMedis.pelayananBundlingUsages.pelayanan',
         ])->findOrFail($id);
-        
-        $rekamMedis = $pasien->rekamMedis;
 
-        $this->transaksi = $pasien->rekamMedis->transaksi;
-        $this->bundling =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'bundling')->values();
-        $this->produk =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'produk')->values();
-        $this->layanan =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'pelayanan')->values();
-        $this->treatment =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'treatment')->values();
-        $this->obatNonRacik =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'obat_non_racik')->values();
-        $this->obatRacik =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'obat_racik')->values();
-        $this->produkTambahan =  $this->transaksi->riwayatTransaksi->where('jenis_item', 'produk_tambahan')->values();
-        
-        // Item sisa bundling — tidak masuk riwayatTransaksi, diambil langsung dari rekamMedis
+        $rekamMedis      = $pasien->rekamMedis;
+        $this->transaksi = $rekamMedis->transaksi;
+
+        $riwayat = $this->transaksi->riwayatTransaksi()->get();
+
+        $this->bundling       = $riwayat->where('jenis_item', 'bundling')->values();
+        $this->produk         = $riwayat->where('jenis_item', 'produk')->values();
+        $this->layanan        = $riwayat->where('jenis_item', 'pelayanan')->values();
+        $this->treatment      = $riwayat->where('jenis_item', 'treatment')->values();
+        $this->obatNonRacik   = $riwayat->where('jenis_item', 'obat_non_racik')->values();
+        $this->obatRacik      = $riwayat->where('jenis_item', 'obat_racik')->values();
+        $this->produkTambahan = $riwayat->where('jenis_item', 'produk_tambahan')->values();
+        $this->barangTambahan = $riwayat->where('jenis_item', 'barang_tambahan')->values();
+
         $this->bundlingUsageTreatment = $rekamMedis->treatmentBundlingUsages;
         $this->bundlingUsagePelayanan = $rekamMedis->pelayananBundlingUsages;
-        
     }
 }
