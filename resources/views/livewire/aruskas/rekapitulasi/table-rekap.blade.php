@@ -245,42 +245,49 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="mt-4 space-y-4">
-                            <div class="ml-4">
-                                {{-- HEADER JENIS --}}
-                                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                                    Item Tambahan
+                        @php
+                            $produkTambahan = $trx->riwayatTransaksi->where('jenis_item', 'produk_tambahan');
+                            $barangTambahan = $trx->riwayatTransaksi->where('jenis_item', 'barang_tambahan');
+                        @endphp
+
+                        @if($produkTambahan->isNotEmpty() || $barangTambahan->isNotEmpty())
+                            <div class="mt-4 space-y-4">
+                                <div class="ml-4">
+                                    {{-- HEADER JENIS --}}
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                        Item Tambahan
+                                    </div>
+                                    {{-- LIST ITEM --}}
+                                    @foreach($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            {{-- Baris Utama --}}
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    {{ $produk->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $produk->qty }})</span>
+                                                </div>
+                                                <div class="text-right font-medium text-success">
+                                                    Rp {{ number_format($produk->subtotal,0,',','.') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    {{-- LIST ITEM --}}
+                                    @foreach($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            {{-- Baris Utama --}}
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    {{ $barang->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $barang->qty }})</span>
+                                                </div>
+                                                <div class="text-right font-medium text-success">
+                                                    Rp {{ number_format($barang->subtotal,0,',','.') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                                {{-- LIST ITEM --}}
-                                @foreach($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
-                                    <div class="text-sm py-2 border-b border-dashed border-base-200">
-                                        {{-- Baris Utama --}}
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                {{ $produk->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $produk->qty }})</span>
-                                            </div>
-                                            <div class="text-right font-medium text-success">
-                                                Rp {{ number_format($produk->subtotal,0,',','.') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                                {{-- LIST ITEM --}}
-                                @foreach($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
-                                    <div class="text-sm py-2 border-b border-dashed border-base-200">
-                                        {{-- Baris Utama --}}
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                {{ $barang->nama_item ?? 'Item tidak ditemukan' }}<span class="text-gray-400"> x({{ $barang->qty }})</span>
-                                            </div>
-                                            <div class="text-right font-medium text-success">
-                                                Rp {{ number_format($barang->subtotal,0,',','.') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
                             </div>
-                        </div>
+                        @endif
                         {{-- ================= SISA BUNDLING ================= --}}
                         @php
                             $usageTreatments = $trx->rekammedis?->treatmentBundlingUsages ?? collect();
@@ -288,7 +295,7 @@
                             $usageProduks = $trx->rekammedis?->produkBundlingUsages ?? collect();
                         @endphp
 
-                        @if($usageTreatments->isNotEmpty() || $usagePelayanans->isNotEmpty())
+                        @if($usageTreatments->isNotEmpty() || $usagePelayanans->isNotEmpty() || $usageProduks->isNotEmpty())
                             <div class="mt-4 space-y-4">
                                 <div class="ml-4">
                                     <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">

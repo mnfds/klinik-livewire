@@ -106,44 +106,50 @@
                     @endforeach
                 @endforeach
 
-                {{-- Item Tambahan --}}
-                <div style="margin-top:8px; font-weight:bold;">Item Tambahan</div>
+                @php
+                    $produkTambahan = $trx->riwayatTransaksi->where('jenis_item', 'produk_tambahan');
+                    $barangTambahan = $trx->riwayatTransaksi->where('jenis_item', 'barang_tambahan');
+                @endphp
+                @if($produkTambahan->isNotEmpty() || $barangTambahan->isNotEmpty())
+                    {{-- Item Tambahan --}}
+                    <div style="margin-top:8px; font-weight:bold;">Item Tambahan</div>
 
-                @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
-                    <div style="margin-left:8px; margin-bottom:6px;">
-                        <strong>{{ $produk->nama_item }}</strong><br>
-                        {{ $produk->qty }} x Rp {{ number_format($produk->harga,0,',','.') }}
-                        @php $total_kotor = $produk->qty * $produk->harga; @endphp
-                        = Rp {{ number_format($total_kotor,0,',','.') }}<br>
-                        @if($produk->diskon > 0)
-                            (-) Diskon: {{ number_format($produk->diskon,0,',','.') }}%<br>
-                        @endif
-                        @if($produk->potongan > 0)
-                            (-) Potongan: Rp {{ number_format($produk->potongan,0,',','.') }}<br>
-                        @endif
-                        @if($produk->diskon > 0 || $produk->potongan > 0)
-                            <strong>Total: Rp {{ number_format($produk->subtotal,0,',','.') }}</strong>
-                        @endif
-                    </div>
-                @endforeach
+                    @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
+                        <div style="margin-left:8px; margin-bottom:6px;">
+                            <strong>{{ $produk->nama_item }}</strong><br>
+                            {{ $produk->qty }} x Rp {{ number_format($produk->harga,0,',','.') }}
+                            @php $total_kotor = $produk->qty * $produk->harga; @endphp
+                            = Rp {{ number_format($total_kotor,0,',','.') }}<br>
+                            @if($produk->diskon > 0)
+                                (-) Diskon: {{ number_format($produk->diskon,0,',','.') }}%<br>
+                            @endif
+                            @if($produk->potongan > 0)
+                                (-) Potongan: Rp {{ number_format($produk->potongan,0,',','.') }}<br>
+                            @endif
+                            @if($produk->diskon > 0 || $produk->potongan > 0)
+                                <strong>Total: Rp {{ number_format($produk->subtotal,0,',','.') }}</strong>
+                            @endif
+                        </div>
+                    @endforeach
 
-                @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
-                    <div style="margin-left:8px; margin-bottom:6px;">
-                        <strong>{{ $barang->nama_item }}</strong><br>
-                        {{ $barang->qty }} x Rp {{ number_format($barang->harga,0,',','.') }}
-                        @php $total_kotor = $barang->qty * $barang->harga; @endphp
-                        = Rp {{ number_format($total_kotor,0,',','.') }}<br>
-                        @if($barang->diskon > 0)
-                            (-) Diskon: {{ number_format($barang->diskon,0,',','.') }}%<br>
-                        @endif
-                        @if($barang->potongan > 0)
-                            (-) Potongan: Rp {{ number_format($barang->potongan,0,',','.') }}<br>
-                        @endif
-                        @if($barang->diskon > 0 || $barang->potongan > 0)
-                            <strong>Total: Rp {{ number_format($barang->subtotal,0,',','.') }}</strong>
-                        @endif
-                    </div>
-                @endforeach
+                    @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
+                        <div style="margin-left:8px; margin-bottom:6px;">
+                            <strong>{{ $barang->nama_item }}</strong><br>
+                            {{ $barang->qty }} x Rp {{ number_format($barang->harga,0,',','.') }}
+                            @php $total_kotor = $barang->qty * $barang->harga; @endphp
+                            = Rp {{ number_format($total_kotor,0,',','.') }}<br>
+                            @if($barang->diskon > 0)
+                                (-) Diskon: {{ number_format($barang->diskon,0,',','.') }}%<br>
+                            @endif
+                            @if($barang->potongan > 0)
+                                (-) Potongan: Rp {{ number_format($barang->potongan,0,',','.') }}<br>
+                            @endif
+                            @if($barang->diskon > 0 || $barang->potongan > 0)
+                                <strong>Total: Rp {{ number_format($barang->subtotal,0,',','.') }}</strong>
+                            @endif
+                        </div>
+                    @endforeach
+                @endif
 
                 {{-- ✅ Item Sisa Bundling --}}
                 @php
