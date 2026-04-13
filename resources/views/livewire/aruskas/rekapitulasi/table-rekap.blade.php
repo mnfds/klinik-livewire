@@ -281,6 +281,71 @@
                                 @endforeach
                             </div>
                         </div>
+                        {{-- ================= SISA BUNDLING ================= --}}
+                        @php
+                            $usageTreatments = $trx->rekammedis?->treatmentBundlingUsages ?? collect();
+                            $usagePelayanans = $trx->rekammedis?->pelayananBundlingUsages ?? collect();
+                            $usageProduks = $trx->rekammedis?->produkBundlingUsages ?? collect();
+                        @endphp
+
+                        @if($usageTreatments->isNotEmpty() || $usagePelayanans->isNotEmpty())
+                            <div class="mt-4 space-y-4">
+                                <div class="ml-4">
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                        Item Sisa Bundling
+                                    </div>
+
+                                    {{-- Treatment dari sisa bundling --}}
+                                    @foreach($usageTreatments as $usage)
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <span class="text-xs text-gray-400 block">
+                                                        {{ $usage->bundling?->nama ?? '-' }}
+                                                    </span>
+                                                    {{ $usage->treatment?->nama_treatment ?? '-' }}
+                                                    <span class="text-gray-400">x({{ $usage->jumlah_dipakai }})</span>
+                                                </div>
+                                                <span class="text-xs text-gray-400 italic">Sisa Bundling</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    {{-- Pelayanan dari sisa bundling --}}
+                                    @foreach($usagePelayanans as $usage)
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <span class="text-xs text-gray-400 block">
+                                                        {{ $usage->bundling?->nama ?? '-' }}
+                                                    </span>
+                                                    {{ $usage->pelayanan?->nama_pelayanan ?? '-' }}
+                                                    <span class="text-gray-400">x({{ $usage->jumlah_dipakai }})</span>
+                                                </div>
+                                                <span class="text-xs text-gray-400 italic">Sisa Bundling</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    {{-- Produk dari sisa bundling --}}
+                                    @foreach($usageProduks as $usage)
+                                        <div class="text-sm py-2 border-b border-dashed border-base-200">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <span class="text-xs text-gray-400 block">
+                                                        {{ $usage->bundling?->nama ?? '-' }}
+                                                    </span>
+                                                    {{ $usage->produk?->nama_dagang ?? '-' }}
+                                                    <span class="text-gray-400">x({{ $usage->jumlah_dipakai }})</span>
+                                                </div>
+                                                <span class="text-xs text-gray-400 italic">Sisa Bundling</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>

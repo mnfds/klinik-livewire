@@ -65,16 +65,17 @@
                 @php
                     $grouped = $trx->riwayatTransaksi->groupBy('jenis_item');
                     $labels = [
-                        'produk' => 'Produk',
-                        'pelayanan' => 'Pelayanan',
-                        'treatment' => 'Treatment',
-                        'bundling' => 'Bundling',
-                        'obat_non_racik' => 'Obat Non Racik',
-                        'obat_racik' => 'Obat Racik',
+                        'produk'          => 'Produk',
+                        'pelayanan'       => 'Pelayanan',
+                        'treatment'       => 'Treatment',
+                        'bundling'        => 'Bundling',
+                        'obat_non_racik'  => 'Obat Non Racik',
+                        'obat_racik'      => 'Obat Racik',
                         'produk_tambahan' => 'Produk Tambahan',
                         'barang_tambahan' => 'Barang Tambahan',
                     ];
                 @endphp
+
                 @foreach($grouped as $jenis => $items)
                     <div style="margin-top:8px; font-weight:bold;">
                         {{ $labels[$jenis] ?? ucfirst($jenis) }}
@@ -104,47 +105,90 @@
                         </div>
                     @endforeach
                 @endforeach
-                <div style="margin-top:8px; font-weight:bold;">
-                    Item Tambahan
-                </div>
+
+                {{-- Item Tambahan --}}
+                <div style="margin-top:8px; font-weight:bold;">Item Tambahan</div>
+
                 @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'produk_tambahan')->get() as $produk)
-                <div style="margin-left:8px; margin-bottom:6px;">
-                    <strong>{{ $produk->nama_item }}</strong><br>
-                    {{ $produk->qty }} x Rp {{ number_format($produk->harga,0,',','.') }}
-                    @php
-                        $total_kotor = $produk->qty * $produk->harga;
-                    @endphp
-                    = Rp {{ number_format($total_kotor,0,',','.') }}<br>
-                    @if($produk->diskon > 0)
-                        (-) Diskon: {{ number_format($produk->diskon,0,',','.') }}%<br>
-                    @endif
-                    @if($produk->potongan > 0)
-                        (-) Potongan: Rp {{ number_format($produk->potongan,0,',','.') }}<br>
-                    @endif
-                    @if($produk->diskon > 0 || $produk->potongan > 0)
-                        <strong>Total: Rp {{ number_format($produk->subtotal,0,',','.') }}</strong>
-                    @endif
-                </div>
+                    <div style="margin-left:8px; margin-bottom:6px;">
+                        <strong>{{ $produk->nama_item }}</strong><br>
+                        {{ $produk->qty }} x Rp {{ number_format($produk->harga,0,',','.') }}
+                        @php $total_kotor = $produk->qty * $produk->harga; @endphp
+                        = Rp {{ number_format($total_kotor,0,',','.') }}<br>
+                        @if($produk->diskon > 0)
+                            (-) Diskon: {{ number_format($produk->diskon,0,',','.') }}%<br>
+                        @endif
+                        @if($produk->potongan > 0)
+                            (-) Potongan: Rp {{ number_format($produk->potongan,0,',','.') }}<br>
+                        @endif
+                        @if($produk->diskon > 0 || $produk->potongan > 0)
+                            <strong>Total: Rp {{ number_format($produk->subtotal,0,',','.') }}</strong>
+                        @endif
+                    </div>
                 @endforeach
+
                 @foreach ($trx->riwayatTransaksi()->where('jenis_item', 'barang_tambahan')->get() as $barang)
-                <div style="margin-left:8px; margin-bottom:6px;">
-                    <strong>{{ $barang->nama_item }}</strong><br>
-                    {{ $barang->qty }} x Rp {{ number_format($barang->harga,0,',','.') }}
-                    @php
-                        $total_kotor = $barang->qty * $barang->harga;
-                    @endphp
-                    = Rp {{ number_format($total_kotor,0,',','.') }}<br>
-                    @if($barang->diskon > 0)
-                        (-) Diskon: {{ number_format($barang->diskon,0,',','.') }}%<br>
-                    @endif
-                    @if($barang->potongan > 0)
-                        (-) Potongan: Rp {{ number_format($barang->potongan,0,',','.') }}<br>
-                    @endif
-                    @if($barang->diskon > 0 || $barang->potongan > 0)
-                        <strong>Total: Rp {{ number_format($barang->subtotal,0,',','.') }}</strong>
-                    @endif
-                </div>
+                    <div style="margin-left:8px; margin-bottom:6px;">
+                        <strong>{{ $barang->nama_item }}</strong><br>
+                        {{ $barang->qty }} x Rp {{ number_format($barang->harga,0,',','.') }}
+                        @php $total_kotor = $barang->qty * $barang->harga; @endphp
+                        = Rp {{ number_format($total_kotor,0,',','.') }}<br>
+                        @if($barang->diskon > 0)
+                            (-) Diskon: {{ number_format($barang->diskon,0,',','.') }}%<br>
+                        @endif
+                        @if($barang->potongan > 0)
+                            (-) Potongan: Rp {{ number_format($barang->potongan,0,',','.') }}<br>
+                        @endif
+                        @if($barang->diskon > 0 || $barang->potongan > 0)
+                            <strong>Total: Rp {{ number_format($barang->subtotal,0,',','.') }}</strong>
+                        @endif
+                    </div>
                 @endforeach
+
+                {{-- ✅ Item Sisa Bundling --}}
+                @php
+                    $usageTreatments = $trx->rekammedis?->treatmentBundlingUsages ?? collect();
+                    $usagePelayanans = $trx->rekammedis?->pelayananBundlingUsages ?? collect();
+                    $usageProduks = $trx->rekammedis?->produkBundlingUsages ?? collect();
+                @endphp
+
+                @if($usageTreatments->isNotEmpty() || $usagePelayanans->isNotEmpty())
+                    <div style="margin-top:8px; font-weight:bold;">Item Sisa Bundling</div>
+
+                    @foreach($usageTreatments as $usage)
+                        <div style="margin-left:8px; margin-bottom:6px;">
+                            <span style="color:#888; font-size:0.85em;">
+                                {{ $usage->bundling?->nama ?? '-' }}
+                            </span><br>
+                            <strong>{{ $usage->treatment?->nama_treatment ?? '-' }}</strong>
+                            x{{ $usage->jumlah_dipakai }}
+                            <span style="color:#888; font-size:0.85em;">(Sisa Bundling)</span>
+                        </div>
+                    @endforeach
+
+                    @foreach($usagePelayanans as $usage)
+                        <div style="margin-left:8px; margin-bottom:6px;">
+                            <span style="color:#888; font-size:0.85em;">
+                                {{ $usage->bundling?->nama ?? '-' }}
+                            </span><br>
+                            <strong>{{ $usage->pelayanan?->nama_pelayanan ?? '-' }}</strong>
+                            x{{ $usage->jumlah_dipakai }}
+                            <span style="color:#888; font-size:0.85em;">(Sisa Bundling)</span>
+                        </div>
+                    @endforeach
+
+                    @foreach($usageProduks as $usage)
+                        <div style="margin-left:8px; margin-bottom:6px;">
+                            <span style="color:#888; font-size:0.85em;">
+                                {{ $usage->bundling?->nama ?? '-' }}
+                            </span><br>
+                            <strong>{{ $usage->produk?->nama_dagang ?? '-' }}</strong>
+                            x{{ $usage->jumlah_dipakai }}
+                            <span style="color:#888; font-size:0.85em;">(Sisa Bundling)</span>
+                        </div>
+                    @endforeach
+                @endif
+
             </td>
 
             <td class="text-right">
