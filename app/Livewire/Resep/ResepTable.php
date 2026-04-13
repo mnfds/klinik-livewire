@@ -18,6 +18,11 @@ final class ResepTable extends PowerGridComponent
 {
     public string $tableName = 'resep-table-1ijbsf-table';
 
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         return [
@@ -31,8 +36,22 @@ final class ResepTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::whereIn('status_terdaftar', ['peresepan', 'lunas', 'selesai'])
+        return PasienTerdaftar::query()
+            ->whereIn('status_terdaftar', ['peresepan', 'lunas', 'selesai'])
             // ->whereDate('created_at', today())
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q) {
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween(
+                        'tanggal_kunjungan',
+                        [$range['start'], $range['end']]
+                    );
+                },
+                fn ($q) => $q->whereDate('tanggal_kunjungan', today())
+            )
+            ->orderByDesc('tanggal_kunjungan')
+            ->orderByDesc('id') 
             ->with([
                 'pasien',
                 'poliklinik', 
@@ -40,7 +59,7 @@ final class ResepTable extends PowerGridComponent
                 'rekamMedis.obatNonRacikanRM', 
                 'rekamMedis.obatRacikanRM.bahanRacikan'
                 ])
-            ->orderByDesc('id');
+            ->latest();
     }
 
     public function relationSearch(): array
@@ -88,7 +107,9 @@ final class ResepTable extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
-            Column::make('Tanggal Peresepan', 'tanggal_kunjungan'),
+            Column::make('Tanggal Peresepan', 'tanggal_kunjungan')
+                ->searchable()
+                ->sortable(),
 
             Column::make('Nama Pasien', 'pasien.nama')
                 ->searchable()
@@ -112,10 +133,6 @@ final class ResepTable extends PowerGridComponent
             Column::make('Poli dan Dokter', 'dokter_dan_poli')
                 ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Tanggal Kunjungan', 'tanggal_kunjungan')
-                ->hidden()
-                ->sortable(),
-
             Column::make('status', 'status'),
             
             Column::make('Jenis Kunjungan', 'jenis_kunjungan')
@@ -128,6 +145,7 @@ final class ResepTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_kunjungan', 'tanggal_kunjungan'),
         ];
     }
 
@@ -170,4 +188,25 @@ final class ResepTable extends PowerGridComponent
                 ->hide(),
         ];
     }
+
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_kunjungan.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_kunjungan.end')
+            )->toDateString(),
+        ];
+    }
+
 }
