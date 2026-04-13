@@ -130,7 +130,7 @@
                             @endforeach
                             
                             {{-- ================= ITEM SISA BUNDLING ================= --}}
-                            @if($bundlingUsageTreatment->isNotEmpty() || $bundlingUsagePelayanan->isNotEmpty())
+                            @if($bundlingUsageTreatment->isNotEmpty() || $bundlingUsagePelayanan->isNotEmpty() || $bundlingUsageProduk->isNotEmpty())
                                 <div>
                                     <h3 class="font-bold text-lg border-b pb-1 mb-3">
                                         Item Sisa Bundling
@@ -165,6 +165,24 @@
                                                             {{ $item->bundling?->nama ?? '-' }}
                                                         </span>
                                                         {{ $item->pelayanan?->nama_pelayanan ?? '-' }}
+                                                        <span class="text-sm text-gray-500">
+                                                            ({{ $item->jumlah_dipakai }}x)
+                                                        </span>
+                                                    </span>
+                                                    <span class="text-sm text-gray-500 italic">Sisa Bundling</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                        {{-- Produk dari sisa bundling --}}
+                                        @foreach($bundlingUsageProduk as $item)
+                                            <div class="border-b pb-2">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="flex-1">
+                                                        <span class="text-xs text-gray-400 block">
+                                                            {{ $item->bundling?->nama ?? '-' }}
+                                                        </span>
+                                                        {{ $item->produk?->nama_dagang ?? '-' }}
                                                         <span class="text-sm text-gray-500">
                                                             ({{ $item->jumlah_dipakai }}x)
                                                         </span>

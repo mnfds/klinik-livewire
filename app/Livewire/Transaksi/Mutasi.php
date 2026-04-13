@@ -19,6 +19,7 @@ class Mutasi extends Component
     public $barangTambahan;
     public $bundlingUsageTreatment;
     public $bundlingUsagePelayanan;
+    public $bundlingUsageProduk;
 
     public function render()
     {
@@ -33,6 +34,8 @@ class Mutasi extends Component
             'rekamMedis.treatmentBundlingUsages.treatment',
             'rekamMedis.pelayananBundlingUsages.bundling',
             'rekamMedis.pelayananBundlingUsages.pelayanan',
+            'rekamMedis.produkBundlingUsages.bundling',
+            'rekamMedis.produkBundlingUsages.produk',
         ])->findOrFail($id);
 
         $rekamMedis      = $pasien->rekamMedis;
@@ -49,7 +52,8 @@ class Mutasi extends Component
         $this->produkTambahan = $riwayat->where('jenis_item', 'produk_tambahan')->values();
         $this->barangTambahan = $riwayat->where('jenis_item', 'barang_tambahan')->values();
 
-        $this->bundlingUsageTreatment = $rekamMedis->treatmentBundlingUsages;
-        $this->bundlingUsagePelayanan = $rekamMedis->pelayananBundlingUsages;
+        $this->bundlingUsageTreatment = $rekamMedis->treatmentBundlingUsages->where('is_pembelian_baru', false)->values();
+        $this->bundlingUsagePelayanan = $rekamMedis->pelayananBundlingUsages->where('is_pembelian_baru', false)->values();
+        $this->bundlingUsageProduk    = $rekamMedis->produkBundlingUsages->where('is_pembelian_baru', false)->values();
     }
 }
