@@ -43,7 +43,10 @@
         <!-- select 2 -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+        
+        <!-- HTML5-QR CODE -->
+        <script src="https://unpkg.com/html5-qrcode"></script>
+        
         <style>
                 /* Default (emerald / light theme) */
                 /* html[data-theme='emerald'] body {

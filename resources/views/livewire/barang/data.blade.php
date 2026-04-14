@@ -48,7 +48,10 @@
                         </div>
 
                         <!-- KANAN: Stok Keluar & Masuk -->
-                        <div class="w-full md:w-auto grid grid-cols-2 gap-[2px] mt-2 md:mt-0">
+                        <div class="w-full md:w-auto grid grid-cols-3 gap-[2px] mt-2 md:mt-0">
+                            <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-neutral w-full">
+                                <i class="fa-solid fa-qrcode"></i> Pindai
+                            </button>
                             @can('akses', 'Persediaan Barang Keluar')
                             <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary w-full">
                                 <i class="fa-solid fa-circle-minus"></i> Keluar

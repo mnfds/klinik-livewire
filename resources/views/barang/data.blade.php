@@ -4,4 +4,5 @@
     <livewire:barang.take />
     <livewire:barang.restok />
     <livewire:barang.update />
+    <livewire:barang.scanning />
 </x-app-layout>
