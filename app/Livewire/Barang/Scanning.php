@@ -23,7 +23,7 @@ class Scanning extends Component
     {
         $this->scannedData = $result;
     }
-    
+
     public function resetScan(): void
     {
         $this->scannedData = null;

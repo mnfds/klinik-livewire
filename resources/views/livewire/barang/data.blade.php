@@ -34,7 +34,7 @@
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
                         <!-- KIRI: Tambah Barang & Riwayat -->
-                        <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
+                        <div class="w-full md:w-auto grid grid-cols-3 gap-[2px]">
                             @can('akses', 'Persediaan Barang Tambah')
                             <button onclick="document.getElementById('storeModalBarang').showModal()" class="btn btn-success w-full">
                                 <i class="fa-solid fa-box-open"></i> Tambah
@@ -45,12 +45,15 @@
                                 <i class="fa-solid fa-clipboard"></i> Riwayat
                             </a>
                             @endcan
+                            <button onclick="document.getElementById('showQrCode').showModal()" class="btn btn-info w-full">
+                                <i class="fa-solid fa-qrcode"></i> QRCODE
+                            </button>
                         </div>
 
                         <!-- KANAN: Stok Keluar & Masuk -->
                         <div class="w-full md:w-auto grid grid-cols-3 gap-[2px] mt-2 md:mt-0">
                             <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-neutral w-full">
-                                <i class="fa-solid fa-qrcode"></i> Pindai
+                                <i class="fa-solid fa-expand"></i> Pindai
                             </button>
                             @can('akses', 'Persediaan Barang Keluar')
                             <button onclick="document.getElementById('takeModalBarang').showModal()" class="btn btn-secondary w-full">
@@ -76,4 +79,68 @@
             </div>
         </div>
     </div>
+<dialog id="showQrCode" class="modal" wire:ignore.self x-data x-init="
+    Livewire.on('closeshowQrCode', () => { document.getElementById('showQrCode')?.close()})">
+    
+    <div class="modal-box w-full max-w-lg">
+        
+        <!-- Title -->
+        <h3 class="text-xl font-semibold text-center mb-5">
+            QR Code Barang
+        </h3>
+
+        <!-- QR Container -->
+        <div class="flex flex-col items-center gap-4 p-5 border border-base-200 rounded-xl bg-base-100 mx-auto">
+
+            <div class="w-48 h-48 flex items-center justify-center" id="qr-image">
+                {!! $qrImage !!}
+            </div>
+            <p class="text-base font-mono font-semibold tracking-widest bg-base-200 px-3 py-1 rounded-lg">{{ $qrcode }}</p>
+
+            <button onclick="downloadQR('{{ $qrcode }}')" class="btn btn-sm btn-info gap-2 w-full">
+                <i class="fa-solid fa-download"></i>Download
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end mt-5">
+            <button type="button" 
+                class="btn btn-error"
+                onclick="document.getElementById('showQrCode').close()">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</dialog>
 </div>
+<script>
+    function downloadQR(filename) {
+        const svgEl = document.querySelector('#qr-image svg');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;  // resolusi PNG, makin besar makin tajam
+            canvas.height = 400;
+
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // background putih
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = `qrcode-${filename}.png`;
+            a.click();
+
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+    }
+</script>
