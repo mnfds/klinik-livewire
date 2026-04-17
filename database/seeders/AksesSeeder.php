@@ -188,6 +188,8 @@ class AksesSeeder extends Seeder
                 'Persediaan Barang Edit',
                 'Persediaan Barang Keluar',
                 'Persediaan Barang Masuk',
+                'Persediaan Barang Scan',
+                'Persediaan Barang QR',
                 'Persediaan Riwayat Barang',
                 'Persediaan Riwayat Barang Edit',
                 'Persediaan Riwayat Barang Hapus',
