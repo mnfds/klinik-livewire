@@ -2,7 +2,15 @@
     Livewire.on('closemodalScanning', () => {
         stopScanner();
         document.getElementById('modalScanning')?.close();
-    })
+    });
+
+    Livewire.on('openTakeModal', () => {
+        stopScanner();
+        document.getElementById('modalScanning')?.close();
+        setTimeout(() => {
+            document.getElementById('takeModalBarang')?.showModal();
+        }, 300);
+    });
     ">
     <div class="modal-box w-full max-w-md">
         <div class="flex items-center justify-between mb-4">
@@ -24,12 +32,20 @@
         @endif
 
         @if($scannedData)
-            <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-                <p class="font-semibold mb-1">Berhasil di-scan!</p>
-                <p>Hasil: <span class="font-mono">{{ $scannedData }}</span></p>
-            </div>
+            @if ($booleanScan === true)
+                <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+                    <p class="font-semibold mb-1">Berhasil di-scan!</p>
+                    <p>Hasil: <span class="font-mono">{{ $scannedData }}</span></p>
+                </div>
+            @endif
+            @if ($booleanScan === false)
+                <div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                    <p class="font-semibold mb-1">Berhasil di-scan!</p>
+                    <p>Hasil: <span class="font-mono">{{ $scannedData }}</span></p>
+                </div>
+            @endif
             <div class="mt-3">
-                <button class="btn btn-outline btn-sm" wire:click="resetScan">
+                <button class="btn btn-soft btn-sm btn-secondary" wire:click="resetScan">
                     Scan Ulang
                 </button>
             </div>
