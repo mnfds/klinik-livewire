@@ -28,7 +28,8 @@ final class Dipanggil extends PowerGridComponent
                 ->showPerPage()
                 ->showRecordCount(),
             PowerGrid::responsive()
-                ->fixedColumns('kode_nomor', 'actions'),
+                // ->fixedColumns('kode_nomor', 'actions'),
+                ->fixedColumns('nama_pengantri', 'actions'),
         ];
     }
 
@@ -47,6 +48,7 @@ final class Dipanggil extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
+            ->add('nama_pengantri', fn ($row) => $row->nama_pengantri ?? '-')
             ->add('kode', fn ($row) => $row->kode ?? '-')
             ->add('nomor_antrian', fn ($row) => $row->nomor_antrian ?? '-')
             ->add('kode_nomor', function ($row) {
@@ -62,6 +64,7 @@ final class Dipanggil extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
+            Column::make('nama', 'nama_pengantri')->searchable(),
             Column::make('Nomor Antrian', 'kode_nomor'),
             Column::make('kode', 'kode')->hidden()->searchable(),
             Column::make('nomor', 'nomor_antrian')->hidden()->searchable(),
@@ -90,13 +93,23 @@ final class Dipanggil extends PowerGridComponent
                 'class' => 'btn btn-primary',
             ]);
 
-        Gate::allows('akses', 'Panggilan Suara') && $antrianDipanggilButton[] =
+        Gate::allows('akses', 'Panggilan Suara Nomor') && $antrianDipanggilButton[] =
         Button::add('dipanggilButton')
             ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
             ->tag('button')
             ->attributes([
                 'title' => 'Panggil Antrian',
                 'onclick' => "responsiveVoice.speak('Nomor Antrian, {$row->kode}{$row->nomor_antrian}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
+                'class' => 'btn btn-secondary',
+            ]);
+
+        Gate::allows('akses', 'Panggilan Suara Nama') && $antrianDipanggilButton[] =
+        Button::add('dipanggilButton')
+            ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Panggil Antrian',
+                'onclick' => "responsiveVoice.speak('Panggilan Atas Nama, {$row->nama_pengantri}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
                 'class' => 'btn btn-secondary',
             ]);
 

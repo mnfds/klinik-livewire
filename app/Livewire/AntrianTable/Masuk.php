@@ -29,7 +29,8 @@ final class Masuk extends PowerGridComponent
                 ->showPerPage()
                 ->showRecordCount(),
             PowerGrid::Responsive()
-                ->fixedColumns('kode_nomor', 'actions'),
+                // ->fixedColumns('kode_nomor', 'actions'),
+                ->fixedColumns('nama_pengantri', 'actions'),
         ];
     }
 
@@ -48,6 +49,7 @@ final class Masuk extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
+            ->add('nama_pengantri', fn ($row) => $row->nama_pengantri ?? '-')
             ->add('kode', fn ($row) => $row->kode ?? '-')
             ->add('nomor_antrian', fn ($row) => $row->nomor_antrian ?? '-')
             ->add('kode_nomor', function ($row) {
@@ -63,6 +65,7 @@ final class Masuk extends PowerGridComponent
     {
         return [
             Column::make('#', '')->index(),
+            Column::make('Nama', 'nama_pengantri')->searchable(),
             Column::make('Nomor Antrian', 'kode_nomor'),
             Column::make('kode', 'kode')->hidden()->searchable(),
             Column::make('nomor', 'nomor_antrian')->hidden()->searchable(),

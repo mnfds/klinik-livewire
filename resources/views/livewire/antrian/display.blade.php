@@ -24,16 +24,7 @@
         @foreach ($poli as $p)
             <div class="card bg-base-100 text-base-content shadow-md hover:shadow-lg transition duration-300">
                 <div class="card-body">
-                    <div class="flex items-center justify-between">
-                        <h1 class="card-title text-lg font-bold tracking-wide">{{ Str::title($p->nama_poli) }}</h1>
-                        {{-- Set poliId THEN open the modal --}}
-                        <button
-                            wire:click="setPoliId({{ $p->id }})"
-                            x-on:poli-id-set.window="document.getElementById('showNameInput').showModal()"
-                            class="btn btn-sm btn-primary btn-circle">
-                            <i class="fa-solid fa-person"></i>
-                        </button>
-                    </div>
+                    <h1 class="card-title text-lg font-bold tracking-wide">{{ Str::title($p->nama_poli) }}</h1>
                     <p class="text-sm font-semibold uppercase text-gray-700">
                         Nomor Antrian Terakhir : {{ $p->nomor_terakhir }}
                     </p>
@@ -41,11 +32,22 @@
                         Silakan klik tombol di bawah untuk mengambil nomor antrian.
                     </p>
                     <div class="card-actions justify-end mt-4">
-                        <button wire:click="addNomorAntrian({{ $p->id }})"
-                            class="btn btn-primary btn-sm gap-2 w-full">
-                            <i class="fa-solid fa-ticket"></i>
-                            Ambil Nomor
-                        </button>
+                        {{-- BUTTON AMBIL NOMOR DAN CETAK NOMOR ANTRIAN --}}
+                        @can('akses', 'Ambil Nomor')
+                            <button wire:click="addNomorAntrian({{ $p->id }})"
+                                class="btn btn-primary btn-sm gap-2 w-full">
+                                <i class="fa-solid fa-ticket"></i>
+                                Ambil Nomor
+                            </button>
+                        @endcan
+                        {{-- OPEN MODAL UNTUK INPUT NAMA PASIEN KE ANTRIAN --}}
+                        @can('akses', 'Daftarkan Nama')
+                            <button wire:click="setPoliId({{ $p->id }})" x-on:poli-id-set.window="document.getElementById('showNameInput').showModal()"
+                                class="btn btn-sm btn-primary gap-2 w-full">
+                                <i class="fa-solid fa-person"></i>
+                                Input Nama
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>

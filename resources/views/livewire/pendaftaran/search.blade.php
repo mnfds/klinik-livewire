@@ -6,6 +6,7 @@
             <i class="fa-solid fa-circle-info"></i>
             <div>
                 <div class="font-semibold">Nomor Antrian: {{ $antrianTerdaftar->kode }}-{{ $antrianTerdaftar->nomor_antrian }}</div>
+                <div class="font-semibold">Nama Didaftarkan: {{ $antrianTerdaftar->nama_pengantri ?? '-'}}</div>
                 <div class="text-sm">Poli: {{ $antrianTerdaftar->poli->nama_poli }}</div>
             </div>
         </div>

@@ -282,10 +282,12 @@ class AksesSeeder extends Seeder
             // Antrian
             24 => [
                 'Kelola Antrian',
-                'Panggilan Suara',
+                'Panggilan Suara Nomor',
+                'Panggilan Suara Nama',
                 'Hapus Nomor Antrian Masuk',
                 'Hapus Nomor Antrian Dipanggil',
                 'Ambil Nomor',
+                'Daftarkan Nama',
             ],
             
             25 => [
