@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('poli_id');
             $table->string('kode');
             $table->integer('nomor_antrian');
+            $table->string('nama_pengantri')->nullable();
             $table->enum('status', ['masuk', 'dipanggil','nonaktif'])->default('masuk');
             $table->timestamps();
         });
