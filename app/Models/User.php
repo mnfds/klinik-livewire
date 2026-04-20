@@ -66,19 +66,37 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Lembur::class, 'disetujui_oleh');
     }
 
+    public function userakses()
+    {
+        return $this->hasMany(UserAkses::class);
+    }
+
     //helper untuk akses role
     public function hasAkses(string $namaAkses): bool
     {
-        if (! $this->role) {
+        if (! $this->role && ! $this->userakses()->exists()) {
             return false;
         }
 
-        return $this->role
-            ->aksesrole()
+        // Cek akses dari role
+        $dariRole = $this->role
+            ? $this->role
+                ->aksesrole()
+                ->whereHas('akses', function ($query) use ($namaAkses) {
+                    $query->where('nama_akses', $namaAkses);
+                })
+                ->exists()
+            : false;
+
+        // Cek akses individual
+        $dariIndividu = $this->userakses()
             ->whereHas('akses', function ($query) use ($namaAkses) {
                 $query->where('nama_akses', $namaAkses);
             })
             ->exists();
+
+        // Union — cukup salah satu yang punya akses
+        return $dariRole || $dariIndividu;
     }
     
     /**

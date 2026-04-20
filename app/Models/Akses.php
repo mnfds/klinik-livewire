@@ -16,4 +16,9 @@ class Akses extends Model
     {
         return $this->hasMany(RoleAkses::class);
     }
+    
+    public function userakses()
+    {
+        return $this->hasMany(UserAkses::class);
+    }
 }
