@@ -37,7 +37,7 @@
                     <option value="">Pilih Unit</option>
                     <option value="Klinik">Klinik</option>
                     <option value="Apotik">Apotik</option>
-                    <option value="Lainnya">Lainnya</option>
+                    <option value="Dll">Dll</option>
                 </select>
             </div>
 

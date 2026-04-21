@@ -64,7 +64,7 @@
                     <option value="">Pilih Unit</option>
                     <option value="Klinik">Klinik</option>
                     <option value="Apotik">Apotik</option>
-                    <option value="Lainnya">Lainnya</option>
+                    <option value="Dll">Dll</option>
                 </select>
                 @error('unit_usaha')
                     <span class="text-error text-sm">Mohon Memilih Unit Usaha Dengan Benar</span>

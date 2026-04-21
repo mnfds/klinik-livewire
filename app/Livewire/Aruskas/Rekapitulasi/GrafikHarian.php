@@ -80,7 +80,7 @@ class GrafikHarian extends Component
             ->sum('total_tagihan');
 
         $totalKeluarLainnya = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
-            ->where('unit_usaha', 'Lainnya')
+            ->where('unit_usaha', 'Dll')
             ->where('status', 'Disetujui')
             ->sum('jumlah_uang');
 
