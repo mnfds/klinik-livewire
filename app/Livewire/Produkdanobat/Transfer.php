@@ -85,22 +85,30 @@ class Transfer extends Component
             $jumlah  = (int) $item['jumlah'];
             $catatan = $item['catatan'] ?? '';
 
+            // 1️⃣ Lock & ambil data produk
             $produk = ProdukDanObat::lockForUpdate()->findOrFail($item['produk_id']);
 
-            $bahanbaku = BahanBaku::create([
-                'nama'         => $produk->nama_dagang,
-                'kode'         => $produk->kode,
-                'stok_besar'   => 0,
-                'satuan_besar' => $produk->sediaan,
-                'pengali'      => 1,
-                'stok_kecil'   => $jumlah,
-                'satuan_kecil' => $produk->sediaan,
-                'lokasi'       => $produk->lokasi,
-                'expired_at'   => $produk->expired_at,
-                'reminder'     => (int) $produk->reminder,
-                'keterangan'   => null,
-            ]);
+            // 2️⃣ Ambil bahan yang sudah ada, atau buat baru jika belum ada
+            $bahanbaku = BahanBaku::firstOrCreate(
+                ['kode' => $produk->kode], // ← cari berdasarkan kode
+                [
+                    'nama'         => $produk->nama_dagang,
+                    'stok_besar'   => 0,
+                    'satuan_besar' => $produk->sediaan,
+                    'pengali'      => 1,
+                    'stok_kecil'   => 0, // ← mulai dari 0, nanti di-increment
+                    'satuan_kecil' => $produk->sediaan,
+                    'lokasi'       => $produk->lokasi,
+                    'expired_at'   => $produk->expired_at,
+                    'reminder'     => (int) $produk->reminder,
+                    'keterangan'   => null,
+                ]
+            );
 
+            // 3️⃣ Tambah stok kecil (baik baru maupun yang sudah ada)
+            $bahanbaku->increment('stok_kecil', $jumlah);
+
+            // 4️⃣ Mutasi masuk bahan baku
             $bahanbaku->mutasibahan()->create([
                 'bahan_bakus_id' => $bahanbaku->id,
                 'tipe'           => 'masuk',
@@ -110,6 +118,7 @@ class Transfer extends Component
                 'catatan'        => $catatan . ' (Ditransfer Persediaan Dari Apotik)',
             ]);
 
+            // 5️⃣ Mutasi keluar produk
             MutasiProdukDanObat::create([
                 'produk_id'     => $produk->id,
                 'tipe'          => 'keluar',
@@ -118,6 +127,7 @@ class Transfer extends Component
                 'diajukan_oleh' => $pengaju,
             ]);
 
+            // 6️⃣ Kurangi stok produk
             $produk->decrement('stok', $jumlah);
         });
     }
