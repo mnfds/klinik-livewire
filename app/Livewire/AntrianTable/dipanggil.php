@@ -108,9 +108,9 @@ final class Dipanggil extends PowerGridComponent
             ->slot('<i class="fa-solid fa-volume-high"></i> Panggil')
             ->tag('button')
             ->attributes([
-                'title' => 'Panggil Antrian',
-                'onclick' => "responsiveVoice.speak('Panggilan Atas Nama, {$row->nama_pengantri}, Dimohon untuk, Ke meja,  Pendaftaran', 'Indonesian Female')",
-                'class' => 'btn btn-secondary',
+                'title'   => 'Panggilan Antrian',
+                'onclick' => "panggilAntrian({$row->id}, '{$row->nama_pengantri}')",
+                'class'   => 'btn btn-secondary',
             ]);
 
         Gate::allows('akses', 'Hapus Nomor Antrian Dipanggil') && $antrianDipanggilButton[] =

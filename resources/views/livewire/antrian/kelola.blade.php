@@ -121,5 +121,24 @@
     </div>
 </div>
 @push('scripts')
-    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+<script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+<script>
+    function panggilAntrian(id, nama) {
+        responsiveVoice.speak(
+            'Panggilan Atas Nama, ' + nama + ', Dimohon untuk, Ke meja, Pendaftaran',
+            'Indonesian Female'
+        );
+
+        fetch(`/antrian/${id}/panggil`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+        })
+        .then(res => res.json())
+        .then(data => console.log('Updated:', data))
+        .catch(err => console.error('Error:', err));
+    }
+</script>
 @endpush

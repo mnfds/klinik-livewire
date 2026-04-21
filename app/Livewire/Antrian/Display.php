@@ -37,7 +37,7 @@ class Display extends Component
 
     public function render()
     {
-        if (! Gate::allows('akses', 'Ambil Nomor')) {
+        if (! Gate::allows('akses', 'Ambil Nomor') && ! Gate::allows('akses', 'Daftarkan Nama')) {
             session()->flash('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

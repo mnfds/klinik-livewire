@@ -119,6 +119,13 @@ Route::middleware(['auth'])->group(function () {
     // ====== ANTRIAN PASIEN ====== //
     Route::view('/antrian', 'antrian.data')->name('antrian.data');
     Route::view('/antrian/ambil-nomor', 'antrian.display')->name('antrian.display');
+    //Route update kolom updated_at ketika klik button panggil
+    Route::patch('/antrian/{id}/panggil', function ($id) {
+    $antrian = \App\Models\NomorAntrian::findOrFail($id);
+    $antrian->touch();
+
+    return response()->json(['success' => true]);
+});
     // ====== ANTRIAN PASIEN ====== //
 
     // ====== PASIEN ====== //
@@ -438,6 +445,12 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/surat-sehat', 'surat.sehat.data')->name('surat-sehat.data');    
     Route::view('/surat-sakit', 'surat.sakit.data')->name('surat-sakit.data');    
     // ====== INVENTARIS ====== //
+
+    // ====== TV DISPLAY ====== //
+    Route::view('/display-pendaftaran', 'tv.pendaftaran')->name('tv.pendaftaran');
+    Route::view('/display-poliklinik', 'tv.poliklinik')->name('tv.poli');
+    Route::view('/display-apotek', 'tv.apotek')->name('tv.apotek');
+    // ====== TV DISPLAY ====== //
 });
 
 

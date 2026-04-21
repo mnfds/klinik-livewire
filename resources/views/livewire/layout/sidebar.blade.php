@@ -391,7 +391,7 @@
                 @endcan
                 @if (
                     Gate::allows('akses','Ambil Nomor') ||
-                    Gate::allows('akses','Kelola Nomor')
+                    Gate::allows('akses','Kelola Antrian')
                     )
                     <li x-data="{ open: {{ request()->routeIs('antrian.*') || request()->routeIs('tv.*') ? 'true' : 'false' }} }">
                         <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('antrian.*') || request()->routeIs('tv.*')">
@@ -401,13 +401,13 @@
                         </x-side-link>
     
                         <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                            @can('akses', 'Ambil Nomor')                            
+                            @if (Gate::allows('akses','Ambil Nomor') || Gate::allows('akses','Daftarkan Nama'))
                             <li>
                                 <x-side-link href="{{ route('antrian.display') }}" :active="request()->routeIs('antrian.display')" wire:navigate>
                                     Ambil Nomor Antrian
                                 </x-side-link>
                             </li>
-                            @endcan
+                            @endif                   
                             @can('akses', 'Kelola Antrian')                            
                             <li>
                                 <x-side-link href="{{ route('antrian.data') }}" :active="request()->routeIs('antrian.data')" wire:navigate>
@@ -430,21 +430,21 @@
                                 <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
                                     @can('akses', 'Display Registrasi')
                                     <li>
-                                        <x-side-link :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
+                                        <x-side-link href="{{ route('tv.pendaftaran') }}" :active="request()->routeIs('tv.pendaftaran')" wire:navigate>
                                             TV Pendaftaran
                                         </x-side-link>
                                     </li>
                                     @endcan
                                     @can('akses', 'Display Poliklinik')
                                     <li>
-                                        <x-side-link :active="request()->routeIs('tv.poli')" wire:navigate>
+                                        <x-side-link href="{{ route('tv.poli') }}" :active="request()->routeIs('tv.poli')" wire:navigate>
                                             TV Poliklinik
                                         </x-side-link>
                                     </li>
                                     @endcan
                                     @can('akses', 'Display Apotek')
                                     <li>
-                                        <x-side-link :active="request()->routeIs('tv.apotek')" wire:navigate>
+                                        <x-side-link href="{{ route('tv.apotek') }}" :active="request()->routeIs('tv.apotek')" wire:navigate>
                                             TV Apotek
                                         </x-side-link>
                                     </li>
