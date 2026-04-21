@@ -7,21 +7,18 @@ use App\Models\MutasiProdukDanObat;
 use Livewire\Component;
 use App\Models\ProdukDanObat;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class Transfer extends Component
 {
-    public $produk_id, $jumlah, $catatan;
+    public int $activeTab = 0;
+    public array $items = [
+        ['produk_id' => '', 'jumlah' => '', 'catatan' => ''],
+    ];
     public $produk = [];
 
-    // BAHAN
-    public $nama_bahan, $kode_bahan, $lokasi_bahan, $expired_at_bahan, $reminder_bahan, $keterangan_bahan, $satuan_besar_bahan, $satuan_kecil_bahan;
-    public $tipe_bahan = 'masuk';
-    public $stok_besar_bahan = 0;
-    public $pengali_bahan = 0;
-    public $stok_kecil_bahan = 0;
-
-    public function mount()
+    public function mount(): void
     {
         $this->produk = ProdukDanObat::all();
     }
@@ -31,81 +28,97 @@ class Transfer extends Component
         return view('livewire.produkdanobat.transfer');
     }
 
+    public function addTab(): void
+    {
+        $this->items[] = ['produk_id' => '', 'jumlah' => '', 'catatan' => ''];
+        $this->activeTab = count($this->items) - 1;
+    }
+
+    public function removeTab(int $index): void
+    {
+        if (count($this->items) <= 1) return;
+
+        array_splice($this->items, $index, 1);
+
+        if ($this->activeTab >= count($this->items)) {
+            $this->activeTab = count($this->items) - 1;
+        }
+    }
+
     public function store()
     {
         $this->validate([
-            'produk_id'     => 'required',
-            'jumlah'        => 'required|numeric',
-            'catatan'       => 'nullable',
+            'items'             => 'required|array|min:1',
+            'items.*.produk_id' => 'required|exists:produk_dan_obats,id',
+            'items.*.jumlah'    => 'required|numeric|min:1',
+            'items.*.catatan'   => 'nullable|string',
+        ], [
+            'items.*.produk_id.required' => 'Nama produk/obat wajib dipilih.',
+            'items.*.produk_id.exists'   => 'Produk/obat tidak valid.',
+            'items.*.jumlah.required'    => 'Jumlah wajib diisi.',
+            'items.*.jumlah.min'         => 'Jumlah minimal 1.',
         ]);
+
         if (! Gate::allows('akses', 'Persediaan Bahan Baku Masuk')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'Anda tidak memiliki akses.']);
             return;
         }
-        $produk = ProdukDanObat::lockForUpdate()->findOrFail($this->produk_id);
-        // AMBIL DATA PRODUK UNTUK KE BAHAN
-        $this->nama_bahan = $produk->nama_dagang;
-        $this->kode_bahan = $produk->kode;
-        $this->stok_besar_bahan = 0;
-        $this->satuan_besar_bahan = $produk->sediaan;
-        $this->pengali_bahan = 1;
-        $this->stok_kecil_bahan = $this->jumlah;
-        $this->satuan_kecil_bahan = $produk->sediaan;
-        $this->lokasi_bahan = $produk->lokasi;
-        $this->expired_at_bahan = $produk->expired_at;
-        $this->reminder_bahan = $produk->reminder;
-        $this->keterangan_bahan = null;
 
-        // CREATE BAHAN
-        $bahanbaku = BahanBaku::create([
-           'nama'            => $this->nama_bahan,
-           'kode'            => $this->kode_bahan,
-           'stok_besar'      => (int) $this->stok_besar_bahan,
-           'satuan_besar'    => $this->satuan_besar_bahan,
-           'pengali'         => (int) $this->pengali_bahan,
-           'stok_kecil'      => (int) $this->stok_kecil_bahan,
-           'satuan_kecil'    => $this->satuan_kecil_bahan,
-           'lokasi'          => $this->lokasi_bahan,
-           'expired_at'      => $this->expired_at_bahan,
-           'reminder'        => (int) $this->reminder_bahan,
-           'keterangan'      => $this->keterangan_bahan,
-        ]);
-        // CREATE MUTASI BAHAN INSTOCK
-        $bahanbaku->mutasibahan()->create([
-            'bahan_bakus_id'     => $bahanbaku->id,
-            'tipe'               => 'masuk',
-            'jumlah'             => $bahanbaku->stok_kecil,
-            'satuan'             => $bahanbaku->satuan_kecil,
-            'diajukan_oleh'      => Auth::user()->biodata?->nama_lengkap,
-            'catatan'            => $this->catatan . ' (Ditransfer Persediaan Dari Apotik)',
-        ]);
-        // CREATE MUTASI PRODUK OUTSTOCK
-        MutasiProdukDanObat::create([
-            'produk_id'   => $this->produk_id,
-            'tipe' => 'keluar',
-            'jumlah'   => $this->jumlah,
-            'catatan'   => $this->catatan . ' (Transfer Persediaan Ke Poli)',
-            'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap,
-        ]);
+        foreach ($this->items as $item) {
+            $this->prosesTransfer($item);
+        }
 
-        $stokProduk = ProdukDanObat::findOrFail($this->produk_id);
-        $stokTersisa = $stokProduk->stok - $this->jumlah;
-        $stokProduk->update([
-            'stok' => $stokTersisa,
-        ]);
+        $this->items     = [['produk_id' => '', 'jumlah' => '', 'catatan' => '']];
+        $this->activeTab = 0;
 
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Data Produk/Obat berhasil Diperbarui.'
-        ]);
-
-        $this->reset();
-
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Data Produk/Obat berhasil Diperbarui.']);
         $this->dispatch('closetransferModal');
 
         return redirect()->route('produk-obat.data');
+    }
+
+    protected function prosesTransfer(array $item): void
+    {
+        DB::transaction(function () use ($item) {
+
+            $pengaju = Auth::user()->biodata?->nama_lengkap;
+            $jumlah  = (int) $item['jumlah'];
+            $catatan = $item['catatan'] ?? '';
+
+            $produk = ProdukDanObat::lockForUpdate()->findOrFail($item['produk_id']);
+
+            $bahanbaku = BahanBaku::create([
+                'nama'         => $produk->nama_dagang,
+                'kode'         => $produk->kode,
+                'stok_besar'   => 0,
+                'satuan_besar' => $produk->sediaan,
+                'pengali'      => 1,
+                'stok_kecil'   => $jumlah,
+                'satuan_kecil' => $produk->sediaan,
+                'lokasi'       => $produk->lokasi,
+                'expired_at'   => $produk->expired_at,
+                'reminder'     => (int) $produk->reminder,
+                'keterangan'   => null,
+            ]);
+
+            $bahanbaku->mutasibahan()->create([
+                'bahan_bakus_id' => $bahanbaku->id,
+                'tipe'           => 'masuk',
+                'jumlah'         => $jumlah,
+                'satuan'         => $bahanbaku->satuan_kecil,
+                'diajukan_oleh'  => $pengaju,
+                'catatan'        => $catatan . ' (Ditransfer Persediaan Dari Apotik)',
+            ]);
+
+            MutasiProdukDanObat::create([
+                'produk_id'     => $produk->id,
+                'tipe'          => 'keluar',
+                'jumlah'        => $jumlah,
+                'catatan'       => $catatan . ' (Transfer Persediaan Ke Poli)',
+                'diajukan_oleh' => $pengaju,
+            ]);
+
+            $produk->decrement('stok', $jumlah);
+        });
     }
 }
