@@ -11,12 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 class Take extends Component
 {
-    public $bahan_baku_id, $jumlah, $satuan, $diajukan_oleh, $catatan;
-    public $tipe = 'keluar';
+    public string $tipe = 'keluar';
+    public int $activeTab = 0;
+
+    public array $items = [
+        ['bahan_baku_id' => '', 'jumlah' => '', 'catatan' => ''],
+    ];
 
     public $bahan = [];
 
-    public function mount()
+    public function mount(): void
     {
         $this->bahan = BahanBaku::all();
     }
@@ -26,98 +30,90 @@ class Take extends Component
         return view('livewire.bahan.take');
     }
 
+    public function addTab(): void
+    {
+        $this->items[] = ['bahan_baku_id' => '', 'jumlah' => '', 'catatan' => ''];
+        $this->activeTab = count($this->items) - 1;
+    }
+
+    public function removeTab(int $index): void
+    {
+        if (count($this->items) <= 1) return;
+
+        array_splice($this->items, $index, 1);
+
+        if ($this->activeTab >= count($this->items)) {
+            $this->activeTab = count($this->items) - 1;
+        }
+    }
+
     public function store()
     {
         $this->validate([
-            'bahan_baku_id'   => 'required',
-            'jumlah'   => 'required|numeric',
-            'catatan'   => 'nullable',
+            'items'                 => 'required|array|min:1',
+            'items.*.bahan_baku_id' => 'required|exists:bahan_bakus,id',
+            'items.*.jumlah'        => 'required|numeric|min:1',
+            'items.*.catatan'       => 'nullable|string',
+        ], [
+            'items.*.bahan_baku_id.required' => 'Nama bahan baku wajib dipilih.',
+            'items.*.bahan_baku_id.exists'   => 'Bahan baku tidak valid.',
+            'items.*.jumlah.required'        => 'Jumlah wajib diisi.',
+            'items.*.jumlah.min'             => 'Jumlah minimal 1.',
         ]);
+
         if (! Gate::allows('akses', 'Persediaan Bahan Baku Keluar')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'Anda tidak memiliki akses.']);
             return;
         }
 
-        $this->hitungStokBahanBaku();
+        foreach ($this->items as $item) {
+            $this->hitungStokBahanBaku($item);
+        }
 
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Data Bahan Baku berhasil Diperbarui.'
-        ]);
+        $this->items     = [['bahan_baku_id' => '', 'jumlah' => '', 'catatan' => '']];
+        $this->activeTab = 0;
 
-        $this->reset();
-
+        $this->dispatch('toast', ['type' => 'success', 'message' => 'Data Bahan Baku berhasil Diperbarui.']);
         $this->dispatch('pg:eventRefresh-DishTable');
-
         $this->dispatch('closetakeModalBahanbaku');
 
         return redirect()->route('bahanbaku.data');
     }
 
-    protected function hitungStokBahanBaku()
+    protected function hitungStokBahanBaku(array $item): void
     {
-        DB::transaction(function () {
+        DB::transaction(function () use ($item) {
 
-            $bahan = BahanBaku::lockForUpdate()->findOrFail($this->bahan_baku_id);
+            $bahan = BahanBaku::lockForUpdate()->findOrFail($item['bahan_baku_id']);
 
-            $jumlahKeluar = (int) $this->jumlah;
+            $jumlahKeluar = (int) $item['jumlah'];
+            $catatan      = $item['catatan'] ?? '';
             $pengali      = (int) $bahan->pengali;
 
             $stokBesar = (int) $bahan->stok_besar;
             $stokKecil = (int) $bahan->stok_kecil;
 
-            // 1️⃣ Pastikan stok total cukup (dalam satuan kecil)
             $totalStokKecil = ($stokBesar * $pengali) + $stokKecil;
 
             if ($totalStokKecil < $jumlahKeluar) {
-                throw new \Exception('Stok bahan baku tidak mencukupi');
+                throw new \Exception("Stok bahan baku '{$bahan->nama}' tidak mencukupi.");
             }
 
-            // 2️⃣ Jika stok kecil kurang, konversi stok besar → kecil
             while ($stokKecil < $jumlahKeluar) {
-
                 if ($stokBesar <= 0) {
-                    throw new \Exception('Stok besar habis');
+                    throw new \Exception("Stok besar bahan baku '{$bahan->nama}' habis.");
                 }
 
-                // stok besar keluar 1
                 $stokBesar--;
+                $this->simpanMutasi($bahan->id, 'keluar', 1, $bahan->satuan_besar, $catatan . ' (Konversi stok besar ke kecil)');
 
-                $this->simpanMutasi(
-                    $bahan->id,
-                    'keluar',
-                    1,
-                    $bahan->satuan_besar,
-                    $this->catatan . ' (Konversi stok besar ke kecil)'
-                );
-
-                // stok kecil masuk sesuai pengali
                 $stokKecil += $pengali;
-
-                $this->simpanMutasi(
-                    $bahan->id,
-                    'masuk',
-                    $pengali,
-                    $bahan->satuan_kecil,
-                    $this->catatan . ' (Hasil konversi dari stok besar)'
-                );
+                $this->simpanMutasi($bahan->id, 'masuk', $pengali, $bahan->satuan_kecil, $catatan . ' (Hasil konversi dari stok besar)');
             }
 
-            // 3️⃣ Kurangi stok kecil sesuai pemakaian
             $stokKecil -= $jumlahKeluar;
+            $this->simpanMutasi($bahan->id, 'keluar', $jumlahKeluar, $bahan->satuan_kecil, $catatan . ' (Bahan Baku Outstock)');
 
-            $this->simpanMutasi(
-                $bahan->id,
-                'keluar',
-                $jumlahKeluar,
-                $bahan->satuan_kecil,
-                $this->catatan . ' (Bahan Baku Outstock)'
-            );
-
-            // 4️⃣ Update stok akhir di tabel bahan
             $bahan->update([
                 'stok_besar' => $stokBesar,
                 'stok_kecil' => $stokKecil,
@@ -125,21 +121,15 @@ class Take extends Component
         });
     }
 
-    protected function simpanMutasi(
-        int $bahanId,
-        string $jenis,     // masuk | keluar
-        int $jumlah,
-        string $satuan,    // besar | kecil
-        string $keterangan,
-    ) {
+    protected function simpanMutasi(int $bahanId, string $jenis, int $jumlah, string $satuan, string $keterangan): void
+    {
         MutasiBahanbaku::create([
             'bahan_baku_id' => $bahanId,
-            'tipe'         => $jenis,
+            'tipe'          => $jenis,
             'jumlah'        => $jumlah,
             'satuan'        => $satuan,
             'diajukan_oleh' => Auth::user()->biodata?->nama_lengkap,
-            'catatan'    => $keterangan,
+            'catatan'       => $keterangan,
         ]);
     }
-
 }

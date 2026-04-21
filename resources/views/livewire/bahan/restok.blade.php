@@ -1,89 +1,116 @@
-<dialog id="restockModalBahanbaku" class="modal" wire:ignore.self x-data x-init="
-    Livewire.on('closerestockModalBahanbaku', () => {
-        document.getElementById('restockModalBahanbaku')?.close()
-    })
-">
+<dialog id="restockModalBahanbaku" class="modal" wire:ignore.self x-data x-init="Livewire.on('closerestockModalBahanbaku', () => {document.getElementById('restockModalBahanbaku')?.close()}) ">
     <div class="modal-box w-full max-w-xl">
         <h3 class="text-xl font-semibold mb-4">Bahan Baku Masuk</h3>
-
         <form wire:submit.prevent="store" class="space-y-4">
-
+            {{-- Tambah Tab --}}
             <div>
-                <label class="label font-medium">Nama Bahan Baku<span class="text-error">*</span></label>
-                <select class="select select-bordered w-full @error('bahan_baku_id') input-error @enderror" wire:model.lazy="bahan_baku_id">
-                    <option value="">Pilih Bahan Baku</option>
-                    @foreach ($bahan as $b)
-                        <option value="{{ $b->id }}">{{ $b->nama }}</option>
-                    @endforeach
-                </select>
-                @error('bahan_baku_id')
-                    <span class="text-error text-sm">Mohon Memilih Bahan Dengan Benar</span>
-                @enderror
+                <button type="button" class="btn btn-primary btn-sm" wire:click="addTab">
+                    + Tambah Form
+                </button>
             </div>
 
-            <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="jenis_keluar" wire:model="jenis_keluar" value="besar" class="radio">
-                    <span>Tambah Stok Besar</span>
-                </label>
+            {{-- Tab Headers --}}
+            <div role="tablist" class="tabs tabs-bordered flex-wrap">
+                @foreach ($items as $i => $item)
+                    <button type="button" role="tab" class="tab gap-1 {{ $activeTab === $i ? 'tab-active border-b-2 border-primary text-primary' : 'border-b-2 border-transparent' }}" wire:click="$set('activeTab', {{ $i }})">
+                        <span>
+                            Form {{ $i + 1 }}
+                            @if ($errors->has("items.$i.bahan_baku_id") || $errors->has("items.$i.jumlah") || $errors->has("items.$i.jenis_keluar"))
+                                <span class="inline-block w-2 h-2 rounded-full bg-error ml-1 align-middle"></span>
+                            @endif
+                        </span>
 
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="jenis_keluar" wire:model="jenis_keluar" value="kecil" class="radio">
-                    <span>Tambah Stok Kecil</span>
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="jenis_keluar" wire:model="jenis_keluar" value="besarkecil" class="radio">
-                    <span>Tambah Stok Kecil Dari Stok Besar</span>
-                </label>
+                        @if (count($items) > 1)
+                            <span role="button" class="ml-1 text-base-content/40 hover:text-error transition-colors" wire:click.stop="removeTab({{ $i }})">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </span>
+                        @endif
+                    </button>
+                @endforeach
             </div>
 
-            <div>
-                <label id="label-jumlah" class="label font-medium">
-                    Jumlah Masuk <span class="text-error">*</span>
-                </label>
-                <input type="number" wire:model.lazy="jumlah" class="input input-bordered w-full @error('jumlah') input-error @enderror">
-                @error('jumlah')
-                    <span class="text-error text-sm">
-                            Mohon Mengisi Jumlah Bahan Keluar Dengan Benar
-                    </span>
-                @enderror
-            </div>
+            {{-- Tab Content --}}
+            @foreach ($items as $i => $item)
+                <div @class(['hidden' => $activeTab !== $i, 'space-y-4' => true])>
+                    {{-- Nama Bahan Baku --}}
+                    <div>
+                        <label class="label font-medium">
+                            Nama Bahan Baku <span class="text-error">*</span>
+                        </label>
+                        <select class="select select-bordered w-full @error("items.$i.bahan_baku_id") select-error @enderror" wire:model.lazy="items.{{ $i }}.bahan_baku_id">
+                            <option value="">Pilih Bahan Baku</option>
+                            @foreach ($bahan as $b)
+                                <option value="{{ $b->id }}">{{ $b->nama }}</option>
+                            @endforeach
+                        </select>
+                        @error("items.$i.bahan_baku_id")
+                            <span class="text-error text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-            <div>
-                <label class="label font-medium">Catatan</label>
-                <input type="text" class="input input-bordered w-full" wire:model.lazy="catatan">
-            </div>
+                    {{-- Jenis Restok --}}
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" class="radio" value="besar" wire:model="items.{{ $i }}.jenis_keluar">
+                            <span>Tambah Stok Besar</span>
+                        </label>
 
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" class="radio" value="kecil" wire:model="items.{{ $i }}.jenis_keluar">
+                            <span>Tambah Stok Kecil</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" class="radio" value="besarkecil" wire:model="items.{{ $i }}.jenis_keluar">
+                            <span>Tambah Stok Kecil Dari Stok Besar</span>
+                        </label>
+                    </div>
+                    @error("items.$i.jenis_keluar")
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+
+                    {{-- Label jumlah dinamis berdasarkan jenis_keluar --}}
+                    <div>
+                        <label class="label font-medium">
+                            @if ($item['jenis_keluar'] === 'besar')
+                                Jumlah Stok Besar Masuk
+                            @elseif ($item['jenis_keluar'] === 'kecil')
+                                Jumlah Stok Kecil Masuk
+                            @elseif ($item['jenis_keluar'] === 'besarkecil')
+                                Jumlah Stok Besar Diambil Untuk Menambah Stok Kecil
+                            @else
+                                Jumlah Masuk
+                            @endif
+                            <span class="text-error">*</span>
+                        </label>
+                        <input type="number" min="1" class="input input-bordered w-full @error("items.$i.jumlah") input-error @enderror" wire:model.lazy="items.{{ $i }}.jumlah" placeholder="0">
+                        @error("items.$i.jumlah")
+                            <span class="text-error text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Catatan --}}
+                    <div>
+                        <label class="label font-medium">Catatan</label>
+                        <input type="text" class="input input-bordered w-full" wire:model.lazy="items.{{ $i }}.catatan" placeholder="Opsional...">
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- Actions --}}
             <div class="modal-action justify-end pt-4">
                 @can('akses', 'Persediaan Bahan Baku Masuk')
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
-                <button type="button" class="btn btn-error" onclick="document.getElementById('restockModalBahanbaku').close()">Batal</button>
+                <button type="button" class="btn btn-error" onclick="document.getElementById('restockModalBahanbaku').close()">
+                    Batal
+                </button>
             </div>
         </form>
     </div>
-</dialog>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const label = document.getElementById('label-jumlah');
 
-        document.querySelectorAll('input[name="jenis_keluar"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                switch (this.value) {
-                    case 'besar':
-                        label.innerHTML = 'Jumlah Stok Besar Masuk <span class="text-error">*</span>';
-                        break;
-                    case 'kecil':
-                        label.innerHTML = 'Jumlah Stok Kecil Masuk <span class="text-error">*</span>';
-                        break;
-                    case 'besarkecil':
-                        label.innerHTML = 'Jumlah Stok Besar Diambil Untuk Menambah Stok Kecil<span class="text-error">*</span>';
-                        break;
-                    default:
-                        label.innerHTML = 'Jumlah Masuk <span class="text-error">*</span>';
-                }
-            });
-        });
-    });
-</script>
+    {{-- Backdrop --}}
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
