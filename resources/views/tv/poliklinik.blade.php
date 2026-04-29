@@ -74,7 +74,7 @@
         <!-- Page Content -->
         <main :class="sidebarOpen ? 'sm:ml-48' : 'sm:ml-0'" class="transition-all duration-300 p-4">
             <div class="max-w-screen-xl mx-auto">
-                <livewire:tv.poliklinik />
+                <livewire:Tv.Poliklinik />
             </div>
         </main>
 
