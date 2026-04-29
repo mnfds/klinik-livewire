@@ -1,103 +1,125 @@
-# 🩺 Dokter L - Aplikasi Manajemen Klinik
-
-**Dokter L** adalah aplikasi manajemen klinik berbasis web yang dibangun menggunakan [Laravel](https://laravel.com/), [Livewire](https://livewire.laravel.com/), dan [Volt](https://voltphp.dev/).  
-Proyek ini **masih dalam pengembangan (on track)** dan dirancang untuk membantu klinik dalam mengelola laporan keuangan, transaksi pasien, serta tampilan visual yang dinamis dan responsif.
-
-## 🧩 Fitur Sekarang
-
-- 🔐 **Autentikasi**: Login, register, reset password
-- 🌙 **Dark Mode**: Tampilan responsif dan nyaman di siang/malam hari
-- 🎨 **Komponen Dinamis**: Menggunakan Tailwind CSS + Livewire Volt
-
-## 🖼️ Cuplikan Logo
-
 <div align="center">
-  <img src="public/assets/logo_dr_l.png" alt="Logo Dokter L" height="100">
+
+<img src="public/assets/aset/logo-no-text.png" alt="Logo Dokter L" height="90">
+
+# Dokter L
+
+**Aplikasi manajemen klinik berbasis web**
+
+[![Laravel](https://img.shields.io/badge/Laravel-v11-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-v3-4E56A6?style=flat-square&logo=livewire&logoColor=white)](https://livewire.laravel.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Status](https://img.shields.io/badge/status-on%20track-22c55e?style=flat-square)](https://github.com/mnfds/dokterL)
+
 </div>
 
-## 📂 Struktur Utama
+---
 
-```
+## Tentang Proyek
 
-.
-├── app/
-│   ├── Livewire/           # Komponen Livewire (Volt)
-│   ├── Http/Controllers/   # Controller Laravel
-├── resources/views/        # Blade templates dan Livewire views
-├── public/assets/          # Logo, gambar, dll.
-├── routes/web.php          # Routing aplikasi
-├── vendor/                 # Laravel core (diubah: quotes Inspiring.php)
-
-````
+**Dokter L** adalah aplikasi manajemen klinik yang dibangun menggunakan [Laravel](https://laravel.com/), [Livewire](https://livewire.laravel.com/), dan [Volt](https://voltphp.dev/). Proyek ini dirancang untuk membantu klinik dalam mengelola laporan keuangan, SDMK, transaksi pasien, serta antrian dan rekam medis secara terpadu.
 
 ## 🛠️ Instalasi Lokal
 
 ```bash
+# Clone repositori
 git clone https://github.com/mnfds/dokterL.git
 cd dokterL
+
+# Install dependensi
 composer install
 npm install && npm run dev
+
+# Konfigurasi environment
 cp .env.example .env
 php artisan key:generate
+
+# Migrasi & seed database
 php artisan migrate --seed
+
+# Jalankan server
 php artisan serve
-````
+```
+
+---
 
 ## ⚙️ Teknologi
 
-* Laravel v11
-* Livewire v3
-* Blade + Tailwind CSS v3
-* PowerGrid Livewire DataTables v6
-* Daisy UI v5
+| Teknologi | Versi |
+|---|---|
+| [Laravel](https://laravel.com/) | v11 |
+| [Livewire](https://livewire.laravel.com/) | v3 |
+| [Blade](https://laravel.com/docs/blade) + [Tailwind CSS](https://tailwindcss.com/) | v3 |
+| [DaisyUI](https://daisyui.com/) | v5 |
+| [PowerGrid Livewire DataTables](https://livewire-powergrid.com/) | v6 |
+
+---
+
+## 📂 Struktur Utama
 
 ```
+.
+├── app/
+│   ├── Livewire/            # Komponen Livewire (Volt)
+│   └── Http/Controllers/    # Controller Laravel
+├── resources/views/         # Blade templates & Livewire views
+├── public/assets/           # Logo, gambar, aset statis
+└── routes/web.php           # Routing aplikasi
+```
 
-## 🗓️ Roadmap
+---
 
-* [ ] Crud Master Data (User, Role, Jam Kerja, Poli, Layanan, Produk & Obat, Paket Bundling)
-* [ ] Manajemen Role & Permission
-* [ ] Antrian Real Time
-* [ ] Pasien Reservasi
-* [ ] Kajian Awal & Rekam Medis Dengan Metode SOAP
-* [ ] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
-* [ ] Transaksi Klinik
-* [ ] Manajemen Inventori (Obat, Produk, Barang)
-* [ ] Integrasi SatuSehat API
-* [ ] Manajemen Jadwal Dan Absensi Staff Klinik
-* [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
-* [ ] Laporan Keuangan Klinik
+## ✨ Fitur Tersedia
 
-## 👤 Pengembang
+### Manajemen Data
+- [ ] CRUD Master Data (User, Role, Jam Kerja, Poli, Layanan, Paket Bundling)
+- [ ] Manajemen Role & Permission
 
-* Muhammad Noor Firdaus ([@mnfds](https://github.com/mnfds))
+### Operasional Klinik
+- [ ] Sistem Antrian
+- [ ] Pasien Reservasi
+- [ ] Pendaftaran Pasien
+- [ ] Kajian Awal & Rekam Medis dengan Metode SOAP
+- [ ] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
+- [ ] Transaksi Klinik & Apotik
+- [ ] Print Out Surat Keterangan Sehat & Sakit
+- [ ] E-Resep
+
+### Inventori & Laporan
+- [ ] Manajemen Inventori (Obat, Produk, Barang)
+- [ ] Manajemen Arsip Dokumen
+- [ ] Manajemen Barang Inventaris
+- [ ] Laporan Keuangan Klinik
+
+### SDM & Integrasi
+- [ ] Integrasi SatuSehat API
+- [ ] Manajemen Jadwal & Absensi Staff Klinik
+- [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
 
 ---
 
 ## 🧾 Konvensi Commit
 
-Proyek ini mengikuti [Conventional Commits](https://www.conventionalcommits.org/) agar riwayat perubahan tetap jelas dan mudah dilacak.
+Proyek ini mengikuti spesifikasi [Conventional Commits](https://www.conventionalcommits.org/) agar riwayat perubahan tetap jelas dan mudah dilacak.
 
-### Format umum
+**Format umum:**
 
-```bash
-<type>(optional-scope): <deskripsi singkat>
+```
+<type>(scope opsional): <deskripsi singkat>
 ```
 
-### Jenis-jenis commit
+| Type | Keterangan |
+|---|---|
+| `feat` | Penambahan fitur baru |
+| `fix` | Perbaikan bug |
+| `docs` | Perubahan dokumentasi (README, dll) |
+| `style` | Perubahan non-logik (indentasi, CSS) |
+| `refactor` | Refactor kode tanpa fitur/bug baru |
+| `test` | Penambahan atau perbaikan testing |
+| `chore` | Tugas rutin, update dependensi, dll |
+| `ci` | Perubahan terkait CI/CD |
 
-| Type       | Keterangan                           |
-| ---------- | ------------------------------------ |
-| `feat`     | Penambahan fitur baru                |
-| `fix`      | Perbaikan bug                        |
-| `docs`     | Perubahan dokumentasi (README, dll)  |
-| `style`    | Perubahan non-logik (indentasi, CSS) |
-| `refactor` | Refactor kode (tanpa fitur/bug)      |
-| `test`     | Penambahan/perbaikan testing         |
-| `chore`    | Tugas rutin, update dependensi, dll  |
-| `ci`       | Perubahan terkait CI/CD              |
-
-### Contoh
+**Contoh:**
 
 ```bash
 feat(auth): menambahkan tampilan login baru
@@ -106,3 +128,22 @@ docs(readme): menambahkan panduan commit
 ```
 
 ---
+
+## 👤 Pengembang
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/mnfds">
+        <img src="https://github.com/mnfds.png" width="72" style="border-radius:50%" alt="mnfds"/><br/>
+        <sub><b>Muhammad Noor Firdaus</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+---
+
+<div align="center">
+  <sub>Sehat Sehat Dah :)</sub>
+</div>
