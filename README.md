@@ -72,27 +72,27 @@ php artisan serve
 ## ✨ Fitur Tersedia
 
 ### Manajemen Data
-- [ ] CRUD Master Data (User, Role, Jam Kerja, Poli, Layanan, Paket Bundling)
-- [ ] Manajemen Role & Permission
+- [x] CRUD Master Data (User, Role, Jam Kerja, Poli, Layanan, Paket Bundling)
+- [x] Manajemen Role & Permission
 
 ### Operasional Klinik
-- [ ] Sistem Antrian
+- [x] Sistem Antrian
 - [ ] Pasien Reservasi
-- [ ] Pendaftaran Pasien
-- [ ] Kajian Awal & Rekam Medis dengan Metode SOAP
-- [ ] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
-- [ ] Transaksi Klinik & Apotik
+- [x] Pendaftaran Pasien
+- [x] Kajian Awal & Rekam Medis dengan Metode SOAP
+- [x] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
+- [x] Transaksi Klinik & Apotik
 - [ ] Print Out Surat Keterangan Sehat & Sakit
 - [ ] E-Resep
 
 ### Inventori & Laporan
-- [ ] Manajemen Inventori (Obat, Produk, Barang)
-- [ ] Manajemen Arsip Dokumen
-- [ ] Manajemen Barang Inventaris
-- [ ] Laporan Keuangan Klinik
+- [x] Manajemen Inventori (Obat, Produk, Barang)
+- [x] Manajemen Arsip Dokumen
+- [x] Manajemen Barang Inventaris
+- [x] Laporan Keuangan Klinik
 
 ### SDM & Integrasi
-- [ ] Integrasi SatuSehat API
+- [x] Integrasi SatuSehat API
 - [ ] Manajemen Jadwal & Absensi Staff Klinik
 - [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
 
