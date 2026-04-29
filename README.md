@@ -95,6 +95,7 @@ php artisan serve
 - [x] Integrasi SatuSehat API
 - [ ] Manajemen Jadwal & Absensi Staff Klinik
 - [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
+- [ ] Manajemen KPI SDMK
 
 ---
 
