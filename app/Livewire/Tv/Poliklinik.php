@@ -7,7 +7,6 @@ use Livewire\Component;
 
 class Poliklinik extends Component
 {
-    public $pasien_terdaftar;
     public $poli;
 
     public function mount()
