@@ -197,6 +197,7 @@ Route::middleware(['auth'])->group(function () {
     // ====== RIWAYAT KUNJUNGAN ATAU REKAM MEDIS PASIEN ====== //
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
+    Route::view('/rekam-medis-pasien/keep', 'rekammedis.keep')->name('rekam-medis-pasien.keep');
     Route::view('/rekam-medis-pasien/detail', 'rekammedis.detail')->name('rekam-medis-pasien.detail');
     Route::get('/rekam-medis-pasien/pengurangan-stok/{pasien_terdaftar_id}', function ($pasien_terdaftar_id) {
             return view('rekammedis.penguranganstok', compact('pasien_terdaftar_id'));

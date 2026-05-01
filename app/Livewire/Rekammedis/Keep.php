@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Rekammedis;
 
+use Livewire\Component;
 use App\Models\Icd;
 use App\Models\IcdRM;
 use App\Models\KfaObat;
-use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\Pelayanan;
 use App\Models\Treatment;
@@ -56,7 +56,7 @@ use App\Services\StoreIntruksiObatNonRacik;
 use Illuminate\Validation\ValidationException;
 use App\View\Components\rekammedis\rencanalayanan;
 
-class Create extends Component
+class Keep extends Component
 {    
     // DATA YANG AKAN DI STORE PADA RekamMedis::model //
     public $rekammedis;
@@ -1333,6 +1333,6 @@ class Create extends Component
             ]);
             $this->redirectRoute('dashboard');
         }
-        return view('livewire.rekammedis.create');
+        return view('livewire.rekammedis.keep');
     }
 }

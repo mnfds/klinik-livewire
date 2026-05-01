@@ -28,6 +28,7 @@ return new class extends Migration
             [
                 'terdaftar',    // muncul untuk perawat mengisi KAJIAN AWAL
                 'konsultasi',   // muncul untuk dokter mengisi SOAP
+                'keep',         // muncul untuk dokter setelah SOAP Di simpan tapi tidak mengubah ke tahap berikutnya
                 'peresepan',    //muncul untuk apoteker mengisi obat dari inventory berdasarkan resep dokter 
                 'pembayaran',   //muncul di kasir untuk pembayaran dan konfirmasi obat yang ingin ditebus
                 'lunas',      // muncul di apoteker kalau sudah melakukan pembayaran sudah lunas dan obat sudah dikonfimasi

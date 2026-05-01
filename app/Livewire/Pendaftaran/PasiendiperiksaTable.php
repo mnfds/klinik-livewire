@@ -37,7 +37,7 @@ final class PasiendiperiksaTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return PasienTerdaftar::whereIn('status_terdaftar', ['konsultasi','selesai'])
+        return PasienTerdaftar::whereIn('status_terdaftar', ['konsultasi','keep','selesai'])
             ->when(
                 $this->hasTanggalFilter(),
                 function ($q){
@@ -171,6 +171,16 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 'class' => 'btn btn-secondary',
             ]);
 
+        Gate::allows('akses', 'Rekam Medis') && $diperiksaButton[] =
+        Button::add('keeprekammedis')
+            ->slot('<i class="fa-solid fa-book"></i> Rekam Medis')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Lihat Rekam Medis Pasien',
+                'onclick' => "Livewire.navigate('" . route('rekam-medis-pasien.keep', ['pasien_terdaftar_id' => $row->id, 'rekam_medis_id' => $row->rekamMedis?->id]) . "')",
+                'class' => 'btn btn-primary',
+            ]);
+
         Gate::allows('akses', 'Rekam Medis Hapus') && $diperiksaButton[] =
         Button::add('deleterekammedispasien')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
@@ -240,8 +250,12 @@ final class PasiendiperiksaTable extends PowerGridComponent
                 ->when(fn($row) => $row->status_terdaftar !== 'konsultasi')
                 ->hide(),
 
+            Rule::button('keeprekammedis')
+                ->when(fn($row) => $row->status_terdaftar !== 'keep')
+                ->hide(),
+
             Rule::button('deleterekammedispasien')
-                ->when(fn($row) => $row->status_terdaftar !== 'konsultasi')
+                ->when(fn($row) => !in_array($row->status_terdaftar, ['konsultasi', 'keep']))
                 ->hide(),
         ];
     }
