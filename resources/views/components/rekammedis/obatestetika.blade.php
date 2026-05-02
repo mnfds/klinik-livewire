@@ -1,5 +1,28 @@
+    @props([
+        'obatEstetika' => [
+            'produk_id' => [],
+            'jumlah_produk' => [],
+            'potongan' => [],
+            'diskon' => [],
+            'subtotal' => [],
+        ],
+        'obatEstetikaLabels' => [],
+        'layanandanbundling' => [
+            'layanan' => [],
+            'bundling' => [],
+            'treatment' => [],
+            'skincare' => [],
+        ]
+    ])
 <div class="bg-base-200 p-4 rounded border border-base-200"
-    x-data="obatEstetikaForm()"
+    x-data="obatEstetikaForm(
+        @js($obatEstetika['produk_id']     ?? []),
+        @js($obatEstetika['jumlah_produk'] ?? []),
+        @js($obatEstetika['potongan']      ?? []),
+        @js($obatEstetika['diskon']        ?? []),
+        @js($obatEstetika['subtotal']      ?? []),
+        @js($obatEstetikaLabels            ?? [])
+    )"
         x-init="
         $watch('produkItems', () => {
             const total = calcTotal();
@@ -9,22 +32,6 @@
         })
     "
 >
-    @props([
-        'obatEstetika' => [
-            'produk_id' => [],
-            'jumlah_produk' => [],
-            'potongan' => [],
-            'diskon' => [],
-            'subtotal' => [],
-        ],
-        'layanandanbundling' => [
-            'layanan' => [],
-            'bundling' => [],
-            'treatment' => [],
-            'skincare' => [],
-        ]
-    ])
-
     <div class="divider">Produk Keperluan Estetika</div>
 
     <!-- Tombol tambah -->
@@ -62,14 +69,15 @@
                                 item.search_label = val.text;
                             }
                             syncItemProduk(index);
-                        }
+                        },
+                        () => item.search_label
                     )" x-init="init()">
                         <label class="block text-sm font-semibold mb-1">Produk</label>
                         <div class="relative">
                             <input type="text"
                                 class="input input-bordered w-full"
                                 placeholder="Ketik untuk cari produk..."
-                                :value="item.search_label || search"
+                                :value="search"
                                 @input.debounce.300ms="item.search_label = ''; search = $event.target.value; fetchOptions(); open = true"
                                 @focus="open = true"
                             >
@@ -161,10 +169,28 @@
 </div>
 
 <script>
-function obatEstetikaForm() {
+function obatEstetikaForm(
+    existingIds      = [],
+    existingJumlah   = [],
+    existingPotongan = [],
+    existingDiskon   = [],
+    existingSubtotal = [],
+    existingLabels   = []
+    ) {
     return {
-        // state
-        produkItems: [{ produk_id: '', nama_produk: '', harga: 0, search_label: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+        produkItems: existingIds.length > 0
+            ? existingIds.map((id, i) => ({
+                produk_id:    id,
+                nama_produk:  existingLabels[i]  ?? '',
+                search_label: existingLabels[i]  ?? '',
+                harga:        0,
+                jumlah_produk:existingJumlah[i]  ?? 1,
+                potongan:     existingPotongan[i] ?? 0,
+                diskon:       existingDiskon[i]   ?? 0,
+                subtotal:     existingSubtotal[i] ?? 0,
+            }))
+            : [{ produk_id: '', nama_produk: '', harga: 0, search_label: '', jumlah_produk: 1, potongan: 0, diskon: 0, subtotal: 0 }],
+
         produk: @json($layanandanbundling['skincare']),
 
         // helpers
@@ -269,13 +295,16 @@ function obatEstetikaForm() {
     }
 }
 
-function singleSelectProduk(getModel, setModel) {
+function singleSelectProduk(getModel, setModel, getLabel) {
     return {
         open: false,
         selected: null,
         search: '',
         filteredOptions: [],
-        init() {},
+        init() {
+            const label = getLabel ? getLabel() : '';
+            if (label) this.search = label;
+        },
         fetchOptions() {
             if (this.search.trim() === '') { this.filteredOptions = []; return; }
             fetch(`/ajax/produk?q=${encodeURIComponent(this.search)}`)

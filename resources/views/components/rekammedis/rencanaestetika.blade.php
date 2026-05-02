@@ -1,5 +1,27 @@
+    @props([
+        'rencanaEstetika' => [
+            'treatments_id'    => [],
+            'jumlah_treatment' => [],
+            'potongan'         => [],
+            'diskon'           => [],
+            'subtotal'         => [],
+        ],
+        'rencanaEstetikaLabels' => [],
+        'layanandanbundling' => [
+            'layanan'   => [],
+            'bundling'  => [],
+            'treatment' => [],
+        ]
+    ])
 <div class="bg-base-200 p-4 rounded border border-base-200"
-    x-data="treatmentForm()"
+    x-data="treatmentForm(
+        @js($rencanaEstetika['treatments_id']    ?? []),
+        @js($rencanaEstetika['jumlah_treatment'] ?? []),
+        @js($rencanaEstetika['potongan']         ?? []),
+        @js($rencanaEstetika['diskon']           ?? []),
+        @js($rencanaEstetika['subtotal']         ?? []),
+        @js($rencanaEstetikaLabels               ?? [])
+    )"
     x-init="
         $watch('treatmentItems', () => {
             const total = calcTotal();
@@ -9,21 +31,6 @@
         })
     "
 >
-    @props([
-        'rencanaEstetika' => [
-            'treatments_id' => [],
-            'jumlah_treatment' => [],
-            'potongan' => [],
-            'diskon' => [],
-            'subtotal' => [],
-        ],
-        'layanandanbundling' => [
-            'layanan' => [],
-            'bundling' => [],
-            'treatment' => [],
-        ]
-    ])
-
     <div class="divider">Rencana Tindakan Estetika</div>
 
     <!-- Tombol tambah -->
@@ -82,21 +89,6 @@
                         </div>
                     </div>
                   
-                    {{-- <div>
-                        <label class="block text-sm font-semibold mb-1">Treatment</label>
-                        <select class="select select-bordered w-full"
-                            :name="`rencanaEstetika[treatments_id][${index}]`"
-                            x-model="item.treatments_id"
-                            @change="syncItemTreatment(index)"
-                        >
-                            <option value="">-- Pilih Treatment --</option>
-                            @foreach($layanandanbundling['treatment'] as $Treatment)
-                                <option value="{{ $Treatment['id'] }}">
-                                    {{ $Treatment['nama_treatment'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div> --}}
                     <div>
                         <label class="block text-sm font-semibold mb-1">Jumlah</label>
                         <input type="number" min="1"
@@ -175,19 +167,31 @@
 </div>
 
 <script>
-    function treatmentForm() {
+    function treatmentForm(
+        existingIds      = [],
+        existingJumlah   = [],
+        existingPotongan = [],
+        existingDiskon   = [],
+        existingSubtotal = [],
+        existingLabels   = []
+    ) {
         return {
-            // state
-            treatmentItems: [{ 
-                treatments_id: '', 
-                nama_treatment: '',
-                harga: 0,
-                search_label: '',
-                jumlah_treatment: 1, 
-                potongan: 0, 
-                diskon: 0, 
-                subtotal: 0 
-            }],
+            treatmentItems: existingIds.length > 0
+                ? existingIds.map((id, i) => ({
+                    treatments_id:    id,
+                    nama_treatment:   existingLabels[i]   ?? '',
+                    search_label:     existingLabels[i]   ?? '',
+                    harga:            0,
+                    jumlah_treatment: existingJumlah[i]   ?? 1,
+                    potongan:         existingPotongan[i]  ?? 0,
+                    diskon:           existingDiskon[i]    ?? 0,
+                    subtotal:         existingSubtotal[i]  ?? 0,
+                }))
+                : [{ 
+                    treatments_id: '', nama_treatment: '', harga: 0,
+                    search_label: '', jumlah_treatment: 1, potongan: 0, diskon: 0, subtotal: 0 
+                }],
+
             treatments: @json($layanandanbundling['treatment']),
 
             // helpers
@@ -300,6 +304,7 @@
             },
         }
     }
+    
     function singleSelectTreatment(getModel, setModel) {
         return {
             open: false,

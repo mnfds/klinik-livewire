@@ -712,6 +712,7 @@
                                             <x-rekammedis.rencanaestetika 
                                                 :layanandanbundling="$layanandanbundling" 
                                                 :rencanaEstetika="$rencana_estetika"
+                                                :rencanaEstetikaLabels="$rencanaEstetikaLabels"
                                             />
                                         </div>
 
@@ -720,6 +721,7 @@
                                             <x-rekammedis.rencanalayanan 
                                                 :layanandanbundling="$layanandanbundling" 
                                                 :rencanaLayanan="$rencana_layanan"
+                                                :rencanaLayananLabels="$rencanaLayananLabels"
                                             />
                                         </div>
 
@@ -801,6 +803,7 @@
                                             <x-rekammedis.obatestetika 
                                                 :layanandanbundling="$layanandanbundling"
                                                 :obatEstetika="$obat_estetika"
+                                                :obatEstetikaLabels="$obatEstetikaLabels"
                                             />
                                         </div>
 

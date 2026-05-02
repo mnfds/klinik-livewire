@@ -67,6 +67,8 @@ class Keep extends Component
     public ?int $pasien_terdaftar_id = null;
     public ?PasienTerdaftar $pasienTerdaftar = null;
     public $kajian;
+    public ?int $rekam_medis_id = null;
+    public $rekamMedisLama; // simpan instance RM lama
 
     public $encounter_id;
     
@@ -152,6 +154,7 @@ class Keep extends Component
             'pelayanan_id' => [],
             'jumlah_pelayanan' => [],
         ];
+        public $rencanaLayananLabels = [];
 
         public $rencana_estetika = [
             'treatments_id' => [],
@@ -160,6 +163,7 @@ class Keep extends Component
             'diskon' => [],
             'subtotal' => [],
         ];
+        public $rencanaEstetikaLabels = [];
 
         public $obat_estetika = [
             'produk_id' => [],
@@ -168,6 +172,7 @@ class Keep extends Component
             'diskon' => [],
             'subtotal' => [],
         ];
+        public $obatEstetikaLabels = [];
 
         public $rencana_bundling = [
             'bundling_id' => [],
@@ -181,6 +186,7 @@ class Keep extends Component
                 'produks' => [],
             ]
         ];
+        public $rencanaBundlingLabels = [];
 
         public $layanandanbundling = [
             'layanan' => [],
@@ -217,6 +223,330 @@ class Keep extends Component
             ],
         ];
     //PLAN
+
+    public function mount($rekam_medis_id = null)
+    {
+        $this->rekam_medis_id = $rekam_medis_id;
+
+        $rm = RekamMedis::with([
+            'pasienTerdaftar.pasien',
+            'pasienTerdaftar.dokter',
+            'pasienTerdaftar.poliklinik',
+            'dataKesehatanRM',
+            'dataEstetikaRM',
+            'tandaVitalRM',
+            'pemeriksaanFisikRM',
+            'pemeriksaanKulitRM',
+            'diagnosaRM',
+            'icdRM',
+            'rencanaLayananRM.pelayanan',
+            'rencanaTreatmentRM.treatment',
+            'rencanaBundlingRM.bundling',
+            'obatNonRacikanRM',
+            'obatRacikanRM.bahanRacikan',
+            'rencanaProdukRM.produk',
+        ])->findOrFail($rekam_medis_id);
+
+        $this->rekamMedisLama = $rm;
+        $this->pasien_terdaftar_id = $rm->pasien_terdaftar_id;
+        $this->pasienTerdaftar = $rm->pasienTerdaftar;
+        $this->pasien_id = $rm->pasienTerdaftar->pasien_id;
+        $this->nama_dokter = $rm->nama_dokter;
+        $this->keluhan_utama = $rm->keluhan_utama;
+        $this->tingkat_kesadaran = $rm->tingkat_kesadaran;
+
+        // Load layanan/bundling untuk dropdown (sama seperti component lama)
+        $this->layanan = Pelayanan::all();
+        $this->bundling = Bundling::with([
+            'treatmentBundlings.treatment',
+            'pelayananBundlings.pelayanan',
+            'produkObatBundlings.produk',
+        ])->get();
+        $this->treatment = Treatment::all();
+        $this->skincare = ProdukDanObat::all();
+        $this->layanandanbundling = [
+            'layanan'   => $this->layanan,
+            'bundling'  => $this->bundling,
+            'treatment' => $this->treatment,
+            'skincare'  => $this->skincare,
+        ];
+
+        // Bundling pasien
+        if ($this->pasien_id) {
+            $this->bundlingPasien['treatments'] = TreatmentBundlingRM::with('bundling', 'treatment')
+                ->where('pasien_id', $this->pasien_id)->get();
+            $this->bundlingPasien['pelayanans'] = PelayananBundlingRM::with('bundling', 'pelayanan')
+                ->where('pasien_id', $this->pasien_id)->get();
+            $this->bundlingPasien['produks'] = ProdukObatBundlingRM::with('bundling', 'produk')
+                ->where('pasien_id', $this->pasien_id)->get();
+        }
+
+        $treatmentUsages = \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
+            ->where('is_pembelian_baru', false) // hanya yang dipakai, bukan pembelian baru
+            ->with('bundling', 'treatment')
+            ->get();
+
+        $pelayananUsages = \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
+            ->where('is_pembelian_baru', false)
+            ->with('bundling', 'pelayanan')
+            ->get();
+
+        $produkUsages = \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
+            ->where('is_pembelian_baru', false)
+            ->with('bundling', 'produk')
+            ->get();
+
+        // Rebuild layananTerpilih dari usage
+        foreach ($treatmentUsages as $usage) {
+            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $record = \App\Models\TreatmentBundlingRM::where('pasien_id', $this->pasien_id)
+                ->where('treatments_id', $usage->treatments_id)
+                ->where('group_bundling', $usage->group_bundling)
+                ->first();
+
+            if (!$record) continue;
+
+            $sisa = $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai);
+            // kurangi terpakai dengan usage ini karena nanti akan dihitung ulang saat save
+
+            if (!isset($this->layananTerpilih[$bundlingName])) {
+                $this->layananTerpilih[$bundlingName] = [];
+            }
+            $this->layananTerpilih[$bundlingName][] = [
+                'id'                 => $record->id,
+                'tipe'               => 'treatment',
+                'nama'               => $usage->treatment?->nama_treatment ?? '',
+                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
+                'dipakai'            => $usage->jumlah_dipakai,
+                'group_bundling_lama'=> $usage->group_bundling,
+            ];
+        }
+
+        foreach ($pelayananUsages as $usage) {
+            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $record = \App\Models\PelayananBundlingRM::where('pasien_id', $this->pasien_id)
+                ->where('pelayanan_id', $usage->pelayanan_id)
+                ->where('group_bundling', $usage->group_bundling)
+                ->first();
+
+            if (!$record) continue;
+
+            if (!isset($this->layananTerpilih[$bundlingName])) {
+                $this->layananTerpilih[$bundlingName] = [];
+            }
+            $this->layananTerpilih[$bundlingName][] = [
+                'id'                 => $record->id,
+                'tipe'               => 'pelayanan',
+                'nama'               => $usage->pelayanan?->nama ?? '',
+                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
+                'dipakai'            => $usage->jumlah_dipakai,
+                'group_bundling_lama'=> $usage->group_bundling,
+            ];
+        }
+
+        foreach ($produkUsages as $usage) {
+            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $record = \App\Models\ProdukObatBundlingRM::where('pasien_id', $this->pasien_id)
+                ->where('produk_obat_id', $usage->produk_obat_id)
+                ->where('group_bundling', $usage->group_bundling)
+                ->first();
+
+            if (!$record) continue;
+
+            if (!isset($this->layananTerpilih[$bundlingName])) {
+                $this->layananTerpilih[$bundlingName] = [];
+            }
+            $this->layananTerpilih[$bundlingName][] = [
+                'id'                 => $record->id,
+                'tipe'               => 'produk',
+                'nama'               => $usage->produk?->nama_produk ?? '',
+                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
+                'dipakai'            => $usage->jumlah_dipakai,
+                'group_bundling_lama'=> $usage->group_bundling,
+            ];
+        }
+        // ── LOAD DATA KE FORM ──
+
+        // Subjective: Data Kesehatan
+        if ($rm->dataKesehatanRM) {
+            $this->selected_forms_subjective[] = 'data-kesehatan';
+            $dk = $rm->dataKesehatanRM;
+            $this->data_kesehatan = [
+                'status_perokok'         => $dk->status_perokok,
+                'riwayat_penyakit'       => json_decode($dk->riwayat_penyakit ?? '[]', true),
+                'riwayat_alergi_obat'    => json_decode($dk->riwayat_alergi_obat ?? '[]', true),
+                'riwayat_alergi_lainnya' => json_decode($dk->riwayat_alergi_lainnya ?? '[]', true),
+                'obat_sedang_dikonsumsi' => json_decode($dk->obat_sedang_dikonsumsi ?? '[]', true),
+            ];
+        }
+
+        // Subjective: Data Estetika
+        if ($rm->dataEstetikaRM) {
+            $this->selected_forms_subjective[] = 'data-estetika';
+            $de = $rm->dataEstetikaRM;
+            $this->data_estetika = [
+                'problem_dihadapi'    => json_decode($de->problem_dihadapi ?? '[]', true),
+                'lama_problem'        => $de->lama_problem,
+                'tindakan_sebelumnya' => json_decode($de->tindakan_sebelumnya ?? '[]', true),
+                'penyakit_dialami'    => $de->penyakit_dialami,
+                'alergi_kosmetik'     => $de->alergi_kosmetik,
+                'sedang_hamil'        => $de->sedang_hamil,
+                'usia_kehamilan'      => $de->usia_kehamilan,
+                'metode_kb'           => json_decode($de->metode_kb ?? '[]', true),
+                'pengobatan_saat_ini' => $de->pengobatan_saat_ini,
+                'produk_kosmetik'     => $de->produk_kosmetik,
+            ];
+        }
+
+        // Objective: Tanda Vital
+        if ($rm->tandaVitalRM) {
+            $this->selected_forms_objective[] = 'tanda-vital';
+            $tv = $rm->tandaVitalRM;
+            $this->tanda_vital = [
+                'suhu_tubuh'           => $tv->suhu_tubuh,
+                'nadi'                 => $tv->nadi,
+                'sistole'              => $tv->sistole,
+                'diastole'             => $tv->diastole,
+                'frekuensi_pernapasan' => $tv->frekuensi_pernapasan,
+            ];
+        }
+
+        // Objective: Pemeriksaan Fisik
+        if ($rm->pemeriksaanFisikRM) {
+            $this->selected_forms_objective[] = 'pemeriksaan-fisik';
+            $pf = $rm->pemeriksaanFisikRM;
+            $this->pemeriksaan_fisik = [
+                'tinggi_badan' => $pf->tinggi_badan,
+                'berat_badan'  => $pf->berat_badan,
+                'imt'          => $pf->imt,
+            ];
+        }
+
+        // Objective: Pemeriksaan Estetika/Kulit
+        if ($rm->pemeriksaanKulitRM) {
+            $this->selected_forms_objective[] = 'pemeriksaan-estetika';
+            $pk = $rm->pemeriksaanKulitRM;
+            $this->pemeriksaan_estetika = [
+                'warna_kulit'       => $pk->warna_kulit,
+                'ketebalan_kulit'   => $pk->ketebalan_kulit,
+                'kadar_minyak'      => $pk->kadar_minyak,
+                'kerapuhan_kulit'   => $pk->kerapuhan_kulit,
+                'kekencangan_kulit' => $pk->kekencangan_kulit,
+                'melasma'           => $pk->melasma,
+                'acne'              => json_decode($pk->acne ?? '[]', true),
+                'lesions'           => json_decode($pk->lesions ?? '[]', true),
+            ];
+        }
+
+        // Assessment: ICD10
+        if ($rm->icdRM->isNotEmpty()) {
+            $this->icd10 = $rm->icdRM->map(fn($i) => [
+                'code'    => $i->code,
+                'name_id' => $i->name_id,
+                'name_en' => $i->name_en,
+            ])->toArray();
+        }
+
+        // Assessment: Diagnosa
+        if ($rm->diagnosaRM) {
+            $this->diagnosa = $rm->diagnosaRM->diagnosa;
+        }
+
+        // Plan: Rencana Layanan
+        if ($rm->rencanaLayananRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'rencana-layanan';
+            $this->rencana_layanan = [
+                'pelayanan_id'     => $rm->rencanaLayananRM->pluck('pelayanan_id')->toArray(),
+                'jumlah_pelayanan' => $rm->rencanaLayananRM->pluck('jumlah_pelayanan')->toArray(),
+            ];
+            $this->rencanaLayananLabels = $rm->rencanaLayananRM
+            ->map(fn($r) => $r->pelayanan?->nama_pelayanan ?? '')
+            ->toArray();
+        }
+
+        // Plan: Rencana Treatment Estetika
+        if ($rm->rencanaTreatmentRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'rencana-estetika';
+            $this->rencana_estetika = [
+                'treatments_id'    => $rm->rencanaTreatmentRM->pluck('treatments_id')->toArray(),
+                'jumlah_treatment' => $rm->rencanaTreatmentRM->pluck('jumlah_treatment')->toArray(),
+                'potongan'         => $rm->rencanaTreatmentRM->pluck('potongan')->toArray(),
+                'diskon'           => $rm->rencanaTreatmentRM->pluck('diskon')->toArray(),
+                'subtotal'         => $rm->rencanaTreatmentRM->pluck('subtotal')->toArray(),
+            ];
+            $this->rencanaEstetikaLabels = $rm->rencanaTreatmentRM
+            ->map(fn($r) => $r->treatment?->nama_treatment ?? '')
+            ->toArray();
+            // dd($this->rencanaEstetikaLabels);
+        }
+
+        // Plan: Rencana Bundling
+        if ($rm->rencanaBundlingRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'rencana-bundling';
+            $this->rencana_bundling = [
+                'bundling_id'    => $rm->rencanaBundlingRM->pluck('bundling_id')->toArray(),
+                'jumlah_bundling'=> $rm->rencanaBundlingRM->pluck('jumlah_bundling')->toArray(),
+                'potongan'       => $rm->rencanaBundlingRM->pluck('potongan')->toArray(),
+                'diskon'         => $rm->rencanaBundlingRM->pluck('diskon')->toArray(),
+                'subtotal'       => $rm->rencanaBundlingRM->pluck('subtotal')->toArray(),
+                'details'        => [
+                    'treatments' => [],
+                    'pelayanans' => [],
+                    'produks'    => [],
+                ],
+            ];
+            $this->rencanaBundlingLabels = $rm->rencanaBundlingRM
+                ->map(fn($r) => $r->bundling?->nama_bundling ?? '')
+                ->toArray();
+        }
+
+        // Plan: Produk Estetika
+        if ($rm->rencanaProdukRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'obat-estetika';
+            $this->obat_estetika = [
+                'produk_id'     => $rm->rencanaProdukRM->pluck('produk_id')->toArray(),
+                'jumlah_produk' => $rm->rencanaProdukRM->pluck('jumlah_produk')->toArray(),
+                'potongan'      => $rm->rencanaProdukRM->pluck('potongan')->toArray(),
+                'diskon'        => $rm->rencanaProdukRM->pluck('diskon')->toArray(),
+                'subtotal'      => $rm->rencanaProdukRM->pluck('subtotal')->toArray(),
+            ];
+            $this->obatEstetikaLabels = $rm->rencanaProdukRM
+            ->map(fn($r) => $r->produk?->nama_dagang ?? '')
+            ->toArray();
+        }
+
+        // Plan: Obat Non Racikan
+        if ($rm->obatNonRacikanRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'obat-non-racikan';
+            $this->obat_non_racikan = [
+                'nama_obat_non_racikan'         => $rm->obatNonRacikanRM->pluck('nama_obat_non_racikan')->toArray(),
+                'jumlah_obat_non_racikan'       => $rm->obatNonRacikanRM->pluck('jumlah_obat_non_racikan')->toArray(),
+                'satuan_obat_non_racikan'       => $rm->obatNonRacikanRM->pluck('satuan_obat_non_racikan')->toArray(),
+                'dosis_obat_non_racikan'        => $rm->obatNonRacikanRM->pluck('dosis_obat_non_racikan')->toArray(),
+                'hari_obat_non_racikan'         => $rm->obatNonRacikanRM->pluck('hari_obat_non_racikan')->toArray(),
+                'aturan_pakai_obat_non_racikan' => $rm->obatNonRacikanRM->pluck('aturan_pakai_obat_non_racikan')->toArray(),
+            ];
+        }
+
+        // Plan: Obat Racikan
+        if ($rm->obatRacikanRM->isNotEmpty()) {
+            $this->selected_forms_plan[] = 'obat-racikan';
+            $this->racikanItems = $rm->obatRacikanRM->map(fn($r) => [
+                'nama_racikan'         => $r->nama_racikan,
+                'jumlah_racikan'       => $r->jumlah_racikan,
+                'satuan_racikan'       => $r->satuan_racikan,
+                'dosis_obat_racikan'   => $r->dosis_obat_racikan,
+                'hari_obat_racikan'    => $r->hari_obat_racikan,
+                'aturan_pakai_racikan' => $r->aturan_pakai_racikan,
+                'metode_racikan'       => $r->metode_racikan,
+                'bahan'                => $r->bahanRacikan->map(fn($b) => [
+                    'nama_obat_racikan'   => $b->nama_obat_racikan,
+                    'jumlah_obat_racikan' => $b->jumlah_obat_racikan,
+                    'satuan_obat_racikan' => $b->satuan_obat_racikan,
+                ])->toArray(),
+            ])->toArray();
+        }
+    }
 
     public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName, $group_bundling_lama)
     {
@@ -309,1019 +639,552 @@ class Keep extends Component
         }
     }
 
-    public function mount($pasien_terdaftar_id = null)
-    {
-        $this->nama_dokter = Auth::user()->dokter->nama_dokter ?? '-';
-        $this->pasien_terdaftar_id = $pasien_terdaftar_id;
-        if ($pasien_terdaftar_id) {
-            $this->pasienTerdaftar = PasienTerdaftar::with('pasien')->find($pasien_terdaftar_id);
-            $this->pasien_id = $this->pasienTerdaftar?->pasien_id;
-        }
-
-        $this->layanan = Pelayanan::all();
-        $this->bundling = Bundling::with([
-            'treatmentBundlings.treatment',
-            'pelayananBundlings.pelayanan',
-            'produkObatBundlings.produk',
-        ])->get();
-        $this->treatment = Treatment::all();
-        $this->skincare = ProdukDanObat::all();
-
-        $this->layanandanbundling['layanan'] = $this->layanan;
-        $this->layanandanbundling['bundling'] = $this->bundling;
-        $this->layanandanbundling['treatment'] = $this->treatment;
-        $this->layanandanbundling['skincare'] = $this->skincare;
-
-        if ($this->pasien_id) {
-            // Ambil treatment bundling pasien
-            $this->bundlingPasien['treatments'] = TreatmentBundlingRM::with('bundling', 'treatment')
-                ->where('pasien_id', $this->pasien_id)
-                ->get();
-
-            // Ambil pelayanan bundling pasien
-            $this->bundlingPasien['pelayanans'] = PelayananBundlingRM::with('bundling', 'pelayanan')
-                ->where('pasien_id', $this->pasien_id)
-                ->get();
-
-            // Ambil produk/obat bundling pasien
-            $this->bundlingPasien['produks'] = ProdukObatBundlingRM::with('bundling', 'produk',)
-                ->where('pasien_id', $this->pasien_id)
-                ->get();
-        }
-
-        if ($this->pasien_terdaftar_id) {
-            $this->pasienTerdaftar = PasienTerdaftar::findOrFail($this->pasien_terdaftar_id);
-            $this->kajian = KajianAwal::with('pemeriksaanFisik')
-                ->where('pasien_terdaftar_id', $this->pasien_terdaftar_id)
-                ->first();
-
-            if ($this->kajian && $this->kajian->pemeriksaanFisik) {
-                $this->pemeriksaan_fisik = [
-                    'tinggi_badan' => $this->kajian->pemeriksaanFisik->tinggi_badan,
-                    'berat_badan' => $this->kajian->pemeriksaanFisik->berat_badan,
-                    'imt' => $this->kajian->pemeriksaanFisik->imt,
-                ];
-            }
-            if ($this->kajian && $this->kajian->tandaVital) {
-                $this->tanda_vital = [
-                    'suhu_tubuh' => $this->kajian->tandaVital->suhu_tubuh,
-                    'nadi' => $this->kajian->tandaVital->nadi,
-                    'sistole' => $this->kajian->tandaVital->sistole,
-                    'diastole' => $this->kajian->tandaVital->diastole,
-                    'frekuensi_pernapasan' => $this->kajian->tandaVital->frekuensi_pernapasan,
-                ];
-            }
-            if ($this->kajian && $this->kajian->dataKesehatan) {
-                $this->data_kesehatan = [
-                    'keluhan_utama' => $this->kajian->dataKesehatan->keluhan_utama,
-                    'status_perokok' => $this->kajian->dataKesehatan->status_perokok,
-                    'riwayat_penyakit' => json_decode($this->kajian->dataKesehatan->riwayat_penyakit ?? '[]', true),
-                    'riwayat_alergi_obat' => json_decode($this->kajian->dataKesehatan->riwayat_alergi_obat ?? '[]', true),
-                    'obat_sedang_dikonsumsi' => json_decode($this->kajian->dataKesehatan->obat_sedang_dikonsumsi ?? '[]', true),
-                    'riwayat_alergi_lainnya' => json_decode($this->kajian->dataKesehatan->riwayat_alergi_lainnya ?? '[]', true),
-                ];
-            }
-            if ($this->kajian && $this->kajian->dataEstetika) {
-                $this->data_estetika = [
-                    'problem_dihadapi' => json_decode($this->kajian->dataEstetika->problem_dihadapi ?? '[]', true),
-                    'lama_problem' => $this->kajian->dataEstetika->lama_problem,
-                    'tindakan_sebelumnya' => json_decode($this->kajian->dataEstetika->tindakan_sebelumnya ?? '[]', true),
-                    'penyakit_dialami' => $this->kajian->dataEstetika->penyakit_dialami,
-                    'alergi_kosmetik' => $this->kajian->dataEstetika->alergi_kosmetik,
-                    'sedang_hamil' => $this->kajian->dataEstetika->sedang_hamil,
-                    'usia_kehamilan' => $this->kajian->dataEstetika->usia_kehamilan,
-                    'metode_kb' => json_decode($this->kajian->dataEstetika->metode_kb ?? '[]', true),
-                    'pengobatan_saat_ini' => $this->kajian->dataEstetika->pengobatan_saat_ini,
-                    'produk_kosmetik' => $this->kajian->dataEstetika->produk_kosmetik,
-                ];
-            }
-        }
-    }
-
     public function create()
     {
-        $this->storeData(keepStatus: false);
+        $this->updateData(keepStatus: false);
     }
 
     public function createAndKeep()
     {
-        $this->storeData(keepStatus: true);
+        $this->updateData(keepStatus: true);
     }
 
-    public function storeData(bool $keepStatus = false)
+    public function updateData(bool $keepStatus = false)
     {
         $rules = [
-            'nama_dokter' => 'required|string|max:255',
+            'nama_dokter'         => 'required|string|max:255',
             'pasien_terdaftar_id' => 'required|exists:pasien_terdaftars,id',
-            'keluhan_utama' => 'required|string',
-            'tingkat_kesadaran' => 'required|string',
+            'keluhan_utama'       => 'required|string',
+            'tingkat_kesadaran'   => 'required|string',
         ];
         if (collect($this->icd10)->flatten(1)->count() === 0) {
             $rules['icd10'] = 'required';
         }
         if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
             $rules['pemeriksaan_fisik.tinggi_badan'] = 'required';
-            $rules['pemeriksaan_fisik.berat_badan'] = 'required';
+            $rules['pemeriksaan_fisik.berat_badan']  = 'required';
         }
         $this->validate($rules);
-        // dd([
-            // $this->keluhan_utama,
-            // $this->selected_forms_subjective,
-            // $this->selected_forms_objective,
-            // $this->selected_forms_assessment,
-            // $this->selected_forms_plan,
-            // $this->pemeriksaan_fisik,
-            // $this->tanda_vital,
-            // $this->data_kesehatan,
-            // $this->tingkat_kesadaran,
-            // $this->diagnosa,
-            // $this->icd10,
-            // $this->data_estetika,
-            // $this->pemeriksaan_estetika,
-            // $this->rencana_layanan,
-            // $this->rencana_estetika,
-            // $this->rencana_bundling,
-            // $this->obat_estetika,
-            // $this->obat_non_racikan,
-            // $this->obat_racikan,
-            // $this->bahan_racikan,
-            // $this->layananTerpilih,
-        // ]);
 
         DB::beginTransaction();
+        try {
+            $rm = RekamMedis::findOrFail($this->rekam_medis_id);
 
-            try {
-                $rekammedis = RekamMedis::create([
-                    'nama_dokter' => $this->nama_dokter,
-                    'pasien_terdaftar_id' => $this->pasien_terdaftar_id,
-                    'keluhan_utama' => $this->keluhan_utama,
-                    'tingkat_kesadaran' => $this->tingkat_kesadaran,
-                ]);
-                
-                $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
-                // ambil waktu diperiksa
-                $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
-                
-                //put encounter
-                $kirimsatusehat = $pt->encounter_id;
-                if($kirimsatusehat){               
-                    
-                    // Encounter ID yang sudah dibuat saat POST Encounter
-                    $encounterId = $pt->encounter_id;
-                    // Panggil PUT Encounter
-                    $putEncounter = app(PutInProgressEncounter::class);
-                    $putEncounter->handle(
-                        encounterId: $encounterId,
-                        waktuTiba: $pt->waktu_tiba,
-                        WaktuDiperiksa: $waktu_diperiksa,
-                        pasienNama: $pt->pasien->nama,
-                        pasienIhs: $pt->pasien->no_ihs,
-                        dokterNama: $pt->dokter->nama_dokter,
-                        dokterIhs: $pt->dokter->ihs,
-                        location: $pt->poliklinik->location,
-                    );
-                    
-                    if($rekammedis->keluhan_utama){
-                        $PostKeluhanUtama = app(StoreKeluhanUtama::class);
-                        $PostKeluhanUtama->handle(
-                            encounterId: $encounterId,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            pasienNama: $pt->pasien->nama,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            keluhanUtama: $rekammedis->keluhan_utama,
-                        );
-                    }
+            // ── UPDATE REKAM MEDIS UTAMA ──
+            $rm->update([
+                'nama_dokter'      => $this->nama_dokter,
+                'keluhan_utama'    => $this->keluhan_utama,
+                'tingkat_kesadaran'=> $this->tingkat_kesadaran,
+            ]);
 
-                    if($rekammedis->tingkat_kesadaran){
-                        $PostTingkatKesadaran = app(StoreTingkatKesadaran::class);
-                        $PostTingkatKesadaran->handle(
-                            encounterId: $encounterId,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            pasienNama: $pt->pasien->nama,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            tingkatKesadaran: $rekammedis->tingkat_kesadaran,
-                        );
+            $pt = PasienTerdaftar::with(['pasien', 'dokter'])->find($this->pasien_terdaftar_id);
+            $waktu_diperiksa = $pt->waktu_diperiksa ?? Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String();
+
+            // ── STATUS ──
+            if ($keepStatus) {
+                $status = 'keep';
+            } else {
+                $status = 'pembayaran';
+                if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
+                    $status = 'peresepan';
+                }
+                if (in_array('obat-racikan', $this->selected_forms_plan)) {
+                    $status = 'peresepan';
+                }
+                if (in_array('rencana-bundling', $this->selected_forms_plan)) {
+                    $adaObat = \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $this->rekamMedisLama->id)
+                                ->with('produk')
+                                ->get();
+
+                    $golonganObat = [
+                        'Obat Bebas', 'Obat Bebas Terbatas', 'Obat Keras',
+                        'Obat Narkotika', 'Obat Psikotropika',
+                        'Obat fitofarmaka', 'OHT (Obat Herbal Terstandar)',
+                        'Jamu', 'Lain - Lain',
+                    ];
+
+                    $adaObatDenganGolongan = $adaObat->contains(function ($item) use ($golonganObat) {
+                        return in_array($item->produk?->golongan, $golonganObat);
+                    });
+
+                    if ($adaObatDenganGolongan) {
+                        $status = 'peresepan';
                     }
                 }
+                if (!empty($this->layananTerpilih)) {
+                    $golonganObat = [
+                        'Obat Bebas', 'Obat Bebas Terbatas', 'Obat Keras',
+                        'Obat Narkotika', 'Obat Psikotropika', 'Obat fitofarmaka',
+                        'OHT (Obat Herbal Terstandar)', 'Jamu', 'Lain - Lain',
+                    ];
+                    $pasien_Id = $this->pasien_id ?? null;
 
-                if ($keepStatus) {
-                    $status = 'konsultasi';
-                } else {
-                    $status = 'pembayaran';
-                    if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
-                        $status = 'peresepan';
-                    }
-                    if (in_array('obat-racikan', $this->selected_forms_plan)) {
-                        $status = 'peresepan';
-                    }
-                    if (in_array('rencana-bundling', $this->selected_forms_plan)) {
-                        $adaObat = \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rekammedis->id)
-                                    ->with('produk')
-                                    ->get();
+                    $adaObatSisa = collect($this->layananTerpilih)
+                        ->flatten(1)
+                        ->filter(fn($item) => 
+                            $item['tipe'] === 'produk' && 
+                            (int)($item['dipakai'] ?? 0) > 0
+                        )
+                        ->contains(function ($item) use ($golonganObat, $pasien_Id) {
+                            $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
+                                ->where('pasien_id', $pasien_Id)
+                                ->with('produk')
+                                ->first();
 
-                        $golonganObat = [
-                            'Obat Bebas', 'Obat Bebas Terbatas', 'Obat Keras',
-                            'Obat Narkotika', 'Obat Psikotropika',
-                            'Obat fitofarmaka', 'OHT (Obat Herbal Terstandar)',
-                            'Jamu', 'Lain - Lain',
-                        ];
-
-                        $adaObatDenganGolongan = $adaObat->contains(function ($item) use ($golonganObat) {
-                            return in_array($item->produk?->golongan, $golonganObat);
+                            return $record && in_array($record->produk?->golongan, $golonganObat);
                         });
 
-                        if ($adaObatDenganGolongan) {
-                            $status = 'peresepan';
-                        }
-                    }
-                    if (!empty($this->layananTerpilih)) {
-                        $golonganObat = [
-                            'Obat Bebas', 'Obat Bebas Terbatas', 'Obat Keras',
-                            'Obat Narkotika', 'Obat Psikotropika', 'Obat fitofarmaka',
-                            'OHT (Obat Herbal Terstandar)', 'Jamu', 'Lain - Lain',
-                        ];
-                        $pasien_Id = $this->pasien_id ?? null;
-
-                        $adaObatSisa = collect($this->layananTerpilih)
-                            ->flatten(1)
-                            ->filter(fn($item) => 
-                                $item['tipe'] === 'produk' && 
-                                (int)($item['dipakai'] ?? 0) > 0
-                            )
-                            ->contains(function ($item) use ($golonganObat, $pasien_Id) {
-                                $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
-                                    ->where('pasien_id', $pasien_Id)
-                                    ->with('produk')
-                                    ->first();
-
-                                return $record && in_array($record->produk?->golongan, $golonganObat);
-                            });
-
-                        if ($adaObatSisa) {
-                            $status = 'peresepan';
-                        }
+                    if ($adaObatSisa) {
+                        $status = 'peresepan';
                     }
                 }
-                PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                    ->update([
-                        'status_terdaftar' => $status,
-                        'waktu_diperiksa' => $waktu_diperiksa
-                    ]);
+            }
 
-                // PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)
-                //     ->update(['status_terdaftar' => 'peresepan']);
+            PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update([
+                'status_terdaftar' => $status,
+                'waktu_diperiksa'  => $waktu_diperiksa,
+            ]);
 
-            // ----- SUBJECTIVE ----- //
-
-                // SIMPAN DATA KESEHATAN REKAM MEDIS
-                if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
-                    $datakesehatans = DataKesehatanRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'status_perokok' => $this->data_kesehatan['status_perokok'],
-                        'riwayat_penyakit' => json_encode($this->data_kesehatan['riwayat_penyakit']),
-                        'riwayat_alergi_obat' => json_encode($this->data_kesehatan['riwayat_alergi_obat']),
+            // ── SUBJECTIVE: updateOrCreate pakai rekam_medis_id sebagai key ──
+            if (in_array('data-kesehatan', $this->selected_forms_subjective)) {
+                DataKesehatanRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'status_perokok'         => $this->data_kesehatan['status_perokok'],
+                        'riwayat_penyakit'       => json_encode($this->data_kesehatan['riwayat_penyakit']),
+                        'riwayat_alergi_obat'    => json_encode($this->data_kesehatan['riwayat_alergi_obat']),
                         'riwayat_alergi_lainnya' => json_encode($this->data_kesehatan['riwayat_alergi_lainnya']),
                         'obat_sedang_dikonsumsi' => json_encode($this->data_kesehatan['obat_sedang_dikonsumsi']),
-                    ]);
+                    ]
+                );
+            }
 
-                    if ($kirimsatusehat) {
-
-                        $encounterId = $pt->encounter_id;
-
-                        // AMBIL LANGSUNG DARI DATA KESEHATAN RM
-                        $icds = json_decode($datakesehatans->riwayat_penyakit, true);
-                        $obatdikonsumsi = json_decode($datakesehatans->obat_sedang_dikonsumsi, true);
-                        $alergi = json_decode($datakesehatans->riwayat_alergi_obat, true);
-
-                        // ---- Riwayat Penyakit ----
-                        if ($icds) {
-                            $riwayatPenyakits = Icd::whereIn('name_id', $icds)->get(['code', 'name_en', 'name_id']);
-
-                            if ($riwayatPenyakits->isNotEmpty()) {
-                                $payloadICD = $riwayatPenyakits->map(fn($i) => [
-                                    'code' => $i->code,
-                                    'name_en' => $i->name_en,
-                                    'name_id' => $i->name_id,
-                                ])->toArray();
-
-                                app(StoreRiwayatPenyakit::class)->handle(
-                                    encounterId: $encounterId,
-                                    pasienNama: $pt->pasien->nama,
-                                    pasienIhs: $pt->pasien->no_ihs,
-                                    dokterNama: $pt->dokter->nama_dokter,
-                                    dokterIhs: $pt->dokter->ihs,
-                                    WaktuDiperiksa: $waktu_diperiksa,
-                                    icdList: $payloadICD
-                                );
-                            }
-                        }
-
-                        // ---- Obat Dikonsumsi ----
-                        if ($obatdikonsumsi) {
-                            $obatdikonsumsis = KfaObat::whereIn('nama_obat_aktual', $obatdikonsumsi)
-                                ->select('kode_kfa_aktual', 'nama_obat_aktual')->distinct()->get();
-
-                            if ($obatdikonsumsis->isNotEmpty()) {
-                                $payloadObatDikonsumsi = $obatdikonsumsis->map(fn($o) => [
-                                    'kode_kfa_aktual' => $o->kode_kfa_aktual,
-                                    'nama_obat_aktual' => $o->nama_obat_aktual,
-                                ])->toArray();
-
-                                app(StoreObatDikonsumsi::class)->handle(
-                                    encounterId: $encounterId,
-                                    pasienNama: $pt->pasien->nama,
-                                    pasienIhs: $pt->pasien->no_ihs,
-                                    obatKonsumsiList: $payloadObatDikonsumsi
-                                );
-                            }
-                        }
-
-                        // ---- Alergi Obat ----
-                        if ($alergi) {
-                            $alergiobat = KfaObat::whereIn('nama_obat_aktual', $alergi)
-                                ->select('kode_kfa_aktual', 'nama_obat_aktual')->distinct()->get();
-
-                            if ($alergiobat->isNotEmpty()) {
-                                $payloadAlergi = $alergiobat->map(fn($o) => [
-                                    'kode_kfa_aktual' => $o->kode_kfa_aktual,
-                                    'nama_obat_aktual' => $o->nama_obat_aktual,
-                                ])->toArray();
-
-                                app(StoreAlergiObat::class)->handle(
-                                    encounterId: $encounterId,
-                                    pasienNama: $pt->pasien->nama,
-                                    pasienIhs: $pt->pasien->no_ihs,
-                                    dokterNama: $pt->dokter->nama_dokter,
-                                    dokterIhs: $pt->dokter->ihs,
-                                    obatAlergiList: $payloadAlergi
-                                );
-                            }
-                        }
-                    }
-                }
-                // SIMPAN DATA ESTETIKA REKAM MEDIS
-                if (in_array('data-estetika', $this->selected_forms_subjective)) {
-                    DataEstetikaRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'problem_dihadapi' => json_encode($this->data_estetika['problem_dihadapi']),
-                        'lama_problem' => $this->data_estetika['lama_problem'],
+            if (in_array('data-estetika', $this->selected_forms_subjective)) {
+                DataEstetikaRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'problem_dihadapi'    => json_encode($this->data_estetika['problem_dihadapi']),
+                        'lama_problem'        => $this->data_estetika['lama_problem'],
                         'tindakan_sebelumnya' => json_encode($this->data_estetika['tindakan_sebelumnya']),
-                        'penyakit_dialami' => $this->data_estetika['penyakit_dialami'],
-                        'alergi_kosmetik' => $this->data_estetika['alergi_kosmetik'],
-                        'sedang_hamil' => $this->data_estetika['sedang_hamil'],
-                        'usia_kehamilan' => $this->data_estetika['usia_kehamilan'],
-                        'metode_kb' => json_encode($this->data_estetika['metode_kb']),
+                        'penyakit_dialami'    => $this->data_estetika['penyakit_dialami'],
+                        'alergi_kosmetik'     => $this->data_estetika['alergi_kosmetik'],
+                        'sedang_hamil'        => $this->data_estetika['sedang_hamil'],
+                        'usia_kehamilan'      => $this->data_estetika['usia_kehamilan'],
+                        'metode_kb'           => json_encode($this->data_estetika['metode_kb']),
                         'pengobatan_saat_ini' => $this->data_estetika['pengobatan_saat_ini'],
-                        'produk_kosmetik' => $this->data_estetika['produk_kosmetik'],
-                    ]);
-                }
+                        'produk_kosmetik'     => $this->data_estetika['produk_kosmetik'],
+                    ]
+                );
+            }
 
-            // ----- SUBJECTIVE ----- //
-
-            // ----- OBJECTIVE ----- //
-
-                // SIMPAN DATA TANDA VITAL REKAM MEDIS
-                if (in_array('tanda-vital', $this->selected_forms_objective)) {
-                    $tandavitals = TandaVitalRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'suhu_tubuh' => $this->tanda_vital['suhu_tubuh'],
-                        'nadi' => $this->tanda_vital['nadi'],
-                        'sistole' => $this->tanda_vital['sistole'],
-                        'diastole' => $this->tanda_vital['diastole'],
+            // ── OBJECTIVE ──
+            if (in_array('tanda-vital', $this->selected_forms_objective)) {
+                TandaVitalRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'suhu_tubuh'           => $this->tanda_vital['suhu_tubuh'],
+                        'nadi'                 => $this->tanda_vital['nadi'],
+                        'sistole'              => $this->tanda_vital['sistole'],
+                        'diastole'             => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
-                    ]);
-                    
-                    if($kirimsatusehat){
-                        $encounterId = $pt->encounter_id; // Encounter ID yang sudah dibuat saat POST Encounter
-                        $PostVitalSign = app(StoreVitalSign::class);
-                        if($tandavitals){
-                            $observation = $PostVitalSign->handle(
-                                encounterId: $encounterId,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                dokterNama: $pt->dokter->nama_dokter,
-                                dokterIhs: $pt->dokter->ihs,
-                                WaktuDiperiksa: $waktu_diperiksa,
-                                sistole: $tandavitals->sistole,
-                                diastole: $tandavitals->diastole,
-                                suhu_tubuh: $tandavitals->suhu_tubuh,
-                                nadi: $tandavitals->nadi,
-                                pernapasan: $tandavitals->frekuensi_pernapasan,
-                            );
-                        }
-                    }
-                }
+                    ]
+                );
+            }
 
-                // SIMPAN DATA PEMERIKSAAN FISIK REKAM MEDIS
-                if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
-                    $dataFisik = PemeriksaanFisikRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
+            if (in_array('pemeriksaan-fisik', $this->selected_forms_objective)) {
+                PemeriksaanFisikRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
                         'tinggi_badan' => $this->pemeriksaan_fisik['tinggi_badan'],
-                        'berat_badan' => $this->pemeriksaan_fisik['berat_badan'],
-                        'imt' => $this->pemeriksaan_fisik['imt'],
-                    ]);
+                        'berat_badan'  => $this->pemeriksaan_fisik['berat_badan'],
+                        'imt'          => $this->pemeriksaan_fisik['imt'],
+                    ]
+                );
+            }
 
-                    if($kirimsatusehat){
-                        // Encounter ID yang sudah dibuat saat POST Encounter
-                        $encounterId = $pt->encounter_id;
-                        $PostPemeriksaanFisik = app(StorePemeriksaanFisik::class);
-                        if($dataFisik){
-                            $observationFisik = $PostPemeriksaanFisik->handle(
-                                encounterId: $encounterId,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                dokterNama: $pt->dokter->nama_dokter,
-                                dokterIhs: $pt->dokter->ihs,
-                                WaktuDiperiksa: $waktu_diperiksa,
-                                tinggiBadan: $dataFisik->tinggi_badan,
-                                beratBadan: $dataFisik->berat_badan,
-                            );
-                        }
-                    }
-                }
-
-                // SIMPAN DATA PEMERIKSAAN KULIT REKAM MEDIS
-                if (in_array('pemeriksaan-estetika', $this->selected_forms_objective)) {
-                    PemeriksaanKulitRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'warna_kulit' => $this->pemeriksaan_estetika['warna_kulit'],
-                        'ketebalan_kulit' => $this->pemeriksaan_estetika['ketebalan_kulit'],
-                        'kadar_minyak' => $this->pemeriksaan_estetika['kadar_minyak'],
-                        'kerapuhan_kulit' => $this->pemeriksaan_estetika['kerapuhan_kulit'],
+            if (in_array('pemeriksaan-estetika', $this->selected_forms_objective)) {
+                PemeriksaanKulitRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'warna_kulit'       => $this->pemeriksaan_estetika['warna_kulit'],
+                        'ketebalan_kulit'   => $this->pemeriksaan_estetika['ketebalan_kulit'],
+                        'kadar_minyak'      => $this->pemeriksaan_estetika['kadar_minyak'],
+                        'kerapuhan_kulit'   => $this->pemeriksaan_estetika['kerapuhan_kulit'],
                         'kekencangan_kulit' => $this->pemeriksaan_estetika['kekencangan_kulit'],
-                        'melasma' => $this->pemeriksaan_estetika['melasma'],
-                        'acne' => json_encode($this->pemeriksaan_estetika['acne']),
-                        'lesions' => json_encode($this->pemeriksaan_estetika['lesions']),
-                    ]);
-                }
-                
-            // ----- OBJECTIVE ----- //
+                        'melasma'           => $this->pemeriksaan_estetika['melasma'],
+                        'acne'              => json_encode($this->pemeriksaan_estetika['acne']),
+                        'lesions'           => json_encode($this->pemeriksaan_estetika['lesions']),
+                    ]
+                );
+            }
 
-            // ----- ASSESSMENT ----- //
+            // ── ASSESSMENT ──
+            DiagnosaRM::updateOrCreate(
+                ['rekam_medis_id' => $rm->id],
+                ['diagnosa' => $this->diagnosa]
+            );
 
-                // SIMPAN DATA DIAGNOSA REKAM MEDIS
-                // if (in_array('diagnosa', $this->selected_forms_assessment)) {
-                    DiagnosaRM::create([
-                        'rekam_medis_id' => $rekammedis->id,
-                        'diagnosa' => $this->diagnosa,
-                    ]);
-                // }
-                // if (in_array('icd_10', $this->selected_forms_assessment)) {
-                    $condition_id = null;
-                    foreach ($this->icd10 as $item) {
-                        if (empty($item['code'])) {
-                            continue;
-                        }
-                        $icd10s = IcdRM::create([
-                            'rekam_medis_id' => $rekammedis->id,
-                            'code'           => $item['code'],
-                            'name_id'        => $item['name_id'],
-                            'name_en'        => $item['name_en'],
-                        ]);
-                        if ($kirimsatusehat) {
-                            $encounterId = $pt->encounter_id;
-                            $PostCondition = app(StoreCondition::class);
-                            if($icd10s){
-                                $condition_id = $PostCondition->handle(
-                                    encounterId: $encounterId,
-                                    pasienNama: $pt->pasien->nama,
-                                    pasienIhs: $pt->pasien->no_ihs,
-                                    icdCode: $item['code'],
-                                    icdName: $item['name_en'],
-                                );
-                                // Update condition_id pada tabel lokal
-                                $icd10s->condition_id = $condition_id;
-                                $icd10s->save();
-                            }
-                        }
-                    }
-                // }
-
-            // ----- ASSESSMENT ----- //
-                
-            // ----- PLAN ----- //
-
-                // SIMPAN DATA RENCANA LAYANAN REKAM MEDIS
-                if (in_array('rencana-estetika', $this->selected_forms_plan)) {
-                    foreach ($this->rencana_estetika['treatments_id'] as $index => $treatmentId) {
-                        if (empty($treatmentId)) continue;
-                        RencanaTreatmentRM::create([
-                            'rekam_medis_id' => $rekammedis->id,
-                            'treatments_id' => $treatmentId,
-                            'jumlah_treatment' => $this->rencana_estetika['jumlah_treatment'][$index] ?? 1,
-                            'potongan' => $this->rencana_estetika['potongan'][$index] ?? 0,
-                            'diskon' => $this->rencana_estetika['diskon'][$index] ?? 0,
-                            'subtotal' => $this->rencana_estetika['subtotal'][$index] ?? 0,
-                        ]);
-                    }
-                }
-
-                if (in_array('rencana-layanan', $this->selected_forms_plan)) {
-                    foreach ($this->rencana_layanan['pelayanan_id'] as $index => $pelayananId) {
-                        if (empty($pelayananId)) continue;
-                        RencanaLayananRM::create([
-                            'rekam_medis_id'   => $rekammedis->id,
-                            'pelayanan_id'     => $pelayananId,
-                            'jumlah_pelayanan' => $this->rencana_layanan['jumlah_pelayanan'][$index],
-                        ]);
-                    }
-                }
-
-                if (in_array('obat-estetika', $this->selected_forms_plan)) {
-                    foreach ($this->obat_estetika['produk_id'] as $index => $produkId) {
-                        if (empty($produkId)) continue;
-                        RencanaProdukRM::create([
-                            'rekam_medis_id'   => $rekammedis->id,
-                            'produk_id'     => $produkId,
-                            'jumlah_produk' => $this->obat_estetika['jumlah_produk'][$index] ?? 1,
-                            'potongan' => $this->obat_estetika['potongan'][$index] ?? 0,
-                            'diskon' => $this->obat_estetika['diskon'][$index] ?? 0,
-                            'subtotal' => $this->obat_estetika['subtotal'][$index] ?? 0,
-                        ]);
-                    }
-                }
-
-                // SIMPAN DATA PAKET BUNDLING REKAM MEDIS
-                // if (in_array('rencana-bundling', $this->selected_forms_plan)) {
-                //     foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
-                //         RencananaBundlingRM::create([
-                //             'rekam_medis_id'   => $rekammedis->id,
-                //             'bundling_id'      => $bundlingId,
-                //             'jumlah_bundling'  => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
-                //             'potongan' => $this->rencana_bundling['potongan'][$index] ?? 0,
-                //             'diskon' => $this->rencana_bundling['diskon'][$index] ?? 0,
-                //             'subtotal' => $this->rencana_bundling['subtotal'][$index] ?? 0,
-                //         ]);
-                        
-                //         // Ambil pasien_id
-                //         $pasienId = $this->pasien_id;
-
-                //         // Simpan detail treatment
-                //         if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
-                //             foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
-                //                 TreatmentBundlingRM::create([
-                //                     'pasien_id'      => $pasienId,
-                //                     'bundling_id'    => $bundlingId,
-                //                     'treatments_id'   => $t['treatments_id'],
-                //                     'jumlah_awal'    => $t['jumlah_awal'],
-                //                     'jumlah_terpakai'=> $t['jumlah_terpakai'],
-                //                 ]);
-                //             }
-                //         }
-                //         // Simpan detail Pelayanan
-                //         if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
-                //             foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
-                //                 PelayananBundlingRM::create([
-                //                     'pasien_id'      => $pasienId,
-                //                     'bundling_id'    => $bundlingId,
-                //                     'pelayanan_id'   => $t['pelayanan_id'],
-                //                     'jumlah_awal'    => $t['jumlah_awal'],
-                //                     'jumlah_terpakai'=> $t['jumlah_terpakai'],
-                //                 ]);
-                //             }
-                //         }
-                //         // Simpan detail Produk & Obat
-                //         if (!empty($this->rencana_bundling['details']['produks'][$index])) {
-                //             foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
-                //                 ProdukObatBundlingRM::create([
-                //                     'pasien_id'      => $pasienId,
-                //                     'bundling_id'    => $bundlingId,
-                //                     'produk_obat_id'   => $t['produk_obat_id'],
-                //                     'jumlah_awal'    => $t['jumlah_awal'],
-                //                     'jumlah_terpakai'=> $t['jumlah_terpakai'],
-                //                 ]);
-                //             }
-                //         }
-                //     }
-                // }
-                // SIMPAN DATA PAKET BUNDLING REKAM MEDIS KETIKA PERTAMA DIBELI
-                if (in_array('rencana-bundling', $this->selected_forms_plan)) {
-                    foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
-                        if (empty($bundlingId)) continue;
-                        $rekamMedisId = $rekammedis->id;
-                        $group_bundling = 'GB-' . Str::random(4);
-
-                        $bundlingRecord = RencananaBundlingRM::create([
-                            'rekam_medis_id'   => $rekamMedisId,
-                            'bundling_id'      => $bundlingId,
-                            'jumlah_bundling'  => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
-                            'potongan' => $this->rencana_bundling['potongan'][$index] ?? 0,
-                            'diskon' => $this->rencana_bundling['diskon'][$index] ?? 0,
-                            'subtotal' => $this->rencana_bundling['subtotal'][$index] ?? 0,
-                            'group_bundling'   => $group_bundling,
-                        ]);
-                        
-                        // Ambil pasien_id
-                        $pasienId = $this->pasien_id;
-                        /**
-                         * ==========================
-                         * SIMPAN DETAIL TREATMENT
-                         * ==========================
-                         */
-                        if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
-                            foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
-                                $treatmentRM = TreatmentBundlingRM::create([
-                                    'pasien_id'       => $pasienId,
-                                    'bundling_id'     => $bundlingId,
-                                    'treatments_id'   => $t['treatments_id'],
-                                    'jumlah_awal'     => $t['jumlah_awal'],
-                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                    'group_bundling'   => $group_bundling,
-                                ]);
-
-                                // Jika ada jumlah_terpakai > 0 → simpan usage awal
-                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                    \App\Models\TreatmentBundlingUsage::create([
-                                        'pasien_id'       => $pasienId,
-                                        'rekam_medis_id'  => $rekamMedisId,
-                                        'bundling_id'     => $bundlingId,
-                                        'group_bundling'   => $group_bundling,
-                                        'treatments_id'   => $t['treatments_id'],
-                                        'jumlah_dipakai'  => $t['jumlah_terpakai'],
-                                        'kategori'        => 'penggunaan_sisa',
-                                        'is_pembelian_baru' => true,
-                                    ]);
-                                }
-                            }
-                        }
-
-                        /**
-                         * ==========================
-                         * SIMPAN DETAIL PELAYANAN
-                         * ==========================
-                         */
-                        if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
-                            foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
-                                $pelayananRM = PelayananBundlingRM::create([
-                                    'pasien_id'       => $pasienId,
-                                    'bundling_id'     => $bundlingId,
-                                    'pelayanan_id'    => $t['pelayanan_id'],
-                                    'jumlah_awal'     => $t['jumlah_awal'],
-                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                    'group_bundling'   => $group_bundling,
-                                ]);
-
-                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                    \App\Models\PelayananBundlingUsage::create([
-                                        'pasien_id'       => $pasienId,
-                                        'rekam_medis_id'  => $rekamMedisId,
-                                        'bundling_id'     => $bundlingId,
-                                        'group_bundling'   => $group_bundling,
-                                        'pelayanan_id'    => $t['pelayanan_id'],
-                                        'jumlah_dipakai'  => $t['jumlah_terpakai'],
-                                        'kategori'        => 'penggunaan_sisa',
-                                        'is_pembelian_baru' => true,
-                                    ]);
-                                }
-                            }
-                        }
-
-                        /**
-                         * ==========================
-                         * SIMPAN DETAIL PRODUK / OBAT
-                         * ==========================
-                         */
-                        if (!empty($this->rencana_bundling['details']['produks'][$index])) {
-                            foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
-                                $produkRM = ProdukObatBundlingRM::create([
-                                    'pasien_id'       => $pasienId,
-                                    'bundling_id'     => $bundlingId,
-                                    'group_bundling'   => $group_bundling,
-                                    'produk_obat_id'  => $t['produk_obat_id'],
-                                    'jumlah_awal'     => $t['jumlah_awal'],
-                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                ]);
-
-                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                    \App\Models\ProdukBundlingUsage::create([
-                                        'pasien_id'       => $pasienId,
-                                        'rekam_medis_id'  => $rekamMedisId,
-                                        'bundling_id'     => $bundlingId,
-                                        'group_bundling'   => $group_bundling,
-                                        'produk_obat_id'  => $t['produk_obat_id'],
-                                        'jumlah_dipakai'  => $t['jumlah_terpakai'],
-                                        'kategori'        => 'penggunaan_sisa',
-                                        'is_pembelian_baru' => true,
-                                    ]);
-                                }
-                            }
-                        }
-                    }
-                }
-          
-                // SIMPAN DATA OBAT NON RACIK
-                if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
-                    foreach ($this->obat_non_racikan['nama_obat_non_racikan'] as $index => $namaObat) {
-                        if (empty($namaObat)) continue;
-
-                        $nonracik = ObatNonRacikanRM::create([
-                            'rekam_medis_id' => $rekammedis->id,
-                            'nama_obat_non_racikan' => $namaObat,
-                            'jumlah_obat_non_racikan' => $this->obat_non_racikan['jumlah_obat_non_racikan'][$index] ?? 1,
-                            'satuan_obat_non_racikan' => $this->obat_non_racikan['satuan_obat_non_racikan'][$index] ?? null,
-                            'dosis_obat_non_racikan' => $this->obat_non_racikan['dosis_obat_non_racikan'][$index] ?? null,
-                            'hari_obat_non_racikan' => $this->obat_non_racikan['hari_obat_non_racikan'][$index] ?? null,
-                            'aturan_pakai_obat_non_racikan' => $this->obat_non_racikan['aturan_pakai_obat_non_racikan'][$index] ?? null,
-                        ]);
-                        $kfa = KfaObat::where('nama_obat_aktual', $namaObat)->first();
-                        // dd($kfa);
-                        $nonracik_id = null;
-                        $nonracikrequest_id = null;
-                        if ($kirimsatusehat && $kfa) {
-                            $PostObatNonRacik = app(StoreObatNonRacik::class);
-                            $nonracik_id = $PostObatNonRacik->handle(
-                                kfaKodeAktual: $kfa->kode_kfa_aktual,
-                                kfaNamaDagang: $kfa->nama_obat_aktual,
-                                kfaKodeVirtual: $kfa->kode_kfa_virtual,
-                                kfaNamaVirtual: $kfa->nama_obat_virtual,
-                            );
-                            $nonracik->medication_id = $nonracik_id;
-                        }
-                        if($nonracik_id){
-                            $postIntruksiObatNonRacik = app(StoreIntruksiObatNonRacik::class);
-                            $nonracikrequest_id = $postIntruksiObatNonRacik->handle(
-                                medicationId: $nonracik_id,
-                                kfaNamaDagang: $kfa->nama_obat_aktual,
-                                pasienNama: $pt->pasien->nama,
-                                pasienIhs: $pt->pasien->no_ihs,
-                                encounterId: $pt->encounter_id,
-                                dokterNama: $pt->dokter->nama_dokter,
-                                dokterIhs: $pt->dokter->ihs,
-                                waktuDiperiksa: $waktu_diperiksa,
-                            );
-                            $nonracik->medication_request_id = $nonracikrequest_id;
-                        }
-                        $nonracik->save();
-                    }
-                }
-                
-                // SIMPAN DATA OBAT RACIKAN
-                if (in_array('obat-racikan', $this->selected_forms_plan)) {
-                    foreach ($this->racikanItems as $racikan) {
-                        // 1. Buat racikan utama
-                        $obatRacikan = ObatRacikanRM::create([
-                            'rekam_medis_id'      => $rekammedis->id,
-                            'nama_racikan'        => $racikan['nama_racikan'] ?? null,
-                            'jumlah_racikan'      => $racikan['jumlah_racikan'] ?? 1,
-                            'satuan_racikan'      => $racikan['satuan_racikan'] ?? null,
-                            'dosis_obat_racikan'  => $racikan['dosis_obat_racikan'] ?? null,
-                            'hari_obat_racikan'   => $racikan['hari_obat_racikan'] ?? null,
-                            'aturan_pakai_racikan'=> $racikan['aturan_pakai_racikan'] ?? null,
-                            'metode_racikan'      => $racikan['metode_racikan'] ?? null,
-                        ]);
-
-                        // 2. Simpan bahan racikan (jika ada)
-                        $bahanList = [];
-                        if (!empty($racikan['bahan']) && is_array($racikan['bahan'])) {
-                            foreach ($racikan['bahan'] as $bahan) {
-                                $obatRacikan->bahanRacikan()->create([
-                                    'obat_racikan_id' => $obatRacikan->id,
-                                    'nama_obat_racikan' => $bahan['nama_obat_racikan'] ?? null,
-                                    'jumlah_obat_racikan' => $bahan['jumlah_obat_racikan'] ?? 1,
-                                    'satuan_obat_racikan' => $bahan['satuan_obat_racikan'] ?? null,
-                                ]);
-                                // kumpulkan bahan untuk payload SATUSEHAT
-                                $kfa = KfaObat::where('nama_obat_aktual', $bahan['nama_obat_racikan'])->first();
-                                if ($kfa) {
-                                    $bahanList[] = [
-                                        'kfaKodeAktual'   => $kfa->kode_kfa_aktual,
-                                        'namaObatDagang'  => $kfa->nama_obat_aktual
-                                    ];
-                                }
-                            }
-                        }
-
-                        $racik_medication_id = null;
-                        $racikrequest_id = null;
-                        if ($kirimsatusehat && count($bahanList) > 0) {
-                            // POST Medication Racik
-                            $PostObatRacik = app(StoreObatRacik::class);
-                            $racik_medication_id = $PostObatRacik->handle(
-                                namaRacikan: $racikan['nama_racikan'],
-                                ingredients: $bahanList,
-                            );
-                            $obatRacikan->medication_id = $racik_medication_id;
-
-                            // POST Instruksi Racik
-                            if ($racik_medication_id) {
-                                $postInstruksiRacik = app(StoreIntruksiObatRacik::class);
-                                $racikrequest_id = $postInstruksiRacik->handle(
-                                    medicationId: $racik_medication_id,
-                                    namaRacikan: $racikan['nama_racikan'],
-                                    encounterId: $pt->encounter_id,
-                                    pasienNama: $pt->pasien->nama,
-                                    pasienIhs: $pt->pasien->no_ihs,
-                                    dokterNama: $pt->dokter->nama_dokter,
-                                    dokterIhs: $pt->dokter->ihs,
-                                    waktuDiperiksa: $waktu_diperiksa,
-                                    aturanPakai: $racikan['aturan_pakai_racikan'],
-                                    dosis: $racikan['dosis_obat_racikan'],
-                                    jumlahHari: $racikan['hari_obat_racikan'],
-                                    jumlahRacikan: $racikan['jumlah_racikan'],
-                                );
-                                $obatRacikan->medication_request_id = $racikrequest_id;
-                            }
-                        }
-                        $obatRacikan->save();
-                    }
-                }
-
-                // SIMPAN DATA SISA ITEM BUNDLING YANG BELUM DIAMBIL
-                if (!empty($this->layananTerpilih)) {
-                    $pasienId = $this->pasien_id ?? null;
-
-                    foreach ($this->layananTerpilih as $namaBundling => $items) {
-                        foreach ($items as $item) {
-                            $jumlahDipakai = (int) ($item['dipakai'] ?? 0);
-                            $group_bundling_lama = $item['group_bundling_lama'];
-                            if ($jumlahDipakai <= 0) continue;
-
-                            switch ($item['tipe']) {
-                                case 'treatment':
-                                    $record = \App\Models\TreatmentBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)->first();
-                                    break;
-                                case 'produk':
-                                    $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)->first();
-                                    break;
-                                case 'pelayanan':
-                                    $record = \App\Models\PelayananBundlingRM::where('id', $item['id'])
-                                        ->where('pasien_id', $pasienId)->first();
-                                    break;
-                                default:
-                                    $record = null;
-                            }
-
-                            if (!$record) {
-                                Log::warning("Record bundling tidak ditemukan", [
-                                    'tipe' => $item['tipe'],
-                                    'id' => $item['id'],
-                                    'pasien' => $pasienId,
-                                ]);
-                                continue;
-                            }
-
-                            $baruTerpakai = min(
-                                $record->jumlah_terpakai + $jumlahDipakai,
-                                $record->jumlah_awal
-                            );
-
-                            $record->update(['jumlah_terpakai' => $baruTerpakai]);
-
-                            // 🔍 Tambahkan logger di sini sebelum create
-                            Log::info("Create BundlingUsage", [
-                                'tipe' => $item['tipe'],
-                                'pasien_id' => $pasienId,
-                                'rekam_medis_id' => $rekammedis->id,
-                                'bundling_id' => $record->bundling_id ?? null,
-                                'group_bundling' => $group_bundling_lama ?? null,
-                                'jumlah_dipakai' => $jumlahDipakai,
-                            ]);
-
-                            try {
-                                switch ($item['tipe']) {
-                                    case 'treatment':
-                                        \App\Models\TreatmentBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'treatments_id' => $record->treatments_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-
-                                    case 'produk':
-                                        \App\Models\ProdukBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'produk_obat_id' => $record->produk_obat_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-
-                                    case 'pelayanan':
-                                        \App\Models\PelayananBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'pelayanan_id' => $record->pelayanan_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-                                }
-                            } catch (\Exception $e) {
-                                Log::error("Gagal create BundlingUsage", [
-                                    'tipe' => $item['tipe'],
-                                    'error' => $e->getMessage(),
-                                ]);
-                            }
-                        }
-                    }
-                }
-
-            // ----- PLAN ----- //
-
-                if($kirimsatusehat){
-                    $reasonIcd = null;
-                    foreach ($this->icd10 as $item) {
-                        if (!empty($item['code'])) {
-                            $reasonIcd = [
-                                'code'    => $item['code'],
-                                'display' => $item['name_en'],   // tetap pakai milikmu
-                                'name_id' => $item['name_id'],   // tetap pakai milikmu
-                            ];
-                            break;
-                        }
-                    }
-                    $encounterId = $pt->encounter_id;
-                    $serviceId   = null;
-                    if($reasonIcd){
-                        $PostKonselingService = app(StoreKonselingService::class);
-                        $serviceId = $PostKonselingService->handle(
-                            encounterId: $encounterId,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            reasonIcd: $reasonIcd
-                        );
-                    }
-                    
-                    if($serviceId){
-                        $PostKonselingProcedure = app(StoreKonselingProcedure::class);
-                        $PostKonselingProcedure->handle(
-                            encounterId: $encounterId,
-                            pasienNama: $pt->pasien->nama,
-                            pasienIhs: $pt->pasien->no_ihs,
-                            dokterNama: $pt->dokter->nama_dokter,
-                            dokterIhs: $pt->dokter->ihs,
-                            WaktuDiperiksa: $waktu_diperiksa,
-                            reasonIcd: $reasonIcd,
-                            serviceId: $serviceId,
-                        );
-                    }   
-                }
-                
-                DB::commit();
-                if($kirimsatusehat){
-                    $this->dispatch('toast', [
-                        'type' => 'success',
-                        'message' => 'Rekam Medis Berhasil Ditambahkan Dan Kirim Satu Sehat'
-                    ]);
-                } elseif ($keepStatus) {
-                $this->dispatch('toast', [
-                    'type' => 'success',
-                    'message' => 'Data disimpan, status pasien tetap Konsultasi.'
-                ]);
-                } else {
-                    $this->dispatch('toast', [
-                        'type' => 'success',
-                        'message' => 'Rekam Medis Berhasil Ditambahkan.'
-                    ]);
-                }
-
-                $this->dispatch('closeStoreModal');                
-                $rekammedis->load([
-                    'rencanaLayananRM',
-                    'rencanaTreatmentRM',
-                    'rencanaBundlingRM',
-                    'treatmentBundlingUsages',
-                    'pelayananBundlingUsages',
-                ]);
-                if (!$keepStatus && (
-                    $rekammedis->rencanaLayananRM->isNotEmpty() || 
-                    $rekammedis->rencanaTreatmentRM->isNotEmpty() || 
-                    $rekammedis->rencanaBundlingRM->isNotEmpty() || 
-                    $rekammedis->treatmentBundlingUsages->isNotEmpty() || 
-                    $rekammedis->pelayananBundlingUsages->isNotEmpty()
-                )) {
-                    return redirect()->route('rekam-medis-pasien.pengurangan', [
-                        'pasien_terdaftar_id' => $this->pasien_terdaftar_id[0] ?? $this->pasien_terdaftar_id
-                    ]);
-                }else{
-                    return redirect()->route('pendaftaran.data');
-                }
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $this->dispatch('toast', [
-                    'type' => 'error',
-                    'message' => 'Gagal Menyimpan Data: ' . $e->getMessage()
+            // ICD10: delete lama → insert ulang (lebih aman karena bisa banyak row)
+            IcdRM::where('rekam_medis_id', $rm->id)->delete();
+            foreach ($this->icd10 as $item) {
+                if (empty($item['code'])) continue;
+                IcdRM::create([
+                    'rekam_medis_id' => $rm->id,
+                    'code'           => $item['code'],
+                    'name_id'        => $item['name_id'],
+                    'name_en'        => $item['name_en'],
                 ]);
             }
-            $this->reset();
 
+            // ── PLAN: delete lama → insert ulang (karena jumlah row bisa berubah) ──
+            RencanaLayananRM::where('rekam_medis_id', $rm->id)->delete();
+            if (in_array('rencana-layanan', $this->selected_forms_plan)) {
+                foreach ($this->rencana_layanan['pelayanan_id'] as $index => $pelayananId) {
+                    if (empty($pelayananId)) continue;
+                    RencanaLayananRM::create([
+                        'rekam_medis_id'   => $rm->id,
+                        'pelayanan_id'     => $pelayananId,
+                        'jumlah_pelayanan' => $this->rencana_layanan['jumlah_pelayanan'][$index],
+                    ]);
+                }
+            }
+
+            RencanaTreatmentRM::where('rekam_medis_id', $rm->id)->delete();
+            if (in_array('rencana-estetika', $this->selected_forms_plan)) {
+                foreach ($this->rencana_estetika['treatments_id'] as $index => $treatmentId) {
+                    if (empty($treatmentId)) continue;
+                    RencanaTreatmentRM::create([
+                        'rekam_medis_id'   => $rm->id,
+                        'treatments_id'    => $treatmentId,
+                        'jumlah_treatment' => $this->rencana_estetika['jumlah_treatment'][$index] ?? 1,
+                        'potongan'         => $this->rencana_estetika['potongan'][$index] ?? 0,
+                        'diskon'           => $this->rencana_estetika['diskon'][$index] ?? 0,
+                        'subtotal'         => $this->rencana_estetika['subtotal'][$index] ?? 0,
+                    ]);
+                }
+            }
+
+            RencanaProdukRM::where('rekam_medis_id', $rm->id)->delete();
+            if (in_array('obat-estetika', $this->selected_forms_plan)) {
+                foreach ($this->obat_estetika['produk_id'] as $index => $produkId) {
+                    if (empty($produkId)) continue;
+                    RencanaProdukRM::create([
+                        'rekam_medis_id' => $rm->id,
+                        'produk_id'      => $produkId,
+                        'jumlah_produk'  => $this->obat_estetika['jumlah_produk'][$index] ?? 1,
+                        'potongan'       => $this->obat_estetika['potongan'][$index] ?? 0,
+                        'diskon'         => $this->obat_estetika['diskon'][$index] ?? 0,
+                        'subtotal'       => $this->obat_estetika['subtotal'][$index] ?? 0,
+                    ]);
+                }
+            }
+
+            ObatNonRacikanRM::where('rekam_medis_id', $rm->id)->delete();
+            if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
+                foreach ($this->obat_non_racikan['nama_obat_non_racikan'] as $index => $namaObat) {
+                    if (empty($namaObat)) continue;
+                    ObatNonRacikanRM::create([
+                        'rekam_medis_id'                => $rm->id,
+                        'nama_obat_non_racikan'         => $namaObat,
+                        'jumlah_obat_non_racikan'       => $this->obat_non_racikan['jumlah_obat_non_racikan'][$index] ?? 1,
+                        'satuan_obat_non_racikan'       => $this->obat_non_racikan['satuan_obat_non_racikan'][$index] ?? null,
+                        'dosis_obat_non_racikan'        => $this->obat_non_racikan['dosis_obat_non_racikan'][$index] ?? null,
+                        'hari_obat_non_racikan'         => $this->obat_non_racikan['hari_obat_non_racikan'][$index] ?? null,
+                        'aturan_pakai_obat_non_racikan' => $this->obat_non_racikan['aturan_pakai_obat_non_racikan'][$index] ?? null,
+                    ]);
+                }
+            }
+
+            // Obat racikan: hapus bahan dulu lewat relasi, lalu racikan utama
+            ObatRacikanRM::where('rekam_medis_id', $rm->id)->each(function ($r) {
+                $r->bahanRacikan()->delete();
+                $r->delete();
+            });
+            if (in_array('obat-racikan', $this->selected_forms_plan)) {
+                foreach ($this->racikanItems as $racikan) {
+                    $obatRacikan = ObatRacikanRM::create([
+                        'rekam_medis_id'       => $rm->id,
+                        'nama_racikan'         => $racikan['nama_racikan'] ?? null,
+                        'jumlah_racikan'       => $racikan['jumlah_racikan'] ?? 1,
+                        'satuan_racikan'       => $racikan['satuan_racikan'] ?? null,
+                        'dosis_obat_racikan'   => $racikan['dosis_obat_racikan'] ?? null,
+                        'hari_obat_racikan'    => $racikan['hari_obat_racikan'] ?? null,
+                        'aturan_pakai_racikan' => $racikan['aturan_pakai_racikan'] ?? null,
+                        'metode_racikan'       => $racikan['metode_racikan'] ?? null,
+                    ]);
+                    foreach ($racikan['bahan'] ?? [] as $bahan) {
+                        $obatRacikan->bahanRacikan()->create([
+                            'nama_obat_racikan'   => $bahan['nama_obat_racikan'] ?? null,
+                            'jumlah_obat_racikan' => $bahan['jumlah_obat_racikan'] ?? 1,
+                            'satuan_obat_racikan' => $bahan['satuan_obat_racikan'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            // RENCANA BUNDLING — hanya tambah bundling BARU
+            if (in_array('rencana-bundling', $this->selected_forms_plan)) {
+
+                // Ambil bundling_id yang sudah ada untuk rekam medis ini
+                $existingBundlingIds = RencananaBundlingRM::where('rekam_medis_id', $rm->id)
+                    ->pluck('bundling_id')
+                    ->toArray();
+
+                foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
+                    if (empty($bundlingId)) continue;
+
+                    // Skip jika bundling ini sudah ada sebelumnya
+                    if (in_array($bundlingId, $existingBundlingIds)) continue;
+
+                    // Insert bundling baru
+                    $group_bundling = 'GB-' . Str::random(4);
+
+                    RencananaBundlingRM::create([
+                        'rekam_medis_id'  => $rm->id,
+                        'bundling_id'     => $bundlingId,
+                        'jumlah_bundling' => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
+                        'potongan'        => $this->rencana_bundling['potongan'][$index] ?? 0,
+                        'diskon'          => $this->rencana_bundling['diskon'][$index] ?? 0,
+                        'subtotal'        => $this->rencana_bundling['subtotal'][$index] ?? 0,
+                        'group_bundling'  => $group_bundling,
+                    ]);
+
+                    // Detail treatments
+                    if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
+                        foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
+                            $treatmentRM = TreatmentBundlingRM::create([
+                                'pasien_id'       => $this->pasien_id,
+                                'bundling_id'     => $bundlingId,
+                                'treatments_id'   => $t['treatments_id'],
+                                'jumlah_awal'     => $t['jumlah_awal'],
+                                'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                'group_bundling'  => $group_bundling,
+                            ]);
+                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                \App\Models\TreatmentBundlingUsage::create([
+                                    'pasien_id'         => $this->pasien_id,
+                                    'rekam_medis_id'    => $rm->id,
+                                    'bundling_id'       => $bundlingId,
+                                    'group_bundling'    => $group_bundling,
+                                    'treatments_id'     => $t['treatments_id'],
+                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                    'kategori'          => 'penggunaan_sisa',
+                                    'is_pembelian_baru' => true,
+                                ]);
+                            }
+                        }
+                    }
+
+                    // Detail pelayanans
+                    if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
+                        foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
+                            PelayananBundlingRM::create([
+                                'pasien_id'       => $this->pasien_id,
+                                'bundling_id'     => $bundlingId,
+                                'pelayanan_id'    => $t['pelayanan_id'],
+                                'jumlah_awal'     => $t['jumlah_awal'],
+                                'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                'group_bundling'  => $group_bundling,
+                            ]);
+                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                \App\Models\PelayananBundlingUsage::create([
+                                    'pasien_id'         => $this->pasien_id,
+                                    'rekam_medis_id'    => $rm->id,
+                                    'bundling_id'       => $bundlingId,
+                                    'group_bundling'    => $group_bundling,
+                                    'pelayanan_id'      => $t['pelayanan_id'],
+                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                    'kategori'          => 'penggunaan_sisa',
+                                    'is_pembelian_baru' => true,
+                                ]);
+                            }
+                        }
+                    }
+
+                    // Detail produks
+                    if (!empty($this->rencana_bundling['details']['produks'][$index])) {
+                        foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
+                            ProdukObatBundlingRM::create([
+                                'pasien_id'      => $this->pasien_id,
+                                'bundling_id'    => $bundlingId,
+                                'group_bundling' => $group_bundling,
+                                'produk_obat_id' => $t['produk_obat_id'],
+                                'jumlah_awal'    => $t['jumlah_awal'],
+                                'jumlah_terpakai'=> $t['jumlah_terpakai'],
+                            ]);
+                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                \App\Models\ProdukBundlingUsage::create([
+                                    'pasien_id'         => $this->pasien_id,
+                                    'rekam_medis_id'    => $rm->id,
+                                    'bundling_id'       => $bundlingId,
+                                    'group_bundling'    => $group_bundling,
+                                    'produk_obat_id'    => $t['produk_obat_id'],
+                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                    'kategori'          => 'penggunaan_sisa',
+                                    'is_pembelian_baru' => true,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // LAYANAN TERPILIH (sisa bundling) — rollback dulu, lalu insert ulang
+            if (!empty($this->layananTerpilih)) {
+
+                // 1. Rollback jumlah_terpakai dari usage lama rekam medis ini
+                \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $this->pasien_id)
+                    ->where('is_pembelian_baru', false)
+                    ->each(function ($usage) {
+                        \App\Models\TreatmentBundlingRM::where('treatments_id', $usage->treatments_id)
+                            ->where('group_bundling', $usage->group_bundling)
+                            ->decrement('jumlah_terpakai', $usage->jumlah_dipakai);
+                    });
+
+                \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_pembelian_baru', false)
+                    ->each(function ($usage) {
+                        \App\Models\PelayananBundlingRM::where('pelayanan_id', $usage->pelayanan_id)
+                            ->where('group_bundling', $usage->group_bundling)
+                            ->decrement('jumlah_terpakai', $usage->jumlah_dipakai);
+                    });
+
+                \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_pembelian_baru', false)
+                    ->each(function ($usage) {
+                        \App\Models\ProdukObatBundlingRM::where('produk_obat_id', $usage->produk_obat_id)
+                            ->where('group_bundling', $usage->group_bundling)
+                            ->decrement('jumlah_terpakai', $usage->jumlah_dipakai);
+                    });
+
+                // 2. Hapus usage lama
+                \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_pembelian_baru', false)->delete();
+                \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_pembelian_baru', false)->delete();
+                \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_pembelian_baru', false)->delete();
+
+                // 3. Insert ulang dari layananTerpilih (kode sama persis dengan create())
+                foreach ($this->layananTerpilih as $namaBundling => $items) {
+                    foreach ($items as $item) {
+                        $jumlahDipakai = (int) ($item['dipakai'] ?? 0);
+                        $group_bundling_lama = $item['group_bundling_lama'];
+                        if ($jumlahDipakai <= 0) continue;
+
+                        switch ($item['tipe']) {
+                            case 'treatment':
+                                $record = \App\Models\TreatmentBundlingRM::where('id', $item['id'])
+                                    ->where('pasien_id', $this->pasien_id)->first();
+                                break;
+                            case 'produk':
+                                $record = \App\Models\ProdukObatBundlingRM::where('id', $item['id'])
+                                    ->where('pasien_id', $this->pasien_id)->first();
+                                break;
+                            case 'pelayanan':
+                                $record = \App\Models\PelayananBundlingRM::where('id', $item['id'])
+                                    ->where('pasien_id', $this->pasien_id)->first();
+                                break;
+                            default:
+                                $record = null;
+                        }
+
+                        if (!$record) {
+                            Log::warning("Record bundling tidak ditemukan saat update", [
+                                'tipe'   => $item['tipe'],
+                                'id'     => $item['id'],
+                                'pasien' => $this->pasien_id,
+                            ]);
+                            continue;
+                        }
+
+                        $baruTerpakai = min(
+                            $record->jumlah_terpakai + $jumlahDipakai,
+                            $record->jumlah_awal
+                        );
+                        $record->update(['jumlah_terpakai' => $baruTerpakai]);
+
+                        try {
+                            switch ($item['tipe']) {
+                                case 'treatment':
+                                    \App\Models\TreatmentBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $record->bundling_id,
+                                        'group_bundling'    => $group_bundling_lama,
+                                        'treatments_id'     => $record->treatments_id,
+                                        'jumlah_dipakai'    => $jumlahDipakai,
+                                        'is_pembelian_baru' => false,
+                                    ]);
+                                    break;
+                                case 'produk':
+                                    \App\Models\ProdukBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $record->bundling_id,
+                                        'group_bundling'    => $group_bundling_lama,
+                                        'produk_obat_id'    => $record->produk_obat_id,
+                                        'jumlah_dipakai'    => $jumlahDipakai,
+                                        'is_pembelian_baru' => false,
+                                    ]);
+                                    break;
+                                case 'pelayanan':
+                                    \App\Models\PelayananBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $record->bundling_id,
+                                        'group_bundling'    => $group_bundling_lama,
+                                        'pelayanan_id'      => $record->pelayanan_id,
+                                        'jumlah_dipakai'    => $jumlahDipakai,
+                                        'is_pembelian_baru' => false,
+                                    ]);
+                                    break;
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Gagal create BundlingUsage saat update", [
+                                'tipe'  => $item['tipe'],
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            DB::commit();
+
+            $this->dispatch('toast', [
+                'type'    => 'success',
+                'message' => $keepStatus 
+                    ? 'Data diperbarui, status tetap Konsultasi.' 
+                    : 'Rekam Medis berhasil diperbarui.',
+            ]);
+
+            $rm->load([
+                'rencanaLayananRM', 'rencanaTreatmentRM', 'rencanaBundlingRM',
+                'treatmentBundlingUsages', 'pelayananBundlingUsages',
+            ]);
+
+            if (!$keepStatus && (
+                $rm->rencanaLayananRM->isNotEmpty() ||
+                $rm->rencanaTreatmentRM->isNotEmpty() ||
+                $rm->rencanaBundlingRM->isNotEmpty() ||
+                $rm->treatmentBundlingUsages->isNotEmpty() ||
+                $rm->pelayananBundlingUsages->isNotEmpty()
+            )) {
+                return redirect()->route('rekam-medis-pasien.pengurangan', [
+                    'pasien_terdaftar_id' => $this->pasien_terdaftar_id,
+                ]);
+            }
+
+            return redirect()->route('pendaftaran.data');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('toast', [
+                'type'    => 'error',
+                'message' => 'Gagal memperbarui data: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     public function render()

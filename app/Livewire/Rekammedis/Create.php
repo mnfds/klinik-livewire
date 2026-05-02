@@ -509,7 +509,7 @@ class Create extends Component
                 }
 
                 if ($keepStatus) {
-                    $status = 'konsultasi';
+                    $status = 'keep';
                 } else {
                     $status = 'pembayaran';
                     if (in_array('obat-non-racikan', $this->selected_forms_plan)) {
