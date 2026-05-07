@@ -1,14 +1,45 @@
+@props([
+    'obatNonRacikan' => [],
+    'obatNonRacikLabels' => [],
+])
+
+@php
+    // Bangun initial items dari data yang sudah ada, atau 1 item kosong jika belum ada
+    $initialItems = [];
+    $count = count($obatNonRacikan['nama_obat_non_racikan'] ?? []);
+
+    if ($count > 0) {
+        for ($i = 0; $i < $count; $i++) {
+            $initialItems[] = [
+                'id'                          => $i + 1,
+                'nama_obat_non_racikan'       => $obatNonRacikan['nama_obat_non_racikan'][$i] ?? '',
+                'jumlah_obat_non_racikan'     => $obatNonRacikan['jumlah_obat_non_racikan'][$i] ?? '',
+                'satuan_obat_non_racikan'     => $obatNonRacikan['satuan_obat_non_racikan'][$i] ?? '',
+                'dosis_obat_non_racikan'      => $obatNonRacikan['dosis_obat_non_racikan'][$i] ?? '',
+                'hari_obat_non_racikan'       => $obatNonRacikan['hari_obat_non_racikan'][$i] ?? '',
+                'aturan_pakai_obat_non_racikan' => $obatNonRacikan['aturan_pakai_obat_non_racikan'][$i] ?? '',
+            ];
+        }
+    } else {
+        $initialItems[] = [
+            'id'                          => 1,
+            'nama_obat_non_racikan'       => '',
+            'jumlah_obat_non_racikan'     => '',
+            'satuan_obat_non_racikan'     => '',
+            'dosis_obat_non_racikan'      => '',
+            'hari_obat_non_racikan'       => '',
+            'aturan_pakai_obat_non_racikan' => '',
+        ];
+    }
+
+    // Labels untuk nama obat (untuk ditampilkan di dropdown selected)
+    $initialLabels = $obatNonRacikLabels;
+@endphp
+
 <div class="bg-base-200 p-4 rounded border border-base-200"
     x-data="{
-        obatItems: [{
-            id: Date.now() + Math.random(),
-            nama_obat_non_racikan: '',
-            jumlah_obat_non_racikan: '',
-            satuan_obat_non_racikan: '',
-            dosis_obat_non_racikan: '',
-            hari_obat_non_racikan: '',
-            aturan_pakai_obat_non_racikan: ''
-        }],
+        obatItems: {{ Js::from($initialItems) }},
+        obatLabels: {{ Js::from($initialLabels) }},
         addObat() {
             this.obatItems.push({
                 id: Date.now() + Math.random(),
@@ -23,6 +54,7 @@
         },
         removeObat(i) {
             this.obatItems.splice(i, 1);
+            this.obatLabels.splice(i, 1);
             this.syncObatToLivewire();
         },
         syncItemObat() {
@@ -47,7 +79,11 @@
                 <!-- Baris 1: Nama Obat -->
                 <div class="flex items-center gap-2">
                     <div class="flex-1"
-                        x-data="singleSelectObat(() => item.nama_obat_non_racikan, (val) => { item.nama_obat_non_racikan = val; syncItemObat(index); })"
+                        x-data="singleSelectObat(
+                            () => item.nama_obat_non_racikan,
+                            (val) => { item.nama_obat_non_racikan = val; syncItemObat(index); },
+                            obatLabels[index] ?? ''
+                        )"
                         x-init="init()"
                     >
                         <label class="label">
@@ -86,14 +122,14 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <!-- Tombol hapus -->
                     <button type="button" class="btn btn-error btn-sm" @click="removeObat(index)" x-show="obatItems.length > 1">
                         ✕
                     </button>
                 </div>
-    
-                <!-- Baris 2: Jumlah, Satuan, Aturan Pakai -->
+
+                <!-- Baris 2: Jumlah, Satuan -->
                 <div class="flex gap-2 mt-2">
                     <div class="form-control w-20">
                         <label class="label">
@@ -111,7 +147,6 @@
                         </label>
                         <select class="select select-bordered w-full" x-model="item.satuan_obat_non_racikan" @change="syncItemObat(index)">
                             <option value="">Pilih Bentuk Obat</option>
-
                             <optgroup label="Oral">
                                 <option value="Tablet">Tablet</option>
                                 <option value="Kaplet">Kaplet</option>
@@ -122,14 +157,12 @@
                                 <option value="Suspensi">Suspensi</option>
                                 <option value="Granula">Granula</option>
                             </optgroup>
-
                             <optgroup label="Injeksi & Parenteral">
                                 <option value="Larutan Injeksi">Larutan Injeksi</option>
                                 <option value="Infus">Infus</option>
                                 <option value="Suspensi Injeksi">Suspensi Injeksi</option>
                                 <option value="Serbuk Injeksi">Serbuk Injeksi</option>
                             </optgroup>
-
                             <optgroup label="Tetes & Semprot">
                                 <option value="Tetes Mata">Tetes Mata</option>
                                 <option value="Tetes Telinga">Tetes Telinga</option>
@@ -138,14 +171,12 @@
                                 <option value="Suspensi Inhalasi">Suspensi Inhalasi</option>
                                 <option value="Semprot Hidung">Semprot Hidung</option>
                             </optgroup>
-
                             <optgroup label="Topikal">
                                 <option value="Krim">Krim</option>
                                 <option value="Salep">Salep</option>
                                 <option value="Gel">Gel</option>
                                 <option value="Topical Spray">Topical Spray</option>
                             </optgroup>
-
                             <optgroup label="Lainnya">
                                 <option value="Suppositoria">Suppositoria</option>
                                 <option value="Enema">Enema</option>
@@ -153,9 +184,9 @@
                             </optgroup>
                         </select>
                     </div>
-
-                    
                 </div>
+
+                <!-- Baris 3: Dosis, Hari, Instruksi -->
                 <div class="flex gap-2 mt-2">
                     <div class="form-control w-20">
                         <label class="label">
@@ -167,9 +198,7 @@
                             @input="syncItemObat(index)" />
                     </div>
                     <div class="form-control w-10">
-                        <label class="label">
-                            <span class="label-text"></span>
-                        </label>
+                        <label class="label"><span class="label-text"></span></label>
                         <input type="text" placeholder="X" class="input input-ghost" />
                     </div>
                     <div class="form-control w-20">
@@ -183,7 +212,7 @@
                     </div>
                     <div class="form-control flex-1">
                         <label class="label">
-                            <span class="label-text">Intruksi Pemakaian</span>
+                            <span class="label-text">Instruksi Pemakaian</span>
                         </label>
                         <input type="text" placeholder="Sesudah Makan"
                             class="input input-bordered w-full"
@@ -193,21 +222,27 @@
                 </div>
             </div>
         </template>
-        
-        <!-- Tombol tambah -->
+
         <button type="button" class="btn btn-primary btn-sm mt-2" @click="addObat">+ Tambah Obat</button>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    function singleSelectObat(getModel, setModel) {
+    function singleSelectObat(getModel, setModel, initialLabel = '') {
         return {
             open: false,
-            selected: getModel() || '', // simpan 1 value
+            // Gunakan initialLabel untuk menampilkan nama obat yang sudah tersimpan
+            selected: initialLabel || getModel() || '',
             search: '',
             filteredOptions: [],
 
+            init() {
+                // Jika ada data awal, pastikan model Livewire juga terisi
+                if (this.selected) {
+                    setModel(this.selected);
+                }
+            },
             fetchOptions() {
                 if (this.search.trim() === '') {
                     this.filteredOptions = [];

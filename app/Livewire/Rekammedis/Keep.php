@@ -203,6 +203,8 @@ class Keep extends Component
             'hari_obat_non_racikan'=> [],
             'aturan_pakai_obat_non_racikan'=> [],
         ];
+        public $obatNonRacikLabels = [];
+
 
         public $racikanItems = [
             [
@@ -526,6 +528,9 @@ class Keep extends Component
                 'hari_obat_non_racikan'         => $rm->obatNonRacikanRM->pluck('hari_obat_non_racikan')->toArray(),
                 'aturan_pakai_obat_non_racikan' => $rm->obatNonRacikanRM->pluck('aturan_pakai_obat_non_racikan')->toArray(),
             ];
+            $this->obatNonRacikLabels = $rm->obatNonRacikanRM
+            ->map(fn($r) => $r->nama_obat_non_racikan ?? '')
+            ->toArray();
         }
 
         // Plan: Obat Racikan

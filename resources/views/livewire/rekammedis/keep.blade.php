@@ -811,6 +811,7 @@
                                         <div x-show="selectedFormsPlan.includes('obat-non-racikan')" style="display: none" wire:ignore >
                                             <x-rekammedis.obatnonracikan 
                                                 :obatNonRacikan="$obat_non_racikan"
+                                                :obatNonRacikLabels="$obatNonRacikLabels"
                                             />
                                         </div>
 
