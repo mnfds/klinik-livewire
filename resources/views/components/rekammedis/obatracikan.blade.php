@@ -1,5 +1,8 @@
+@props([
+    'racikanItems' => [],
+])
 <div class="bg-base-200 p-4 rounded border border-base-200"
-    x-data="racikanForm(@entangle('racikanItems'))">
+    x-data="racikanForm({{ Js::from($racikanItems) }}, $wire)">
 
     <div class="divider">Pemberian Obat Racikan</div>
 
@@ -256,74 +259,91 @@
 
 @push('scripts')
 <script>
-function racikanForm(livewireBinding) {
-    return {
-        racikanItems: livewireBinding,
-        addRacikan() {
-            this.racikanItems.push({
-                id: Date.now() + Math.random(),
-                nama_racikan: '',
-                jumlah_racikan: '',
-                satuan_racikan: '',
-                dosis_obat_racikan: '',
-                hari_obat_racikan: '',
-                aturan_pakai_racikan: '',
-                metode_racikan: '',
-                bahan: [{
+    function racikanForm(initialItems, wire) {
+        return {
+            // Pastikan setiap item punya id untuk :key Alpine
+            racikanItems: initialItems.map((r, ri) => ({
+                ...r,
+                id: r.id ?? (Date.now() + ri),
+                bahan: (r.bahan ?? []).map((b, bi) => ({
+                    ...b,
+                    id: b.id ?? (Date.now() + ri + bi),
+                }))
+            })),
+
+            syncToLivewire() {
+                wire.set('racikanItems', this.racikanItems);
+            },
+
+            addRacikan() {
+                this.racikanItems.push({
+                    id: Date.now() + Math.random(),
+                    nama_racikan: '',
+                    jumlah_racikan: '',
+                    satuan_racikan: '',
+                    dosis_obat_racikan: '',
+                    hari_obat_racikan: '',
+                    aturan_pakai_racikan: '',
+                    metode_racikan: '',
+                    bahan: [{
+                        id: Date.now() + Math.random(),
+                        nama_obat_racikan: '',
+                        jumlah_obat_racikan: '',
+                        satuan_obat_racikan: ''
+                    }]
+                });
+                this.syncToLivewire();
+            },
+            removeRacikan(i) {
+                this.racikanItems.splice(i, 1);
+                this.syncToLivewire();
+            },
+            addBahan(i) {
+                this.racikanItems[i].bahan.push({
                     id: Date.now() + Math.random(),
                     nama_obat_racikan: '',
                     jumlah_obat_racikan: '',
                     satuan_obat_racikan: ''
-                }]
-            });
-        },
-        removeRacikan(i) {
-            this.racikanItems.splice(i, 1);
-        },
-        addBahan(i) {
-            this.racikanItems[i].bahan.push({
-                id: Date.now() + Math.random(),
-                nama_obat_racikan: '',
-                jumlah_obat_racikan: '',
-                satuan_obat_racikan: ''
-            });
-        },
-        removeBahan(i, j) {
-            this.racikanItems[i].bahan.splice(j, 1);
-        }
-    }
-}
-
-function singleSelectObatRacikan(getModel, setModel) {
-    return {
-        open: false,
-        selected: getModel() || '',
-        search: '',
-        filteredOptions: [],
-
-        fetchOptions() {
-            if (this.search.trim() === '') {
-                this.filteredOptions = [];
-                return;
-            }
-            fetch(`/ajax/obat-kfa?q=${encodeURIComponent(this.search)}`)
-                .then(r => r.json())
-                .then(data => {
-                    this.filteredOptions = data.map(obat => obat.text);
                 });
-        },
-        choose(item) {
-            this.selected = item;
-            setModel(this.selected);
-            this.search = '';
-            this.filteredOptions = [];
-            this.open = false;
-        },
-        remove() {
-            this.selected = '';
-            setModel('');
+                this.syncToLivewire();
+            },
+            removeBahan(i, j) {
+                this.racikanItems[i].bahan.splice(j, 1);
+                this.syncToLivewire();
+            }
         }
     }
-}
+    function singleSelectObatRacikan(getModel, setModel) {
+        return {
+            open: false,
+            // getModel() sudah berisi nama obat dari data tersimpan
+            selected: getModel() || '',
+            search: '',
+            filteredOptions: [],
+
+            fetchOptions() {
+                if (this.search.trim() === '') {
+                    this.filteredOptions = [];
+                    return;
+                }
+                fetch(`/ajax/obat-kfa?q=${encodeURIComponent(this.search)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        this.filteredOptions = data.map(obat => obat.text);
+                    });
+            },
+            choose(item) {
+                this.selected = item;
+                setModel(this.selected);
+                this.search = '';
+                this.filteredOptions = [];
+                this.open = false;
+            },
+            remove() {
+                this.selected = '';
+                setModel('');
+            }
+        }
+    }
 </script>
 @endpush
