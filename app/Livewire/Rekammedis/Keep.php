@@ -765,7 +765,8 @@ class Keep extends Component
             }
 
             if (in_array('data-estetika', $this->selected_forms_subjective)) {
-                DataEstetikaRM::updateOrCreate(
+                // dd([$rm->id,$this->data_estetika['sedang_hamil']]);
+                DataEstetikaRM::where('rekam_medis_id', $rm->id)->updateOrInsert(
                     ['rekam_medis_id' => $rm->id],
                     [
                         'problem_dihadapi'    => json_encode($this->data_estetika['problem_dihadapi']),
@@ -774,7 +775,7 @@ class Keep extends Component
                         'penyakit_dialami'    => $this->data_estetika['penyakit_dialami'],
                         'alergi_kosmetik'     => $this->data_estetika['alergi_kosmetik'],
                         'sedang_hamil'        => $this->data_estetika['sedang_hamil'],
-                        'usia_kehamilan'      => $this->data_estetika['usia_kehamilan'],
+                        'usia_kehamilan' => $this->data_estetika['sedang_hamil'] === 'tidak' ? null : $this->data_estetika['usia_kehamilan'],
                         'metode_kb'           => json_encode($this->data_estetika['metode_kb']),
                         'pengobatan_saat_ini' => $this->data_estetika['pengobatan_saat_ini'],
                         'produk_kosmetik'     => $this->data_estetika['produk_kosmetik'],

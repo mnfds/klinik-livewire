@@ -66,8 +66,8 @@
                 <label for="sedang_hamil" class="label"><span class="label-text">Sedang Hamil?</span></label>
                 <select id="sedang_hamil" class="select select-bordered w-full" wire:model.defer="data_estetika.sedang_hamil" onchange="toggleKehamilanInput(this)">
                     <option value="">Pilih</option>
-                    <option value="1">Ya</option>
-                    <option value="0">Tidak</option>
+                    <option value="ya">Ya</option>
+                    <option value="tidak">Tidak</option>
                 </select>
             </div>
             <div id="usia_kehamilan_section" style="display: none;">
@@ -108,7 +108,7 @@
 <script>
     function toggleKehamilanInput(selectElement) {
         const section = document.getElementById('usia_kehamilan_section');
-        if (selectElement.value === '1') {
+        if (selectElement.value === 'ya') {
             section.style.display = 'block';
         } else {
             section.style.display = 'none';
