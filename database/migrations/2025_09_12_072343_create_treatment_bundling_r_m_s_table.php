@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('treatments_id')->constrained('treatments')->onDelete('cascade');
             $table->integer('jumlah_awal')->default(0);
             $table->integer('jumlah_terpakai')->default(0);
+            $table->boolean('is_final')->default(false);
             $table->string('group_bundling')->nullable()->index();
             $table->timestamps();
         });

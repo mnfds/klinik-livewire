@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('pasien_id')->constrained()->cascadeOnDelete();
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
             $table->boolean('is_pembelian_baru')->default(false);
+            $table->boolean('is_final')->default(false);
             $table->foreignId('bundling_id')->constrained('bundlings')->cascadeOnDelete();
             $table->string('group_bundling')->nullable()->index();
             $table->foreignId('pelayanan_id')->constrained('pelayanans')->cascadeOnDelete();

@@ -16,10 +16,12 @@ return new class extends Migration
             $table->foreignId('pasien_id')->constrained()->cascadeOnDelete();
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
             $table->boolean('is_pembelian_baru')->default(false);
+            $table->boolean('is_final')->default(false);
             $table->foreignId('bundling_id')->constrained('bundlings')->cascadeOnDelete();
             $table->string('group_bundling')->nullable()->index();
             $table->foreignId('produk_obat_id')->constrained('produk_dan_obats')->cascadeOnDelete();
             $table->integer('jumlah_dipakai')->default(1);
+            $table->boolean('is_final')->default(false); // untuk menentukan apakah angka jumlah_dipakai di keep atau final
             $table->timestamps();
         });
     }

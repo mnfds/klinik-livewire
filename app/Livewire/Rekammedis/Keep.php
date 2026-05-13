@@ -205,7 +205,6 @@ class Keep extends Component
         ];
         public $obatNonRacikLabels = [];
 
-
         public $racikanItems = [
             [
                 'nama_racikan' => '',
@@ -224,8 +223,100 @@ class Keep extends Component
                 ],
             ],
         ];
+
     //PLAN
 
+    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName, $group_bundling_lama)
+    {
+        // pastikan bundling sudah ada di array
+        if (!isset($this->layananTerpilih[$bundlingName])) {
+            $this->layananTerpilih[$bundlingName] = [];
+        }
+
+        // cari apakah item ini sudah dipilih sebelumnya
+        $existingIndex = collect($this->layananTerpilih[$bundlingName])
+            ->search(fn($item) => $item['id'] == $id && $item['tipe'] == $tipe);
+
+        if ($existingIndex !== false) {
+            // sudah ada → tambahkan jumlah dipakai (tapi tidak boleh melebihi sisa)
+            $current = $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'];
+            $new = min($current + 1, $sisa);
+
+            $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'] = $new;
+        } else {
+            // belum ada → tambahkan baru dengan dipakai = 1
+            $this->layananTerpilih[$bundlingName][] = [
+                'id' => $id,
+                'tipe' => $tipe,
+                'nama' => $nama,
+                'sisa' => $sisa,
+                'dipakai' => 1,
+                'group_bundling_lama' => $group_bundling_lama,
+            ];
+        }
+    }
+
+    public function hapusLayanan($bundlingName, $index)
+    {
+        if (isset($this->layananTerpilih[$bundlingName][$index])) {
+            unset($this->layananTerpilih[$bundlingName][$index]);
+        }
+
+        // Re-index agar array tetap rapi (opsional tapi sering membantu)
+        if (isset($this->layananTerpilih[$bundlingName])) {
+            $this->layananTerpilih[$bundlingName] = array_values($this->layananTerpilih[$bundlingName]);
+        }
+
+        // Hapus grup jika kosong
+        if (empty($this->layananTerpilih[$bundlingName])) {
+            unset($this->layananTerpilih[$bundlingName]);
+        }
+    }
+
+    public function tambahLayanan($bundlingName, $index)
+    {
+        $item = &$this->layananTerpilih[$bundlingName][$index];
+        if ($item['dipakai'] < $item['sisa']) {
+            $item['dipakai']++;
+        }
+    }
+
+    public function kurangiLayanan($bundlingName, $index)
+    {
+        $item = &$this->layananTerpilih[$bundlingName][$index];
+        if ($item['dipakai'] > 1) {
+            $item['dipakai']--;
+        }
+    }
+
+    /**
+     * Sanitasi setiap kali properti layananTerpilih berubah (Livewire hook).
+     * key contoh: layananTerpilih.Paket%20Whitening.0.dipakai
+     */
+    public function updatedLayananTerpilih($value, $key)
+    {
+        // Pastikan kita sedang update field dipakai
+        if (Str::endsWith($key, '.dipakai')) {
+            // parse key menjadi parts
+            $parts = explode('.', $key); // ["layananTerpilih", "<bundlingName>", "<index>", "dipakai"]
+            if (count($parts) >= 4) {
+                $bundlingName = $parts[1];
+                $index = (int) $parts[2];
+
+                if (!isset($this->layananTerpilih[$bundlingName][$index])) return;
+
+                // normalize angka
+                $dipakai = (int) $this->layananTerpilih[$bundlingName][$index]['dipakai'];
+                $sisa = (int) $this->layananTerpilih[$bundlingName][$index]['sisa'];
+
+                if ($dipakai < 1) $dipakai = 1;
+                if ($dipakai > $sisa) $dipakai = $sisa;
+
+                $this->layananTerpilih[$bundlingName][$index]['dipakai'] = $dipakai;
+            }
+        }
+    }
+    
     public function mount($rekam_medis_id = null)
     {
         $this->rekam_medis_id = $rekam_medis_id;
@@ -283,6 +374,28 @@ class Keep extends Component
                 ->where('pasien_id', $this->pasien_id)->get();
         }
 
+        // Ambil usage is_final=false dari rekam medis LAIN milik pasien ini
+        $treatmentKeepLain = \App\Models\TreatmentBundlingUsage::where('pasien_id', $this->pasien_id)
+            ->where('rekam_medis_id', '!=', $rm->id)
+            ->where('is_pembelian_baru', false)
+            ->where('is_final', false)
+            ->get()
+            ->groupBy(fn($u) => $u->treatments_id . '_' . $u->group_bundling);
+
+        $pelayananKeepLain = \App\Models\PelayananBundlingUsage::where('pasien_id', $this->pasien_id)
+            ->where('rekam_medis_id', '!=', $rm->id)
+            ->where('is_pembelian_baru', false)
+            ->where('is_final', false)
+            ->get()
+            ->groupBy(fn($u) => $u->pelayanan_id . '_' . $u->group_bundling);
+
+        $produkKeepLain = \App\Models\ProdukBundlingUsage::where('pasien_id', $this->pasien_id)
+            ->where('rekam_medis_id', '!=', $rm->id)
+            ->where('is_pembelian_baru', false)
+            ->where('is_final', false)
+            ->get()
+            ->groupBy(fn($u) => $u->produk_obat_id . '_' . $u->group_bundling);
+
         $treatmentUsages = \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
             ->where('is_pembelian_baru', false) // hanya yang dipakai, bukan pembelian baru
             ->with('bundling', 'treatment')
@@ -300,7 +413,7 @@ class Keep extends Component
 
         // Rebuild layananTerpilih dari usage
         foreach ($treatmentUsages as $usage) {
-            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $bundlingName = $usage->bundling?->nama ?? 'Unknown';
             $record = \App\Models\TreatmentBundlingRM::where('pasien_id', $this->pasien_id)
                 ->where('treatments_id', $usage->treatments_id)
                 ->where('group_bundling', $usage->group_bundling)
@@ -308,24 +421,28 @@ class Keep extends Component
 
             if (!$record) continue;
 
-            $sisa = $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai);
-            // kurangi terpakai dengan usage ini karena nanti akan dihitung ulang saat save
+            $sisa = $usage->is_final
+                ? $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai)
+                : $record->jumlah_awal - $record->jumlah_terpakai;
+
+            $key = $usage->treatments_id . '_' . $usage->group_bundling;
+            $dipegangLain = $treatmentKeepLain->get($key)?->sum('jumlah_dipakai') ?? 0;
+            $sisa = max(0, $sisa - $dipegangLain);
 
             if (!isset($this->layananTerpilih[$bundlingName])) {
                 $this->layananTerpilih[$bundlingName] = [];
             }
             $this->layananTerpilih[$bundlingName][] = [
-                'id'                 => $record->id,
-                'tipe'               => 'treatment',
-                'nama'               => $usage->treatment?->nama_treatment ?? '',
-                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
-                'dipakai'            => $usage->jumlah_dipakai,
-                'group_bundling_lama'=> $usage->group_bundling,
+                'id'                  => $record->id,
+                'tipe'                => 'treatment',
+                'nama'                => $usage->treatment?->nama_treatment ?? '',
+                'sisa'                => $sisa,
+                'dipakai'             => $usage->jumlah_dipakai,
+                'group_bundling_lama' => $usage->group_bundling,
             ];
         }
-
         foreach ($pelayananUsages as $usage) {
-            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $bundlingName = $usage->bundling?->nama ?? 'Unknown';
             $record = \App\Models\PelayananBundlingRM::where('pasien_id', $this->pasien_id)
                 ->where('pelayanan_id', $usage->pelayanan_id)
                 ->where('group_bundling', $usage->group_bundling)
@@ -333,21 +450,28 @@ class Keep extends Component
 
             if (!$record) continue;
 
+            $sisa = $usage->is_final
+                ? $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai)
+                : $record->jumlah_awal - $record->jumlah_terpakai;
+
+            $key = $usage->pelayanan_id . '_' . $usage->group_bundling;
+            $dipegangLain = $pelayananKeepLain->get($key)?->sum('jumlah_dipakai') ?? 0;
+            $sisa = max(0, $sisa - $dipegangLain);
+
             if (!isset($this->layananTerpilih[$bundlingName])) {
                 $this->layananTerpilih[$bundlingName] = [];
             }
             $this->layananTerpilih[$bundlingName][] = [
-                'id'                 => $record->id,
-                'tipe'               => 'pelayanan',
-                'nama'               => $usage->pelayanan?->nama ?? '',
-                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
-                'dipakai'            => $usage->jumlah_dipakai,
-                'group_bundling_lama'=> $usage->group_bundling,
+                'id'                  => $record->id,
+                'tipe'                => 'pelayanan',
+                'nama'                => $usage->pelayanan?->nama ?? '',
+                'sisa'                => $sisa,
+                'dipakai'             => $usage->jumlah_dipakai,
+                'group_bundling_lama' => $usage->group_bundling,
             ];
         }
-
         foreach ($produkUsages as $usage) {
-            $bundlingName = $usage->bundling?->nama_bundling ?? 'Unknown';
+            $bundlingName = $usage->bundling?->nama ?? 'Unknown';
             $record = \App\Models\ProdukObatBundlingRM::where('pasien_id', $this->pasien_id)
                 ->where('produk_obat_id', $usage->produk_obat_id)
                 ->where('group_bundling', $usage->group_bundling)
@@ -355,16 +479,24 @@ class Keep extends Component
 
             if (!$record) continue;
 
+            $sisa = $usage->is_final
+                ? $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai)
+                : $record->jumlah_awal - $record->jumlah_terpakai;
+
+            $key = $usage->produk_obat_id . '_' . $usage->group_bundling;
+            $dipegangLain = $produkKeepLain->get($key)?->sum('jumlah_dipakai') ?? 0;
+            $sisa = max(0, $sisa - $dipegangLain);
+
             if (!isset($this->layananTerpilih[$bundlingName])) {
                 $this->layananTerpilih[$bundlingName] = [];
             }
             $this->layananTerpilih[$bundlingName][] = [
-                'id'                 => $record->id,
-                'tipe'               => 'produk',
-                'nama'               => $usage->produk?->nama_produk ?? '',
-                'sisa'               => $record->jumlah_awal - ($record->jumlah_terpakai - $usage->jumlah_dipakai),
-                'dipakai'            => $usage->jumlah_dipakai,
-                'group_bundling_lama'=> $usage->group_bundling,
+                'id'                  => $record->id,
+                'tipe'                => 'produk',
+                'nama'                => $usage->produk?->nama_dagang ?? '',
+                'sisa'                => $sisa,
+                'dipakai'             => $usage->jumlah_dipakai,
+                'group_bundling_lama' => $usage->group_bundling,
             ];
         }
         // ── LOAD DATA KE FORM ──
@@ -550,97 +682,6 @@ class Keep extends Component
                     'satuan_obat_racikan' => $b->satuan_obat_racikan,
                 ])->toArray(),
             ])->toArray();
-        }
-    }
-
-    public function tambahLayananBundling($id, $tipe, $nama, $sisa, $bundlingName, $group_bundling_lama)
-    {
-        // pastikan bundling sudah ada di array
-        if (!isset($this->layananTerpilih[$bundlingName])) {
-            $this->layananTerpilih[$bundlingName] = [];
-        }
-
-        // cari apakah item ini sudah dipilih sebelumnya
-        $existingIndex = collect($this->layananTerpilih[$bundlingName])
-            ->search(fn($item) => $item['id'] == $id && $item['tipe'] == $tipe);
-
-        if ($existingIndex !== false) {
-            // sudah ada → tambahkan jumlah dipakai (tapi tidak boleh melebihi sisa)
-            $current = $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'];
-            $new = min($current + 1, $sisa);
-
-            $this->layananTerpilih[$bundlingName][$existingIndex]['dipakai'] = $new;
-        } else {
-            // belum ada → tambahkan baru dengan dipakai = 1
-            $this->layananTerpilih[$bundlingName][] = [
-                'id' => $id,
-                'tipe' => $tipe,
-                'nama' => $nama,
-                'sisa' => $sisa,
-                'dipakai' => 1,
-                'group_bundling_lama' => $group_bundling_lama,
-            ];
-        }
-    }
-
-    public function hapusLayanan($bundlingName, $index)
-    {
-        if (isset($this->layananTerpilih[$bundlingName][$index])) {
-            unset($this->layananTerpilih[$bundlingName][$index]);
-        }
-
-        // Re-index agar array tetap rapi (opsional tapi sering membantu)
-        if (isset($this->layananTerpilih[$bundlingName])) {
-            $this->layananTerpilih[$bundlingName] = array_values($this->layananTerpilih[$bundlingName]);
-        }
-
-        // Hapus grup jika kosong
-        if (empty($this->layananTerpilih[$bundlingName])) {
-            unset($this->layananTerpilih[$bundlingName]);
-        }
-    }
-
-    public function tambahLayanan($bundlingName, $index)
-    {
-        $item = &$this->layananTerpilih[$bundlingName][$index];
-        if ($item['dipakai'] < $item['sisa']) {
-            $item['dipakai']++;
-        }
-    }
-
-    public function kurangiLayanan($bundlingName, $index)
-    {
-        $item = &$this->layananTerpilih[$bundlingName][$index];
-        if ($item['dipakai'] > 1) {
-            $item['dipakai']--;
-        }
-    }
-
-    /**
-     * Sanitasi setiap kali properti layananTerpilih berubah (Livewire hook).
-     * key contoh: layananTerpilih.Paket%20Whitening.0.dipakai
-     */
-    public function updatedLayananTerpilih($value, $key)
-    {
-        // Pastikan kita sedang update field dipakai
-        if (Str::endsWith($key, '.dipakai')) {
-            // parse key menjadi parts
-            $parts = explode('.', $key); // ["layananTerpilih", "<bundlingName>", "<index>", "dipakai"]
-            if (count($parts) >= 4) {
-                $bundlingName = $parts[1];
-                $index = (int) $parts[2];
-
-                if (!isset($this->layananTerpilih[$bundlingName][$index])) return;
-
-                // normalize angka
-                $dipakai = (int) $this->layananTerpilih[$bundlingName][$index]['dipakai'];
-                $sisa = (int) $this->layananTerpilih[$bundlingName][$index]['sisa'];
-
-                if ($dipakai < 1) $dipakai = 1;
-                if ($dipakai > $sisa) $dipakai = $sisa;
-
-                $this->layananTerpilih[$bundlingName][$index]['dipakai'] = $dipakai;
-            }
         }
     }
 
@@ -1038,9 +1079,10 @@ class Keep extends Component
             // LAYANAN TERPILIH (sisa bundling) — rollback dulu, lalu insert ulang
             if (!empty($this->layananTerpilih)) {
 
-                // 1. Rollback jumlah_terpakai dari usage lama rekam medis ini
-                \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $this->pasien_id)
+                // Rollback jumlah_terpakai HANYA dari usage yang sudah final
+                \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
                     ->where('is_pembelian_baru', false)
+                    ->where('is_final', true)
                     ->each(function ($usage) {
                         \App\Models\TreatmentBundlingRM::where('treatments_id', $usage->treatments_id)
                             ->where('group_bundling', $usage->group_bundling)
@@ -1049,6 +1091,7 @@ class Keep extends Component
 
                 \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
                     ->where('is_pembelian_baru', false)
+                    ->where('is_final', true)
                     ->each(function ($usage) {
                         \App\Models\PelayananBundlingRM::where('pelayanan_id', $usage->pelayanan_id)
                             ->where('group_bundling', $usage->group_bundling)
@@ -1057,13 +1100,14 @@ class Keep extends Component
 
                 \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
                     ->where('is_pembelian_baru', false)
+                    ->where('is_final', true)
                     ->each(function ($usage) {
                         \App\Models\ProdukObatBundlingRM::where('produk_obat_id', $usage->produk_obat_id)
                             ->where('group_bundling', $usage->group_bundling)
                             ->decrement('jumlah_terpakai', $usage->jumlah_dipakai);
                     });
 
-                // 2. Hapus usage lama
+                // Hapus semua usage lama
                 \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
                     ->where('is_pembelian_baru', false)->delete();
                 \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
@@ -1071,7 +1115,7 @@ class Keep extends Component
                 \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
                     ->where('is_pembelian_baru', false)->delete();
 
-                // 3. Insert ulang dari layananTerpilih (kode sama persis dengan create())
+                // Insert ulang
                 foreach ($this->layananTerpilih as $namaBundling => $items) {
                     foreach ($items as $item) {
                         $jumlahDipakai = (int) ($item['dipakai'] ?? 0);
@@ -1095,59 +1139,42 @@ class Keep extends Component
                                 $record = null;
                         }
 
-                        if (!$record) {
-                            Log::warning("Record bundling tidak ditemukan saat update", [
-                                'tipe'   => $item['tipe'],
-                                'id'     => $item['id'],
-                                'pasien' => $this->pasien_id,
+                        if (!$record) continue;
+
+                        // Hanya update jumlah_terpakai jika final
+                        if (!$keepStatus) {
+                            $record->update([
+                                'jumlah_terpakai' => min(
+                                    $record->jumlah_terpakai + $jumlahDipakai,
+                                    $record->jumlah_awal
+                                )
                             ]);
-                            continue;
                         }
 
-                        $baruTerpakai = min(
-                            $record->jumlah_terpakai + $jumlahDipakai,
-                            $record->jumlah_awal
-                        );
-                        $record->update(['jumlah_terpakai' => $baruTerpakai]);
+                        $basePayload = [
+                            'pasien_id'         => $this->pasien_id,
+                            'rekam_medis_id'    => $rm->id,
+                            'bundling_id'       => $record->bundling_id,
+                            'group_bundling'    => $group_bundling_lama,
+                            'jumlah_dipakai'    => $jumlahDipakai,
+                            'is_pembelian_baru' => false,
+                            'is_final'          => !$keepStatus,
+                        ];
 
                         try {
-                            switch ($item['tipe']) {
-                                case 'treatment':
-                                    \App\Models\TreatmentBundlingUsage::create([
-                                        'pasien_id'         => $this->pasien_id,
-                                        'rekam_medis_id'    => $rm->id,
-                                        'bundling_id'       => $record->bundling_id,
-                                        'group_bundling'    => $group_bundling_lama,
-                                        'treatments_id'     => $record->treatments_id,
-                                        'jumlah_dipakai'    => $jumlahDipakai,
-                                        'is_pembelian_baru' => false,
-                                    ]);
-                                    break;
-                                case 'produk':
-                                    \App\Models\ProdukBundlingUsage::create([
-                                        'pasien_id'         => $this->pasien_id,
-                                        'rekam_medis_id'    => $rm->id,
-                                        'bundling_id'       => $record->bundling_id,
-                                        'group_bundling'    => $group_bundling_lama,
-                                        'produk_obat_id'    => $record->produk_obat_id,
-                                        'jumlah_dipakai'    => $jumlahDipakai,
-                                        'is_pembelian_baru' => false,
-                                    ]);
-                                    break;
-                                case 'pelayanan':
-                                    \App\Models\PelayananBundlingUsage::create([
-                                        'pasien_id'         => $this->pasien_id,
-                                        'rekam_medis_id'    => $rm->id,
-                                        'bundling_id'       => $record->bundling_id,
-                                        'group_bundling'    => $group_bundling_lama,
-                                        'pelayanan_id'      => $record->pelayanan_id,
-                                        'jumlah_dipakai'    => $jumlahDipakai,
-                                        'is_pembelian_baru' => false,
-                                    ]);
-                                    break;
-                            }
+                            match ($item['tipe']) {
+                                'treatment' => \App\Models\TreatmentBundlingUsage::create(
+                                    $basePayload + ['treatments_id' => $record->treatments_id]
+                                ),
+                                'produk' => \App\Models\ProdukBundlingUsage::create(
+                                    $basePayload + ['produk_obat_id' => $record->produk_obat_id]
+                                ),
+                                'pelayanan' => \App\Models\PelayananBundlingUsage::create(
+                                    $basePayload + ['pelayanan_id' => $record->pelayanan_id]
+                                ),
+                            };
                         } catch (\Exception $e) {
-                            Log::error("Gagal create BundlingUsage saat update", [
+                            Log::error("Gagal create BundlingUsage", [
                                 'tipe'  => $item['tipe'],
                                 'error' => $e->getMessage(),
                             ]);

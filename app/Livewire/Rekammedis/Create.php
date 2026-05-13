@@ -1157,73 +1157,42 @@ class Create extends Component
                                     $record = null;
                             }
 
-                            if (!$record) {
-                                Log::warning("Record bundling tidak ditemukan", [
-                                    'tipe' => $item['tipe'],
-                                    'id' => $item['id'],
-                                    'pasien' => $pasienId,
-                                ]);
-                                continue;
+                            if (!$record) continue;
+
+                            // ✅ Hanya update jumlah_terpakai jika final (bukan keep)
+                            if (!$keepStatus) {
+                                $baruTerpakai = min(
+                                    $record->jumlah_terpakai + $jumlahDipakai,
+                                    $record->jumlah_awal
+                                );
+                                $record->update(['jumlah_terpakai' => $baruTerpakai]);
                             }
 
-                            $baruTerpakai = min(
-                                $record->jumlah_terpakai + $jumlahDipakai,
-                                $record->jumlah_awal
-                            );
-
-                            $record->update(['jumlah_terpakai' => $baruTerpakai]);
-
-                            // 🔍 Tambahkan logger di sini sebelum create
-                            Log::info("Create BundlingUsage", [
-                                'tipe' => $item['tipe'],
-                                'pasien_id' => $pasienId,
-                                'rekam_medis_id' => $rekammedis->id,
-                                'bundling_id' => $record->bundling_id ?? null,
-                                'group_bundling' => $group_bundling_lama ?? null,
-                                'jumlah_dipakai' => $jumlahDipakai,
-                            ]);
+                            $basePayload = [
+                                'pasien_id'         => $pasienId,
+                                'rekam_medis_id'    => $rekammedis->id,
+                                'bundling_id'       => $record->bundling_id,
+                                'group_bundling'    => $group_bundling_lama,
+                                'jumlah_dipakai'    => $jumlahDipakai,
+                                'is_pembelian_baru' => false,
+                                'is_final'          => !$keepStatus, // ✅ false jika keep, true jika final
+                            ];
 
                             try {
-                                switch ($item['tipe']) {
-                                    case 'treatment':
-                                        \App\Models\TreatmentBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'treatments_id' => $record->treatments_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-
-                                    case 'produk':
-                                        \App\Models\ProdukBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'produk_obat_id' => $record->produk_obat_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-
-                                    case 'pelayanan':
-                                        \App\Models\PelayananBundlingUsage::create([
-                                            'pasien_id' => $pasienId,
-                                            'rekam_medis_id' => $rekammedis->id,
-                                            'bundling_id' => $record->bundling_id,
-                                            'group_bundling' => $group_bundling_lama,
-                                            'pelayanan_id' => $record->pelayanan_id,
-                                            'jumlah_dipakai' => $jumlahDipakai,
-                                            'is_pembelian_baru' => false,
-                                        ]);
-                                        break;
-                                }
+                                match ($item['tipe']) {
+                                    'treatment' => \App\Models\TreatmentBundlingUsage::create(
+                                        $basePayload + ['treatments_id' => $record->treatments_id]
+                                    ),
+                                    'produk' => \App\Models\ProdukBundlingUsage::create(
+                                        $basePayload + ['produk_obat_id' => $record->produk_obat_id]
+                                    ),
+                                    'pelayanan' => \App\Models\PelayananBundlingUsage::create(
+                                        $basePayload + ['pelayanan_id' => $record->pelayanan_id]
+                                    ),
+                                };
                             } catch (\Exception $e) {
                                 Log::error("Gagal create BundlingUsage", [
-                                    'tipe' => $item['tipe'],
+                                    'tipe'  => $item['tipe'],
                                     'error' => $e->getMessage(),
                                 ]);
                             }
