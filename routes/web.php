@@ -198,6 +198,11 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
     Route::view('/rekam-medis-pasien/keep', 'rekammedis.keep')->name('rekam-medis-pasien.keep');
+    Route::view('/rekam-medis-pasien/subjective', 'rekammedis.update.subjective')->name('rekammedis.update.subjective');
+    Route::get('/rekam-medis-pasien/objective', function () {
+        return view('rekammedis.update.objective');
+    })->name('rekammedis.update.objective');
+    Route::view('/rekam-medis-pasien/assessment', 'rekammedis.update.assessment')->name('rekammedis.update.assessment');
     Route::view('/rekam-medis-pasien/detail', 'rekammedis.detail')->name('rekam-medis-pasien.detail');
     Route::get('/rekam-medis-pasien/pengurangan-stok/{pasien_terdaftar_id}', function ($pasien_terdaftar_id) {
             return view('rekammedis.penguranganstok', compact('pasien_terdaftar_id'));
