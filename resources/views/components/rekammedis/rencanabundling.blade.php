@@ -11,16 +11,22 @@
 >
     @props([
         'rencanaBundling' => [
-            'bundling_id' => [],
-            'jumlah_bundling' => [],
-            'potongan' => [],
-            'diskon' => [],
-            'subtotal' => [],
+            'bundling_id'    => [],
+            'jumlah_bundling'=> [],
+            'potongan'       => [],
+            'diskon'         => [],
+            'subtotal'       => [],
+            'details'        => [
+                'treatments' => [],
+                'pelayanans' => [],
+                'produks'    => [],
+            ],
         ],
         'layanandanbundling' => [
             'treatment' => [],
-            'bundling' => [],
-        ]
+            'bundling'  => [],
+        ],
+        'rencanaBundlingLabels' => [],
     ])
 
     <div class="divider">Paket Bundling</div>
@@ -59,14 +65,15 @@
                                 }
                                 onChangeBundling(index);
                             }
-                            )" x-init="init()">
+                            )" 
+                        x-init="init(item.search_label)">
 
                         <label class="block text-sm font-semibold mb-1">Bundling</label>
                         <div class="relative">
                             <input type="text"
                                 class="input input-bordered w-full"
                                 placeholder="Ketik untuk cari bundling..."
-                                :value="item.search_label || search"
+                                :value="search"
                                 @input.debounce.300ms="item.search_label = ''; search = $event.target.value; fetchOptions(); open = true"
                                 @focus="open = true"
                             >
@@ -155,7 +162,7 @@
                                                 <li 
                                                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
                                                     x-init="
-                                                        initDetailIfMissing(item, 'treatments', '{{ $tb['id'] }}', {
+                                                        initDetailIfMissing(item, 'treatments', '{{ $tb['treatment']['id'] }}', {
                                                             idKey: 'treatments_id',
                                                             idValue: {{ $tb['treatment']['id'] }},
                                                             perBundle: {{ $tb->jumlah ?? 0 }}
@@ -179,21 +186,21 @@
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
                                                                 @click="
-                                                                    decrementDetail(item, 'treatments', '{{ $tb['id'] }}', index);
+                                                                    decrementDetail(item, 'treatments', '{{ $tb['treatment']['id'] }}', index);
                                                                 ">
                                                                 -
                                                             </button>
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.treatments['{{ $tb['id'] }}']
-                                                                    ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai
+                                                                :value="item.details.treatments['{{ $tb['treatment']['id'] }}']
+                                                                    ? item.details.treatments['{{ $tb['treatment']['id'] }}'].jumlah_terpakai
                                                                     : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
                                                                 @click="
-                                                                    incrementDetail(item, 'treatments', '{{ $tb['id'] }}', index);
+                                                                    incrementDetail(item, 'treatments', '{{ $tb['treatment']['id'] }}', index);
                                                                 ">
                                                                 +
                                                             </button>
@@ -206,8 +213,8 @@
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
                                                             :value="(item.jumlah_bundling * {{ $tb->jumlah ?? 0 }}) - 
-                                                                (item.details.treatments['{{ $tb['id'] }}']
-                                                                    ? item.details.treatments['{{ $tb['id'] }}'].jumlah_terpakai
+                                                                (item.details.treatments['{{ $tb['treatment']['id'] }}']
+                                                                    ? item.details.treatments['{{ $tb['treatment']['id'] }}'].jumlah_terpakai
                                                                     : 0)"
                                                             readonly>
                                                     </div>
@@ -229,7 +236,7 @@
                                                 <li 
                                                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
                                                     x-init="
-                                                        initDetailIfMissing(item, 'pelayanans', '{{ $pb['id'] }}', {
+                                                        initDetailIfMissing(item, 'pelayanans', '{{ $pb['pelayanan']['id'] }}', {
                                                             idKey: 'pelayanan_id',
                                                             idValue: {{ $pb['pelayanan_id'] }},
                                                             perBundle: {{ $pb->jumlah ?? 0 }}
@@ -252,19 +259,19 @@
                                                         <label class="block text-xs mb-1">Dipakai</label>
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
-                                                                @click="decrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index)">
+                                                                @click="decrementDetail(item, 'pelayanans', '{{ $pb['pelayanan']['id'] }}', index)">
                                                                 -
                                                             </button>
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.pelayanans['{{ $pb['id'] }}']
-                                                                    ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai
+                                                                :value="item.details.pelayanans['{{ $pb['pelayanan']['id'] }}']
+                                                                    ? item.details.pelayanans['{{ $pb['pelayanan']['id'] }}'].jumlah_terpakai
                                                                     : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
-                                                                @click="incrementDetail(item, 'pelayanans', '{{ $pb['id'] }}', index)">
+                                                                @click="incrementDetail(item, 'pelayanans', '{{ $pb['pelayanan']['id'] }}', index)">
                                                                 +
                                                             </button>
                                                         </div>
@@ -276,8 +283,8 @@
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
                                                             :value="(item.jumlah_bundling * {{ $pb->jumlah ?? 0 }}) - 
-                                                                (item.details.pelayanans['{{ $pb['id'] }}']
-                                                                    ? item.details.pelayanans['{{ $pb['id'] }}'].jumlah_terpakai
+                                                                (item.details.pelayanans['{{ $pb['pelayanan']['id'] }}']
+                                                                    ? item.details.pelayanans['{{ $pb['pelayanan']['id'] }}'].jumlah_terpakai
                                                                     : 0)"
                                                             readonly>
                                                     </div>
@@ -299,7 +306,7 @@
                                                 <li 
                                                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start border rounded p-2"
                                                     x-init="
-                                                        initDetailIfMissing(item, 'produks', '{{ $prb['id'] }}', {
+                                                        initDetailIfMissing(item, 'produks', '{{ $prb['produk']['id'] }}', {
                                                             idKey: 'produk_obat_id',
                                                             idValue: {{ $prb['produk_id'] }},
                                                             perBundle: {{ $prb->jumlah ?? 0 }}
@@ -322,19 +329,19 @@
                                                         <label class="block text-xs mb-1">Dipakai</label>
                                                         <div class="flex items-center gap-2">
                                                             <button type="button" class="btn btn-xs btn-error"
-                                                                @click="decrementDetail(item, 'produks', '{{ $prb['id'] }}', index)">
+                                                                @click="decrementDetail(item, 'produks', '{{ $prb['produk']['id'] }}', index)">
                                                                 -
                                                             </button>
 
                                                             <input type="number"
                                                                 class="input input-bordered w-16 text-center"
-                                                                :value="item.details.produks['{{ $prb['id'] }}']
-                                                                    ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai
+                                                                :value="item.details.produks['{{ $prb['produk']['id'] }}']
+                                                                    ? item.details.produks['{{ $prb['produk']['id'] }}'].jumlah_terpakai
                                                                     : 0"
                                                                 readonly>
 
                                                             <button type="button" class="btn btn-xs btn-success"
-                                                                @click="incrementDetail(item, 'produks', '{{ $prb['id'] }}', index)">
+                                                                @click="incrementDetail(item, 'produks', '{{ $prb['produk']['id'] }}', index)">
                                                                 +
                                                             </button>
                                                         </div>
@@ -346,8 +353,8 @@
                                                         <input type="number"
                                                             class="input input-bordered w-full bg-base-200"
                                                             :value="(item.jumlah_bundling * {{ $prb->jumlah ?? 0 }}) - 
-                                                                (item.details.produks['{{ $prb['id'] }}']
-                                                                    ? item.details.produks['{{ $prb['id'] }}'].jumlah_terpakai
+                                                                (item.details.produks['{{ $prb['produk']['id'] }}']
+                                                                    ? item.details.produks['{{ $prb['produk']['id'] }}'].jumlah_terpakai
                                                                     : 0)"
                                                             readonly>
                                                     </div>
@@ -387,21 +394,37 @@
 <script>
     function bundlingForm() {
         return {
-            // state
-            bundlingItems: [{
-                bundling_id: '',
-                nama_bundling: '',
-                search_label: '',
-                jumlah_bundling: 1,
-                potongan: 0,
-                diskon: 0,
-                subtotal: 0,
-                details: {
-                    treatments: {},
-                    pelayanans: {},
-                    produks: {}
+            // state — GANTI BAGIAN INI
+            bundlingItems: (function() {
+                const rb     = @json($rencanaBundling);
+                const ids    = rb.bundling_id || [];
+                const labels = @json($rencanaBundlingLabels);
+
+                // Mode create — semua kosong
+                if (!ids.length || ids.every(id => !id)) {
+                    return [{
+                        bundling_id: '', nama_bundling: '', search_label: '',
+                        jumlah_bundling: 1, potongan: 0, diskon: 0, subtotal: 0,
+                        details: { treatments: {}, pelayanans: {}, produks: {} }
+                    }];
                 }
-            }],
+
+                // Mode keep/edit — rebuild dari prop
+                return ids.map((bundling_id, i) => ({
+                    bundling_id:     String(bundling_id || ''),
+                    nama_bundling:   labels[i] || '',
+                    search_label:    labels[i] || '',
+                    jumlah_bundling: rb.jumlah_bundling?.[i] ?? 1,
+                    potongan:        rb.potongan?.[i] ?? 0,
+                    diskon:          rb.diskon?.[i] ?? 0,
+                    subtotal:        rb.subtotal?.[i] ?? 0,
+                    details: {
+                        treatments: rb.details?.treatments?.[i] ?? {},
+                        pelayanans: rb.details?.pelayanans?.[i] ?? {},
+                        produks:    rb.details?.produks?.[i]    ?? {},
+                    }
+                }));
+            })(),
 
             bundlings: @json($layanandanbundling['bundling']),
 
@@ -580,7 +603,11 @@
             selected: null,
             search: '',
             filteredOptions: [],
-            init() {},
+            init(initialLabel = '') {
+                if (initialLabel) {
+                    this.search = initialLabel;
+                }
+            },
             fetchOptions() {
                 if (this.search.trim() === '') {
                     this.filteredOptions = [];

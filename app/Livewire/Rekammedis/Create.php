@@ -944,6 +944,7 @@ class Create extends Component
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
                                         'is_pembelian_baru' => true,
+                                        'is_final'          => true,
                                     ]);
                                 }
                             }
@@ -975,6 +976,7 @@ class Create extends Component
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
                                         'is_pembelian_baru' => true,
+                                        'is_final'          => true,
                                     ]);
                                 }
                             }
@@ -1006,6 +1008,7 @@ class Create extends Component
                                         'jumlah_dipakai'  => $t['jumlah_terpakai'],
                                         'kategori'        => 'penggunaan_sisa',
                                         'is_pembelian_baru' => true,
+                                        'is_final'          => true,
                                     ]);
                                 }
                             }

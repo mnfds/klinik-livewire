@@ -771,6 +771,7 @@
                                             <x-rekammedis.rencanabundling 
                                                 :layanandanbundling="$layanandanbundling" 
                                                 :rencanaBundling="$rencana_bundling"
+                                                :rencanaBundlingLabels="$rencanaBundlingLabels"
                                             />
                                         </div>
                                         

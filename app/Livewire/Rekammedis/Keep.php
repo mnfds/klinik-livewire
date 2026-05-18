@@ -617,6 +617,58 @@ class Keep extends Component
         // Plan: Rencana Bundling
         if ($rm->rencanaBundlingRM->isNotEmpty()) {
             $this->selected_forms_plan[] = 'rencana-bundling';
+
+            $detailTreatments = [];
+            $detailPelayanans = [];
+            $detailProduks    = [];
+
+            foreach ($rm->rencanaBundlingRM as $i => $rbRM) {
+                // Key = treatments_id (cocok dengan $tb['treatment']['id'] di blade)
+                $detailTreatments[$i] = TreatmentBundlingRM::where('pasien_id', $this->pasien_id)
+                    ->where('group_bundling', $rbRM->group_bundling)
+                    ->get()
+                    ->mapWithKeys(fn($t) => [
+                        (string) $t->treatments_id => [
+                            'treatments_id'    => $t->treatments_id,
+                            'jumlah_per_bundle' => $rbRM->jumlah_bundling > 0
+                                ? $t->jumlah_awal / $rbRM->jumlah_bundling
+                                : 0,
+                            'jumlah_awal'      => $t->jumlah_awal,
+                            'jumlah_terpakai'  => $t->jumlah_terpakai,
+                        ]
+                    ])->toArray();
+
+                // Key = pelayanan_id (cocok dengan $pb['pelayanan']['id'] di blade)
+                $detailPelayanans[$i] = PelayananBundlingRM::where('pasien_id', $this->pasien_id)
+                    ->where('group_bundling', $rbRM->group_bundling)
+                    ->get()
+                    ->mapWithKeys(fn($p) => [
+                        (string) $p->pelayanan_id => [
+                            'pelayanan_id'     => $p->pelayanan_id,
+                            'jumlah_per_bundle' => $rbRM->jumlah_bundling > 0
+                                ? $p->jumlah_awal / $rbRM->jumlah_bundling
+                                : 0,
+                            'jumlah_awal'      => $p->jumlah_awal,
+                            'jumlah_terpakai'  => $p->jumlah_terpakai,
+                        ]
+                    ])->toArray();
+
+                // Key = produk_obat_id (cocok dengan $prb['produk']['id'] di blade)
+                $detailProduks[$i] = ProdukObatBundlingRM::where('pasien_id', $this->pasien_id)
+                    ->where('group_bundling', $rbRM->group_bundling)
+                    ->get()
+                    ->mapWithKeys(fn($p) => [
+                        (string) $p->produk_obat_id => [
+                            'produk_obat_id'   => $p->produk_obat_id,
+                            'jumlah_per_bundle' => $rbRM->jumlah_bundling > 0
+                                ? $p->jumlah_awal / $rbRM->jumlah_bundling
+                                : 0,
+                            'jumlah_awal'      => $p->jumlah_awal,
+                            'jumlah_terpakai'  => $p->jumlah_terpakai,
+                        ]
+                    ])->toArray();
+            }
+
             $this->rencana_bundling = [
                 'bundling_id'    => $rm->rencanaBundlingRM->pluck('bundling_id')->toArray(),
                 'jumlah_bundling'=> $rm->rencanaBundlingRM->pluck('jumlah_bundling')->toArray(),
@@ -624,13 +676,14 @@ class Keep extends Component
                 'diskon'         => $rm->rencanaBundlingRM->pluck('diskon')->toArray(),
                 'subtotal'       => $rm->rencanaBundlingRM->pluck('subtotal')->toArray(),
                 'details'        => [
-                    'treatments' => [],
-                    'pelayanans' => [],
-                    'produks'    => [],
+                    'treatments' => $detailTreatments,
+                    'pelayanans' => $detailPelayanans,
+                    'produks'    => $detailProduks,
                 ],
             ];
+
             $this->rencanaBundlingLabels = $rm->rencanaBundlingRM
-                ->map(fn($r) => $r->bundling?->nama_bundling ?? '')
+                ->map(fn($r) => $r->bundling?->nama ?? '')
                 ->toArray();
         }
 
@@ -972,110 +1025,200 @@ class Keep extends Component
             // RENCANA BUNDLING — hanya tambah bundling BARU
             if (in_array('rencana-bundling', $this->selected_forms_plan)) {
 
-                // Ambil bundling_id yang sudah ada untuk rekam medis ini
-                $existingBundlingIds = RencananaBundlingRM::where('rekam_medis_id', $rm->id)
-                    ->pluck('bundling_id')
+                // Bundling yang masih ada di form
+                $currentBundlingIds = collect($this->rencana_bundling['bundling_id'])
+                    ->filter(fn($id) => !empty($id))
+                    ->values()
                     ->toArray();
+
+                // Hapus bundling yang dihapus user dari form
+                $existingBundlings = RencananaBundlingRM::where('rekam_medis_id', $rm->id)->get();
+                foreach ($existingBundlings as $existing) {
+                    if (!in_array((string) $existing->bundling_id, array_map('strval', $currentBundlingIds))) {
+                        $groupBundling = $existing->group_bundling;
+                        \App\Models\TreatmentBundlingUsage::where('group_bundling', $groupBundling)->delete();
+                        \App\Models\PelayananBundlingUsage::where('group_bundling', $groupBundling)->delete();
+                        \App\Models\ProdukBundlingUsage::where('group_bundling', $groupBundling)->delete();
+                        TreatmentBundlingRM::where('group_bundling', $groupBundling)->delete();
+                        PelayananBundlingRM::where('group_bundling', $groupBundling)->delete();
+                        ProdukObatBundlingRM::where('group_bundling', $groupBundling)->delete();
+                        $existing->delete();
+                    }
+                }
+
+                // Refresh existing setelah delete
+                $existingBundlingMap = RencananaBundlingRM::where('rekam_medis_id', $rm->id)
+                    ->get()
+                    ->keyBy('bundling_id'); // key by bundling_id untuk lookup cepat
 
                 foreach ($this->rencana_bundling['bundling_id'] as $index => $bundlingId) {
                     if (empty($bundlingId)) continue;
 
-                    // Skip jika bundling ini sudah ada sebelumnya
-                    if (in_array($bundlingId, $existingBundlingIds)) continue;
+                    if ($existingBundlingMap->has($bundlingId)) {
+                        // ── BUNDLING SUDAH ADA → UPDATE jumlah_terpakai detail ──
+                        $existingRM = $existingBundlingMap->get($bundlingId);
+                        $groupBundling = $existingRM->group_bundling;
 
-                    // Insert bundling baru
-                    $group_bundling = 'GB-' . Str::random(4);
+                        // Update header (jumlah, diskon, potongan, subtotal)
+                        $existingRM->update([
+                            'jumlah_bundling' => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
+                            'potongan'        => $this->rencana_bundling['potongan'][$index] ?? 0,
+                            'diskon'          => $this->rencana_bundling['diskon'][$index] ?? 0,
+                            'subtotal'        => $this->rencana_bundling['subtotal'][$index] ?? 0,
+                        ]);
 
-                    RencananaBundlingRM::create([
-                        'rekam_medis_id'  => $rm->id,
-                        'bundling_id'     => $bundlingId,
-                        'jumlah_bundling' => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
-                        'potongan'        => $this->rencana_bundling['potongan'][$index] ?? 0,
-                        'diskon'          => $this->rencana_bundling['diskon'][$index] ?? 0,
-                        'subtotal'        => $this->rencana_bundling['subtotal'][$index] ?? 0,
-                        'group_bundling'  => $group_bundling,
-                    ]);
-
-                    // Detail treatments
-                    if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
-                        foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
-                            $treatmentRM = TreatmentBundlingRM::create([
-                                'pasien_id'       => $this->pasien_id,
-                                'bundling_id'     => $bundlingId,
-                                'treatments_id'   => $t['treatments_id'],
-                                'jumlah_awal'     => $t['jumlah_awal'],
-                                'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                'group_bundling'  => $group_bundling,
-                            ]);
-                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                \App\Models\TreatmentBundlingUsage::create([
-                                    'pasien_id'         => $this->pasien_id,
-                                    'rekam_medis_id'    => $rm->id,
-                                    'bundling_id'       => $bundlingId,
-                                    'group_bundling'    => $group_bundling,
-                                    'treatments_id'     => $t['treatments_id'],
-                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
-                                    'kategori'          => 'penggunaan_sisa',
-                                    'is_pembelian_baru' => true,
-                                ]);
+                        // Update jumlah_terpakai treatments
+                        if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
+                            foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
+                                TreatmentBundlingRM::where('pasien_id', $this->pasien_id)
+                                    ->where('group_bundling', $groupBundling)
+                                    ->where('treatments_id', $t['treatments_id'])
+                                    ->update([
+                                        'jumlah_awal'     => $t['jumlah_awal'],
+                                        'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    ]);
                             }
                         }
-                    }
 
-                    // Detail pelayanans
-                    if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
-                        foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
-                            PelayananBundlingRM::create([
-                                'pasien_id'       => $this->pasien_id,
-                                'bundling_id'     => $bundlingId,
-                                'pelayanan_id'    => $t['pelayanan_id'],
-                                'jumlah_awal'     => $t['jumlah_awal'],
-                                'jumlah_terpakai' => $t['jumlah_terpakai'],
-                                'group_bundling'  => $group_bundling,
-                            ]);
-                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                \App\Models\PelayananBundlingUsage::create([
-                                    'pasien_id'         => $this->pasien_id,
-                                    'rekam_medis_id'    => $rm->id,
-                                    'bundling_id'       => $bundlingId,
-                                    'group_bundling'    => $group_bundling,
-                                    'pelayanan_id'      => $t['pelayanan_id'],
-                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
-                                    'kategori'          => 'penggunaan_sisa',
-                                    'is_pembelian_baru' => true,
-                                ]);
+                        // Update jumlah_terpakai pelayanans
+                        if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
+                            foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
+                                PelayananBundlingRM::where('pasien_id', $this->pasien_id)
+                                    ->where('group_bundling', $groupBundling)
+                                    ->where('pelayanan_id', $t['pelayanan_id'])
+                                    ->update([
+                                        'jumlah_awal'     => $t['jumlah_awal'],
+                                        'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    ]);
                             }
                         }
-                    }
 
-                    // Detail produks
-                    if (!empty($this->rencana_bundling['details']['produks'][$index])) {
-                        foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
-                            ProdukObatBundlingRM::create([
-                                'pasien_id'      => $this->pasien_id,
-                                'bundling_id'    => $bundlingId,
-                                'group_bundling' => $group_bundling,
-                                'produk_obat_id' => $t['produk_obat_id'],
-                                'jumlah_awal'    => $t['jumlah_awal'],
-                                'jumlah_terpakai'=> $t['jumlah_terpakai'],
-                            ]);
-                            if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
-                                \App\Models\ProdukBundlingUsage::create([
-                                    'pasien_id'         => $this->pasien_id,
-                                    'rekam_medis_id'    => $rm->id,
-                                    'bundling_id'       => $bundlingId,
-                                    'group_bundling'    => $group_bundling,
-                                    'produk_obat_id'    => $t['produk_obat_id'],
-                                    'jumlah_dipakai'    => $t['jumlah_terpakai'],
-                                    'kategori'          => 'penggunaan_sisa',
-                                    'is_pembelian_baru' => true,
+                        // Update jumlah_terpakai produks
+                        if (!empty($this->rencana_bundling['details']['produks'][$index])) {
+                            foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
+                                ProdukObatBundlingRM::where('pasien_id', $this->pasien_id)
+                                    ->where('group_bundling', $groupBundling)
+                                    ->where('produk_obat_id', $t['produk_obat_id'])
+                                    ->update([
+                                        'jumlah_awal'     => $t['jumlah_awal'],
+                                        'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    ]);
+                            }
+                        }
+
+                    } else {
+                        // ── BUNDLING BARU → INSERT ──
+                        $group_bundling = 'GB-' . \Illuminate\Support\Str::random(4);
+
+                        RencananaBundlingRM::create([
+                            'rekam_medis_id'  => $rm->id,
+                            'bundling_id'     => $bundlingId,
+                            'jumlah_bundling' => $this->rencana_bundling['jumlah_bundling'][$index] ?? 1,
+                            'potongan'        => $this->rencana_bundling['potongan'][$index] ?? 0,
+                            'diskon'          => $this->rencana_bundling['diskon'][$index] ?? 0,
+                            'subtotal'        => $this->rencana_bundling['subtotal'][$index] ?? 0,
+                            'group_bundling'  => $group_bundling,
+                        ]);
+
+                        //insert detail treatments/pelayanans/produks
+                        if (!empty($this->rencana_bundling['details']['treatments'][$index])) {
+                            foreach ($this->rencana_bundling['details']['treatments'][$index] as $t) {
+                                TreatmentBundlingRM::create([
+                                    'pasien_id'       => $this->pasien_id,
+                                    'bundling_id'     => $bundlingId,
+                                    'treatments_id'   => $t['treatments_id'],
+                                    'jumlah_awal'     => $t['jumlah_awal'],
+                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    'group_bundling'  => $group_bundling,
                                 ]);
+
+                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                    \App\Models\TreatmentBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $bundlingId,
+                                        'group_bundling'    => $group_bundling,
+                                        'treatments_id'     => $t['treatments_id'],
+                                        'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                        'kategori'          => 'penggunaan_sisa',
+                                        'is_pembelian_baru' => true,
+                                        'is_final'          => false,
+                                    ]);
+                                }
+                            }
+                        }
+
+                        // Detail pelayanans
+                        if (!empty($this->rencana_bundling['details']['pelayanans'][$index])) {
+                            foreach ($this->rencana_bundling['details']['pelayanans'][$index] as $t) {
+                                PelayananBundlingRM::create([
+                                    'pasien_id'       => $this->pasien_id,
+                                    'bundling_id'     => $bundlingId,
+                                    'pelayanan_id'    => $t['pelayanan_id'],
+                                    'jumlah_awal'     => $t['jumlah_awal'],
+                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                    'group_bundling'  => $group_bundling,
+                                ]);
+
+                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                    \App\Models\PelayananBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $bundlingId,
+                                        'group_bundling'    => $group_bundling,
+                                        'pelayanan_id'      => $t['pelayanan_id'],
+                                        'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                        'kategori'          => 'penggunaan_sisa',
+                                        'is_pembelian_baru' => true,
+                                        'is_final'          => false,
+                                    ]);
+                                }
+                            }
+                        }
+
+                        // Detail produks
+                        if (!empty($this->rencana_bundling['details']['produks'][$index])) {
+                            foreach ($this->rencana_bundling['details']['produks'][$index] as $t) {
+                                ProdukObatBundlingRM::create([
+                                    'pasien_id'       => $this->pasien_id,
+                                    'bundling_id'     => $bundlingId,
+                                    'group_bundling'  => $group_bundling,
+                                    'produk_obat_id'  => $t['produk_obat_id'],
+                                    'jumlah_awal'     => $t['jumlah_awal'],
+                                    'jumlah_terpakai' => $t['jumlah_terpakai'],
+                                ]);
+
+                                if (!empty($t['jumlah_terpakai']) && $t['jumlah_terpakai'] > 0) {
+                                    \App\Models\ProdukBundlingUsage::create([
+                                        'pasien_id'         => $this->pasien_id,
+                                        'rekam_medis_id'    => $rm->id,
+                                        'bundling_id'       => $bundlingId,
+                                        'group_bundling'    => $group_bundling,
+                                        'produk_obat_id'    => $t['produk_obat_id'],
+                                        'jumlah_dipakai'    => $t['jumlah_terpakai'],
+                                        'kategori'          => 'penggunaan_sisa',
+                                        'is_pembelian_baru' => true,
+                                        'is_final'          => false,
+                                    ]);
+                                }
                             }
                         }
                     }
                 }
-            }
 
+                // Finalisasi semua usage is_final = false → true
+                \App\Models\TreatmentBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_final', false)
+                    ->update(['is_final' => true]);
+
+                \App\Models\PelayananBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_final', false)
+                    ->update(['is_final' => true]);
+
+                \App\Models\ProdukBundlingUsage::where('rekam_medis_id', $rm->id)
+                    ->where('is_final', false)
+                    ->update(['is_final' => true]);
+            }
             // LAYANAN TERPILIH (sisa bundling) — rollback dulu, lalu insert ulang
             if (!empty($this->layananTerpilih)) {
 
