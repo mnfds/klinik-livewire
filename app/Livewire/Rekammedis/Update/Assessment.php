@@ -99,7 +99,7 @@ class Assessment extends Component
                 'message' => 'Assessment rekam medis berhasil diperbarui.',
             ]);
 
-            return redirect()->route('pendaftaran.data');
+            return redirect()->route('rekam-medis-pasien.detail', ['pasien_terdaftar_id' => $this->pasien_terdaftar_id]);
 
         } catch (\Exception $e) {
             DB::rollBack();
