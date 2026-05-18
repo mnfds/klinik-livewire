@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('data_estetika_r_m_s', function (Blueprint $table) {
+            $table->id();
             
             // Relasi ke rekam medis
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');

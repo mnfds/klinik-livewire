@@ -198,7 +198,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekam-medis-pasien', 'rekammedis.data')->name('rekam-medis-pasien.data');
     Route::view('/rekam-medis-pasien/create', 'rekammedis.create')->name('rekam-medis-pasien.create');
     Route::view('/rekam-medis-pasien/keep', 'rekammedis.keep')->name('rekam-medis-pasien.keep');
-    Route::view('/rekam-medis-pasien/subjective', 'rekammedis.update.subjective')->name('rekammedis.update.subjective');
+
+    Route::get('/rekam-medis-pasien/subjective', function () {
+        return view('rekammedis.update.subjective');
+    })->name('rekammedis.update.subjective');
     Route::get('/rekam-medis-pasien/objective', function () {
         return view('rekammedis.update.objective');
     })->name('rekammedis.update.objective');
