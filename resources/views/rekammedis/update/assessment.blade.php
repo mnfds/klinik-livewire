@@ -1,3 +1,5 @@
 <x-app-layout>
-    <livewire:rekammedis.update.assessment :pasien_terdaftar_id="request('pasien_terdaftar_id')" :rekam_medis_id="request('rekam_medis_id')" />
+    <livewire:rekammedis.update.assessment 
+        :rekam_medis_id="request('rekam_medis_id')" 
+    />
 </x-app-layout>

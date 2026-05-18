@@ -534,7 +534,8 @@
                                         <div>Tingkat Kesadaran</div>
                                         <div>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
                                     </div>
-                                    <a href="{{ route('rekammedis.update.assessment', ['pasien_terdaftar_id' => $pasienTerdaftar->id]) }}" wire:navigate class="btn btn-primary btn-circle btn-sm">
+                                    <a href="{{ route('rekammedis.update.assessment', ['rekam_medis_id' => $pasienTerdaftar->rekamMedis->id]) }}" 
+                                    wire:navigate class="btn btn-primary btn-circle btn-sm">
                                         <i class="fa-solid fa-pen-clip"></i>
                                     </a>
                                 </div>
