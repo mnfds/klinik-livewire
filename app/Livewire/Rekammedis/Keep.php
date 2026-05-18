@@ -365,13 +365,47 @@ class Keep extends Component
         ];
 
         // Bundling pasien
+        $groupBundlingRMIni = RencananaBundlingRM::where('rekam_medis_id', $rm->id)
+            ->pluck('group_bundling')
+            ->toArray();
+
         if ($this->pasien_id) {
-            $this->bundlingPasien['treatments'] = TreatmentBundlingRM::with('bundling', 'treatment')
-                ->where('pasien_id', $this->pasien_id)->get();
-            $this->bundlingPasien['pelayanans'] = PelayananBundlingRM::with('bundling', 'pelayanan')
-                ->where('pasien_id', $this->pasien_id)->get();
-            $this->bundlingPasien['produks'] = ProdukObatBundlingRM::with('bundling', 'produk')
-                ->where('pasien_id', $this->pasien_id)->get();
+            $treatments = TreatmentBundlingRM::with('bundling', 'treatment')
+                ->where('pasien_id', $this->pasien_id)
+                ->whereNotIn('group_bundling', $groupBundlingRMIni)
+                ->get();
+
+            $pelayanans = PelayananBundlingRM::with('bundling', 'pelayanan')
+                ->where('pasien_id', $this->pasien_id)
+                ->whereNotIn('group_bundling', $groupBundlingRMIni)
+                ->get();
+
+            $produks = ProdukObatBundlingRM::with('bundling', 'produk')
+                ->where('pasien_id', $this->pasien_id)
+                ->whereNotIn('group_bundling', $groupBundlingRMIni)
+                ->get();
+
+            // Kumpulkan semua group_bundling yang masih punya sisa (minimal 1 item sisa > 0)
+            $groupDenganSisa = collect()
+                ->merge($treatments->filter(fn($t) => $t->jumlah_terpakai < $t->jumlah_awal)->pluck('group_bundling'))
+                ->merge($pelayanans->filter(fn($p) => $p->jumlah_terpakai < $p->jumlah_awal)->pluck('group_bundling'))
+                ->merge($produks->filter(fn($p) => $p->jumlah_terpakai < $p->jumlah_awal)->pluck('group_bundling'))
+                ->unique()
+                ->values()
+                ->toArray();
+
+            // Hanya tampilkan detail dari group_bundling yang masih punya sisa
+            $this->bundlingPasien['treatments'] = $treatments
+                ->whereIn('group_bundling', $groupDenganSisa)
+                ->values();
+
+            $this->bundlingPasien['pelayanans'] = $pelayanans
+                ->whereIn('group_bundling', $groupDenganSisa)
+                ->values();
+
+            $this->bundlingPasien['produks'] = $produks
+                ->whereIn('group_bundling', $groupDenganSisa)
+                ->values();
         }
 
         // Ambil usage is_final=false dari rekam medis LAIN milik pasien ini

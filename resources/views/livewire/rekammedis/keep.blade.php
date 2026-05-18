@@ -321,21 +321,36 @@
                                     $grouped = [];
 
                                     foreach ($bundlingPasien['treatments'] as $t) {
-                                        $grouped[$t->bundling_id]['nama'] = $t->bundling->nama;
-                                        $grouped[$t->bundling_id]['group_bundling_lama'] = $t->group_bundling;
-                                        $grouped[$t->bundling_id]['treatments'][] = $t;
+                                        $key = $t->group_bundling;
+                                        if (!isset($grouped[$key])) {
+                                            $grouped[$key]['nama'] = $t->bundling->nama;
+                                            $grouped[$key]['group_bundling_lama'] = $t->group_bundling;
+                                            $grouped[$key]['tanggal_beli'] = \App\Models\RencananaBundlingRM::where('group_bundling', $t->group_bundling)
+                                                ->first()?->created_at?->format('d/m/Y') ?? '-';
+                                        }
+                                        $grouped[$key]['treatments'][] = $t;
                                     }
 
                                     foreach ($bundlingPasien['pelayanans'] as $p) {
-                                        $grouped[$p->bundling_id]['nama'] = $p->bundling->nama;
-                                        $grouped[$p->bundling_id]['group_bundling_lama'] = $p->group_bundling;
-                                        $grouped[$p->bundling_id]['pelayanans'][] = $p;
+                                        $key = $p->group_bundling;
+                                        if (!isset($grouped[$key])) {
+                                            $grouped[$key]['nama'] = $p->bundling->nama;
+                                            $grouped[$key]['group_bundling_lama'] = $p->group_bundling;
+                                            $grouped[$key]['tanggal_beli'] = \App\Models\RencananaBundlingRM::where('group_bundling', $p->group_bundling)
+                                                ->first()?->created_at?->format('d/m/Y') ?? '-';
+                                        }
+                                        $grouped[$key]['pelayanans'][] = $p;
                                     }
 
                                     foreach ($bundlingPasien['produks'] as $pr) {
-                                        $grouped[$pr->bundling_id]['nama'] = $pr->bundling->nama;
-                                        $grouped[$pr->bundling_id]['group_bundling_lama'] = $pr->group_bundling;
-                                        $grouped[$pr->bundling_id]['produks'][] = $pr;
+                                        $key = $pr->group_bundling;
+                                        if (!isset($grouped[$key])) {
+                                            $grouped[$key]['nama'] = $pr->bundling->nama;
+                                            $grouped[$key]['group_bundling_lama'] = $pr->group_bundling;
+                                            $grouped[$key]['tanggal_beli'] = \App\Models\RencananaBundlingRM::where('group_bundling', $pr->group_bundling)
+                                                ->first()?->created_at?->format('d/m/Y') ?? '-';
+                                        }
+                                        $grouped[$key]['produks'][] = $pr;
                                     }
 
                                     $treatmentKeepLain = \App\Models\TreatmentBundlingUsage::where('pasien_id', $pasien_id)
@@ -365,6 +380,7 @@
                                         @foreach($grouped as $bundling)
                                             <li class="border rounded-lg p-3">
                                                 <p class="font-semibold">{{ $bundling['nama'] }}</p>
+                                                 <span class="text-xs text-gray-400 font-normal ml-1">Dibeli: {{ $bundling['tanggal_beli'] }}</span>
 
                                                 {{-- Treatments --}}
                                                 @if(!empty($bundling['treatments']))
