@@ -30,6 +30,12 @@ class Mutasi extends Component
     {
         $pasien = PasienTerdaftar::with([
             'rekamMedis.transaksi',
+            'rekamMedis.rencanaProdukRM.produk',
+            'rekamMedis.rencanaLayananRM.pelayanan',
+            'rekamMedis.rencanaTreatmentRM.treatment',
+            'rekamMedis.rencanaBundlingRM.bundling',
+            'rekamMedis.obatFinal.obatNonRacikanFinals.produk',
+            'rekamMedis.obatFinal.obatRacikanFinals',
             'rekamMedis.treatmentBundlingUsages.bundling',
             'rekamMedis.treatmentBundlingUsages.treatment',
             'rekamMedis.pelayananBundlingUsages.bundling',
@@ -41,7 +47,7 @@ class Mutasi extends Component
         $rekamMedis      = $pasien->rekamMedis;
         $this->transaksi = $rekamMedis->transaksi;
 
-        $riwayat = $this->transaksi->riwayatTransaksi()->get();
+        $riwayat = $this->transaksi->getRiwayatTransaksiAttribute();
 
         $this->bundling       = $riwayat->where('jenis_item', 'bundling')->values();
         $this->produk         = $riwayat->where('jenis_item', 'produk')->values();

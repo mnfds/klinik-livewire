@@ -77,14 +77,7 @@
                                                 @php
                                                     $nama = $item->nama_item ?? $item->produk->nama_dagang ?? '-';
                                                     $qty = $item->qty ?? $item->jumlah ?? 1;
-                                                    // $harga = $item->harga ?? 0;
-                                                    $harga = $item->harga 
-                                                    ?? $item->harga_dasar 
-                                                    ?? $item->harga_pelayanan
-                                                    ?? $item->harga_treatment
-                                                    ?? $item->harga_jual 
-                                                    ?? $item->harga_satuan 
-                                                    ?? 0;
+                                                    $harga = $item->harga_jual ?? 0;
                                                     $hargaTotal = $harga * $qty;
                                                 @endphp
 
