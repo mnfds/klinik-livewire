@@ -15,6 +15,8 @@ class Mutasi extends Component
     public $treatment;
     public $obatNonRacik;
     public $obatRacik;
+    public $embalase;
+    public $tuslah;
     public $produkTambahan;
     public $barangTambahan;
     public $bundlingUsageTreatment;
@@ -44,8 +46,13 @@ class Mutasi extends Component
             'rekamMedis.produkBundlingUsages.produk',
         ])->findOrFail($id);
 
+        
         $rekamMedis      = $pasien->rekamMedis;
+        $obatFinal = $rekamMedis->obatFinal;
+
         $this->transaksi = $rekamMedis->transaksi;
+        $this->embalase = $obatFinal->sum('embalase');
+        $this->tuslah   = $obatFinal->sum('tuslah');
 
         $riwayat = $this->transaksi->getRiwayatTransaksiAttribute();
 

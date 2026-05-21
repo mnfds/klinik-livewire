@@ -113,7 +113,9 @@ class TransaksiKlinik extends Model
                     'jenis_item' => 'obat_racik',
                     'nama_item'  => $item->nama_racikan ?? '-',
                     'qty'        => $item->jumlah_racikan ?? 1,
-                    'harga_jual' => $item->total_racikan ?? 0,
+                    'harga_jual' => $item->jumlah_racikan > 0  // ✅ harga per satuan
+                                    ? ($item->total_racikan / $item->jumlah_racikan) 
+                                    : 0,
                     'subtotal'   => $item->total_racikan ?? 0,
                     'diskon'     => 0,
                     'potongan'   => 0,

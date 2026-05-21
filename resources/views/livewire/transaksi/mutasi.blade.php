@@ -189,7 +189,6 @@
                                 </div>
                             @endif
                         </div>
-
                     </div>
                 </div>
                 {{-- Kolom Kanan: Invoice --}}
@@ -214,6 +213,19 @@
                                     @endforeach
                                 @endforeach
 
+                                {{-- EMBALASE & TUSLAH --}}
+                                @if($embalase > 0)
+                                    <div class="flex justify-between">
+                                        <span>Embalase</span>
+                                        <span class="text-success">Rp {{ number_format($embalase, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+                                @if($tuslah > 0)
+                                    <div class="flex justify-between">
+                                        <span>Tuslah</span>
+                                        <span class="text-success">Rp {{ number_format($tuslah, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
                                 <div class="border-t my-3"></div>
 
                                 {{-- TOTAL KOTOR --}}

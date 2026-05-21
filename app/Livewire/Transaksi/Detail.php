@@ -5,6 +5,7 @@ namespace App\Livewire\Transaksi;
 use App\Models\Barang;
 use Livewire\Component;
 use App\Models\Bundling;
+use App\Models\ObatFinal;
 use App\Models\RekamMedis;
 use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
@@ -421,22 +422,31 @@ class Detail extends Component
                 $totalTagihan += $subtotalnonracik;
             }
 
+            $obatFinalSudahDihitung = []; // tracking agar tidak double count
             foreach ($this->selectedRacikan as $id) {
-                $item = ObatRacikanFinal::with('bahanRacikanFinals.produk')->find($id);
+                $item = ObatRacikanFinal::with('bahanRacikanFinals.produk', 'obatFinal')->find($id);
                 if (!$item) continue;
 
                 $subtotalracik = (int) ($item->total_racikan ?? 0);
 
                 RiwayatTransaksiKlinik::create([
                     'transaksi_klinik_id' => $transaksi->id,
-                    'jenis_item' => 'obat_racik',
-                    'nama_item' => $item->nama_racikan ?? '-',
-                    'qty' => $item->jumlah_racikan,
-                    'harga' => $subtotalracik,
-                    'subtotal' => $subtotalracik,
+                    'jenis_item'          => 'obat_racik',
+                    'nama_item'           => $item->nama_racikan ?? '-',
+                    'qty'                 => $item->jumlah_racikan,
+                    'harga'               => $subtotalracik,
+                    'subtotal'            => $subtotalracik,
                 ]);
 
                 $totalTagihan += $subtotalracik;
+
+                // Embalase & tuslah hanya dihitung per ObatFinal
+                $obatFinalId = $item->obatFinal?->id;
+                if ($obatFinalId && !in_array($obatFinalId, $obatFinalSudahDihitung)) {
+                    $totalTagihan += (int) ($item->obatFinal->embalase ?? 0);
+                    $totalTagihan += (int) ($item->obatFinal->tuslah ?? 0);
+                    $obatFinalSudahDihitung[] = $obatFinalId; // ✅ tandai sudah dihitung
+                }
             }
 
             $diskonNominal = 0;
