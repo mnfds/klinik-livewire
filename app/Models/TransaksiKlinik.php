@@ -114,12 +114,39 @@ class TransaksiKlinik extends Model
                     'nama_item'  => $item->nama_racikan ?? '-',
                     'qty'        => $item->jumlah_racikan ?? 1,
                     'harga_jual' => $item->jumlah_racikan > 0  // ✅ harga per satuan
-                                    ? ($item->total_racikan / $item->jumlah_racikan) 
+                                    ? ($item->total_racikan / $item->jumlah_racikan)
                                     : 0,
                     'subtotal'   => $item->total_racikan ?? 0,
                     'diskon'     => 0,
                     'potongan'   => 0,
                 ]);
+            }
+
+            // Embalase & Tuslah — hanya muncul jika ada obat racik
+            if ($obatFinal->obatRacikanFinals->isNotEmpty()) {
+                if (($obatFinal->embalase ?? 0) > 0) {
+                    $items->push((object)[
+                        'jenis_item' => 'embalase',
+                        'nama_item'  => 'Embalase',
+                        'qty'        => 1,
+                        'harga_jual' => $obatFinal->embalase,
+                        'subtotal'   => $obatFinal->embalase,
+                        'diskon'     => 0,
+                        'potongan'   => 0,
+                    ]);
+                }
+
+                if (($obatFinal->tuslah ?? 0) > 0) {
+                    $items->push((object)[
+                        'jenis_item' => 'tuslah',
+                        'nama_item'  => 'Tuslah',
+                        'qty'        => 1,
+                        'harga_jual' => $obatFinal->tuslah,
+                        'subtotal'   => $obatFinal->tuslah,
+                        'diskon'     => 0,
+                        'potongan'   => 0,
+                    ]);
+                }
             }
         }
 
