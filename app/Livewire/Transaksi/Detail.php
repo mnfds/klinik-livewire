@@ -360,6 +360,8 @@ class Detail extends Component
                         'nama_item' => $produkDitambah?->nama_dagang ?? '-',
                         'qty' => $item['jumlah_produk'],
                         'harga' => $item['harga_satuan'],
+                        'diskon' => $item['diskon'] ?? 0,
+                        'potongan' => $item['potongan_harga'] ?? 0,
                         'subtotal' => $subtotalProdukDiTambah,
                     ]);
                     $totalTagihan += $subtotalProdukDiTambah;
@@ -384,6 +386,8 @@ class Detail extends Component
                         'nama_item' => $barangDitambah?->nama ?? '-',
                         'qty' => $item['jumlah_produk'],
                         'harga' => $item['harga_satuan'],
+                        'diskon' => $item['diskon'] ?? 0,
+                        'potongan' => $item['potongan_harga'] ?? 0,
                         'subtotal' => $subtotalBarangDiTambah,
                     ]);
                     $totalTagihan += $subtotalBarangDiTambah;

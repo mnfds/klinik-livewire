@@ -123,6 +123,26 @@ class TransaksiKlinik extends Model
             }
         }
 
+        // ======================
+        // PRODUK TAMBAHAN & BARANG TAMBAHAN
+        // Ambil langsung dari tabel riwayat_transaksi_kliniks
+        // ======================
+        $fromDb = $this->riwayatTransaksi() // pakai () untuk query builder, bukan accessor
+            ->whereIn('jenis_item', ['produk_tambahan', 'barang_tambahan'])
+            ->get();
+
+        foreach ($fromDb as $item) {
+            $items->push((object)[
+                'jenis_item' => $item->jenis_item,
+                'nama_item'  => $item->nama_item,
+                'qty'        => $item->qty,
+                'harga_jual' => $item->harga,
+                'subtotal'   => $item->subtotal,
+                'diskon'     => $item->diskon ?? 0,
+                'potongan'   => $item->potongan ?? 0,
+            ]);
+        }
+    
         return $items;
     }
 

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('nama_item');
             $table->integer('qty')->default(1);
             $table->unsignedBigInteger('harga')->default(0);
+            $table->unsignedBigInteger('diskon')->nullable()->default(0);
+            $table->unsignedBigInteger('potongan')->nullable()->default(0);
             $table->unsignedBigInteger('subtotal')->default(0);
             $table->timestamps();
         });
