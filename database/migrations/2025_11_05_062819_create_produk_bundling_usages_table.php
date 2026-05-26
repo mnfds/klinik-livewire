@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('group_bundling')->nullable()->index();
             $table->foreignId('produk_obat_id')->constrained('produk_dan_obats')->cascadeOnDelete();
             $table->integer('jumlah_dipakai')->default(1);
-            $table->boolean('is_final')->default(false); // untuk menentukan apakah angka jumlah_dipakai di keep atau final
             $table->timestamps();
         });
     }
