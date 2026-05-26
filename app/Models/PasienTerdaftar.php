@@ -35,4 +35,9 @@ class PasienTerdaftar extends Model
     {
         return $this->hasOne(RekamMedis::class);
     }
+
+    public function suratSakit()
+    {
+        return $this->hasOne(SuratKeterangan::class);
+    }
 }

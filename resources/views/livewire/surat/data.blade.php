@@ -11,15 +11,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('surat-sakit.data') }}" class="inline-flex items-center gap-1">
-                            <i class="fa-regular fa-folder"></i>
-                            Surat Keterangan
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('surat-sakit.data') }}" class="inline-flex items-center gap-1">
+                        <a href="{{ route('surat.data') }}" class="inline-flex items-center gap-1">
                             <i class="fa-regular fa-folder-open"></i>
-                            Surat Sakit
+                            Surat Keterangan
                         </a>
                     </li>
                 </ul>
@@ -29,7 +23,7 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
                 <i class="fa-solid fa-layer-group"></i>
-                Surat Keterangan Sakit
+                Surat Keterangan
             </h1>
         </div>
 

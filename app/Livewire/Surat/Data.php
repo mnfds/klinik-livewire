@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Surat\Sehat;
+namespace App\Livewire\Surat;
 
 use Livewire\Component;
 
@@ -8,6 +8,6 @@ class Data extends Component
 {
     public function render()
     {
-        return view('livewire.surat.sehat.data');
+        return view('livewire.surat.data');
     }
 }

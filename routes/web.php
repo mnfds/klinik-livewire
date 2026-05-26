@@ -453,10 +453,9 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/inventaris', 'inventaris.data')->name('inventaris.data');    
     // ====== INVENTARIS ====== //
 
-    // ====== INVENTARIS ====== //
-    Route::view('/surat-sehat', 'surat.sehat.data')->name('surat-sehat.data');    
-    Route::view('/surat-sakit', 'surat.sakit.data')->name('surat-sakit.data');    
-    // ====== INVENTARIS ====== //
+    // ====== SURAT KETERANGAN ====== //
+    Route::view('/surat', 'surat.data')->name('surat.data');    
+    // ====== SURAT KETERANGAN ====== //
 
     // ====== TV DISPLAY ====== //
     Route::view('/display-pendaftaran', 'tv.pendaftaran')->name('tv.pendaftaran');
