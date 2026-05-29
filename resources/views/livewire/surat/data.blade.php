@@ -36,7 +36,7 @@
                             <button onclick="document.getElementById('storeModal').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Surat</button>
                         {{-- @endcan --}}
                     </div>
-                    {{-- <livewire:surat-sehat-table /> --}}
+                    <livewire:Surat.Surat-Table />
                     <script>
                         window.addEventListener('show-delete-confirmation', event => {
                                 if (confirm('Yakin ingin menghapus user ini?')) {

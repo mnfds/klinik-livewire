@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('surat_keterangans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pasien_terdaftar_id')->constrained('pasien_terdaftars')->onDelete('cascade');
-            $table->unsignedBigInteger('no_surat')->unique();
+            $table->string('no_surat')->unique();
             $table->date('mulai_berlaku')->nullable();
             $table->date('selesai_berlaku')->nullable();
             $table->enum('tipe_ttd',['digital', 'basah']);
