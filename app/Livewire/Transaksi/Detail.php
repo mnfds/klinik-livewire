@@ -50,12 +50,15 @@ class Detail extends Component
     public bool $showPaymentForm = false;
     public bool $showTambahanItem = false;
     public bool $showTambahanBarang = false;
+    public bool $showSurat = false;
 
     public $produksearch;
     public $produktambahan = [];
 
     public $barangsearch;
     public $barangtambahan = [];
+    
+    public $suratKeterangan;
 
     public $diskon = 0;
     public $potongan = 0;
@@ -68,6 +71,7 @@ class Detail extends Component
         // Ambil semua relasi penting dalam satu query
         $this->pasienTerdaftar = PasienTerdaftar::with([
             'pasien',
+            'suratSakit',
             'rekamMedis.rencanaLayananRM.pelayanan',
             'rekamMedis.obatFinal',
             'rekamMedis.obatNonRacikanRM',
@@ -83,7 +87,8 @@ class Detail extends Component
 
         // Simpan data pasien
         $this->pasien = $this->pasienTerdaftar->pasien;
-
+        // Simpan Data Surat Keterangan
+        $this->suratKeterangan = $this->pasienTerdaftar->suratSakit;
         // Ambil rekam medis (jika ada)
         $rekamMedis = $this->pasienTerdaftar->rekamMedis;
         $this->rekammedis_id = $rekamMedis->id ?? null;
@@ -394,6 +399,10 @@ class Detail extends Component
                 }
             }
 
+            if($this->showSurat === true){
+
+            }
+
             // --- Bundling ---
             foreach ($this->bundling as $item) {
                 $subtotalbundling = (int) ($item->subtotal ?? 0);
@@ -525,6 +534,10 @@ class Detail extends Component
     {
         $this->showTambahanBarang = true;
     }
+    public function tambahSurat()
+    {
+        $this->showSurat = true;
+    }
 
     public function getTotalKotorProperty()
     {
@@ -553,6 +566,13 @@ class Detail extends Component
 
         // === Barang Tambahan ===
         if ($this->showTambahanBarang === true) {
+            foreach ($this->barangtambahan ?? [] as $item) {
+                $total += (int) ($item['subtotal'] ?? 0);
+            }
+        }
+
+        // === Surat Keterangan ===
+        if ($this->showSurat === true) {
             foreach ($this->barangtambahan ?? [] as $item) {
                 $total += (int) ($item['subtotal'] ?? 0);
             }

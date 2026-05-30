@@ -583,6 +583,12 @@
                                 </div>
                             @endif
                         @endif
+                        @if ($showSurat)
+                            @include('transaksi.partials.surat')
+                            <button wire:click="$set('showSurat', false)" class="btn btn-error btn-sm mt-4 w-full">
+                                Batal
+                            </button>
+                        @endif
                         @if ($showTambahanItem)
                             @include('transaksi.partials.tambahproduk')
                             <button wire:click="$set('showTambahanItem', false)" class="btn btn-error btn-sm mt-4 w-full">
@@ -601,7 +607,7 @@
                 {{-- Kolom Kanan: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
-                        @if (!$showTambahanItem || !$showTambahanBarang)
+                        @if (!$showTambahanItem || !$showTambahanBarang || !$showSurat)
                             <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
                                 <div class="text-sm font-semibold text-base-content/70">
                                     Tambah Item
@@ -618,6 +624,13 @@
                                         class="btn btn-secondary btn-sm w-full flex items-center justify-start gap-2">
                                         <i class="fa-solid fa-gifts"></i>
                                         <span>Barang / Souvenir</span>
+                                    </button>
+                                @endif
+                                @if (!$showSurat)
+                                    <button wire:click="tambahSurat"
+                                        class="btn btn-info btn-sm w-full flex items-center justify-start gap-2">
+                                        <i class="fa-solid fa-file-medical"></i>
+                                        <span>Surat</span>
                                     </button>
                                 @endif
                             </div>

@@ -34,6 +34,7 @@ return new class extends Migration
                 'lunas',      // muncul di apoteker kalau sudah melakukan pembayaran sudah lunas dan obat sudah dikonfimasi
                 'selesai',      // menandakan obat sudah diserahkan dan kunjungan pasien selesai
             ]);
+            $table->boolean('only_surat')->default(false);
 
             $table->timestamps();
         });

@@ -139,6 +139,7 @@ class Store extends Component
             'waktu_tiba'        => Carbon::now('Asia/Makassar')->setTimezone('UTC')->toIso8601String(),
             'jenis_kunjungan'   => $this->jenis_surat === 'sakit' ? 'sakit' : 'sehat',
             'status_terdaftar'  => 'pembayaran',
+            'only_surat'        => true,
             'encounter_id'      => null,
         ]);
     }
