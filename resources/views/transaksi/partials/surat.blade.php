@@ -3,16 +3,33 @@
 
      <div class="space-y-3">
          <div class="bg-base-100 border border-base-300 border-t-3 border-t-primary rounded-lg p-3 shadow-sm hover:shadow transition">
-             {{-- Nama pelayanan --}}
+             {{-- Surat --}}
              <div class="font-semibold text-base-content mb-1">
                 Surat Keterangan {{ ucfirst($item->suratKeterangan->sakit ?? 'Sehat') }}
              </div>
-    
-             {{-- Harga --}}
-             {{-- <div class="text-sm text-base-content/70">
-                 {{ $item->jumlah_pelayanan ?? 0 }} x 
-                 Rp {{ number_format($item->pelayanan->harga_pelayanan ?? 0, 0, ',', '.') }}
-             </div> --}}
+             {{-- Harga Dan Jenis Surat --}}
+             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div>
+                    <label class="label font-medium">Harga</label>
+                    <input type="text" class="input input-bordered w-full" wire:model.live="harga_surat" placeholder="0"
+                        x-data
+                        x-on:input="
+                            let v = $el.value.replace(/\D/g,'');
+                            $el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            $wire.set('harga_surat', v);
+                        "
+                    >
+                 </div>
+                 <div>
+                     <label class="label font-medium">Jenis Surat <span class="text-error">*</span></label>
+                     <select class="select select-bordered w-full" wire:model.live="jenis_surat">
+                         <option value="">Pilih Jenis Surat</option>
+                         <option value="standar">Surat Sehat Standar</option>
+                         <option value="lengkap">Surat Sehat Lengkap</option>
+                         <option value="sakit">Surat Sakit</option>
+                     </select>
+                 </div>
+             </div>
          </div>
      </div>
  </div>

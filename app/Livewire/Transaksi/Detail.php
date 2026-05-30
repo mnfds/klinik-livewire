@@ -59,6 +59,7 @@ class Detail extends Component
     public $barangtambahan = [];
     
     public $suratKeterangan;
+    public $harga_surat = 0;
 
     public $diskon = 0;
     public $potongan = 0;
@@ -71,7 +72,7 @@ class Detail extends Component
         // Ambil semua relasi penting dalam satu query
         $this->pasienTerdaftar = PasienTerdaftar::with([
             'pasien',
-            'suratSakit',
+            'suratKeterangan',
             'rekamMedis.rencanaLayananRM.pelayanan',
             'rekamMedis.obatFinal',
             'rekamMedis.obatNonRacikanRM',
@@ -88,7 +89,11 @@ class Detail extends Component
         // Simpan data pasien
         $this->pasien = $this->pasienTerdaftar->pasien;
         // Simpan Data Surat Keterangan
-        $this->suratKeterangan = $this->pasienTerdaftar->suratSakit;
+        $this->suratKeterangan = $this->pasienTerdaftar->suratKeterangan;
+        if($this->pasienTerdaftar->suratKeterangan()->exists()){
+            $this->showSurat = true;
+            $this->harga_surat = $this->suratKeterangan->harga_surat ?? 20000;
+        }
         // Ambil rekam medis (jika ada)
         $rekamMedis = $this->pasienTerdaftar->rekamMedis;
         $this->rekammedis_id = $rekamMedis->id ?? null;
@@ -573,9 +578,7 @@ class Detail extends Component
 
         // === Surat Keterangan ===
         if ($this->showSurat === true) {
-            foreach ($this->barangtambahan ?? [] as $item) {
-                $total += (int) ($item['subtotal'] ?? 0);
-            }
+            $total += (int) ($this->harga_surat ?? 0);
         }
 
         foreach ($this->obatapoteker ?? [] as $obat) {
@@ -893,6 +896,7 @@ class Detail extends Component
             /* ================= DATA ================= */
             $data_transaksi = TransaksiKlinik::with([
                 'rekammedis.pasienTerdaftar.pasien',
+                'rekammedis.pasienTerdaftar.suratKeterangan',
                 'rekammedis.pasienTerdaftar.poliklinik',
                 'rekammedis.rencanaLayananRM.pelayanan',
                 'rekammedis.rencanaTreatmentRM.treatment',
