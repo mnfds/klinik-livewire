@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Mike42\Escpos\CapabilityProfile;
 use App\Models\RiwayatTransaksiKlinik;
+use App\Models\SuratKeterangan;
 use App\Services\PutInFinishedEncounter;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
@@ -60,6 +61,8 @@ class Detail extends Component
     
     public $suratKeterangan;
     public $harga_surat = 0;
+    public $jenis_surat;
+    public $tipe_ttd;
 
     public $diskon = 0;
     public $potongan = 0;
@@ -92,7 +95,9 @@ class Detail extends Component
         $this->suratKeterangan = $this->pasienTerdaftar->suratKeterangan;
         if($this->pasienTerdaftar->suratKeterangan()->exists()){
             $this->showSurat = true;
-            $this->harga_surat = $this->suratKeterangan->harga_surat ?? 20000;
+            $this->harga_surat = $this->suratKeterangan->harga_surat ?? 0;
+            $this->jenis_surat = $this->suratKeterangan->jenis_surat;
+            $this->tipe_ttd = $this->suratKeterangan->tipe_ttd;
         }
         // Ambil rekam medis (jika ada)
         $rekamMedis = $this->pasienTerdaftar->rekamMedis;
@@ -404,8 +409,58 @@ class Detail extends Component
                 }
             }
 
+            // --- Surat Keterangan ---
             if($this->showSurat === true){
-
+                if (!$this->pasienTerdaftar->suratKeterangan()->exists()) {
+                    // Generate nomor surat & create baru
+                    $lastNoSurat = SuratKeterangan::max('no_surat');
+                    $increment   = $lastNoSurat ? ((int) explode('/', $lastNoSurat)[0]) + 1 : 1;
+                    $nomor       = str_pad($increment, 3, '0', STR_PAD_LEFT);
+                    $tanggal     = \Carbon\Carbon::parse($this->pasienTerdaftar->tanggal_kunjungan);
+                    $bulan       = $this->getRomanMonth($tanggal->month);
+                    $tahun       = $tanggal->year;
+                    $noSurat     = $nomor . '/KL-DRL/' . $bulan . '/' . $tahun;
+    
+                    $mulaiBerlaku   = $this->suratKeterangan->mulai_berlaku
+                        ?? $tanggal->copy()->toDateString();
+    
+                    $selesaiBerlaku = $this->suratKeterangan->selesai_berlaku
+                        ?? match($this->jenis_surat) {
+                            'sakit'  => $tanggal->copy()->addDays(3)->toDateString(),
+                            default  => $tanggal->copy()->addDays(7)->toDateString(),
+                        };
+    
+                    $sakit = $this->suratKeterangan->sakit ?? $rekamMedis->icdRM->first()?->name_id ?? null;
+    
+                    $suratKeterangan = SuratKeterangan::create([
+                        'pasien_terdaftar_id' => $this->pasienTerdaftar->id,
+                        'no_surat'            => $noSurat,
+                        'mulai_berlaku'       => $mulaiBerlaku,
+                        'selesai_berlaku'     => $selesaiBerlaku,
+                        'tipe_ttd'            => $this->tipe_ttd,
+                        'harga_surat'         => $this->harga_surat,
+                        'jenis_surat'         => $this->jenis_surat,
+                        'sakit'               => $sakit,
+                    ]);
+                } else {
+                    // Ambil surat yang sudah ada
+                    $suratKeterangan = $this->pasienTerdaftar->suratKeterangan()->first();
+                }
+    
+                // Create riwayat transaksi (berlaku untuk surat baru maupun yang sudah ada)
+                if ($suratKeterangan) {
+                    RiwayatTransaksiKlinik::create([
+                        'transaksi_klinik_id' => $transaksi->id,
+                        'jenis_item'          => 'surat_keterangan',
+                        'nama_item'           => $suratKeterangan->jenis_surat === 'sakit' ? 'Surat Keterangan Sakit' : 'Surat Keterangan Sehat',
+                        'qty'                 => 1,
+                        'harga'               => $suratKeterangan->harga_surat,
+                        'diskon'              => 0,
+                        'potongan'            => 0,
+                        'subtotal'            => $suratKeterangan->harga_surat,
+                    ]);
+                    $totalTagihan += $suratKeterangan->harga_surat;
+                }
             }
 
             // --- Bundling ---
@@ -1130,5 +1185,23 @@ class Detail extends Component
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    private function getRomanMonth(int $month): string
+    {
+        return match($month) {
+            1  => 'I',
+            2  => 'II',
+            3  => 'III',
+            4  => 'IV',
+            5  => 'V',
+            6  => 'VI',
+            7  => 'VII',
+            8  => 'VIII',
+            9  => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII',
+        };
     }
 }

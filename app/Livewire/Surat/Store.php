@@ -15,7 +15,7 @@ class Store extends Component
 {
     // DATA SURAT (masuk DB)
     public $no_surat, $mulai_berlaku, $selesai_berlaku, $tipe_ttd, $sakit;
-
+    public $harga_surat;
     // DATA PASIEN TERDAFTAR (masuk DB)
     public $pasien_id, $pasien_nama = '';
     public $dokter_id;
@@ -105,20 +105,22 @@ class Store extends Component
         $pasienTerdaftar = $this->pasienTerdaftarCreate();
         $rekamMedis = $this->rekamMedisCreate($pasienTerdaftar);
         $noSurat = $this->generateNoSurat();
-
+        $harga = (int) ($this->harga_surat ?? 0);
         SuratKeterangan::create([
             'pasien_terdaftar_id' => $pasienTerdaftar->id,
             'no_surat'            => $noSurat,
             'mulai_berlaku'       => $this->mulai_berlaku,
             'selesai_berlaku'     => $this->selesai_berlaku,
             'tipe_ttd'            => $this->tipe_ttd,
-            'sakit'               => $this->jenis_surat === 'sakit' ? $this->sakit : null,
+            'harga_surat'         => $harga,
+            'jenis_surat'         => $this->jenis_surat,
+            'sakit'               => $this->sakit,
         ]);
 
         $this->dispatch('closeStoreModal');
         $this->dispatch('toast', [
             'type' => 'success',
-            'message' => 'Role berhasil ditambahkan.'
+            'message' => 'Surat berhasil ditambahkan.'
         ]);
         $this->reset([
             'sakit', 'jenis_surat', 'mulai_berlaku', 'selesai_berlaku', 'tipe_ttd',
@@ -151,7 +153,7 @@ class Store extends Component
         return RekamMedis::create([
             'pasien_terdaftar_id' => $pasienTerdaftar->id,
             'nama_dokter'         => $dokter->nama_dokter,
-            'keluhan_utama'       => $this->jenis_surat === 'sakit' ? $this->sakit : null,
+            'keluhan_utama'       => $this->jenis_surat,
             'tingkat_kesadaran'   => 'Sadar Baik/Alert',
         ]);
     }

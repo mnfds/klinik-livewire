@@ -746,6 +746,14 @@
                                     @endforeach
                                 @endif
 
+                                {{-- === Surat Keterangan === --}}
+                                @if($showSurat)
+                                    <div class="flex justify-between">
+                                        <span>Surat Keterangan {{ ucfirst($jenis_surat ?? $this->suratKeterangan?->jenis_surat ?? 'Sehat') }}</span>
+                                        <span>Rp {{ number_format((int)($harga_surat ?? 0), 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+
                                 <hr class="my-2 border-base-300">
 
                                 <div class="flex justify-between">

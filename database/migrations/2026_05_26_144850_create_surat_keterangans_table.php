@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('no_surat')->unique();
             $table->date('mulai_berlaku')->nullable();
             $table->date('selesai_berlaku')->nullable();
-            $table->enum('tipe_ttd',['digital', 'basah']);
+            $table->enum('tipe_ttd',['digital', 'basah'])->nullable();
+            $table->unsignedBigInteger('harga_surat')->nullable();
+            $table->enum('jenis_surat', ['standar', 'lengkap', 'sakit'])->default('standar');
             $table->string('sakit')->nullable(); //gejala sakit yang dialami
             $table->timestamps();
         });

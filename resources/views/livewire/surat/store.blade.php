@@ -112,6 +112,17 @@
                 @enderror
             </div>
             @endif
+            <div>
+                <label class="label font-medium">Harga Surat <span class="text-error">*</span></label>
+                <input type="text" class="input input-bordered w-full" wire:model.live="harga_surat" placeholder="0"
+                    x-data
+                    x-on:input="
+                        let v = $el.value.replace(/\D/g,'');
+                        $el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        $wire.set('harga_surat', v);
+                    "
+                >
+            </div>
 
             <div class="modal-action justify-end mt-6">
                 @can('akses', 'Jam Kerja Tambah')
