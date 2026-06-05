@@ -89,12 +89,52 @@ final class SuratTable extends PowerGridComponent
     public function actions(SuratKeterangan $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Edit: '.$row->id)
-                ->id()
-                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id])
+            Button::add('updateSurat')  
+                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+                ->attributes([
+                    'onclick' => 'modalupdatesurat.showModal()',
+                    'class' => 'btn btn-primary'
+                ])
+                ->dispatchTo('surat.update', 'getupdatesurat', ['rowId' => $row->id]),
+            
+            Button::add('deleteSurat')
+                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+                ->class('btn btn-error')
+                ->dispatch('modalDeleteSurat', ['rowId' => $row->id]),
         ];
+    }
+
+    #[\Livewire\Attributes\On('modalDeleteSurat')]
+    public function modalDeleteSurat($rowId): void
+    {
+        $this->js(<<<JS
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: 'Data ini tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('konfirmasiDeleteSurat', { rowId: $rowId });
+                }
+            });
+        JS);
+    }
+
+    #[\Livewire\Attributes\On('konfirmasiDeleteSurat')]
+    public function konfirmasiDeleteSurat($rowId): void
+    {
+        SuratKeterangan::findOrFail($rowId)->delete();
+
+        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus.',
+        ]);
     }
 
     /*
