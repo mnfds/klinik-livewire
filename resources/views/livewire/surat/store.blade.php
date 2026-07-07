@@ -128,7 +128,7 @@
                 @can('akses', 'Surat Keterangan Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
-                <button type="button" class="btn btn-neutral" onclick="document.getElementById('closeStoreModal').close()">Batal</button>
+                <button type="button" class="btn btn-neutral" onclick="document.getElementById('storeModal').close()">Batal</button>
             </div>
         </form>
     </div>
