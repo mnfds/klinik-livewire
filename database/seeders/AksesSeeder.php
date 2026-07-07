@@ -355,6 +355,15 @@ class AksesSeeder extends Seeder
                 'Tebus Obat',
             ],
 
+            // Surat Keterangan
+            33 => [
+                'Surat Keterangan',
+                'Surat Keterangan Data',
+                'Surat Keterangan Tambah',
+                'Surat Keterangan Hapus',
+                'Surat Keterangan Edit',
+            ],
+
             // Satu Sehat configuration
             34 => [
                 'Praktisi Satu Sehat',

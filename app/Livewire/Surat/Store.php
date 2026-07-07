@@ -9,6 +9,7 @@ use App\Models\PoliKlinik;
 use App\Models\RekamMedis;
 use App\Models\SuratKeterangan;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Store extends Component
@@ -101,6 +102,14 @@ class Store extends Component
             'selesai_berlaku' => 'required|date|after_or_equal:mulai_berlaku',
             'sakit'           => 'nullable|required_if:jenis_surat,sakit|string|max:255',
         ]);
+
+        if (! Gate::allows('akses', 'Surat Keterangan Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $pasienTerdaftar = $this->pasienTerdaftarCreate();
         $rekamMedis = $this->rekamMedisCreate($pasienTerdaftar);

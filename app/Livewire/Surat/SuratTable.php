@@ -4,6 +4,7 @@ namespace App\Livewire\Surat;
 
 use App\Models\SuratKeterangan;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -38,7 +39,8 @@ final class SuratTable extends PowerGridComponent
                 'pasiens.nama          as nama_pasien',
                 'pasiens.no_register   as no_register',
                 'dokters.nama_dokter   as nama_dokter',
-            ]);
+            ])
+            ->latest();
     }
 
     public function relationSearch(): array
@@ -88,20 +90,24 @@ final class SuratTable extends PowerGridComponent
 
     public function actions(SuratKeterangan $row): array
     {
-        return [
-            Button::add('updateSurat')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modalupdatesurat.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('surat.update', 'getupdatesurat', ['rowId' => $row->id]),
-            
-            Button::add('deleteSurat')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('modalDeleteSurat', ['rowId' => $row->id]),
-        ];
+        $suratKeterangan = [];
+        
+        Gate::allows('akses', 'Surat Keterangan Edit') && $suratKeterangan[] =
+        Button::add('updateSurat')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modalupdatesurat.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+            ->dispatchTo('surat.update', 'getupdatesurat', ['rowId' => $row->id]);
+
+        Gate::allows('akses', 'Surat Keterangan Hapus') && $suratKeterangan[] =
+        Button::add('deleteSurat')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+            ->dispatch('modalDeleteSurat', ['rowId' => $row->id]);
+
+        return $suratKeterangan;
     }
 
     #[\Livewire\Attributes\On('modalDeleteSurat')]
@@ -127,6 +133,14 @@ final class SuratTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasiDeleteSurat')]
     public function konfirmasiDeleteSurat($rowId): void
     {
+        if (! Gate::allows('akses', 'Surat Keterangan Hapus')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
+
         SuratKeterangan::findOrFail($rowId)->delete();
 
         $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid

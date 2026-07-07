@@ -125,7 +125,7 @@
             </div>
 
             <div class="modal-action justify-end mt-6">
-                @can('akses', 'Jam Kerja Tambah')
+                @can('akses', 'Surat Keterangan Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
                 <button type="button" class="btn btn-neutral" onclick="document.getElementById('closeStoreModal').close()">Batal</button>

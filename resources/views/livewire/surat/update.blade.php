@@ -79,9 +79,9 @@
             </div>
 
             <div class="modal-action justify-end mt-6">
-                {{-- @can('akses', 'Surat Keterangan Edit') --}}
+                @can('akses', 'Surat Keterangan Edit')
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                {{-- @endcan --}}
+                @endcan
                 <button type="button" class="btn btn-neutral"
                     onclick="document.getElementById('modalupdatesurat').close()">Batal</button>
             </div>

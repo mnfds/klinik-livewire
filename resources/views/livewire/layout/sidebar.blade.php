@@ -568,14 +568,14 @@
                 </li>
                 @endcan
 
-                {{-- @can('akses', 'Surat Keterangan') --}}
+                @can('akses', 'Surat Keterangan')
                 <li>
                     <x-side-link href="{{ route('surat.data') }}" :active="request()->routeIs('surat.*')" wire:navigate>
                         <i class="fa-solid fa-file-medical"></i>
                         <span class="ml-3">Surat Keterangan</span>
                     </x-side-link>
                 </li>
-                {{-- @endcan --}}
+                @endcan
 
                 <li class="pt-2">
                     <span class="text-sm text-base-content">Tentang Aplikasi</span>

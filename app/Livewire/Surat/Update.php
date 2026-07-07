@@ -30,13 +30,13 @@ class Update extends Component
 
     public function update()
     {
-        // if (! Gate::allows('akses', 'Surat Keterangan Edit')) {
-        //     $this->dispatch('toast', [
-        //         'type' => 'error',
-        //         'message' => 'Anda tidak memiliki akses.',
-        //     ]);
-        //     return;
-        // }
+        if (! Gate::allows('akses', 'Surat Keterangan Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $this->validate([
             'tipe_ttd'        => 'required|in:digital,basah',
