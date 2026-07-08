@@ -56,12 +56,24 @@ final class SuratTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('#')
             ->add('no_surat')
+
             ->add('pasien.nama', fn ($row) => $row->pasienTerdaftar->pasien->nama ?? '-') // Nama Pasien
             ->add('pasien.no_register', fn ($row) => $row->pasienTerdaftar->pasien->no_register ?? '-') // No 
             ->add('nama_dan_register', function($row){
                 return strtoupper($row->pasienTerdaftar->pasien->nama) . '<br><span class="text-sm text-gray-500">' . $row->pasienTerdaftar->pasien->no_register . '</span>';
                 })
+
+            ->add('mulai_berlaku', fn ($row) => $row->mulai_berlaku ?? '-') // Nama Pasien
+            ->add('selesai_berlaku', fn ($row) => $row->selesai_berlaku ?? '-') // No 
+            ->add('masa_berlaku', function($row){
+                $mulai   = Carbon::parse($row->mulai_berlaku)->translatedFormat('d M Y');
+                $selesai = Carbon::parse($row->selesai_berlaku)->translatedFormat('d M Y');
+
+                return $mulai . ' - ' . $selesai;
+            })
+
             ->add('nama_dokter')
+
             ->add('kondisi', fn ($row) => $row->sakit ?? '-');
     }
 
@@ -69,15 +81,17 @@ final class SuratTable extends PowerGridComponent
     {
         return [
             Column::make('No. Surat', 'no_surat'),
-            Column::make('Nama Pasien', 'pasien.nama')
-                ->searchable()
-                ->hidden(),
-            Column::make('No. Register', 'pasien.no_register')
-                ->searchable()
-                ->hidden(),
-            Column::make('Pasien', 'nama_dan_register')
-                ->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Nama Pasien', 'pasien.nama')->searchable()->hidden(),
+            Column::make('No. Register', 'pasien.no_register')->searchable()->hidden(),
+            Column::make('Pasien', 'nama_dan_register')->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('Mulai Berlaku', 'mulai_berlaku')->searchable()->hidden(),
+            Column::make('Selesai Berlaku', 'selesai_berlaku')->searchable()->hidden(),
+            Column::make('Masa Berlaku', 'masa_berlaku')->bodyAttribute('whitespace-nowrap'),
+
             Column::make('kondisi', 'sakit'),
+
             Column::action('Action') // untuk tombol edit/delete
         ];
     }
