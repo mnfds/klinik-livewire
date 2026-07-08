@@ -18,11 +18,11 @@
                     @enderror
                 </div>
                 <div>
-                    <label class="label font-medium">Selesai Berlaku <span class="text-error">*</span></label>
-                    <input type="date" class="input input-bordered w-full @error('selesai_berlaku') input-error @enderror"
-                        wire:model="selesai_berlaku">
-                    @error('selesai_berlaku')
-                        <span class="text-error text-sm mt-1">Mohon mengisi tanggal</span>
+                    <label class="label font-medium">Berlaku Selama (Hari) <span class="text-error">*</span></label>
+                    <input type="number" class="input input-bordered w-full @error('jumlah_hari_berlaku') input-error @enderror"
+                        wire:model="jumlah_hari_berlaku">
+                    @error('jumlah_hari_berlaku')
+                        <span class="text-error text-sm mt-1">Mohon mengisi jumlah hari</span>
                     @enderror
                 </div>
             </div>

@@ -56,11 +56,11 @@
                     @enderror
                 </div>
                 <div>
-                    <label class="label font-medium">Selesai Berlaku Pada<span class="text-error">*</span></label>
-                    <input type="date" class="input input-bordered w-full @error('selesai_berlaku') input-error @enderror" wire:model.lazy="selesai_berlaku">
+                    <label class="label font-medium">Berlaku Selama (Hari) <span class="text-error">*</span></label>
+                    <input type="number" class="input input-bordered w-full @error('selesai_berlaku') input-error @enderror" wire:model.lazy="selesai_berlaku">
                     @error('selesai_berlaku')
                         <span class="text-error text-sm mt-1">
-                            Mohon Mengisi Tanggal
+                            Mohon mengisi jumlah hari
                         </span>
                     @enderror
                 </div>

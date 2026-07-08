@@ -99,7 +99,7 @@ class Store extends Component
             'tipe_ttd'        => 'required|in:digital,basah',
             'jenis_surat'     => 'required|in:standar,lengkap,sakit',
             'mulai_berlaku'   => 'required|date',
-            'selesai_berlaku' => 'required|date|after_or_equal:mulai_berlaku',
+            'selesai_berlaku' => 'required|integer',
             'sakit'           => 'nullable|required_if:jenis_surat,sakit|string|max:255',
         ]);
 
@@ -110,7 +110,9 @@ class Store extends Component
             ]);
             return;
         }
-
+        $tanggal_selesai_berlaku = Carbon::parse($this->mulai_berlaku)
+            ->addDays((int) $this->selesai_berlaku)
+            ->format('Y-m-d');
         $pasienTerdaftar = $this->pasienTerdaftarCreate();
         $rekamMedis = $this->rekamMedisCreate($pasienTerdaftar);
         $noSurat = $this->generateNoSurat();
@@ -119,7 +121,7 @@ class Store extends Component
             'pasien_terdaftar_id' => $pasienTerdaftar->id,
             'no_surat'            => $noSurat,
             'mulai_berlaku'       => $this->mulai_berlaku,
-            'selesai_berlaku'     => $this->selesai_berlaku,
+            'selesai_berlaku'     => $tanggal_selesai_berlaku,
             'tipe_ttd'            => $this->tipe_ttd,
             'harga_surat'         => $harga,
             'jenis_surat'         => $this->jenis_surat,
