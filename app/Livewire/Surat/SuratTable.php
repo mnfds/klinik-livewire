@@ -115,6 +115,14 @@ final class SuratTable extends PowerGridComponent
             ])
             ->dispatchTo('surat.update', 'getupdatesurat', ['rowId' => $row->id]);
 
+        Gate::allows('akses', 'Surat Keterangan Unduh') && $suratKeterangan[] =
+        Button::add('downloadSurat')  
+            ->slot('<i class="fa-solid fa-download"></i> Unduh')
+            ->attributes([
+                'class' => 'btn btn-success'
+            ])
+            ->dispatchTo('surat.download', 'getUnduh', ['rowId' => $row->id]);
+
         Gate::allows('akses', 'Surat Keterangan Hapus') && $suratKeterangan[] =
         Button::add('deleteSurat')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')

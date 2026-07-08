@@ -362,6 +362,7 @@ class AksesSeeder extends Seeder
                 'Surat Keterangan Tambah',
                 'Surat Keterangan Hapus',
                 'Surat Keterangan Edit',
+                'Surat Keterangan Unduh',
             ],
 
             // Satu Sehat configuration

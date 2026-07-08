@@ -454,7 +454,7 @@ Route::middleware(['auth'])->group(function () {
     // ====== INVENTARIS ====== //
 
     // ====== SURAT KETERANGAN ====== //
-    Route::view('/surat', 'surat.data')->name('surat.data');    
+    Route::view('/surat', 'surat.data')->name('surat.data'); 
     // ====== SURAT KETERANGAN ====== //
 
     // ====== TV DISPLAY ====== //
