@@ -36,17 +36,29 @@
             <!-- Main Content -->
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
                 <div class="bg-base-100 shadow rounded-box p-6">
-                    <div class="flex gap-4 mt-6">
-                        @can('akses', 'Verifikasi Email')
-                        <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info">
-                            Verifikasi Email
-                        </button>
-                        @endcan
-                        @can('akses', 'Reset Password')
-                        <button type="button" wire:click="kirimResetPassword" class="btn btn-warning">
-                            Kirim Reset Password
-                        </button>
-                        @endcan
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mt-6">
+                        <div class="flex flex-wrap gap-4">
+                            @can('akses', 'Verifikasi Email')
+                            <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info">
+                                Verifikasi Email
+                            </button>
+                            @endcan
+                            @can('akses', 'Reset Password')
+                            <button type="button" wire:click="kirimResetPassword" class="btn btn-warning">
+                                Kirim Reset Password
+                            </button>
+                            @endcan
+                        </div>
+
+                        <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-base-100 mx-auto sm:mx-0">
+                            <div class="w-32 h-32 flex items-center justify-center" id="qr-image">
+                                {!! $qrUserImage !!}
+                            </div>
+                            <p class="text-sm font-mono font-semibold tracking-widest bg-base-200 px-3 py-1 rounded-lg">{{ $user_code_qr }}</p>
+                            <button onclick="downloadQR('{{ $user_code_qr }}')" class="btn btn-sm btn-info gap-2 w-full">
+                                <i class="fa-solid fa-download"></i>Download
+                            </button>
+                        </div>
                     </div>
                     <form wire:submit.prevent="update" class="p-6 space-y-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -243,3 +255,33 @@
             </div>
         </div>
     </div>
+<script>
+    function downloadQR(filename) {
+        const svgEl = document.querySelector('#qr-image svg');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;  // resolusi PNG, makin besar makin tajam
+            canvas.height = 400;
+
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // background putih
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = `qrcode-${filename}.png`;
+            a.click();
+
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+    }
+</script>

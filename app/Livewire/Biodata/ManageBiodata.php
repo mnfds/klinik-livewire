@@ -8,6 +8,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\TemporaryUploadedFile;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ManageBiodata extends Component
 {
@@ -15,7 +16,7 @@ class ManageBiodata extends Component
 
     public $nama_lengkap, $nik, $ihs, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin;
     public $telepon, $mulai_bekerja, $telepon_kerabat, $nama_kerabat, $status_kerabat;
-
+    public $user_code_qr;
     public $foto_wajah; // untuk file upload baru
     public $foto_wajah_preview; // untuk tampilan foto lama
 
@@ -37,7 +38,15 @@ class ManageBiodata extends Component
             $this->telepon_kerabat = $biodata->telepon_kerabat;
             $this->nama_kerabat = $biodata->nama_kerabat;
             $this->status_kerabat = $biodata->status_kerabat;
+            $this->user_code_qr = $biodata->user_code_qr;
         }
+    }
+
+    public function generateQrCodeUser(): string
+    {
+        return QrCode::size(200)
+            ->errorCorrection('H')
+            ->generate($this->user_code_qr);
     }
 
     public function save()
@@ -100,6 +109,8 @@ class ManageBiodata extends Component
 
     public function render()
     {
-        return view('livewire.biodata.manage-biodata');
+        return view('livewire.biodata.manage-biodata',[
+            'qrUserImage' => $this->generateQrCodeUser(),
+        ]);
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UpdateUsers extends Component
 {
@@ -22,6 +23,7 @@ class UpdateUsers extends Component
     public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
     public $foto_wajah, $foto_wajah_preview;
     public $nama_kerabat, $status_kerabat, $telepon_kerabat;
+    public $user_code_qr;
     public $roles = [];
 
     public function mount(User $user): void
@@ -45,14 +47,24 @@ class UpdateUsers extends Component
         $this->nama_kerabat = $biodata->nama_kerabat ?? '';
         $this->telepon_kerabat = $biodata->telepon_kerabat ?? '';
         $this->status_kerabat = $biodata->status_kerabat ?? '';
+        $this->user_code_qr = $biodata->user_code_qr ?? '';
 
         $this->roles = \App\Models\Role::orderBy('nama_role')->pluck('nama_role', 'id')->toArray();
         // dd([$user,$biodata]);
-    }  
+    }
+    
+    public function generateQrCodeUser(): string
+    {
+        return QrCode::size(200)
+            ->errorCorrection('H')
+            ->generate($this->user_code_qr);
+    }
 
     public function render()
     {
-        return view('livewire.users.update-users');
+        return view('livewire.users.update-users',[
+            'qrUserImage' => $this->generateQrCodeUser(),
+        ]);
     }
 
     public function update(Request $request, User $user)

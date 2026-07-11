@@ -1,11 +1,23 @@
 <section>
-    <header class="mb-4">
-        <h2 class="text-xl font-bold text-base-content">
-            {{ __('Biodata Pengguna') }}
-        </h2>
-        <p class="mt-1 text-sm text-base-content/70">
-            {{ __('Perbarui informasi pribadi Anda di bawah ini.') }}
-        </p>
+<header class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+        <div>
+            <h2 class="text-xl font-bold text-base-content">
+                {{ __('Biodata Pengguna') }}
+            </h2>
+            <p class="mt-1 text-sm text-base-content/70">
+                {{ __('Perbarui informasi pribadi Anda di bawah ini.') }}
+            </p>
+        </div>
+
+        <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-base-100 mx-auto sm:mx-0">
+            <div class="w-32 h-32 flex items-center justify-center" id="qr-image">
+                {!! $qrUserImage !!}
+            </div>
+            <p class="text-sm font-mono font-semibold tracking-widest bg-base-200 px-3 py-1 rounded-lg">{{ $user_code_qr }}</p>
+            <button onclick="downloadQR('{{ $user_code_qr }}')" class="btn btn-sm btn-info gap-2 w-full">
+                <i class="fa-solid fa-download"></i>Download
+            </button>
+        </div>
     </header>
 
     <form wire:submit.prevent="save" class="space-y-5">
@@ -124,3 +136,33 @@
         </div>
     </form>
 </section>
+<script>
+    function downloadQR(filename) {
+        const svgEl = document.querySelector('#qr-image svg');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;  // resolusi PNG, makin besar makin tajam
+            canvas.height = 400;
+
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // background putih
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = `qrcode-${filename}.png`;
+            a.click();
+
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+    }
+</script>
