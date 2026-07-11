@@ -17,15 +17,20 @@ class Scanning extends Component
     {
         $this->staff = Biodata::all();
     }
-
+    
+    #[\Livewire\Attributes\On('qrScanned')]
     public function handleQrScanned(string $result): void
     {
-        if ($result === $this->user_code_qr) {
-            $this->scannedData = $this->user_code_qr;
+        $biodata_ditemukan = Biodata::where('user_code_qr', $result)->first();
+
+        if ($biodata_ditemukan) {
+            $this->user_code_qr = $biodata_ditemukan->user_code_qr;
+            $this->scannedData = $biodata_ditemukan->nama_lengkap;
             $this->booleanScan = true;
             $this->dispatch('openTakeModal');
         } else {
             $this->scannedData = "QR Code Salah / Tidak Dikenali";
+            $this->booleanScan = false;
         }
     }
 

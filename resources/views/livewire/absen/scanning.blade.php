@@ -10,14 +10,6 @@
                     stopScanner();
                     document.getElementById('modalScanning')?.close();
                 });
-    
-                Livewire.on('openTakeModal', () => {
-                    stopScanner();
-                    document.getElementById('modalScanning')?.close();
-                    setTimeout(() => {
-                        document.getElementById('takeModalBarang')?.showModal();
-                    }, 300);
-                });
                 ">
                 <div class="modal-box w-full max-w-md">
                     <div class="flex items-center justify-between mb-4">
