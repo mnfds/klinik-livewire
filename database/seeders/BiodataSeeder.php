@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 
 class BiodataSeeder extends Seeder
 {
@@ -13,6 +14,7 @@ class BiodataSeeder extends Seeder
      */
     public function run(): void
     {
+        $code1 = Str::upper(Str::random(6)) . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         DB::table('biodatas')->insert([
             'user_id' => 1,
             'nama_lengkap' => 'Admin Klinik',
@@ -25,10 +27,12 @@ class BiodataSeeder extends Seeder
             'telepon' => '08123456789',
             'mulai_bekerja' => '2020-01-01',
             'foto_wajah' => null,
+            'user_code_qr' => $code1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
+        $code2 = Str::upper(Str::random(6)) . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         // Biodata Perawat
         DB::table('biodatas')->insert([
             'user_id' => 4,
@@ -42,10 +46,12 @@ class BiodataSeeder extends Seeder
             'telepon' => '08129876543',
             'mulai_bekerja' => '2021-03-01',
             'foto_wajah' => null,
+            'user_code_qr' => $code2,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
+        $code3 = Str::upper(Str::random(6)) . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         DB::table('biodatas')->insert([
             'user_id' => 5,
             'nama_lengkap' => 'apt. Aditya Pradhana, S.Farm.',
@@ -58,6 +64,7 @@ class BiodataSeeder extends Seeder
             'telepon' => '081377788899',
             'mulai_bekerja' => '2021-07-01',
             'foto_wajah' => null,
+            'user_code_qr' => $code3,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

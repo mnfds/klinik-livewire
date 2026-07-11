@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('telepon_kerabat')->nullable();
             $table->string('nama_kerabat')->nullable();
             $table->string('status_kerabat')->nullable();
+            $table->string('user_code_qr')->unique();
             $table->timestamps();
         });
     }

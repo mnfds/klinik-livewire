@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class StoreUsers extends Component
 {
@@ -22,6 +23,7 @@ class StoreUsers extends Component
     // Untuk tabel biodata
     public $nama_lengkap, $nik, $ihs, $telepon, $alamat, $tempat_lahir, $tanggal_lahir, $jenis_kelamin, $mulai_bekerja;
     public $nama_kerabat, $telepon_kerabat, $status_kerabat;
+    public $user_code_qr;
 
     // Foto
     public $foto_wajah;
@@ -76,6 +78,12 @@ class StoreUsers extends Component
             'status_kerabat' => ['nullable', 'string'],
         ]);
         
+        do {
+            $letters = Str::upper(Str::random(6));
+            $numbers = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $this->user_code_qr = $letters . $numbers;
+        } while (\App\Models\Biodata::where('user_code_qr', $this->user_code_qr)->exists());
+        
         if (! Gate::allows('akses', 'Staff Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -114,6 +122,7 @@ class StoreUsers extends Component
             'nama_kerabat'  => $this->nama_kerabat,
             'telepon_kerabat'=> $this->telepon_kerabat,
             'status_kerabat' => $this->status_kerabat,
+            'user_code_qr' => $this->user_code_qr,
         ]);
 
         // Flash message & reset
