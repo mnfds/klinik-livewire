@@ -30,26 +30,17 @@
 
             <!-- Main Content -->
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-                <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
+                <div class="bg-base-200 overflow-hidden rounded-sm sm:rounded-lg">
                     <div class="p-6 text-base-content space-y-4">
-                        <div class="flex flex-wrap gap-2">
-                            <button class="btn btn-neutral">Neutral</button>
-                            <button class="btn btn-primary">Primary</button>
-                            <button class="btn btn-secondary">Secondary</button>
-                            <button class="btn btn-accent">Accent</button>
-                            <button class="btn btn-info">Info</button>
-                            <button class="btn btn-success">Success</button>
-                            <button class="btn btn-warning">Warning</button>
-                            <button class="btn btn-error">Error</button>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
+                        {{-- <div class="flex flex-wrap gap-2">
                             <button class="btn btn-neutral" onclick="playNotif()">Klik Untuk Bunyi Bell</button>
                             <audio id="notifAudio" src="{{ asset('assets/music/bell.mp3') }}"></audio>
-                        </div>
+                        </div> --}}
+                        <livewire:Absen.Scanning />
+                        <livewire:Tugas.DataPerorangan />
                     </div>
                 </div>
             </div>
-            <livewire:Absen.Scanning />
         </div>
     </div>
 
