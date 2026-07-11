@@ -32,15 +32,6 @@
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
                 <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg">
                     <div class="p-6 text-base-content space-y-4">
-                        <p>{{ __("You're logged in!") }}</p>
-                        @can('akses', 'create A')
-                        <p>A</p>
-                        <p>HAK AKSES BEKERJA DENGAN BAIK</p>
-                        @endcan
-                        @can('akses', 'create B')
-                        <p>B</p>
-                        <p>AKSES SUKSES</p>
-                        @endcan
                         <div class="flex flex-wrap gap-2">
                             <button class="btn btn-neutral">Neutral</button>
                             <button class="btn btn-primary">Primary</button>
@@ -58,6 +49,7 @@
                     </div>
                 </div>
             </div>
+            <livewire:Absen.Scanning />
         </div>
     </div>
 
