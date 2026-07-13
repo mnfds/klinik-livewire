@@ -3,7 +3,7 @@
         document.getElementById('modalUpdateAbsen')?.close()
     })
 ">
-    <div class="modal-box w-full max-w-2xl">
+    <div class="modal-box w-full max-w-md">
         <h3 class="text-xl font-semibold mb-4">Edit Data Absen "{{ $nama }}"</h3>
 
         <form wire:submit.prevent="update" class="space-y-4">
