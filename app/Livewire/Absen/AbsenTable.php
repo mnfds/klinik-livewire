@@ -80,14 +80,25 @@ final class AbsenTable extends PowerGridComponent
     public function actions(Absen $row): array
     {
         $absenTable = [];
+        
+        Gate::allows('akses', 'Jadwal') && $absenTable[] =
+        Button::add('updateAbsen')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modalUpdateAbsen.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+        ->dispatchTo('absen.update', 'getUpdateAbsen', ['rowId' => $row->id]);
+        
         Gate::allows('akses', 'Jadwal') && $absenTable[] =
         Button::add('deleteAbsen')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-            ->class('btn btn-error btn-sm')
+            ->class('btn btn-error')
         ->dispatch('modaldeleteAbsen', ['rowId' => $row->id]);
 
         return $absenTable;
     }
+
     #[\Livewire\Attributes\On('modaldeleteAbsen')]
     public function modaldeleteAbsen($rowId): void
     {
