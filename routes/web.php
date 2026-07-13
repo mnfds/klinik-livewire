@@ -426,7 +426,10 @@ Route::middleware(['auth'])->group(function () {
     // ====== JADWAL KERJA ====== //
 
     // ====== ABSEN STAFF ====== //
-    Route::view('/absen', 'absen.data')->name('absen.data');    
+    Route::view('/absen', 'absen.data')->name('absen.data');
+    Route::get('/absen-detail/{id}', function ($id) {
+        return view('absen.detail', ['id' => $id]);
+    })->name('absen.detail');
     // ====== ABSEN STAFF ====== //
 
     // ====== SCAN ABSEN SISTEM ====== //

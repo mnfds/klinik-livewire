@@ -13,10 +13,10 @@ use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
-final class AbsenTable extends PowerGridComponent
+final class DetailabsenTable extends PowerGridComponent
 {
-    public string $tableName = 'absen-table-fjvn6z-table';
-
+    public string $tableName = 'detailabsen-table-01hdh3-table';
+    public $userId;
     public function setUp(): array
     {
         return [
@@ -30,9 +30,9 @@ final class AbsenTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Absen::with(['user','user.biodata'])
-            ->whereDate('tanggal_absen', today())
-            ->latest();
+        return Absen::query()
+        ->where('user_id', $this->userId)
+        ->latest();
     }
 
     public function relationSearch(): array
@@ -43,9 +43,7 @@ final class AbsenTable extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            ->add('nama_staff', function ($row){
-                return strtoupper($row->user->biodata->nama_lengkap);
-            })
+            ->add('tanggal_absen', fn($row) => \Carbon\Carbon::parse($row->tanggal_absen)->translatedFormat('d F Y'))
             ->add('jam_masuk_formatted', fn($row) => $row->jam_masuk ? \Carbon\Carbon::parse($row->jam_masuk)->format('H:i') : '-')
             ->add('jam_pulang_formatted', fn($row) => $row->jam_pulang ? \Carbon\Carbon::parse($row->jam_pulang)->format('H:i') : '-')
             ->add('keterangan');
@@ -54,14 +52,14 @@ final class AbsenTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Nama Staff', 'nama_staff')
+            Column::make('Tanggal Absen', 'tanggal_absen')
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Jam Masuk', 'jam_masuk')
+            Column::make('Jam Masuk', 'jam_masuk_formatted')
                 ->sortable(),
 
-            Column::make('Jam Pulang', 'jam_pulang')
+            Column::make('Jam Pulang', 'jam_pulang_formatted')
                 ->sortable(),
 
             Column::make('Keterangan', 'keterangan')
@@ -80,16 +78,6 @@ final class AbsenTable extends PowerGridComponent
     public function actions(Absen $row): array
     {
         $absenTable = [];
-        
-        Gate::allows('akses', 'Jadwal') && $absenTable[] =
-        Button::add('detailAbsen')  
-            ->slot('<i class="fa-solid fa-eye"></i> Detail')
-            ->tag('button')
-            ->attributes([
-                'title' => 'Daftar Absensi ' . $row->user->biodata->nama_lengkap,
-                'onclick' => "Livewire.navigate('" . route('absen.detail', ['id' => $row->user->id]) . "')",
-                'class' => 'btn btn-secondary',
-            ]);
 
         Gate::allows('akses', 'Jadwal') && $absenTable[] =
         Button::add('updateAbsen')  
