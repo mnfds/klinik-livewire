@@ -37,21 +37,17 @@ class Scanning extends Component
             $this->booleanScan   = true;
 
             $this->prosesAbsen(); // langsung teruskan ke proses absen
-
-            $this->dispatch('openTakeModal');
         } else {
             $this->scannedData   = "QR Code Salah / Tidak Dikenali";
             $this->scannedUserId = null;
             $this->booleanScan   = false;
-
-            $this->dispatch('openTakeModal'); // tetap buka modal supaya pesan error terlihat
         }
     }
 
     public function prosesAbsen()
     {
         if (!$this->scannedUserId) {
-            $this->dispatch('notify', type: 'error', message: 'Data user tidak valid.');
+            $this->dispatch('toast', type: 'error', message: 'QR Tidak Dikenali.');
             return;
         }
 
@@ -68,7 +64,7 @@ class Scanning extends Component
             ]);
 
             $this->absenStatus = 'masuk';
-            $this->dispatch('notify', type: 'success', message: "{$this->scannedData} berhasil absen masuk.");
+            $this->dispatch('toast', type: 'success', message: "{$this->scannedData} Berhasil Melakukan Absen Masuk.");
             return;
         }
 
@@ -77,13 +73,13 @@ class Scanning extends Component
             $absen->update(['jam_pulang' => now()]);
 
             $this->absenStatus = 'pulang';
-            $this->dispatch('notify', type: 'success', message: "{$this->scannedData} berhasil absen pulang.");
+            $this->dispatch('toast', type: 'success', message: "{$this->scannedData} Berhasil Melakukan Absen Keluar.");
             return;
         }
 
         // Sudah masuk & pulang -> tolak
         $this->absenStatus = null;
-        $this->dispatch('notify', type: 'error', message: "{$this->scannedData} sudah menyelesaikan absen hari ini.");
+        $this->dispatch('toast', type: 'error', message: "{$this->scannedData} Sudah Melakukan Absen Hari Ini.");
     }
 
     public function resetScan(): void

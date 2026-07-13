@@ -112,13 +112,13 @@
                 @if ($booleanScan === true)
                     <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
                         <p class="font-semibold mb-1">Berhasil Melakukan Absensi!</p>
-                        <p>Hasil: <span class="font-mono">{{ $scannedData }}</span></p>
+                        <p>Halo, <span class="font-mono">{{ $scannedData }}</span></p>
                     </div>
                 @endif
                 @if ($booleanScan === false)
                     <div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
                         <p class="font-semibold mb-1">Gagal Melakukan Absensi!</p>
-                        <p>Hasil: <span class="font-mono">{{ $scannedData }}</span></p>
+                        <p>Mohon Maaf, <span class="font-mono">{{ $scannedData }}</span></p>
                     </div>
                 @endif
                 <div class="mt-3">
