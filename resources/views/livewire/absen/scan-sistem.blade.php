@@ -38,13 +38,13 @@
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg mb-2 border-t-3 border-primary">
                 <div class="p-6 text-base-content space-y-4">
                     <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-base-100 mx-auto sm:mx-0">
-                        <p class="text-center text-lg font-bold">SCAN UNTUK ABSEN</p>
+                        <p class="text-center text-lg font-bold">SCAN QR SISTEM</p>
                         <div class="w-64 h-64 flex items-center justify-center" id="qr-image">
                             {!! $qrUserImage !!}
                         </div>
                     </div>
-                    <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-expand"></i> KLIK UNTUK SCAN QR CODE
+                    <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm w-full">
+                        <i class="fa-solid fa-expand"></i> Scan QR User
                     </button>
                 </div>
             </div>
@@ -58,7 +58,7 @@
             ">
             <div class="modal-box w-full max-w-md">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-semibold">Tunjukkan QR CODE Untuk Melakukan Absen</h3>
+                    <h3 class="text-xl font-semibold">Tunjukkan QR User Untuk Absen</h3>
                     @if(!$scannedData)
                         <button onclick="flipKamera()" class="btn btn-sm btn-soft btn-primary gap-2">
                             <i class="fa-solid fa-arrows-rotate"></i>

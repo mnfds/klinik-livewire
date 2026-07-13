@@ -9,10 +9,10 @@
 
         {{-- Card 1: Pindai --}}
         <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-primary">
-            <p class="text-lg font-semibold text-primary">Pindai Kehadiran</p>
+            <p class="text-lg font-semibold text-primary">Scan QR Sistem</p>
 
             <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-expand"></i> Pindai
+                <i class="fa-solid fa-expand"></i> Scan
             </button>
 
             <div class="text-sm mt-1 space-y-1">
