@@ -15,12 +15,16 @@ class Scanning extends Component
     public $scannedUserId;
     public $booleanScan = false; //default warna
     public $absenStatus;
+    public $absen;
 
     public $staff = [];
 
     public function mount()
     {
         $this->staff = Biodata::all();
+        $this->absen = Absen::where('user_id', Auth::id())
+        ->whereDate('tanggal_absen', today())
+        ->first();
     }
     
     // =====================

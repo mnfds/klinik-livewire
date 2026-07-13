@@ -18,18 +18,18 @@
             <div class="text-sm mt-1 space-y-1">
                 <p class="flex items-center gap-2">
                     <i class="fa-solid fa-right-to-bracket text-success"></i>
-                    Masuk: <span class="font-medium">{{ $jamMasuk ?? 'Belum Absen' }}</span>
+                    Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
                 </p>
                 <p class="flex items-center gap-2">
                     <i class="fa-solid fa-right-from-bracket text-error"></i>
-                    Pulang: <span class="font-medium">{{ $jamPulang ?? 'Belum Absen' }}</span>
+                    Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
                 </p>
             </div>
         </div>
 
         {{-- Card 2: Absen Manual --}}
         <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-info">
-            <p class="text-lg font-semibold text-info">Absen Manual</p>
+            <p class="text-lg font-semibold text-info">Klik Untuk Absen</p>
 
             <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $lokasiTerdeteksi ?? 'Tidak Terdeteksi' }}</span></p>
 
@@ -51,11 +51,11 @@
             <div class="text-sm mt-1 space-y-1">
                 <p class="flex items-center gap-2">
                     <i class="fa-solid fa-right-to-bracket text-success"></i>
-                    Masuk: <span class="font-medium">{{ $jamMasuk ?? 'Belum Absen' }}</span>
+                    Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
                 </p>
                 <p class="flex items-center gap-2">
                     <i class="fa-solid fa-right-from-bracket text-error"></i>
-                    Pulang: <span class="font-medium">{{ $jamPulang ?? 'Belum Absen' }}</span>
+                    Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
                 </p>
             </div>
         </div>
