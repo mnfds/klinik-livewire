@@ -4,13 +4,14 @@ namespace App\Livewire\Absen;
 
 use App\Models\Absen;
 use App\Models\Biodata;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class Scanning extends Component
+class ScanSistem extends Component
 {
     public $sistem_code_qr;
+    public $user_code_qr;
     public $scannedData; // hasil scan tampil dari sini
     public $scannedUserId;
     public $booleanScan = false; //default warna
@@ -21,19 +22,27 @@ class Scanning extends Component
     public function mount()
     {
         $this->staff = Biodata::all();
+        $this->sistem_code_qr = today()->format('Ymd');
     }
-    
+
+    public function generateQrCodeUser(): string
+    {
+        return QrCode::size(200)
+            ->errorCorrection('H')
+            ->generate($this->sistem_code_qr);
+    }
     // =====================
     // ABSENSI DENGAN SCAN
     // =====================
     #[\Livewire\Attributes\On('qrScanned')]
     public function handleQrScanned(string $result): void
     {
-        $this->sistem_code_qr = today()->format('Ymd');
+        $biodata_ditemukan = Biodata::where('user_code_qr', $result)->first();
 
-        if ($result === $this->sistem_code_qr) {
-            $this->scannedUserId = Auth::id();
-            $this->scannedData   = Auth::user()->biodata->nama_lengkap;
+        if ($biodata_ditemukan) {
+            $this->user_code_qr  = $biodata_ditemukan->user_code_qr;
+            $this->scannedData   = $biodata_ditemukan->nama_lengkap;
+            $this->scannedUserId = $biodata_ditemukan->user_id;
             $this->booleanScan   = true;
 
             $this->prosesAbsen(); // langsung teruskan ke proses absen
@@ -89,66 +98,10 @@ class Scanning extends Component
         $this->dispatch('startScanner');
     }
 
-    // =====================
-    // ABSENSI DENGAN BUTTON
-    // =====================
-    public function absenMasuk()
-    {
-        // Cek apakah user sudah absen masuk hari ini
-        $sudahAbsen = Absen::where('user_id', Auth::id())
-            ->where('tanggal_absen', today())
-            ->exists();
-
-        if ($sudahAbsen) {
-            $this->dispatch('toast', ['type' => 'info', 'message' => 'Anda Sudah Melakukan Absen Masuk.']);
-            return;
-        }
-
-        Absen::create([
-            'user_id'       => Auth::id(),
-            'tanggal_absen' => today(),
-            'jam_masuk'     => now(),
-        ]);
-
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Absen Masuk Berhasil Dilakukan.']);
-
-        // refresh data yang ditampilkan di card
-        $this->mount(); // atau panggil ulang method yang set $jamMasuk
-    }
-
-    public function absenPulang()
-    {
-        $absen = Absen::where('user_id', Auth::id())
-            ->where('tanggal_absen', today())
-            ->first();
-
-        // Belum absen masuk sama sekali
-        if (!$absen) {
-            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Anda Belum Melakukan Absen Masuk Hari Ini.']);
-            return;
-        }
-
-        // Sudah absen masuk tapi jam_masuk kosong (edge case, harusnya tidak terjadi)
-        if (!$absen->jam_masuk) {
-            $this->dispatch('toast', ['type' => 'error', 'message' => 'Data Absen Masuk Tidak Valid.']);
-            return;
-        }
-
-        // Sudah absen pulang sebelumnya
-        if ($absen->jam_pulang) {
-            $this->dispatch('toast', ['type' => 'info', 'message' => 'Absen Sudah Melakukan Absen Pulang']);
-            return;
-        }
-
-        $absen->update([
-            'jam_pulang' => now(),
-        ]);
-
-        $this->dispatch('toast', type: 'success', message: 'Absen Pulang Berhasil Dilakukan.');
-    }
-
     public function render()
     {
-        return view('livewire.absen.scanning');
+        return view('livewire.absen.scan-sistem',[
+            'qrUserImage' => $this->generateQrCodeUser(),
+        ]);
     }
 }

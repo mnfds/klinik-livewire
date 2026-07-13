@@ -166,7 +166,15 @@
                             Gate::allows('akses','Jadwal')
                             )
                         <li>
-                            <x-side-link href="{{ route('absen.data') }}" :active="request()->routeIs('absen.*')" wire:navigate>Absensi Staff</x-side-link>
+                            <x-side-link href="{{ route('absen.data') }}" :active="request()->routeIs('absen.data')" wire:navigate>Absensi Staff</x-side-link>
+                        </li>
+                        @endif
+                        @if (
+                            Gate::allows('akses','Jadwal') ||
+                            Gate::allows('akses','Jadwal')
+                            )
+                        <li>
+                            <x-side-link href="{{ route('absen.scansistem') }}" :active="request()->routeIs('absen.scansistem')" wire:navigate>Scan Absen</x-side-link>
                         </li>
                         @endif
                     </ul>

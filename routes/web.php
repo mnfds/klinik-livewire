@@ -429,6 +429,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/absen', 'absen.data')->name('absen.data');    
     // ====== ABSEN STAFF ====== //
 
+    // ====== SCAN ABSEN SISTEM ====== //
+    Route::view('/scan-sistem', 'absen.scansistem')->name('absen.scansistem');    
+    // ====== SCAN ABSEN SISTEM ====== //
+
     // ====== LAPORAN ARUS KAS ====== //
     Route::view('/aruskas', 'aruskas.data')->name('aruskas.data');    
     // ====== LAPORAN ARUS KAS ====== //
