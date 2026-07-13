@@ -5,6 +5,7 @@ namespace App\Livewire\Absen;
 use App\Models\Absen;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class Store extends Component
@@ -20,10 +21,18 @@ class Store extends Component
     {
         $this->validate([
             'user_id' => 'required',
-            'tanggal_absen' => 'required|date',
+            'tanggal_absen' => [
+                'required',
+                'date',
+                Rule::unique('absens')->where(fn ($query) => 
+                    $query->where('user_id', $this->user_id)
+                ),
+            ],
             'jam_masuk' => 'required',
             'jam_pulang' => 'nullable',
             'keterangan' => 'nullable',
+        ], [
+            'tanggal_absen.unique' => 'Staff ini sudah memiliki data absen pada tanggal tersebut.',
         ]);
 
         if (! Gate::allows('akses', 'Jadwal')) {

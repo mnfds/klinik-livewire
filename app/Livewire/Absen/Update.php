@@ -4,6 +4,7 @@ namespace App\Livewire\Absen;
 
 use App\Models\Absen;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class Update extends Component
@@ -29,12 +30,23 @@ class Update extends Component
     
     public function update()
     {
+        $absen = Absen::findOrFail($this->absen_id);
+
         $this->validate([
-            'tanggal_absen' => 'required',
+            'tanggal_absen' => [
+                'required',
+                'date',
+                Rule::unique('absens')
+                    ->where(fn ($query) => $query->where('user_id', $absen->user_id))
+                    ->ignore($this->absen_id),
+            ],
             'jam_masuk'     => 'required',
             'jam_pulang'    => 'nullable',
             'keterangan'    => 'nullable',
+        ], [
+            'tanggal_absen.unique' => 'Staff ini sudah memiliki data absen pada tanggal tersebut.',
         ]);
+
         if (! Gate::allows('akses', 'Jadwal')) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -43,7 +55,7 @@ class Update extends Component
             return;
         }
 
-        Absen::where('id', $this->absen_id)->update([
+        $absen->update([
             'tanggal_absen'  => $this->tanggal_absen,
             'jam_masuk'      => $this->jam_masuk,
             'jam_pulang'     => $this->jam_pulang,

@@ -13,7 +13,7 @@
                     <label class="label font-medium">Tanggal Absen<span class="text-error">*</span></label>
                     <input type="date" class="input input-bordered w-full @error('tanggal_absen') input-error @enderror" wire:model.defer="tanggal_absen">
                     @error('tanggal_absen')
-                        <span class="text-error">Mohon Mengisi Nama Bahan Dengan Benar</span>
+                        <span class="text-error">Tanggal Invalid</span>
                     @enderror
                 </div>
     

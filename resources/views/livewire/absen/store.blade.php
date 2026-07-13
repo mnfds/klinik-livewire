@@ -17,7 +17,7 @@
                         @endforeach
                     </select>
                     @error('user_id')
-                        <span class="text-error">Mohon Mengisi Nama Bahan Dengan Benar</span>
+                        <span class="text-error">Mohon Memilih Staff Dengan Benar</span>
                     @enderror
                 </div>
 
@@ -25,7 +25,7 @@
                     <label class="label font-medium">Tanggal Absen<span class="text-error">*</span></label>
                     <input type="date" class="input input-bordered w-full @error('tanggal_absen') input-error @enderror" wire:model.lazy="tanggal_absen">
                     @error('tanggal_absen')
-                        <span class="text-error">Mohon Mengisi Nama Bahan Dengan Benar</span>
+                        <span class="text-error">Tanggal Invalid</span>
                     @enderror
                 </div>
     
