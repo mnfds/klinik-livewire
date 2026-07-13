@@ -421,6 +421,14 @@ Route::middleware(['auth'])->group(function () {
     });
     // ====== AJAX INDONESIA REGION ========= //
 
+    // ====== JADWAL KERJA ====== //
+    Route::view('/jadwal', 'jadwal.data')->name('jadwal.data');    
+    // ====== JADWAL KERJA ====== //
+
+    // ====== ABSEN STAFF ====== //
+    Route::view('/absen', 'absen.data')->name('absen.data');    
+    // ====== ABSEN STAFF ====== //
+
     // ====== LAPORAN ARUS KAS ====== //
     Route::view('/aruskas', 'aruskas.data')->name('aruskas.data');    
     // ====== LAPORAN ARUS KAS ====== //

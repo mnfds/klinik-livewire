@@ -42,6 +42,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Role::class);
     }
 
+    public function absen()
+    {
+        return $this->hasMany(Absen::class, 'user_id');
+    }
+
     public function izinkeluar()
     {
         // USER ATAU STAFF YANG SEDANG KELUAR

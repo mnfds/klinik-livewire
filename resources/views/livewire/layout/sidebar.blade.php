@@ -145,12 +145,31 @@
                     <span class="text-sm text-base-content">Manajemen Klinik</span>
                 </li>
                 @endif
-                @can('akses', 'Jadwal')                    
-                <li>
-                    <x-side-link href="#" :active="request()->routeIs('#')" wire:navigate>
+                @can('akses', 'Jadwal')
+                <li x-data="{ open: {{ request()->routeIs('jadwal.*') || request()->routeIs('absen.*') ? 'true' : 'false' }} }">
+                    <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('jadwal.*', 'absen.*')">
                         <i class="fa-solid fa-calendar-days"></i>
-                        <span class="ml-3">Jadwal</span>
+                        <span class="flex-1 ml-3 text-left">Jadwal</span>
+                        <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
+                    <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
+                        @if (
+                            Gate::allows('akses','Jadwal') ||
+                            Gate::allows('akses','Jadwal')
+                            )
+                        <li>
+                            <x-side-link href="{{ route('jadwal.data') }}" :active="request()->routeIs('jadwal.*')" wire:navigate>Jadwal Kerja</x-side-link>
+                        </li>
+                        @endif
+                        @if (
+                            Gate::allows('akses','Jadwal') ||
+                            Gate::allows('akses','Jadwal')
+                            )
+                        <li>
+                            <x-side-link href="{{ route('absen.data') }}" :active="request()->routeIs('absen.*')" wire:navigate>Absensi Staff</x-side-link>
+                        </li>
+                        @endif
+                    </ul>
                 </li>
                 @endcan
 

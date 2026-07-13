@@ -4,10 +4,10 @@ namespace App\Livewire\Absen;
 
 use Livewire\Component;
 
-class Scan extends Component
+class Store extends Component
 {
     public function render()
     {
-        return view('livewire.absen.scan');
+        return view('livewire.absen.store');
     }
 }

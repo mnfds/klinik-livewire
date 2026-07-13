@@ -34,8 +34,18 @@
             <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $lokasiTerdeteksi ?? 'Tidak Terdeteksi' }}</span></p>
 
             <div class="flex gap-2">
-                <button class="btn btn-success btn-sm">Absen Masuk</button>
-                <button class="btn btn-error btn-sm">Absen Pulang</button>
+                <button wire:click="absenMasuk" wire:loading.attr="disabled" wire:target="absenMasuk" class="btn btn-success btn-sm">
+                    <span wire:loading.remove wire:target="absenMasuk">Absen Masuk</span>
+                    <span wire:loading wire:target="absenMasuk">
+                        <span class="loading loading-spinner loading-xs"></span> Memproses...
+                    </span>
+                </button>
+                <button wire:click="absenPulang" wire:loading.attr="disabled" wire:target="absenPulang" class="btn btn-error btn-sm">
+                    <span wire:loading.remove wire:target="absenPulang">Absen Pulang</span>
+                    <span wire:loading wire:target="absenPulang">
+                        <span class="loading loading-spinner loading-xs"></span> Memproses...
+                    </span>
+                </button>
             </div>
 
             <div class="text-sm mt-1 space-y-1">
