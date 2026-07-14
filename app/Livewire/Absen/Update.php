@@ -20,8 +20,8 @@ class Update extends Component
         
         $absen = Absen::findOrFail($rowId);
         $this->tanggal_absen = $absen->tanggal_absen;
-        $this->jam_masuk     = $absen->jam_masuk;
-        $this->jam_pulang    = $absen->jam_pulang;
+        $this->jam_masuk  = $absen->jam_masuk ? \Carbon\Carbon::parse($absen->jam_masuk)->format('H:i') : null;
+        $this->jam_pulang = $absen->jam_pulang ? \Carbon\Carbon::parse($absen->jam_pulang)->format('H:i') : null;
         $this->keterangan    = $absen->keterangan;
         $this->nama = $absen->user->biodata->nama_lengkap;
 

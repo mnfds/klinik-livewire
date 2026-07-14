@@ -58,10 +58,10 @@ final class AbsenTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Jam Masuk', 'jam_masuk')
+            Column::make('Jam Masuk', 'jam_masuk_formatted')
                 ->sortable(),
 
-            Column::make('Jam Pulang', 'jam_pulang')
+            Column::make('Jam Pulang', 'jam_pulang_formatted')
                 ->sortable(),
 
             Column::make('Keterangan', 'keterangan')
