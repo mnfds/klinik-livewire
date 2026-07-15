@@ -62,24 +62,48 @@
                                     $tglCell = $tanggal->copy()->day($day)->format('Y-m-d');
                                     $shift = collect($jadwal[$user->id] ?? [])->firstWhere('tanggal', $tglCell);
                                     $namaShift = $shift['jamkerja']['nama_shift'] ?? null;
+                                    $tipeShift = $shift['jamkerja']['tipe_shift'] ?? null;
                                     $jamMulai = $shift['jamkerja']['jam_mulai'] ?? null;
                                     $jamSelesai = $shift['jamkerja']['jam_selesai'] ?? null;
 
                                     $absenHariIni = $absen[$user->id][$tglCell] ?? null;
                                     $jamMasuk = $absenHariIni['jam_masuk'] ?? null;
                                     $jamPulang = $absenHariIni['jam_pulang'] ?? null;
+
+                                    $bgClass = match (true) {
+                                        $tipeShift === 'libur' => 'bg-error text-error-content',
+                                        $namaShift !== null => 'bg-success text-success-content',
+                                        default => 'bg-neutral/50',
+                                    };
                                 @endphp
                                 <td
                                     wire:click="editShift({{ $user->id }}, '{{ $tglCell }}')"
-                                    class="editable text-center border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $namaShift ? 'bg-success text-success-content' : 'bg-neutral/50' }}"
+                                    class="editable text-center border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $bgClass }}"
                                 >
                                     @php
+                                        $terlambat = false;
+                                        $pulangCepat = false;
+
+                                        if ($jamMasuk && $jamMulai) {
+                                            $terlambat = \Carbon\Carbon::parse($jamMasuk)->format('H:i:s') > \Carbon\Carbon::parse($jamMulai)->format('H:i:s');
+                                        }
+
+                                        if ($jamPulang && $jamSelesai) {
+                                            $pulangCepat = \Carbon\Carbon::parse($jamPulang)->format('H:i:s') < \Carbon\Carbon::parse($jamSelesai)->format('H:i:s');
+                                        }
+
                                         $tooltipLines = [];
                                         if ($jamMulai && $jamSelesai) {
                                             $tooltipLines[] = 'Shift: ' . \Carbon\Carbon::parse($jamMulai)->format('H:i') . ' - ' . \Carbon\Carbon::parse($jamSelesai)->format('H:i');
                                         }
                                         if ($jamMasuk || $jamPulang) {
-                                            $tooltipLines[] = 'Absen: ' . ($jamMasuk ? \Carbon\Carbon::parse($jamMasuk)->format('H:i') : '-') . ' - ' . ($jamPulang ? \Carbon\Carbon::parse($jamPulang)->format('H:i') : '-');
+                                            $tooltipLines[] = 'Absen: ' . ($jamMasuk ? \Carbon\Carbon::parse($jamMasuk)->format('H:i') : '-') . ' - ' . ($jamPulang ? \Carbon\Carbon::parse($jamPulang)->format('H:i') : '?');
+                                        }
+                                        if ($terlambat) {
+                                            $tooltipLines[] = 'Terlambat masuk';
+                                        }
+                                        if ($pulangCepat) {
+                                            $tooltipLines[] = 'Pulang lebih awal';
                                         }
                                         $tooltipText = implode("\n", $tooltipLines);
                                     @endphp
@@ -88,7 +112,7 @@
                                         <span class="font-bold text-md">{{ $namaShift ?? '-' }}</span>
 
                                         <div class="flex items-center justify-center gap-2">
-                                            @if ($tooltipText)
+                                            @if ($terlambat || $pulangCepat)
                                                 <span class="tooltip tooltip-left text-xs text-yellow-300" data-tip="{{ $tooltipText }}">
                                                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                                                 </span>
