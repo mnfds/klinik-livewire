@@ -23,17 +23,17 @@
     </style>
 
     <div class="max-w-full mx-auto">
-        <div class="schedule-scroll overflow-x-auto max-h-[70vh]">
-            @php
-                $authId = auth()->id();
-                $sisaLiburSaya = $kuotaLibur - ($kuotaTerpakai[$authId] ?? 0);
-                $sisaCutiSaya = $kuotaCuti - ($kuotaCutiTerpakai[$authId] ?? 0);
-            @endphp
+        @php
+            $authId = auth()->id();
+            $sisaLiburSaya = $kuotaLibur - ($kuotaTerpakai[$authId] ?? 0);
+            $sisaCutiSaya = $kuotaCuti - ($kuotaCutiTerpakai[$authId] ?? 0);
+        @endphp
 
-            <div class="my-2 ">
-                <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaLiburSaya }}/{{ $kuotaLibur }}</span></p>
-                <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaCutiSaya }}/{{ $kuotaCuti }}</span></p>
-            </div>
+        <div class="my-2 ">
+            <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaLiburSaya }}/{{ $kuotaLibur }}</span></p>
+            <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaCutiSaya }}/{{ $kuotaCuti }}</span></p>
+        </div>
+        <div class="schedule-scroll overflow-x-auto max-h-[70vh]">
             <table class="jadwal w-full text-sm table">
                 <thead class="bg-primary text-base-primary text-xs uppercase">
                     <tr>
