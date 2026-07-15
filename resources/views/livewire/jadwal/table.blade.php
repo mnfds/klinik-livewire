@@ -25,13 +25,19 @@
     <div class="max-w-full mx-auto">
         @php
             $authId = auth()->id();
-            $sisaLiburSaya = $kuotaLibur - ($kuotaTerpakai[$authId] ?? 0);
-            $sisaCutiSaya = $kuotaCuti - ($kuotaCutiTerpakai[$authId] ?? 0);
+            $jatahLiburSaya = $kuotaLibur[$authId] ?? 0;
+            $sisaLiburSaya = $jatahLiburSaya - ($kuotaTerpakai[$authId] ?? 0);
+
+            $jatahCutiSaya = $kuotaCuti[$authId] ?? 0;
+            $sisaCutiSaya = $jatahCutiSaya - ($kuotaCutiTerpakai[$authId] ?? 0);
         @endphp
 
         <div class="my-2 ">
-            <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaLiburSaya }}/{{ $kuotaLibur }}</span></p>
-            <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaCutiSaya }}/{{ $kuotaCuti }}</span></p>
+            <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaLiburSaya }}/{{ $jatahLiburSaya }}</span></p>
+            <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaCutiSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaCutiSaya }}/{{ $jatahCutiSaya }}</span></p>
+        </div>
+        <div class="mb-4 text-center text-xl font-bold">
+            {{ \Carbon\Carbon::parse($this->tanggal)->translatedFormat('F Y') }}
         </div>
         <div class="schedule-scroll overflow-x-auto max-h-[70vh]">
             <table class="jadwal w-full text-sm table">
@@ -66,19 +72,21 @@
                                     {{ $user->name ?? '-' }}
                                 @endif
                                 @php
-                                    $terpakai = $kuotaTerpakai[$user->id] ?? 0;
-                                    $sisaKuota = $kuotaLibur - $terpakai;
+                                    $jatahLibur = $kuotaLibur[$user->id] ?? 4;
+                                    $terpakaiLibur = $kuotaTerpakai[$user->id] ?? 0;
+                                    $sisaLibur = $jatahLibur - $terpakaiLibur;
 
+                                    $jatahCuti = $kuotaCuti[$user->id] ?? 12;
                                     $terpakaiCuti = $kuotaCutiTerpakai[$user->id] ?? 0;
-                                    $sisaCuti = $kuotaCuti - $terpakaiCuti;
+                                    $sisaCuti = $jatahCuti - $terpakaiCuti;
                                 @endphp
                                 <br>
-                                <span class="text-xs {{ $sisaKuota <= 0 ? 'text-error' : 'text-base-content' }}">
-                                    Kuota libur: {{ $sisaKuota }}/{{ $kuotaLibur }}
+                                <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-base-content' }}">
+                                    Libur: {{ $sisaLibur }}/{{ $jatahLibur }}
                                 </span>
                                 <br>
                                 <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-base-content' }}">
-                                    Cuti: {{ $sisaCuti }}/{{ $kuotaCuti }}
+                                    Cuti: {{ $sisaCuti }}/{{ $jatahCuti }}
                                 </span>
                             </td>
 

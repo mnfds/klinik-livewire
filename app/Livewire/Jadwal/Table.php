@@ -5,6 +5,8 @@ namespace App\Livewire\Jadwal;
 use App\Models\Absen;
 use App\Models\Jadwal;
 use App\Models\JamKerja;
+use App\Models\Kuotacuti;
+use App\Models\Kuotalibur;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -21,9 +23,9 @@ class Table extends Component
     public $editTanggal = null;
     public $jamKerjaList = [];
     public $absen = [];
-    public $kuotaLibur = 4;
+    public $kuotaLibur = [];
     public $kuotaTerpakai = [];
-    public $kuotaCuti = 12;
+    public $kuotaCuti = [];
     public $kuotaCutiTerpakai = [];
 
     public function render()
@@ -38,7 +40,8 @@ class Table extends Component
 
         $roleId = Role::where('nama_role', $this->role)->value('id');
         $this->users = User::where('role_id', $roleId)->with(['biodata', 'dokter'])->get();
-
+        $userIds = $this->users->pluck('id');
+        
         $this->tanggal = Carbon::createFromFormat('Y-m', $this->bulan);
         $this->jadwal = Jadwal::whereIn('user_id', $this->users->pluck('id'))
             ->whereYear('tanggal', $this->tanggal->year)
@@ -56,7 +59,26 @@ class Table extends Component
             ->groupBy('user_id')
             ->map(fn ($items) => $items->keyBy(fn ($item) => $item->tanggal_absen->format('Y-m-d'))->toArray())
             ->toArray();
-            
+
+        // ambil kuota libur bulan ini per user
+        $kuotaLiburRows = Kuotalibur::whereIn('user_id', $userIds)
+            ->where('bulan', $this->tanggal->month)
+            ->where('tahun', $this->tanggal->year)
+            ->pluck('kuota_dimiliki', 'user_id');
+
+        $this->kuotaLibur = $userIds->mapWithKeys(function ($id) use ($kuotaLiburRows) {
+            return [$id => $kuotaLiburRows[$id] ?? 0];
+        })->toArray();
+
+        // ambil kuota cuti tahun ini per user
+        $kuotaCutiRows = Kuotacuti::whereIn('user_id', $userIds)
+            ->where('tahun', $this->tanggal->year)
+            ->pluck('kuota_dimiliki', 'user_id');
+
+        $this->kuotaCuti = $userIds->mapWithKeys(function ($id) use ($kuotaCutiRows) {
+            return [$id => $kuotaCutiRows[$id] ?? 0];
+        })->toArray();
+
         $today = today();
         if ($this->tanggal->isSameMonth($today) && $this->tanggal->isSameYear($today)) {
             $cutoff = $today;

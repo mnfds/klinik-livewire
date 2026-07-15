@@ -51,6 +51,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Absen::class, 'user_id');
     }
 
+    public function kuotacuti()
+    {
+        return $this->hasMany(Kuotacuti::class, 'user_id');
+    }
+
+    public function kuotalibur()
+    {
+        return $this->hasMany(Kuotalibur::class, 'user_id');
+    }
+
     public function izinkeluar()
     {
         // USER ATAU STAFF YANG SEDANG KELUAR
