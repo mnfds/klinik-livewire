@@ -3,6 +3,7 @@
 namespace App\Livewire\Jadwal;
 
 use App\Models\Jadwal;
+use App\Models\JamKerja;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -15,7 +16,10 @@ class Table extends Component
     public $users;
     public $jadwal;
     public $tanggal;
-    
+    public $editUserId = null;
+    public $editTanggal = null;
+    public $jamKerjaList = [];
+
     public function render()
     {
         return view('livewire.jadwal.table');
@@ -38,5 +42,25 @@ class Table extends Component
             ->groupBy('user_id')
             ->map(fn ($items) => $items->toArray())
             ->toArray();
+
+        $this->jamKerjaList = JamKerja::all();
+    }
+
+    public function editShift($userId, $tanggal)
+    {
+        $this->editUserId = $userId;
+        $this->editTanggal = $tanggal;
+        $this->dispatch('getupdatejadwal', userId: $this->editUserId, tanggal: $this->editTanggal)
+        ->to(\App\Livewire\Jadwal\Update::class);
+    }
+
+    #[\Livewire\Attributes\On('shift-updated')]
+    public function refreshShift($userId, $tanggal, $jadwal)
+    {
+        if ($jadwal) {
+            $this->jadwal[$userId][$tanggal] = $jadwal;
+        } else {
+            unset($this->jadwal[$userId][$tanggal]);
+        }
     }
 }

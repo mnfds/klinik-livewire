@@ -51,6 +51,7 @@
                         </div>
                     </div>
                     <livewire:jadwal.table :bulan="$thisMonth" :role="$selectedRole" :key="$thisMonth . $selectedRole" />
+                    <livewire:jadwal.update />
                 </div>
             </div>
         </div>
