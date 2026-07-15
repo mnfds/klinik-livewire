@@ -11,4 +11,8 @@ class JamKerja extends Model
 
     protected $table = 'jam_kerjas';
     protected $guarded = ['id'];
+
+    public function jadwals() {
+        return $this->hasMany(Jadwal::class, 'jamkerja_id');
+    }
 }
