@@ -31,29 +31,54 @@ class Update extends Component
 
     public function saveShift($jamKerjaId)
     {
+        $jamKerjaBaru = JamKerja::find($jamKerjaId);
+
+        $jadwalLama = Jadwal::where('user_id', $this->userId)
+            ->where('tanggal', $this->tanggal)
+            ->with('jamkerja')
+            ->first();
+
+        $tipeShiftLama = $jadwalLama?->jamkerja?->tipe_shift;
+
         $jadwal = Jadwal::updateOrCreate(
             ['user_id' => $this->userId, 'tanggal' => $this->tanggal],
             ['jamkerja_id' => $jamKerjaId]
         );
 
-        // kabari parent Table biar update in-memory / refresh grid
-        $this->dispatch('shift-updated', userId: $this->userId, tanggal: $this->tanggal, jadwal: $jadwal->load('jamkerja')->toArray());
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Jadwal Kerja Berhasil Ditambahkan.'
-        ]);
+        $jadwal->load('jamkerja');
+
+        $this->dispatch('shift-updated',
+            userId: $this->userId,
+            tanggal: $this->tanggal,
+            jadwal: $jadwal->toArray(),
+            tipeShiftLama: $tipeShiftLama,
+            tipeShiftBaru: $jamKerjaBaru->tipe_shift,
+        );
+
         $this->dispatch('close-modal-shift');
     }
 
     public function hapusShift()
     {
-        Jadwal::where('user_id', $this->userId)->where('tanggal', $this->tanggal)->delete();
+        $jadwalLama = Jadwal::where('user_id', $this->userId)
+            ->where('tanggal', $this->tanggal)
+            ->with('jamkerja')
+            ->first();
 
-        $this->dispatch('shift-updated', userId: $this->userId, tanggal: $this->tanggal, jadwal: null);
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Jadwal Kerja Berhasil Dihapus.'
-        ]);
+        $tipeShiftLama = $jadwalLama?->jamkerja?->tipe_shift;
+
+        Jadwal::where('user_id', $this->userId)
+            ->where('tanggal', $this->tanggal)
+            ->delete();
+
+        $this->dispatch('shift-updated',
+            userId: $this->userId,
+            tanggal: $this->tanggal,
+            jadwal: null,
+            tipeShiftLama: $tipeShiftLama,
+            tipeShiftBaru: null,
+        );
+
         $this->dispatch('close-modal-shift');
     }
 

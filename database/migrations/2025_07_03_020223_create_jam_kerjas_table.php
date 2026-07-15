@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('jam_kerjas', function (Blueprint $table) {
             $table->id();
             $table->string('nama_shift')->nullable();
-            $table->enum('tipe_shift', ['full', 'pagi', 'siang', 'malam', 'libur','mp'])->nullable();
+            $table->enum('tipe_shift', ['full', 'pagi', 'siang', 'malam', 'libur','cuti','mp'])->nullable();
             $table->time('jam_mulai')->nullable();
             $table->time('jam_selesai')->nullable();
             $table->boolean('lewat_hari')->default(false); // untuk shift seperti 20:00PM - 08:00AM

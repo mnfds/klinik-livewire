@@ -17,7 +17,7 @@
 
             <div class="space-y-2">
                 @foreach ($jamKerjaList as $jamKerja)
-                    <button wire:click="saveShift({{ $jamKerja->id }})" class="btn w-full justify-start {{ $jamKerja->tipe_shift === 'libur' ? 'btn-error' : 'btn-secondary' }}">
+                    <button wire:click="saveShift({{ $jamKerja->id }})" class="btn w-full justify-start {{ $jamKerja->tipe_shift === 'libur' || $jamKerja->tipe_shift === 'cuti' ? 'btn-error' : 'btn-secondary' }}">
                         {{ $jamKerja->nama_shift }} ({{ \Carbon\Carbon::parse($jamKerja->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jamKerja->jam_selesai)->format('H:i') }})
                     </button>
                 @endforeach

@@ -24,6 +24,16 @@
 
     <div class="max-w-full mx-auto">
         <div class="schedule-scroll overflow-x-auto max-h-[70vh]">
+            @php
+                $authId = auth()->id();
+                $sisaLiburSaya = $kuotaLibur - ($kuotaTerpakai[$authId] ?? 0);
+                $sisaCutiSaya = $kuotaCuti - ($kuotaCutiTerpakai[$authId] ?? 0);
+            @endphp
+
+            <div class="my-2 ">
+                <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaLiburSaya }}/{{ $kuotaLibur }}</span></p>
+                <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaLiburSaya <= 0 ? 'text-error' : 'text-success' }}"> {{ $sisaCutiSaya }}/{{ $kuotaCuti }}</span></p>
+            </div>
             <table class="jadwal w-full text-sm table">
                 <thead class="bg-primary text-base-primary text-xs uppercase">
                     <tr>
@@ -55,6 +65,21 @@
                                 @if ($user->biodata && $user->dokter)
                                     {{ $user->name ?? '-' }}
                                 @endif
+                                @php
+                                    $terpakai = $kuotaTerpakai[$user->id] ?? 0;
+                                    $sisaKuota = $kuotaLibur - $terpakai;
+
+                                    $terpakaiCuti = $kuotaCutiTerpakai[$user->id] ?? 0;
+                                    $sisaCuti = $kuotaCuti - $terpakaiCuti;
+                                @endphp
+                                <br>
+                                <span class="text-xs {{ $sisaKuota <= 0 ? 'text-error' : 'text-base-content' }}">
+                                    Kuota libur: {{ $sisaKuota }}/{{ $kuotaLibur }}
+                                </span>
+                                <br>
+                                <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-base-content' }}">
+                                    Cuti: {{ $sisaCuti }}/{{ $kuotaCuti }}
+                                </span>
                             </td>
 
                             @for ($day = 1; $day <= $tanggal->daysInMonth; $day++)
@@ -72,6 +97,7 @@
 
                                     $bgClass = match (true) {
                                         $tipeShift === 'libur' => 'bg-error text-error-content',
+                                        $tipeShift === 'cuti' => 'bg-error text-error-content',
                                         $namaShift !== null => 'bg-success text-success-content',
                                         default => 'bg-neutral/50',
                                     };
