@@ -1,17 +1,24 @@
 <div>
     <dialog id="modalEditShift" class="modal"
-        wire:ignore
+        wire:ignore.self
         x-data
         x-on:open-modal-shift.window="$el.showModal()"
         x-on:close-modal-shift.window="$el.close()"
     >
         <div class="modal-box">
-            <h3 class="font-bold text-lg">Ubah Shift</h3>
+            <div class="mb-4">
+                <h3 class="font-bold text-lg">
+                    Ubah Shift — {{ $nama_user?->biodata?->nama_lengkap ?? $nama_user?->dokter?->nama_dokter ?? '-' }}
+                </h3>
+                <p class="text-sm text-gray-500">
+                    {{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '-' }}
+                </p>
+            </div>
 
             <div class="space-y-2">
                 @foreach ($jamKerjaList as $jamKerja)
-                    <button wire:click="saveShift({{ $jamKerja->id }})" class="btn btn-success w-full justify-start">
-                        {{ $jamKerja->nama_shift }}
+                    <button wire:click="saveShift({{ $jamKerja->id }})" class="btn btn-secondary w-full justify-start">
+                        {{ $jamKerja->nama_shift }} ({{ $jamKerja->jam_mulai }} - {{ $jamKerja->jam_selesai }})
                     </button>
                 @endforeach
 
@@ -21,8 +28,8 @@
             </div>
 
             <div class="modal-action mt-4">
-                <button type="button" class="btn btn-sm" onclick="document.getElementById('modalEditShift').close()">
-                    Batal
+                <button type="button" class="btn btn-error" onclick="document.getElementById('modalEditShift').close()">
+                    <i class="fa-solid fa-x"></i>Batal
                 </button>
             </div>
         </div>

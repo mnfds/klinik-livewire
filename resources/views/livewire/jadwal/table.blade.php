@@ -16,6 +16,10 @@
             left: 0;
             z-index: 20;
         }
+        .tooltip:before {
+            white-space: pre-line;
+            text-align: left;
+        }
     </style>
 
     <div class="max-w-full mx-auto">
@@ -41,7 +45,7 @@
                 <tbody>
                     @forelse ($users as $user)
                         <tr class="hover:bg-base-200">
-                            <td class="bg-base-100 px-2 py-3 border border-base-200 font-medium whitespace-nowrap">
+                            <td class="bg-primary px-2 py-3 border border-base-200 font-medium whitespace-nowrap">
                                 @if ($user->biodata)
                                     {{ $user->biodata->nama_lengkap ?? '-' }}
                                 @endif
@@ -58,18 +62,43 @@
                                     $tglCell = $tanggal->copy()->day($day)->format('Y-m-d');
                                     $shift = collect($jadwal[$user->id] ?? [])->firstWhere('tanggal', $tglCell);
                                     $namaShift = $shift['jamkerja']['nama_shift'] ?? null;
+                                    $jamMulai = $shift['jamkerja']['jam_mulai'] ?? null;
+                                    $jamSelesai = $shift['jamkerja']['jam_selesai'] ?? null;
+
+                                    $absenHariIni = $absen[$user->id][$tglCell] ?? null;
+                                    $jamMasuk = $absenHariIni['jam_masuk'] ?? null;
+                                    $jamPulang = $absenHariIni['jam_pulang'] ?? null;
                                 @endphp
                                 <td
                                     wire:click="editShift({{ $user->id }}, '{{ $tglCell }}')"
-                                    class="editable text-center text-md border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $namaShift ? 'bg-success/40 text-success-content' : 'bg-base-200' }}"
+                                    class="editable text-center border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $namaShift ? 'bg-success text-success-content' : 'bg-neutral/50' }}"
                                 >
-                                    {{ $namaShift ?? '-' }}
-                                    <span class="tooltip tooltip-left text-xs text-error" data-tip="08:10 - 16:55">
-                                        <i class="fa-solid fa-x"></i>
-                                    </span>
-                                    <span class="tooltip tooltip-left text-xs text-neutral" data-tip="Jadwal Telah Terkunci">
-                                        <i class="fa-solid fa-lock text-xs"></i>
-                                    </span>
+                                    @php
+                                        $tooltipLines = [];
+                                        if ($jamMulai && $jamSelesai) {
+                                            $tooltipLines[] = 'Shift: ' . \Carbon\Carbon::parse($jamMulai)->format('H:i') . ' - ' . \Carbon\Carbon::parse($jamSelesai)->format('H:i');
+                                        }
+                                        if ($jamMasuk || $jamPulang) {
+                                            $tooltipLines[] = 'Absen: ' . ($jamMasuk ? \Carbon\Carbon::parse($jamMasuk)->format('H:i') : '-') . ' - ' . ($jamPulang ? \Carbon\Carbon::parse($jamPulang)->format('H:i') : '-');
+                                        }
+                                        $tooltipText = implode("\n", $tooltipLines);
+                                    @endphp
+
+                                    <div class="flex flex-col items-center gap-1">
+                                        <span class="font-bold text-md">{{ $namaShift ?? '-' }}</span>
+
+                                        <div class="flex items-center justify-center gap-2">
+                                            @if ($tooltipText)
+                                                <span class="tooltip tooltip-left text-xs text-yellow-300" data-tip="{{ $tooltipText }}">
+                                                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                                                </span>
+                                            @endif
+
+                                            <span class="tooltip tooltip-left text-xs text-neutral" data-tip="Jadwal Telah Terkunci">
+                                                <i class="fa-solid fa-lock text-xs"></i>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </td>
                             @endfor
                         </tr>

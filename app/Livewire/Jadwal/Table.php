@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Jadwal;
 
+use App\Models\Absen;
 use App\Models\Jadwal;
 use App\Models\JamKerja;
 use App\Models\Role;
@@ -19,6 +20,7 @@ class Table extends Component
     public $editUserId = null;
     public $editTanggal = null;
     public $jamKerjaList = [];
+    public $absen = [];
 
     public function render()
     {
@@ -41,6 +43,14 @@ class Table extends Component
             ->get()
             ->groupBy('user_id')
             ->map(fn ($items) => $items->toArray())
+            ->toArray();
+
+        $this->absen = Absen::whereIn('user_id', $this->users->pluck('id'))
+            ->whereYear('tanggal_absen', $this->tanggal->year)
+            ->whereMonth('tanggal_absen', $this->tanggal->month)
+            ->get()
+            ->groupBy('user_id')
+            ->map(fn ($items) => $items->keyBy(fn ($item) => $item->tanggal_absen->format('Y-m-d'))->toArray())
             ->toArray();
 
         $this->jamKerjaList = JamKerja::all();

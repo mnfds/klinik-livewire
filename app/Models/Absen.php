@@ -11,6 +11,9 @@ class Absen extends Model
 
     protected $table = 'absens';
     protected $guarded = ['id'];
+    protected $casts = [
+        'tanggal_absen' => 'date',
+    ];
 
     public function user()
     {
