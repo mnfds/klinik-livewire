@@ -2,7 +2,10 @@
 
 namespace App\Livewire\Users;
 
+use App\Models\Jadwal;
+use App\Models\Kuotalibur;
 use App\Models\User;
+use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Gate;
@@ -24,6 +27,7 @@ class UpdateUsers extends Component
     public $foto_wajah, $foto_wajah_preview;
     public $nama_kerabat, $status_kerabat, $telepon_kerabat;
     public $user_code_qr;
+    public $kuota_sisa,$kuota_diberi, $tanggal;
     public $roles = [];
 
     public function mount(User $user): void
@@ -180,5 +184,102 @@ class UpdateUsers extends Component
         } else {
             $this->dispatch('toast', ['type' => 'error', 'message' => 'User tidak ditemukan.']);
         }
+    }
+
+    private function hitungTerpakai($userId, $bulan, $tahun)
+    {
+        $today = today();
+        $bulanIni = Carbon::create($tahun, $bulan, 1);
+
+        $cutoff = match (true) {
+            $bulanIni->isSameMonth($today) && $bulanIni->isSameYear($today) => $today,
+            $bulanIni->lt($today) => $bulanIni->copy()->endOfMonth(),
+            default => $bulanIni->copy()->startOfMonth()->subDay(),
+        };
+
+        return Jadwal::where('user_id', $this->user->id)
+            ->whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->whereDate('tanggal', '<=', $cutoff)
+            ->whereHas('jamkerja', fn ($q) => $q->where('tipe_shift', 'libur'))
+            ->count();
+    }
+
+    public function updatedTanggal($value)
+    {
+        if (! $value) {
+            return;
+        }
+
+        $bulanDipilih = Carbon::createFromFormat('Y-m', $value);
+        $today = today();
+
+        // Batasi: hanya boleh input untuk bulan berjalan
+        if (! $bulanDipilih->isSameMonth($today) || ! $bulanDipilih->isSameYear($today)) {
+            $this->addError('tanggal', 'Kuota libur hanya bisa diinput untuk bulan berjalan (' . $today->format('F Y') . ').');
+            $this->reset(['tanggal', 'kuota_diberi', 'kuota_sisa']);
+            return;
+        }
+
+        $bulanLalu = $bulanDipilih->copy()->subMonth();
+
+        $kuotaLalu = Kuotalibur::where('user_id', $this->user->id)
+            ->where('bulan', $bulanLalu->month)
+            ->where('tahun', $bulanLalu->year)
+            ->first();
+
+        $dimilikiLalu = $kuotaLalu->kuota_dimiliki ?? 0;
+        $sisaCarryLalu = $kuotaLalu->kuota_sisa_bulan_sebelumnya ?? 0;
+        $totalLalu = $dimilikiLalu + $sisaCarryLalu;
+
+        // aman, karena $bulanLalu pasti sudah lewat sepenuhnya
+        $terpakaiLalu = $this->hitungTerpakai($this->user->id, $bulanLalu->month, $bulanLalu->year);
+
+        $this->kuota_sisa = max(0, $totalLalu - $terpakaiLalu);
+
+        $kuotaBulanIni = Kuotalibur::where('user_id', $this->user->id)
+            ->where('bulan', $bulanDipilih->month)
+            ->where('tahun', $bulanDipilih->year)
+            ->first();
+
+        if ($kuotaBulanIni) {
+            $this->kuota_diberi = $kuotaBulanIni->kuota_dimiliki;
+            $this->kuota_sisa = $kuotaBulanIni->kuota_sisa_bulan_sebelumnya;
+        }
+    }
+
+    public function storeLibur()
+    {
+        $this->validate([
+            'tanggal' => 'required',
+            'kuota_diberi' => 'required|integer|min:0',
+            'kuota_sisa' => 'required|integer|min:0',
+        ]);
+
+        $bulanDipilih = Carbon::createFromFormat('Y-m', $this->tanggal);
+        $today = today();
+
+        if (! $bulanDipilih->isSameMonth($today) || ! $bulanDipilih->isSameYear($today)) {
+            $this->addError('tanggal', 'Kuota libur hanya bisa diinput untuk bulan berjalan.');
+            return;
+        }
+
+        Kuotalibur::updateOrCreate(
+            [
+                'user_id' => $this->user->id,
+                'bulan' => $bulanDipilih->month,
+                'tahun' => $bulanDipilih->year,
+            ],
+            [
+                'kuota_dimiliki' => $this->kuota_diberi,
+                'kuota_sisa_bulan_sebelumnya' => $this->kuota_sisa,
+            ]
+        );
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Kuota Libur berhasil ditambahkan.'
+        ]);
+        $this->reset(['tanggal', 'kuota_diberi', 'kuota_sisa']);
     }
 }

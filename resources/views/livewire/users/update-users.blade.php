@@ -37,17 +37,18 @@
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
                 <div class="bg-base-100 shadow rounded-box p-6">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mt-6">
-                        <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3">
                             @can('akses', 'Verifikasi Email')
-                            <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info">
+                            <button type="button" wire:click="kirimUlangVerifikasi" class="btn btn-info w-full sm:w-auto">
                                 Verifikasi Email
                             </button>
                             @endcan
                             @can('akses', 'Reset Password')
-                            <button type="button" wire:click="kirimResetPassword" class="btn btn-warning">
+                            <button type="button" wire:click="kirimResetPassword" class="btn btn-warning w-full sm:w-auto">
                                 Kirim Reset Password
                             </button>
                             @endcan
+                            <button onclick="document.getElementById('storeKuotaLibur').showModal()" class="btn btn-success w-full sm:w-auto"><i class="fa-solid fa-plus"></i> Kuota Libur</button>
                         </div>
 
                         <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-base-100 mx-auto sm:mx-0">
@@ -254,6 +255,35 @@
                 </div>
             </div>
         </div>
+
+        <dialog id="storeKuotaLibur" class="modal" wire:ignore.self x-data x-init="
+            Livewire.on('closestoreKuotaLibur', () => {
+                document.getElementById('storeKuotaLibur')?.close()
+            })">
+            <div class="modal-box max-xl: w-full">
+                <h3 class="text-lg font-bold">Kuota Libur</h3>
+                <form wire:submit.prevent="storeLibur">
+                    <div class="form-control mb-2">
+                        <label class="label">Tanggal<span class="text-error">*</span></label>
+                        <input type="month" class="input input-bordered w-full" wire:model.live="tanggal" max="{{ now()->format('Y-m') }}">
+                    </div>
+                    <div class="form-control mb-2">
+                        <label class="label">Kuota Libur Diberikan <span class="text-error">*</span></label>
+                        <input type="number" class="input input-bordered w-full" value="4" wire:model.lazy="kuota_diberi">
+                    </div>
+                    <div class="form-control mb-2">
+                        <label class="label">Kuota Libur Sisa <span class="text-error">*</span></label>
+                        <input type="number" class="input input-bordered w-full" wire:model.lazy="kuota_sisa">
+                    </div>
+
+                    <div class="modal-action">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-erro" onclick="document.getElementById('storeKuotaLibur').close()">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+
     </div>
 <script>
     function downloadQR(filename) {

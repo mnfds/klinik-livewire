@@ -65,13 +65,14 @@ class Table extends Component
         $kuotaLiburRows = Kuotalibur::whereIn('user_id', $userIds)
             ->where('bulan', $this->tanggal->month)
             ->where('tahun', $this->tanggal->year)
-            ->pluck('kuota_dimiliki', 'user_id');
+            ->get()
+            ->keyBy('user_id');
 
         $this->kuotaLibur = $userIds->mapWithKeys(function ($id) use ($kuotaLiburRows) {
-            return [$id => $kuotaLiburRows[$id] ?? 0];
+            return [$id => $kuotaLiburRows[$id]->kuota_dimiliki ?? 0];
         })->toArray();
         $this->kuotaSisa = $userIds->mapWithKeys(function ($id) use ($kuotaLiburRows) {
-            return [$id => $kuotaLiburRows[$id]->kuota_sisa ?? 0];
+            return [$id => $kuotaLiburRows[$id]->kuota_sisa_bulan_sebelumnya ?? 0];
         })->toArray();
 
         // ambil kuota cuti tahun ini per user
