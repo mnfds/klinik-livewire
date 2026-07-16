@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('bulan'); // 1-12
             $table->unsignedSmallInteger('tahun');
             $table->unsignedTinyInteger('kuota_dimiliki')->default(4);
+            $table->unsignedTinyInteger('kuota_sisa_bulan_sebelumnya')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'bulan', 'tahun']); // cegah duplikat per user per bulan

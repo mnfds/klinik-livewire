@@ -24,6 +24,7 @@ class Table extends Component
     public $jamKerjaList = [];
     public $absen = [];
     public $kuotaLibur = [];
+    public $kuotaSisa = [];
     public $kuotaTerpakai = [];
     public $kuotaCuti = [];
     public $kuotaCutiTerpakai = [];
@@ -68,6 +69,9 @@ class Table extends Component
 
         $this->kuotaLibur = $userIds->mapWithKeys(function ($id) use ($kuotaLiburRows) {
             return [$id => $kuotaLiburRows[$id] ?? 0];
+        })->toArray();
+        $this->kuotaSisa = $userIds->mapWithKeys(function ($id) use ($kuotaLiburRows) {
+            return [$id => $kuotaLiburRows[$id]->kuota_sisa ?? 0];
         })->toArray();
 
         // ambil kuota cuti tahun ini per user
