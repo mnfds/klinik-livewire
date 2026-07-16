@@ -20,6 +20,7 @@ class Table extends Component
     public $jadwal;
     public $tanggal;
     public $editUserId = null;
+    public $editRoleId = null;
     public $editTanggal = null;
     public $jamKerjaList = [];
     public $absen = [];
@@ -120,11 +121,12 @@ class Table extends Component
         $this->jamKerjaList = JamKerja::all();
     }
 
-    public function editShift($userId, $tanggal)
+    public function editShift($userId, $tanggal, $roleId)
     {
         $this->editUserId = $userId;
+        $this->editRoleId = $roleId;
         $this->editTanggal = $tanggal;
-        $this->dispatch('getupdatejadwal', userId: $this->editUserId, tanggal: $this->editTanggal)
+        $this->dispatch('getupdatejadwal', userId: $this->editUserId, tanggal: $this->editTanggal, roleId: $this->editRoleId)
         ->to(\App\Livewire\Jadwal\Update::class);
     }
 

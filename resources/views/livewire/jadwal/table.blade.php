@@ -116,7 +116,7 @@
                                     };
                                 @endphp
                                 <td
-                                    wire:click="editShift({{ $user->id }}, '{{ $tglCell }}')"
+                                    wire:click="editShift({{ $user->id }}, '{{ $tglCell }}', '{{ $user->role->id }}')"
                                     class="editable text-center border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $bgClass }}"
                                 >
                                     @php

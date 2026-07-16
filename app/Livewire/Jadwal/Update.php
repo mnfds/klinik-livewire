@@ -10,22 +10,27 @@ use Livewire\Component;
 class Update extends Component
 {
     public $userId;
+    public $roleId;
     public $nama_user;
     public $tanggal;
     public $jamKerjaList = [];
 
     public function mount()
     {
-        $this->jamKerjaList = JamKerja::all();
+        $this->jamKerjaList = collect();
     }
 
     #[\Livewire\Attributes\On('getupdatejadwal')]
-    public function getUpdateJadwal($userId, $tanggal)
+    public function getUpdateJadwal($userId, $tanggal, $roleId)
     {
         $this->userId = $userId;
+        $this->roleId = $roleId;
         $this->nama_user = User::where('id', $userId)->with(['biodata','dokter'])->first();
         logger('nama_user set: ' . ($this->nama_user?->biodata?->nama_lengkap ?? 'NULL'));
         $this->tanggal = $tanggal;
+        $this->jamKerjaList = JamKerja::whereHas('jamkerjarole', function ($query) use ($roleId) {
+            $query->where('role_id', $roleId);
+        })->get();
         $this->dispatch('open-modal-shift');
     }
 
