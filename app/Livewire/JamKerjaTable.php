@@ -32,12 +32,14 @@ final class JamKerjaTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return JamKerja::query();
+        return JamKerja::query()->with('jamkerjarole.role');
     }
 
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'jamkerjarole.role' => ['nama_role']
+        ];
     }
 
     public function fields(): PowerGridFields
@@ -48,7 +50,12 @@ final class JamKerjaTable extends PowerGridComponent
             ->add('tipe_shift')
             ->add('jam_mulai')
             ->add('jam_selesai')
-            ->add('lewat_hari');
+            ->add('lewat_hari')
+            ->add('nama_role', function ($data) {
+                return $data->jamkerjarole
+                    ->map(fn($item) => $item->role->nama_role ?? '-')
+                    ->implode(', ');
+            });
     }
 
     public function columns(): array
@@ -65,6 +72,8 @@ final class JamKerjaTable extends PowerGridComponent
             Column::make('Jam Selesai', 'jam_selesai')->searchable()->sortable(),
 
             Column::make('Lintas Hari', 'lewat_hari')->toggleable(),
+            
+            Column::make('Nama Role', 'nama_role'),
 
             Column::action('Action'),
         ];
@@ -93,6 +102,15 @@ final class JamKerjaTable extends PowerGridComponent
     public function actions(JamKerja $row): array
     {
         $jamKerjaButton = [];
+
+        Gate::allows('akses', 'Jam Kerja Edit') && $jamKerjaButton[] =
+        Button::add('updaterole')  
+            ->slot('<i class="fa-solid fa-clock"></i> Role')
+            ->attributes([
+                'onclick' => 'modaleditrole.showModal()',
+                'class' => 'btn btn-info'
+            ])
+            ->dispatchTo('jamkerja.updaterole', 'getupdaterole', ['rowId' => $row->id]);
 
         Gate::allows('akses', 'Jam Kerja Edit') && $jamKerjaButton[] =
         Button::add('updateJamKerja')  

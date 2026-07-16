@@ -21,4 +21,9 @@ class Role extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function jamkerjarole()
+    {
+        return $this->hasMany(JamKerjaRole::class, 'role_id');
+    }
 }

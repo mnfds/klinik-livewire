@@ -15,4 +15,9 @@ class JamKerja extends Model
     public function jadwals() {
         return $this->hasMany(Jadwal::class, 'jamkerja_id');
     }
+
+    public function jamkerjarole()
+    {
+        return $this->hasMany(JamKerjaRole::class, 'jamkerja_id');
+    }
 }
