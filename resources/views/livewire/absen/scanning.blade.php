@@ -62,12 +62,12 @@
 
         {{-- Card 3: Statistik --}}
         <div class="bg-base-100 rounded-box p-4 flex flex-col gap-2 shadow-md border-t-2 border-error">
-            <p class="text-lg font-semibold text-center text-error">Data Absensi Anda</p>
+            <p class="text-lg font-semibold text-center text-error">Data Absensi Anda Bulan ini</p>
 
             <div class="text-sm space-y-1.5 mt-1">
                 <p class="flex justify-between gap-2">
                     <span class="text-base-content/70">Kuota Libur</span>
-                    <span class="font-semibold text-error">{{ $kuotaLibur ?? 0 }} Hari</span>
+                    <span class="font-semibold text-error">{{ $sisaKuotaLibur ?? 0 }} Hari</span>
                 </p>
                 <p class="flex justify-between gap-2">
                     <span class="text-base-content/70">Masuk Terlambat</span>
