@@ -43,7 +43,8 @@ final class DetailabsenTable extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-            ->add('tanggal_absen', fn($row) => \Carbon\Carbon::parse($row->tanggal_absen)->translatedFormat('d F Y'))
+            ->add('tanggal_absen')
+            ->add('tanggal_absen_formatted', fn($row) => \Carbon\Carbon::parse($row->tanggal_absen)->locale('id')->translatedFormat('l, d F Y'))
             ->add('jam_masuk_formatted', fn($row) => $row->jam_masuk ? \Carbon\Carbon::parse($row->jam_masuk)->format('H:i') : '-')
             ->add('jam_pulang_formatted', fn($row) => $row->jam_pulang ? \Carbon\Carbon::parse($row->jam_pulang)->format('H:i') : '-')
             ->add('keterangan');
@@ -52,7 +53,7 @@ final class DetailabsenTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Tanggal Absen', 'tanggal_absen')
+            Column::make('Tanggal Absen', 'tanggal_absen_formatted')
                 ->sortable()
                 ->searchable(),
 
