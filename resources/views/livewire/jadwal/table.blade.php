@@ -42,11 +42,11 @@
         <div class="mb-4 text-center text-xl font-bold">
             {{ \Carbon\Carbon::parse($this->tanggal)->translatedFormat('F Y') }}
         </div>
-        <div class="schedule-scroll overflow-x-auto max-h-[70vh]">
+        <div class="schedule-scroll overflow-x-auto">
             <table class="jadwal w-full text-sm table">
                 <thead class="bg-primary text-base-primary text-xs uppercase">
                     <tr>
-                        <th class="sticky top-0 z-40 bg-primary px-3 py-3 border border-base-200 text-left min-w-[160px] whitespace-nowrap">
+                        <th class="sticky top-0 left-0 z-50 bg-primary px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
                             Nama
                         </th>
                         @for ($day = 1; $day <= $tanggal->daysInMonth; $day++)
@@ -54,9 +54,9 @@
                                 $currentDate = $tanggal->copy()->day($day);
                                 $isWeekend = $currentDate->isWeekend();
                             @endphp
-                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-primary/70' : 'bg-primary' }} px-2 py-3 border border-base-200 text-center min-w-[78px] whitespace-nowrap">
-                                {{ $day }}<br>
-                                <span class="normal-case text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
+                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-primary/70' : 'bg-primary' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
+                                <span class="text-[11px] sm:text-base">{{ $day }}</span><br>
+                                <span class="normal-case text-[9px] sm:text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
                             </th>
                         @endfor
                     </tr>
@@ -73,7 +73,7 @@
                             </tr>
                         @endif
                         <tr class="hover:bg-base-200">
-                            <td class="bg-primary px-2 py-3 border border-base-200 font-medium whitespace-nowrap">
+                            <td class="sticky left-0 z-20 bg-primary px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
                                 @if ($user->biodata)
                                     {{ $user->biodata->nama_lengkap ?? '-' }}
                                 @endif
@@ -126,7 +126,7 @@
                                 @endphp
                                 <td
                                     wire:click="editShift({{ $user->id }}, '{{ $tglCell }}', '{{ $user->role->id }}')"
-                                    class="editable text-center border border-base-200 px-2 py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $bgClass }}"
+                                    class="editable text-center border border-base-200 px-1 py-2 sm:px-2 sm:py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $bgClass }}"
                                 >
                                     @php
                                         $terlambat = false;
@@ -156,10 +156,10 @@
                                         $tooltipText = implode("\n", $tooltipLines);
                                     @endphp
 
-                                    <div class="flex flex-col items-center gap-1">
-                                        <span class="font-bold text-md">{{ $namaShift ?? '-' }}</span>
+                                    <div class="flex flex-col items-center gap-0.5 sm:gap-1">
+                                        <span class="font-bold text-xs sm:text-md">{{ $namaShift ?? '-' }}</span>
 
-                                        <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center justify-center gap-1 md:gap-2">
                                             @if ($terlambat || $pulangCepat)
                                                 <span class="tooltip tooltip-left text-xs text-yellow-300" data-tip="{{ $tooltipText }}">
                                                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>
