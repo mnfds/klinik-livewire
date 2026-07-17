@@ -40,8 +40,19 @@ class Table extends Component
         $this->bulan = $bulan;
         $this->role = $role ?: auth()->User()->role->nama_role;
 
-        $roleId = Role::where('nama_role', $this->role)->value('id');
-        $this->users = User::where('role_id', $roleId)->with(['biodata', 'dokter'])->get();
+        if ($this->role === 'semua') {
+            $this->users = User::with(['biodata', 'dokter', 'role'])
+                ->orderBy('role_id')
+                ->orderBy('name')
+                ->get();
+        } else {
+            $roleId = Role::where('nama_role', $this->role)->value('id');
+            $this->users = User::where('role_id', $roleId)
+                ->with(['biodata', 'dokter', 'role'])
+                ->orderBy('name')
+                ->get();
+        }
+        
         $userIds = $this->users->pluck('id');
         
         $this->tanggal = Carbon::createFromFormat('Y-m', $this->bulan);

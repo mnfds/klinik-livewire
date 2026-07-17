@@ -41,6 +41,7 @@
                             <input type="month" wire:model="thisMonth" class="input input-bordered w-full">
                             <select wire:model="selectedRole" class="select select-bordered w-full">
                                 <option value="">Pilih Divisi</option>
+                                <option value="semua">Semua Role</option>
                                 @foreach ($role as $r)
                                 <option value="{{ $r->nama_role }}">{{ $r->nama_role }}</option>
                                 @endforeach

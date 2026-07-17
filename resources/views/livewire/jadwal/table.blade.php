@@ -63,6 +63,15 @@
                 </thead>
                 <tbody>
                     @forelse ($users as $user)
+                        @if ($loop->first || $user->role_id !== $users[$loop->index - 1]->role_id)
+                            <tr>
+                                <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-primary border border-base-200 p-0">
+                                    <div class="sticky left-0 z-20 w-fit px-3 py-2 text-xs font-bold uppercase">
+                                        {{ $user->role->nama_role ?? '-' }}
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
                         <tr class="hover:bg-base-200">
                             <td class="bg-primary px-2 py-3 border border-base-200 font-medium whitespace-nowrap">
                                 @if ($user->biodata)
