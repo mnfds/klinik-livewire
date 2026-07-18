@@ -36,8 +36,12 @@
                             <button class="btn btn-neutral" onclick="playNotif()">Klik Untuk Bunyi Bell</button>
                             <audio id="notifAudio" src="{{ asset('assets/music/bell.mp3') }}"></audio>
                         </div> --}}
-                        <livewire:Absen.Scanning />
-                        <livewire:Tugas.DataPerorangan />
+                        @if (Gate::allows('akses','Absen Scan User') || Gate::allows('akses','Absen Button'))
+                            <livewire:Absen.Scanning />
+                        @endif
+                        @can('akses', 'Kinerja Karyawan')
+                            <livewire:Tugas.DataPerorangan />
+                        @endcan
                     </div>
                 </div>
             </div>

@@ -37,15 +37,19 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-base-100 overflow-hidden shadow-xs rounded-sm sm:rounded-lg mb-2 border-t-3 border-primary">
                 <div class="p-6 text-base-content space-y-4">
+                    @can('akses', 'Absen Scan User')
                     <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-base-100 mx-auto sm:mx-0">
                         <p class="text-center text-lg font-bold">SCAN QR SISTEM</p>
                         <div class="w-64 h-64 flex items-center justify-center" id="qr-image">
                             {!! $qrUserImage !!}
                         </div>
                     </div>
+                    @endcan
+                    @can('akses', 'Absen Scan Sistem')
                     <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm w-full">
                         <i class="fa-solid fa-expand"></i> Scan QR User
                     </button>
+                    @endcan
                 </div>
             </div>
         </div>

@@ -35,7 +35,7 @@ class Store extends Component
             'tanggal_absen.unique' => 'Staff ini sudah memiliki data absen pada tanggal tersebut.',
         ]);
 
-        if (! Gate::allows('akses', 'Jadwal')) {
+        if (! Gate::allows('akses', 'Absen Tambah')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

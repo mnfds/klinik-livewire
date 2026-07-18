@@ -134,6 +134,7 @@
                     
                 @if (
                     Gate::allows('akses', 'Jadwal') ||
+                    Gate::allows('akses', 'Absen') ||
                     Gate::allows('akses', 'Laporan') ||
                     Gate::allows('akses', 'Dokumen') ||
                     Gate::allows('akses', 'Persediaan') ||
@@ -153,26 +154,17 @@
                         <i class="fa-solid fa-chevron-right transition-transform duration-200" :class="open ? 'rotate-90' : ''"></i>
                     </x-side-link>
                     <ul x-show="open" x-collapse x-cloak class="pl-8 space-y-1 py-2">
-                        @if (
-                            Gate::allows('akses','Jadwal') ||
-                            Gate::allows('akses','Jadwal')
-                            )
+                        @if (Gate::allows('akses','Jadwal'))
                         <li>
                             <x-side-link href="{{ route('jadwal.data') }}" :active="request()->routeIs('jadwal.*')" wire:navigate>Jadwal Kerja</x-side-link>
                         </li>
                         @endif
-                        @if (
-                            Gate::allows('akses','Jadwal') ||
-                            Gate::allows('akses','Jadwal')
-                            )
+                        @if (Gate::allows('akses','Absen'))
                         <li>
                             <x-side-link href="{{ route('absen.data') }}" :active="request()->routeIs('absen.data', 'absen.detail')" wire:navigate>Absensi Staff</x-side-link>
                         </li>
                         @endif
-                        @if (
-                            Gate::allows('akses','Jadwal') ||
-                            Gate::allows('akses','Jadwal')
-                            )
+                        @if (Gate::allows('akses','Absen'))
                         <li>
                             <x-side-link href="{{ route('absen.scansistem') }}" :active="request()->routeIs('absen.scansistem')" wire:navigate>Scan Absen</x-side-link>
                         </li>

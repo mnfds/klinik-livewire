@@ -50,7 +50,7 @@
             </div>
 
             <div class="modal-action justify-end pt-4">
-                @can('akses', 'Jadwal')
+                @can('akses', 'Absen Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 @endcan
                 <button type="button" class="btn btn-error" onclick="document.getElementById('storeAbsen').close()">Batal</button>

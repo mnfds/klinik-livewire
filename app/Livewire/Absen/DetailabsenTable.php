@@ -80,7 +80,7 @@ final class DetailabsenTable extends PowerGridComponent
     {
         $absenTable = [];
 
-        Gate::allows('akses', 'Jadwal') && $absenTable[] =
+        Gate::allows('akses', 'Absen Edit') && $absenTable[] =
         Button::add('updateAbsen')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -89,7 +89,7 @@ final class DetailabsenTable extends PowerGridComponent
             ])
         ->dispatchTo('absen.update', 'getUpdateAbsen', ['rowId' => $row->id]);
         
-        Gate::allows('akses', 'Jadwal') && $absenTable[] =
+        Gate::allows('akses', 'Absen Hapus') && $absenTable[] =
         Button::add('deleteAbsen')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
@@ -121,7 +121,7 @@ final class DetailabsenTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasiDeleteAbsen')]
     public function konfirmasiDeleteAbsen($rowId): void
     {
-        if (! Gate::allows('akses', 'Jadwal')) {
+        if (! Gate::allows('akses', 'Absen Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

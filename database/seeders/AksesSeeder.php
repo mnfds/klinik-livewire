@@ -85,11 +85,22 @@ class AksesSeeder extends Seeder
             // Jadwal
             8 => [
                 'Jadwal',
+                'Jadwal Tabel',
+                'Jadwal Download',
+                'Jadwal Edit',
             ],
-
-            // Laporan
+            // Absen
             9 => [
-                'Laporan',
+                'Absen',
+
+                'Absen Tambah',
+                'Absen Edit',
+                'Absen Hapus',
+                'Absen Detail',
+
+                'Absen Scan Sistem', // QR ADA DI USER DAN SISTEM MELAKUKAN SCAN
+                'Absen Scan User', // QR ADA DI SISTEM DAN USER MELAKUKAN SCAN
+                'Absen Button',
             ],
 
             // Laporan Arus Kas

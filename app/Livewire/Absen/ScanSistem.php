@@ -4,9 +4,10 @@ namespace App\Livewire\Absen;
 
 use App\Models\Absen;
 use App\Models\Biodata;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ScanSistem extends Component
 {
@@ -38,7 +39,14 @@ class ScanSistem extends Component
     public function handleQrScanned(string $result): void
     {
         $biodata_ditemukan = Biodata::where('user_code_qr', $result)->first();
-
+        if (! Gate::allows('akses', 'Absen Scan Sistem')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->scannedData   = "Anda Tidak Memiliki Akses";
+            return;
+        }
         if ($biodata_ditemukan) {
             $this->user_code_qr  = $biodata_ditemukan->user_code_qr;
             $this->scannedData   = $biodata_ditemukan->nama_lengkap;

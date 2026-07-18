@@ -8,57 +8,61 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {{-- Card 1: Pindai --}}
-        <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-primary">
-            <p class="text-lg font-semibold text-primary">Scan QR Sistem</p>
+        @can('akses', 'Absen Scan User')
+            <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-primary">
+                <p class="text-lg font-semibold text-primary">Scan QR Sistem</p>
 
-            <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-expand"></i> Scan
-            </button>
+                <button onclick="document.getElementById('modalScanning').showModal(); startScanner()" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-expand"></i> Scan
+                </button>
 
-            <div class="text-sm mt-1 space-y-1">
-                <p class="flex items-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket text-success"></i>
-                    Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
-                </p>
-                <p class="flex items-center gap-2">
-                    <i class="fa-solid fa-right-from-bracket text-error"></i>
-                    Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
-                </p>
+                <div class="text-sm mt-1 space-y-1">
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket text-success"></i>
+                        Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket text-error"></i>
+                        Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
+                    </p>
+                </div>
             </div>
-        </div>
+        @endcan
 
         {{-- Card 2: Absen Manual --}}
-        <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-info">
-            <p class="text-lg font-semibold text-info">Klik Untuk Absen</p>
+        @can('akses', 'Absen Button')
+            <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-info">
+                <p class="text-lg font-semibold text-info">Klik Untuk Absen</p>
 
-            <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $lokasiTerdeteksi ?? 'Tidak Terdeteksi' }}</span></p>
+                <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $lokasiTerdeteksi ?? 'Tidak Terdeteksi' }}</span></p>
 
-            <div class="flex gap-2">
-                <button wire:click="absenMasuk" wire:loading.attr="disabled" wire:target="absenMasuk" class="btn btn-success btn-sm">
-                    <span wire:loading.remove wire:target="absenMasuk">Absen Masuk</span>
-                    <span wire:loading wire:target="absenMasuk">
-                        <span class="loading loading-spinner loading-xs"></span> Memproses...
-                    </span>
-                </button>
-                <button wire:click="absenPulang" wire:loading.attr="disabled" wire:target="absenPulang" class="btn btn-error btn-sm">
-                    <span wire:loading.remove wire:target="absenPulang">Absen Pulang</span>
-                    <span wire:loading wire:target="absenPulang">
-                        <span class="loading loading-spinner loading-xs"></span> Memproses...
-                    </span>
-                </button>
+                <div class="flex gap-2">
+                    <button wire:click="absenMasuk" wire:loading.attr="disabled" wire:target="absenMasuk" class="btn btn-success btn-sm">
+                        <span wire:loading.remove wire:target="absenMasuk">Absen Masuk</span>
+                        <span wire:loading wire:target="absenMasuk">
+                            <span class="loading loading-spinner loading-xs"></span> Memproses...
+                        </span>
+                    </button>
+                    <button wire:click="absenPulang" wire:loading.attr="disabled" wire:target="absenPulang" class="btn btn-error btn-sm">
+                        <span wire:loading.remove wire:target="absenPulang">Absen Pulang</span>
+                        <span wire:loading wire:target="absenPulang">
+                            <span class="loading loading-spinner loading-xs"></span> Memproses...
+                        </span>
+                    </button>
+                </div>
+
+                <div class="text-sm mt-1 space-y-1">
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket text-success"></i>
+                        Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket text-error"></i>
+                        Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
+                    </p>
+                </div>
             </div>
-
-            <div class="text-sm mt-1 space-y-1">
-                <p class="flex items-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket text-success"></i>
-                    Masuk: <span class="font-medium text-success">{{ $absen->jam_masuk ?? 'Belum Absen' }}</span>
-                </p>
-                <p class="flex items-center gap-2">
-                    <i class="fa-solid fa-right-from-bracket text-error"></i>
-                    Pulang: <span class="font-medium text-error">{{ $absen->jam_pulang ?? 'Belum Absen' }}</span>
-                </p>
-            </div>
-        </div>
+        @endcan
 
         {{-- Card 3: Statistik --}}
         <div class="bg-base-100 rounded-box p-4 flex flex-col gap-2 shadow-md border-t-2 border-error">

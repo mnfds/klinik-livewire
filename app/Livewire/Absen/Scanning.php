@@ -8,6 +8,7 @@ use App\Models\Jadwal;
 use App\Models\Kuotalibur;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -44,7 +45,14 @@ class Scanning extends Component
     public function handleQrScanned(string $result): void
     {
         $this->sistem_code_qr = today()->format('Ymd');
-
+        if (! Gate::allows('akses', 'Absen Scan User')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->scannedData   = "Anda Tidak Memiliki Akses";
+            return;
+        }
         if ($result === $this->sistem_code_qr) {
             $this->scannedUserId = Auth::id();
             $this->scannedData   = Auth::user()->biodata->nama_lengkap;
@@ -108,6 +116,13 @@ class Scanning extends Component
     // =====================
     public function absenMasuk()
     {
+        if (! Gate::allows('akses', 'Absen Button')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         // Cek apakah user sudah absen masuk hari ini
         $sudahAbsen = Absen::where('user_id', Auth::id())
             ->where('tanggal_absen', today())
@@ -132,6 +147,13 @@ class Scanning extends Component
 
     public function absenPulang()
     {
+        if (! Gate::allows('akses', 'Absen Button')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         $absen = Absen::where('user_id', Auth::id())
             ->where('tanggal_absen', today())
             ->first();
