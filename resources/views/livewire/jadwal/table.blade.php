@@ -72,6 +72,7 @@
                                 </td>
                             </tr>
                         @endif
+                        @if (Gate::allows('akses','Jadwal Tabel'))
                         <tr class="hover:bg-base-200">
                             <td class="sticky left-0 z-20 bg-primary px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
                                 @if ($user->biodata)
@@ -174,9 +175,16 @@
                                 </td>
                             @endfor
                         </tr>
+                        @else
+                        <tr>
+                            <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="py-6 bg-error/50 text-base-content">
+                                Anda Tidak Memiliki Akses
+                            </td>
+                        </tr>
+                        @endif
                     @empty
                         <tr>
-                            <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="text-center py-6 text-gray-400">
+                            <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="py-6 text-gray-400">
                                 Belum ada staff dengan posisi ini
                             </td>
                         </tr>

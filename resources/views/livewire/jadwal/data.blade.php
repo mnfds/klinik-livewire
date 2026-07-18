@@ -34,8 +34,10 @@
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
                         <!-- KIRI: Tambah Barang & Riwayat -->
                         <div class="w-full md:w-auto grid grid-cols-2 gap-[2px]">
+                            @can('akses', 'Jadwal Download')
                             <button onclick="document.getElementById('uploadModal').showModal()" class="btn btn-primary w-full"><i class="fa-solid fa-upload"></i> Upload Jadwal</button>
                             <button onclick="document.getElementById('downloadModal').showModal()" class="btn btn-success w-full"><i class="fa-solid fa-download"></i> Download Jadwal</button>
+                            @endcan
                         </div>
                         <div class="w-full md:w-auto grid grid-cols-3 gap-[2px] mt-2 md:mt-0">
                             <input type="month" wire:model="thisMonth" class="input input-bordered w-full">

@@ -5,6 +5,8 @@ namespace App\Livewire\Jadwal;
 use App\Models\Jadwal;
 use App\Models\JamKerja;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Update extends Component
@@ -36,6 +38,18 @@ class Update extends Component
 
     public function saveShift($jamKerjaId)
     {
+        $isPemilik = $this->userId === Auth::id();
+        $punyaAksesUpdate = Gate::allows('akses', 'Jadwal Edit');
+
+        if (! $isPemilik && ! $punyaAksesUpdate) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+             $this->dispatch('close-modal-shift');
+            return;
+        }
+
         $jamKerjaBaru = JamKerja::find($jamKerjaId);
 
         $jadwalLama = Jadwal::where('user_id', $this->userId)
@@ -59,12 +73,27 @@ class Update extends Component
             tipeShiftLama: $tipeShiftLama,
             tipeShiftBaru: $jamKerjaBaru->tipe_shift,
         );
-
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Berhasil mengubah shift.',
+        ]);
         $this->dispatch('close-modal-shift');
     }
 
     public function hapusShift()
     {
+        $isPemilik = $this->userId === Auth::id();
+        $punyaAksesUpdate = Gate::allows('akses', 'Jadwal Edit');
+
+        if (! $isPemilik && ! $punyaAksesUpdate) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+             $this->dispatch('close-modal-shift');
+            return;
+        }
+
         $jadwalLama = Jadwal::where('user_id', $this->userId)
             ->where('tanggal', $this->tanggal)
             ->with('jamkerja')
@@ -83,7 +112,10 @@ class Update extends Component
             tipeShiftLama: $tipeShiftLama,
             tipeShiftBaru: null,
         );
-
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Berhasil mengosongkan shift.',
+        ]);
         $this->dispatch('close-modal-shift');
     }
 

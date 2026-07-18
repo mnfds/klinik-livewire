@@ -10,6 +10,7 @@ use App\Models\Kuotalibur;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Table extends Component
@@ -32,6 +33,13 @@ class Table extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Jadwal Tabel')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.jadwal.table');
     }
 

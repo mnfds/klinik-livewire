@@ -3,6 +3,7 @@
 namespace App\Livewire\Jadwal;
 
 use App\Models\Role;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class Data extends Component
@@ -13,6 +14,13 @@ class Data extends Component
 
     public function render()
     {
+        if (! Gate::allows('akses', 'Jadwal')) {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            $this->redirectRoute('dashboard');
+        }
         return view('livewire.jadwal.data');
     }
 
