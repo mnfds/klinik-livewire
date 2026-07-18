@@ -36,7 +36,7 @@
 
         <div class="my-2">
             <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaCutiSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $sisaCutiSaya }}/{{ $jatahCutiSaya }}</span></p>
-            <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}+{{ $sisaCarryLiburSaya }}</span></p>
+            <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}(+{{ $sisaCarryLiburSaya }})</span></p>
             <p class="text-xs text-gray-400">(Setiap Sisa Kuota Libur Akan Di Jumlahkan Ke Kuota Libur Bulan Berikutnya)</p>
         </div>
         <div class="mb-4 text-center text-xl font-bold">
