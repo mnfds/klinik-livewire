@@ -10,6 +10,7 @@ use App\Models\Kuotalibur;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
@@ -30,6 +31,7 @@ class Table extends Component
     public $kuotaTerpakai = [];
     public $kuotaCuti = [];
     public $kuotaCutiTerpakai = [];
+    public $batasEditHari = 2;
 
     public function render()
     {
@@ -140,6 +142,34 @@ class Table extends Component
         $this->jamKerjaList = JamKerja::all();
     }
 
+    private function isShiftTerkunci($tglCell, $userId): bool
+    {
+        // Punya akses penuh -> tidak pernah terkunci, apapun kondisinya
+        if (Gate::allows('akses', 'Jadwal Edit')) {
+            return false;
+        }
+
+        $tglCell = \Carbon\Carbon::parse($tglCell);
+        $today = today();
+
+        // Sudah lewat
+        if ($tglCell->lt($today)) {
+            return true;
+        }
+
+        // Dalam rentang N hari ke depan (termasuk hari ini)
+        if ($tglCell->lte($today->copy()->addDays($this->batasEditHari))) {
+            return true;
+        }
+
+        // Bukan pemilik jadwal
+        if ($userId !== Auth::id()) {
+            return true;
+        }
+
+        return false;
+    }
+    
     public function editShift($userId, $tanggal, $roleId)
     {
         $this->editUserId = $userId;

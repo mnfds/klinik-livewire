@@ -16,6 +16,7 @@ class Update extends Component
     public $nama_user;
     public $tanggal;
     public $jamKerjaList = [];
+    public $batasEditHari = 2;
 
     public function mount()
     {
@@ -36,17 +37,32 @@ class Update extends Component
         $this->dispatch('open-modal-shift');
     }
 
+    private function bolehEdit(): bool
+    {
+        // Punya akses penuh -> selalu boleh
+        if (Gate::allows('akses', 'Jadwal Edit')) {
+            return true;
+        }
+
+        $isPemilik = $this->userId === Auth::id();
+        if (! $isPemilik) {
+            return false;
+        }
+
+        $tgl = \Carbon\Carbon::parse($this->tanggal);
+        $today = today();
+
+        return $tgl->gte($today->copy()->addDays($this->batasEditHari + 1));
+    }
+
     public function saveShift($jamKerjaId)
     {
-        $isPemilik = $this->userId === Auth::id();
-        $punyaAksesUpdate = Gate::allows('akses', 'Jadwal Edit');
-
-        if (! $isPemilik && ! $punyaAksesUpdate) {
+        if (! $this->bolehEdit()) {
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
+                'message' => 'Anda tidak memiliki akses untuk mengubah jadwal ini.',
             ]);
-             $this->dispatch('close-modal-shift');
+            $this->dispatch('close-modal-shift');
             return;
         }
 
@@ -82,15 +98,12 @@ class Update extends Component
 
     public function hapusShift()
     {
-        $isPemilik = $this->userId === Auth::id();
-        $punyaAksesUpdate = Gate::allows('akses', 'Jadwal Edit');
-
-        if (! $isPemilik && ! $punyaAksesUpdate) {
+        if (! $this->bolehEdit()) {
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
+                'message' => 'Anda tidak memiliki akses untuk mengubah jadwal ini.',
             ]);
-             $this->dispatch('close-modal-shift');
+            $this->dispatch('close-modal-shift');
             return;
         }
 

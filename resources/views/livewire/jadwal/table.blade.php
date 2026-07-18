@@ -118,6 +118,8 @@
                                     $jamMasuk = $absenHariIni['jam_masuk'] ?? null;
                                     $jamPulang = $absenHariIni['jam_pulang'] ?? null;
 
+                                    $terkunci = $this->isShiftTerkunci($tglCell, $user->id);
+
                                     $bgClass = match (true) {
                                         $tipeShift === 'libur' => 'bg-error text-error-content',
                                         $tipeShift === 'cuti' => 'bg-error text-error-content',
@@ -166,10 +168,11 @@
                                                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                                                 </span>
                                             @endif
-
-                                            <span class="tooltip tooltip-left text-xs text-neutral" data-tip="Jadwal Telah Terkunci">
-                                                <i class="fa-solid fa-lock text-xs"></i>
-                                            </span>
+                                            @if ($terkunci)
+                                                <span class="tooltip tooltip-left text-xs text-neutral" data-tip="Jadwal Telah Terkunci">
+                                                    <i class="fa-solid fa-lock text-xs"></i>
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
