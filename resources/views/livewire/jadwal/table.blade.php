@@ -123,7 +123,7 @@
                                     $bgClass = match (true) {
                                         $tipeShift === 'libur' => 'bg-error text-error-content',
                                         $tipeShift === 'cuti' => 'bg-error text-error-content',
-                                        $jamMasuk !== null => 'bg-success text-success-content',
+                                        $namaShift !== null && $jamMasuk !== null => 'bg-success text-success-content',
                                         default => 'bg-neutral/50',
                                     };
                                 @endphp
