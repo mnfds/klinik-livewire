@@ -27,6 +27,15 @@ class Scanning extends Component
     public $jumlahTepatWaktu = 0;
     public $jumlahAlpha = 0;
 
+    //LOCATION
+    // -3.3268461920669985, 114.61689013356387 KLINIK GATOT
+    public $lokasiKerjaLat = -3.3268461920669985; // ganti dengan latitude kantor
+    public $lokasiKerjaLng = 114.61689013356387; // ganti dengan longitude kantor
+    public $radiusMaksimal = 50; // dalam meter
+
+    public $userLat = null;
+    public $userLng = null;
+
     public $staff = [];
 
     public function mount()
@@ -37,7 +46,31 @@ class Scanning extends Component
         ->first();
         $this->hitungStatistikAbsen();
     }
-    
+
+    /**
+     * Hitung jarak antara 2 koordinat menggunakan Haversine formula
+     * Return dalam meter
+     */
+    private function hitungJarak($lat1, $lng1, $lat2, $lng2)
+    {
+        $earthRadius = 6371000; // radius bumi dalam meter
+
+        $latFrom = deg2rad($lat1);
+        $lngFrom = deg2rad($lng1);
+        $latTo = deg2rad($lat2);
+        $lngTo = deg2rad($lng2);
+
+        $latDelta = $latTo - $latFrom;
+        $lngDelta = $lngTo - $lngFrom;
+
+        $angle = 2 * asin(sqrt(
+            pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lngDelta / 2), 2)
+        ));
+
+        return $angle * $earthRadius;
+    }
+
     // =====================
     // ABSENSI DENGAN SCAN
     // =====================
@@ -150,6 +183,27 @@ class Scanning extends Component
                 : 'Anda tidak memiliki jadwal kerja hari ini (libur).';
 
             $this->dispatch('toast', ['type' => 'info', 'message' => $pesan]);
+            return;
+        }
+
+        // Validasi lokasi wajib dikirim dari frontend
+        if (!$this->userLat || !$this->userLng) {
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'Lokasi tidak terdeteksi. Aktifkan GPS/izinkan akses lokasi.']);
+            return;
+        }
+
+        $jarak = $this->hitungJarak(
+            $this->lokasiKerjaLat,
+            $this->lokasiKerjaLng,
+            $this->userLat,
+            $this->userLng
+        );
+
+        if ($jarak > $this->radiusMaksimal) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda berada di luar area lokasi kerja (jarak: ' . round($jarak) . ' meter).'
+            ]);
             return;
         }
 

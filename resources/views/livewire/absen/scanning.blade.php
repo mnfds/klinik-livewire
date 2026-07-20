@@ -34,15 +34,78 @@
             <div class="bg-base-100 rounded-box p-4 flex flex-col items-center gap-2 text-center shadow-md border-t-2 border-info">
                 <p class="text-lg font-semibold text-info">Klik Untuk Absen</p>
 
-                <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $lokasiTerdeteksi ?? 'Tidak Terdeteksi' }}</span></p>
+                {{-- <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info">{{ $ ?? 'Tidak Terdeteksi' }}</span></p> --}}
+                <div x-data="{
+                    lokasiText: null,
+                    async ambilLokasi() {
+                        if (!navigator.geolocation) {
+                            this.lokasiText = 'Browser tidak mendukung geolocation';
+                            return;
+                        }
+                        navigator.geolocation.getCurrentPosition(
+                            async (position) => {
+                                const lat = position.coords.latitude;
+                                const lng = position.coords.longitude;
+                                $wire.set('userLat', lat);
+                                $wire.set('userLng', lng);
 
+                                // Reverse geocoding pakai Nominatim (gratis)
+                                try {
+                                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                                    const data = await res.json();
+                                    this.lokasiText = data.display_name ?? `${lat}, ${lng}`;
+                                } catch (e) {
+                                    this.lokasiText = `${lat}, ${lng}`;
+                                }
+                            },
+                            (err) => {
+                                this.lokasiText = 'Gagal mengambil lokasi';
+                            },
+                            { enableHighAccuracy: true, timeout: 10000 }
+                        );
+                    },
+                    init() {
+                        this.ambilLokasi();
+                    }
+                }">
+                    <p class="text-sm">Lokasi Anda : <span class="font-semibold text-info" x-text="lokasiText ?? 'Tidak Terdeteksi'"></span></p>
+                </div>
                 <div class="flex gap-2">
-                    <button wire:click="absenMasuk" wire:loading.attr="disabled" wire:target="absenMasuk" class="btn btn-success btn-sm">
+                    {{-- <button wire:click="absenMasuk" wire:loading.attr="disabled" wire:target="absenMasuk" class="btn btn-success btn-sm">
                         <span wire:loading.remove wire:target="absenMasuk">Absen Masuk</span>
                         <span wire:loading wire:target="absenMasuk">
                             <span class="loading loading-spinner loading-xs"></span> Memproses...
                         </span>
-                    </button>
+                    </button> --}}
+                    <div x-data="{
+                        lat: null,
+                        lng: null,
+                        error: null,
+                        ambilLokasi() {
+                            if (!navigator.geolocation) {
+                                this.error = 'Browser tidak mendukung geolocation.';
+                                return;
+                            }
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    this.lat = position.coords.latitude;
+                                    this.lng = position.coords.longitude;
+                                    $wire.set('userLat', this.lat);
+                                    $wire.set('userLng', this.lng);
+                                    $wire.absenMasuk();
+                                },
+                                (err) => {
+                                    this.error = 'Gagal mengambil lokasi: ' + err.message;
+                                },
+                                { enableHighAccuracy: true, timeout: 10000 }
+                            );
+                        }
+                    }">
+                        <button type="button" wire:loading.attr="disabled" @click="ambilLokasi()" class="btn btn-success btn-sm">
+                            Absen Masuk
+                        </button>
+                        <p x-show="error" x-text="error" class="text-error text-sm"></p>
+                    </div>
                     <button wire:click="absenPulang" wire:loading.attr="disabled" wire:target="absenPulang" class="btn btn-error btn-sm">
                         <span wire:loading.remove wire:target="absenPulang">Absen Pulang</span>
                         <span wire:loading wire:target="absenPulang">
