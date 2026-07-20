@@ -133,6 +133,26 @@ class Scanning extends Component
             return;
         }
 
+        // Cek apakah jadwal user hari ini adalah libur atau cuti
+        $jadwalHariIni = Jadwal::where('user_id', Auth::id())
+            ->where('tanggal', today())
+            ->with('jamKerja')
+            ->first();
+
+        if (!$jadwalHariIni || !$jadwalHariIni->jamKerja) {
+            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Jadwal Anda Hari Ini Tidak Ditemukan.']);
+            return;
+        }
+
+        if (in_array($jadwalHariIni->jamKerja->tipe_shift, ['libur', 'cuti'])) {
+            $pesan = $jadwalHariIni->jamKerja->tipe_shift === 'cuti'
+                ? 'Anda sedang dalam masa cuti. Absensi tidak diperlukan.'
+                : 'Anda tidak memiliki jadwal kerja hari ini (libur).';
+
+            $this->dispatch('toast', ['type' => 'info', 'message' => $pesan]);
+            return;
+        }
+
         Absen::create([
             'user_id'       => Auth::id(),
             'tanggal_absen' => today(),
