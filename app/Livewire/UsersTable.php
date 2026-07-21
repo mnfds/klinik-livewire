@@ -154,6 +154,7 @@ final class UsersTable extends PowerGridComponent
     {
         $bulanIni = now()->month;
         $tahunIni = now()->year;
+        $bulanTahunIni = now()->format('Y-m'); // format sesuai kebutuhan input type="month"
 
         $this->js(<<<JS
             const ids = window.pgBulkActions.get('$this->tableName');
@@ -166,24 +167,28 @@ final class UsersTable extends PowerGridComponent
             Swal.fire({
                 title: 'Tambah Kuota Libur',
                 html:
-                    '<select id="swal-bulan" class="swal2-input">' +
-                        Array.from({length: 12}, (_, i) => i + 1).map(b =>
-                            `<option value="\${b}" \${b === $bulanIni ? 'selected' : ''}>\${b}</option>`
-                        ).join('') +
-                    '</select>' +
-                    '<input id="swal-tahun" type="number" class="swal2-input" value="$tahunIni" placeholder="Tahun">' +
-                    '<input id="swal-kuota" type="number" class="swal2-input" value="4" placeholder="Jumlah Kuota">',
+                    '<div class="text-left space-y-3">' +
+                        '<div>' +
+                            '<label class="block text-sm font-medium text-gray-700 mb-1">Periode</label>' +
+                            '<input id="swal-periode" type="month" class="input !m-0 !w-full" value="$bulanTahunIni">' +
+                        '</div>' +
+                        '<div>' +
+                            '<label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Kuota</label>' +
+                            '<input id="swal-kuota" type="number" class="input !m-0 !w-full" value="4" placeholder="Jumlah Kuota">' +
+                        '</div>' +
+                    '</div>',
                 showCancelButton: true,
                 confirmButtonText: 'Simpan',
                 preConfirm: () => {
-                    const bulan = document.getElementById('swal-bulan').value;
-                    const tahun = document.getElementById('swal-tahun').value;
+                    const periode = document.getElementById('swal-periode').value; // format: "YYYY-MM"
                     const kuota = document.getElementById('swal-kuota').value;
 
-                    if (!bulan || !tahun || !kuota) {
+                    if (!periode || !kuota) {
                         Swal.showValidationMessage('Semua field wajib diisi');
                         return false;
                     }
+
+                    const [tahun, bulan] = periode.split('-');
 
                     return { bulan, tahun, kuota };
                 }
