@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Kuotalibur;
 use App\Models\Kuotacuti;
+use App\Models\Jadwal;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -152,9 +153,7 @@ final class UsersTable extends PowerGridComponent
     #[\Livewire\Attributes\On('bulkTambahKuota.{tableName}')]
     public function bulkTambahKuota(): void
     {
-        $bulanIni = now()->month;
-        $tahunIni = now()->year;
-        $bulanTahunIni = now()->format('Y-m'); // format sesuai kebutuhan input type="month"
+        $bulanTahunIni = now()->format('Y-m');
 
         $this->js(<<<JS
             const ids = window.pgBulkActions.get('$this->tableName');
@@ -180,7 +179,7 @@ final class UsersTable extends PowerGridComponent
                 showCancelButton: true,
                 confirmButtonText: 'Simpan',
                 preConfirm: () => {
-                    const periode = document.getElementById('swal-periode').value; // format: "YYYY-MM"
+                    const periode = document.getElementById('swal-periode').value;
                     const kuota = document.getElementById('swal-kuota').value;
 
                     if (!periode || !kuota) {
@@ -205,6 +204,44 @@ final class UsersTable extends PowerGridComponent
         JS);
     }
 
+    private function hitungTerpakai($userId, $bulan, $tahun)
+    {
+        $today = today();
+        $bulanIni = Carbon::create($tahun, $bulan, 1);
+
+        $cutoff = match (true) {
+            $bulanIni->isSameMonth($today) && $bulanIni->isSameYear($today) => $today,
+            $bulanIni->lt($today) => $bulanIni->copy()->endOfMonth(),
+            default => $bulanIni->copy()->startOfMonth()->subDay(),
+        };
+
+        return Jadwal::where('user_id', $userId)
+            ->whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->whereDate('tanggal', '<=', $cutoff)
+            ->whereHas('jamkerja', fn ($q) => $q->where('tipe_shift', 'libur'))
+            ->count();
+    }
+
+    private function hitungSisaKuotaBulanLalu($userId, $bulan, $tahun)
+    {
+        $bulanDipilih = Carbon::create($tahun, $bulan, 1);
+        $bulanLalu = $bulanDipilih->copy()->subMonth();
+
+        $kuotaLalu = Kuotalibur::where('user_id', $userId)
+            ->where('bulan', $bulanLalu->month)
+            ->where('tahun', $bulanLalu->year)
+            ->first();
+
+        $dimilikiLalu = $kuotaLalu->kuota_dimiliki ?? 0;
+        $sisaCarryLalu = $kuotaLalu->kuota_sisa_bulan_sebelumnya ?? 0;
+        $totalLalu = $dimilikiLalu + $sisaCarryLalu;
+
+        $terpakaiLalu = $this->hitungTerpakai($userId, $bulanLalu->month, $bulanLalu->year);
+
+        return max(0, $totalLalu - $terpakaiLalu);
+    }
+
     #[\Livewire\Attributes\On('bulkTambahKuotaConfirmed')]
     public function bulkTambahKuotaConfirmed(array $userIds, int $bulan, int $tahun, int $kuota): void
     {
@@ -216,13 +253,14 @@ final class UsersTable extends PowerGridComponent
             return;
         }
 
-        // opsional: cegah bikin kuota untuk bulan yang belum berjalan
-        // (sesuaikan dengan month restriction yang sudah kamu pakai di modul Jadwal)
-        $targetDate = \Carbon\Carbon::create($tahun, $bulan, 1);
-        if ($targetDate->gt(now()->startOfMonth())) {
+        $bulanDipilih = Carbon::create($tahun, $bulan, 1);
+        $today = today();
+
+        // Samakan pembatasan dengan proses single: hanya boleh bulan berjalan
+        if (! $bulanDipilih->isSameMonth($today) || ! $bulanDipilih->isSameYear($today)) {
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Tidak bisa membuat kuota untuk bulan yang akan datang.',
+                'message' => 'Kuota libur hanya bisa diinput untuk bulan berjalan (' . $today->format('F Y') . ').',
             ]);
             return;
         }
@@ -232,7 +270,7 @@ final class UsersTable extends PowerGridComponent
         foreach ($userIds as $userId) {
             $sisaBulanLalu = $this->hitungSisaKuotaBulanLalu($userId, $bulan, $tahun);
 
-            KuotaLibur::updateOrCreate(
+            Kuotalibur::updateOrCreate(
                 [
                     'user_id' => $userId,
                     'bulan'   => $bulan,
@@ -253,37 +291,6 @@ final class UsersTable extends PowerGridComponent
             'type' => 'success',
             'message' => "{$berhasil} user berhasil ditambahkan kuota libur bulan {$bulan}/{$tahun}.",
         ]);
-    }
-
-    /**
-     * Hitung sisa kuota dari bulan sebelumnya untuk carry-over.
-     * sisa = kuota_dimiliki + kuota_sisa_bulan_sebelumnya - kuota_digunakan (dihitung dari tabel jadwals)
-     */
-    private function hitungSisaKuotaBulanLalu(int $userId, int $bulan, int $tahun): int
-    {
-        $bulanLalu = $bulan === 1 ? 12 : $bulan - 1;
-        $tahunLalu = $bulan === 1 ? $tahun - 1 : $tahun;
-
-        $kuotaBulanLalu = KuotaLibur::where('user_id', $userId)
-            ->where('bulan', $bulanLalu)
-            ->where('tahun', $tahunLalu)
-            ->first();
-
-        if (! $kuotaBulanLalu) {
-            return 0; // tidak ada data bulan lalu, sisa dianggap 0
-        }
-
-        $totalKuotaBulanLalu = $kuotaBulanLalu->kuota_dimiliki
-            + ($kuotaBulanLalu->kuota_sisa_bulan_sebelumnya ?? 0);
-
-        // ganti dengan query kuota_digunakan yang sudah kamu pakai di modul Jadwal
-        $kuotaDigunakan = \App\Models\Jadwal::where('user_id', $userId)
-            ->whereMonth('tanggal', $bulanLalu)
-            ->whereYear('tanggal', $tahunLalu)
-            ->where('jenis', 'libur') // sesuaikan kondisi ini dengan skema jadwals kamu
-            ->count();
-
-        return max(0, $totalKuotaBulanLalu - $kuotaDigunakan);
     }
 
     #[\Livewire\Attributes\On('bulkTambahKuotaCuti.{tableName}')]
