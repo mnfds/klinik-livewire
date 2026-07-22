@@ -134,6 +134,7 @@
                                     @php
                                         $terlambat = false;
                                         $pulangCepat = false;
+                                        $AbsenTidakLengkap = false;
 
                                         if ($jamMasuk && $jamMulai) {
                                             $terlambat = \Carbon\Carbon::parse($jamMasuk)->format('H:i:s') > \Carbon\Carbon::parse($jamMulai)->format('H:i:s');
@@ -141,6 +142,9 @@
 
                                         if ($jamPulang && $jamSelesai) {
                                             $pulangCepat = \Carbon\Carbon::parse($jamPulang)->format('H:i:s') < \Carbon\Carbon::parse($jamSelesai)->format('H:i:s');
+                                        }
+                                        if ($jamMasuk && !$jamPulang && \Carbon\Carbon::parse($tglCell)->lt(today())) {
+                                            $AbsenTidakLengkap = true;
                                         }
 
                                         $tooltipLines = [];
@@ -156,6 +160,9 @@
                                         if ($pulangCepat) {
                                             $tooltipLines[] = 'Pulang lebih awal';
                                         }
+                                        if ($AbsenTidakLengkap) {
+                                            $tooltipLines[] = 'Absen tidak lengkap (belum absen pulang)';
+                                        }
                                         $tooltipText = implode("\n", $tooltipLines);
                                     @endphp
 
@@ -163,7 +170,7 @@
                                         <span class="font-bold text-xs sm:text-md">{{ $namaShift ?? '-' }}</span>
 
                                         <div class="flex items-center justify-center gap-1 md:gap-2">
-                                            @if ($terlambat || $pulangCepat)
+                                            @if ($terlambat || $pulangCepat || $AbsenTidakLengkap)
                                                 <span class="tooltip tooltip-left text-xs text-yellow-300" data-tip="{{ $tooltipText }}">
                                                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                                                 </span>
