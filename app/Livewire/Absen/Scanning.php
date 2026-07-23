@@ -228,9 +228,31 @@ class Scanning extends Component
             ]);
             return;
         }
+        
+        // Cari absen hari ini (kasus normal)
         $absen = Absen::where('user_id', Auth::id())
             ->where('tanggal_absen', today())
             ->first();
+
+        // Kalau tidak ketemu / belum ada jam_masuk, cek shift malam kemarin yang lewat hari
+        if (!$absen || !$absen->jam_masuk) {
+            $jadwalKemarin = Jadwal::where('user_id', Auth::id())
+                ->where('tanggal', today()->subDay())
+                ->whereHas('jamkerja', fn ($q) => $q->where('lewat_hari', true))
+                ->first();
+
+            if ($jadwalKemarin) {
+                $absenLewatHari = Absen::where('user_id', Auth::id())
+                    ->where('tanggal_absen', today()->subDay())
+                    ->whereNotNull('jam_masuk')
+                    ->whereNull('jam_pulang')
+                    ->first();
+
+                if ($absenLewatHari) {
+                    $absen = $absenLewatHari;
+                }
+            }
+        }
 
         // Belum absen masuk sama sekali
         if (!$absen) {
