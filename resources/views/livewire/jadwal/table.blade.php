@@ -113,6 +113,7 @@
                                     $tipeShift = $shift['jamkerja']['tipe_shift'] ?? null;
                                     $jamMulai = $shift['jamkerja']['jam_mulai'] ?? null;
                                     $jamSelesai = $shift['jamkerja']['jam_selesai'] ?? null;
+                                    $lewatHari = $shift['jamkerja']['lewat_hari'] ?? false;
 
                                     $absenHariIni = $absen[$user->id][$tglCell] ?? null;
                                     $jamMasuk = $absenHariIni['jam_masuk'] ?? null;
@@ -143,8 +144,14 @@
                                         if ($jamPulang && $jamSelesai) {
                                             $pulangCepat = \Carbon\Carbon::parse($jamPulang)->format('H:i:s') < \Carbon\Carbon::parse($jamSelesai)->format('H:i:s');
                                         }
-                                        if ($jamMasuk && !$jamPulang && \Carbon\Carbon::parse($tglCell)->lt(today())) {
-                                            $AbsenTidakLengkap = true;
+                                        if ($jamSelesai) {
+                                            $selesaiDatetime = $lewatHari
+                                                ? \Carbon\Carbon::parse($tglCell)->addDay()->setTimeFromTimeString(\Carbon\Carbon::parse($jamSelesai)->format('H:i:s'))
+                                                : \Carbon\Carbon::parse($tglCell)->setTimeFromTimeString(\Carbon\Carbon::parse($jamSelesai)->format('H:i:s'));
+
+                                            if ($jamMasuk && !$jamPulang && now()->gt($selesaiDatetime)) {
+                                                $AbsenTidakLengkap = true;
+                                            }
                                         }
 
                                         $tooltipLines = [];
