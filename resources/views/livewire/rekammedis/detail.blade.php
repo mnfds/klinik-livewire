@@ -454,7 +454,7 @@
                                         <div class="space-y-1">
                                             <div>Suhu Tubuh : {{ $rekammedis->tandaVitalRM->suhu_tubuh ?? '-' }} °C</div>
                                             <div>Nadi : {{ $rekammedis->tandaVitalRM->nadi ?? '-'}} bpm</div>
-                                            <div>Tekanan Darah : {{ $rekammedis->tandaVitalRM->sistole ?? '-'}}/{{ $kajian->tandaVitalRM->diastole ?? '-'}} mmHg</div>
+                                            <div>Tekanan Darah : {{ $rekammedis->tandaVitalRM->sistole ?? '-'}}/{{ $rekammedis->tandaVitalRM->diastole ?? '-'}} mmHg</div>
                                             <div>Frekuensi Napas : {{ $rekammedis->tandaVitalRM->frekuensi_pernapasan ?? '-'}} /menit</div>
                                         </div>
                                     </div>
