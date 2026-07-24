@@ -61,6 +61,7 @@ class Detail extends Component
     
     public $suratKeterangan;
     public $harga_surat = 0;
+    public $masa_berlaku_surat = 0;
     public $jenis_surat;
     public $tipe_ttd;
 
@@ -98,6 +99,9 @@ class Detail extends Component
             $this->harga_surat = $this->suratKeterangan->harga_surat ?? 0;
             $this->jenis_surat = $this->suratKeterangan->jenis_surat;
             $this->tipe_ttd = $this->suratKeterangan->tipe_ttd;
+            $mulaiBerlaku = Carbon::parse($this->suratKeterangan->mulai_berlaku);
+            $selesaiBerlaku = Carbon::parse($this->suratKeterangan->selesai_berlaku);
+            $this->masa_berlaku_surat = $mulaiBerlaku->diffInDays($selesaiBerlaku);
         }
         // Ambil rekam medis (jika ada)
         $rekamMedis = $this->pasienTerdaftar->rekamMedis;
@@ -425,10 +429,7 @@ class Detail extends Component
                         ?? $tanggal->copy()->toDateString();
     
                     $selesaiBerlaku = $this->suratKeterangan->selesai_berlaku
-                        ?? match($this->jenis_surat) {
-                            'sakit'  => $tanggal->copy()->addDays(3)->toDateString(),
-                            default  => $tanggal->copy()->addDays(7)->toDateString(),
-                        };
+                        ?? $tanggal->copy()->addDays((int) $this->masa_berlaku_surat)->toDateString();
     
                     $sakit = $this->suratKeterangan->sakit ?? $rekamMedis->icdRM->first()?->name_id ?? null;
     

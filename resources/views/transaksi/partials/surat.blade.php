@@ -32,6 +32,10 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
+                    <label class="label font-medium">Masa berlaku (Hari)<span class="text-error">*</span></label>
+                    <input type="number" class="input input-bordered w-full" wire:model.live="masa_berlaku_surat" placeholder="0">
+                </div>
+                <div>
                     <label class="label font-medium">Tipe TTD <span class="text-error">*</span></label>
                     <select class="select select-bordered w-full" wire:model.live="tipe_ttd">
                         <option value="">Pilih Tanda Tangan</option>
