@@ -7,6 +7,8 @@ use App\Models\Pasien;
 use App\Models\PasienTerdaftar;
 use App\Models\PoliKlinik;
 use App\Models\RekamMedis;
+use App\Models\TandaVitalRM;
+use App\Models\PemeriksaanFisikRM;
 use App\Models\SuratKeterangan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
@@ -26,6 +28,13 @@ class Store extends Component
     public $search_pasien = '';       // keyword pencarian
     public $show_dropdown = false;    // kontrol tampil dropdown
     public $hasil_pasien = [];        // hasil pencarian
+
+    // DATA TANDA VITAL
+    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan;
+    // DATA PEMERIKSAAN FISIK
+    public $tinggi_badan, $berat_badan, $imt;
+    // DATA KOLESTROL
+    public $hdl, $ldl, $trigliserida, $kolestrol_total;
 
     // Data statis
     public $daftar_dokter = [];
@@ -115,6 +124,8 @@ class Store extends Component
             ->format('Y-m-d');
         $pasienTerdaftar = $this->pasienTerdaftarCreate();
         $rekamMedis = $this->rekamMedisCreate($pasienTerdaftar);
+        $tandaVital = $this->tandaVitalCreate($rekamMedis);
+        $pemeriksaanFisik = $this->PemeriksaanFisikCreate($rekamMedis);
         $noSurat = $this->generateNoSurat();
         $harga = (int) ($this->harga_surat ?? 0);
         SuratKeterangan::create([
@@ -166,6 +177,31 @@ class Store extends Component
             'nama_dokter'         => $dokter->nama_dokter,
             'keluhan_utama'       => $this->jenis_surat,
             'tingkat_kesadaran'   => 'Sadar Baik/Alert',
+        ]);
+    }
+
+    private function tandaVitalCreate(RekamMedis $rekamMedis): TandaVitalRM
+    {
+        return TandaVitalRM::create([
+            'rekam_medis_id'        => $rekamMedis->id,
+            'suhu_tubuh'            => $this->suhu_tubuh,
+            'nadi'                  => $this->nadi,
+            'sistole'               => $this->sistole,
+            'diastole'              => $this->diastole,
+            'frekuensi_pernapasan'  => $this->frekuensi_pernapasan,
+        ]);
+    }
+
+    private function pemeriksaanFisikCreate(RekamMedis $rekamMedis): PemeriksaanFisikRM
+    {   
+        $tinggiM = $this->tinggi_badan / 100;
+        $this->imt = $tinggiM > 0 ? round($this->berat_badan / ($tinggiM ** 2), 2) : null;
+        
+        return PemeriksaanFisikRM::create([
+            'rekam_medis_id' => $rekamMedis->id,
+            'tinggi_badan'   => $this->tinggi_badan,
+            'berat_badan'    => $this->berat_badan,
+            'imt'            => $this->imt,
         ]);
     }
 }
