@@ -58,6 +58,7 @@
                                 'Obat Racik' => $obatRacik,
                                 'Produk Tambahan' => $produkTambahan,
                                 'Barang Tambahan' => $barangTambahan,
+                                'Surat Keterangan' => $suratKeterangan,
                             ];
                         @endphp
 

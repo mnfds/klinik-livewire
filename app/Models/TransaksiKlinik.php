@@ -155,7 +155,7 @@ class TransaksiKlinik extends Model
         // Ambil langsung dari tabel riwayat_transaksi_kliniks
         // ======================
         $fromDb = $this->riwayatTransaksi() // pakai () untuk query builder, bukan accessor
-            ->whereIn('jenis_item', ['produk_tambahan', 'barang_tambahan'])
+            ->whereIn('jenis_item', ['produk_tambahan', 'barang_tambahan', 'surat_keterangan'])
             ->get();
 
         foreach ($fromDb as $item) {

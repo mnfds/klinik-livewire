@@ -201,6 +201,7 @@
                                 'obat_racik' => 'Obat Racik',
                                 'produk_tambahan' => 'Produk Tambahan',
                                 'barang_tambahan' => 'Barang Tambahan',
+                                'surat_keterangan' => 'Surat Keterangan',
                             ];
                         @endphp
                         <div class="mt-4 space-y-4">

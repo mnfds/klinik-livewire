@@ -19,6 +19,7 @@ class Mutasi extends Component
     public $tuslah;
     public $produkTambahan;
     public $barangTambahan;
+    public $suratKeterangan;
     public $bundlingUsageTreatment;
     public $bundlingUsagePelayanan;
     public $bundlingUsageProduk;
@@ -64,6 +65,7 @@ class Mutasi extends Component
         $this->obatRacik      = $riwayat->where('jenis_item', 'obat_racik')->values();
         $this->produkTambahan = $riwayat->where('jenis_item', 'produk_tambahan')->values();
         $this->barangTambahan = $riwayat->where('jenis_item', 'barang_tambahan')->values();
+        $this->suratKeterangan= $riwayat->where('jenis_item', 'surat_keterangan')->values();
 
         $this->bundlingUsageTreatment = $rekamMedis->treatmentBundlingUsages->where('is_pembelian_baru', false)->values();
         $this->bundlingUsagePelayanan = $rekamMedis->pelayananBundlingUsages->where('is_pembelian_baru', false)->values();

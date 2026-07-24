@@ -6,7 +6,8 @@
             class="bg-base-100 border border-base-300 border-t-3 border-t-primary rounded-lg p-3 shadow-sm hover:shadow transition">
             {{-- Surat --}}
             <div class="font-semibold text-base-content mb-1">
-                Surat Keterangan {{ ucfirst($item->suratKeterangan->sakit ?? 'Sehat') }}
+                Surat Keterangan Sehat/Sakit
+                {{-- Surat Keterangan {{ ucfirst($item->suratKeterangan->sakit ?? 'Sehat') }} --}}
             </div>
             {{-- Harga Dan Jenis Surat --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
