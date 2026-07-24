@@ -44,6 +44,16 @@
                     </select>
                 </div>
             </div>
+            @if($jenis_surat === 'sakit')
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="label font-medium">Keterangan Sakit</label>
+                    <textarea class="textarea textarea-bordered w-full"
+                        wire:model.live="sakit" rows="3" placeholder="Contoh: Demam, batuk, dan pilek selama 3 hari">
+                    </textarea>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

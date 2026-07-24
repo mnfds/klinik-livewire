@@ -64,6 +64,7 @@ class Detail extends Component
     public $masa_berlaku_surat = 0;
     public $jenis_surat;
     public $tipe_ttd;
+    public $sakit;
 
     public $diskon = 0;
     public $potongan = 0;
@@ -99,6 +100,7 @@ class Detail extends Component
             $this->harga_surat = $this->suratKeterangan->harga_surat ?? 0;
             $this->jenis_surat = $this->suratKeterangan->jenis_surat;
             $this->tipe_ttd = $this->suratKeterangan->tipe_ttd;
+            $this->sakit = $this->suratKeterangan->sakit;
             $mulaiBerlaku = Carbon::parse($this->suratKeterangan->mulai_berlaku);
             $selesaiBerlaku = Carbon::parse($this->suratKeterangan->selesai_berlaku);
             $this->masa_berlaku_surat = $mulaiBerlaku->diffInDays($selesaiBerlaku);
