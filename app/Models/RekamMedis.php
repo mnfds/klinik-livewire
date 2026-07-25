@@ -41,6 +41,11 @@ class RekamMedis extends Model
         return $this->hasOne(PemeriksaanKulitRM::class);
     }
 
+    public function kolestrolRM()
+    {
+        return $this->hasOne(kolestrolRM::class);
+    }
+
     // ----- ASSESSMENT ----- //
     public function diagnosaRM()
     {

@@ -34,4 +34,8 @@ class KajianAwal extends Model
         return $this->hasOne(DataEstetika::class);
     }
 
+    public function kolestrol()
+    {
+        return $this->hasOne(kolestrol::class);
+    }
 }

@@ -85,6 +85,7 @@
                                         {{-- <option value="data-estetika">Data Estetika</option> --}}
                                         <option value="data-kesehatan">Data Kesehatan</option>
                                         <option value="tanda-vital">Tanda Vital</option>
+                                        <option value="kolestrol">Kolestrol</option>
                                         <option value="pemeriksaan-fisik">Pemeriksaan Fisik</option>
                                     </select>
                                 </div>
@@ -95,6 +96,10 @@
                                 <!-- TANDA VITAL -->
                                 <div x-show="selectedForms.includes('tanda-vital')" style="display: none">
                                     <x-kajianawal.tandavital model="tanda_vital" />
+                                </div>
+                                <!-- KOLESTROL -->
+                                <div x-show="selectedForms.includes('kolestrol')" style="display: none">
+                                    <x-kajianawal.kolestrol model="kolestrol" />
                                 </div>
                                 <!-- PEMERIKSAAN FISIK -->
                                 <div x-show="selectedForms.includes('pemeriksaan-fisik')" style="display: none">

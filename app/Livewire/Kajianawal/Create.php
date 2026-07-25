@@ -6,6 +6,7 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\KajianAwal;
 use App\Models\TandaVital;
+use App\Models\Kolestrol;
 use App\Models\DataEstetika;
 use App\Models\DataKesehatan;
 use Illuminate\Support\Carbon;
@@ -44,6 +45,8 @@ class Create extends Component
     
     // --- TANDA VITAL -- //
     public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan;
+    // --- KOLESTROL -- //
+    public $kolestrol_hdl, $kolestrol_ldl, $trigliserida, $kolestrol_total;
     // --- PEMERIKSAAN FISIK -- //
     public $tinggi_badan, $berat_badan, $imt; //imt = berat_badan dibagi tinggi_badan pangkat 2
     // --- DATA KESEHATAN --- //
@@ -100,6 +103,12 @@ class Create extends Component
             // $rules['sistole'] = 'required';
             // $rules['diastole'] = 'required';
             // $rules['frekuensi_pernapasan'] = 'required';
+        }
+        if (in_array('kolestrol', $this->selected_forms)) {
+            // $rules['kolestrol_hdl'] = 'required';
+            // $rules['kolestrol_ldl'] = 'required';
+            // $rules['trigliserida'] = 'required';
+            // $rules['kolestrol_total'] = 'required';
         }
         if (in_array('pemeriksaan-fisik', $this->selected_forms)) {
             $rules['tinggi_badan'] = 'required';
@@ -160,6 +169,17 @@ class Create extends Component
                     'sistole' => $this->sistole,
                     'diastole' => $this->diastole,
                     'frekuensi_pernapasan' => $this->frekuensi_pernapasan,
+                ]);
+            }
+
+            // Simpan data kolestrol
+            if (in_array('kolestrol', $this->selected_forms)) {
+                Kolestrol::create([
+                    'kajian_awal_id' => $kajianawal->id,
+                    'kolestrol_hdl' => $this->kolestrol_hdl,
+                    'kolestrol_ldl' => $this->kolestrol_ldl,
+                    'trigliserida' => $this->trigliserida,
+                    'kolestrol_total' => $this->kolestrol_total,
                 ]);
             }
 
