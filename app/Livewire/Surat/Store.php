@@ -3,13 +3,14 @@
 namespace App\Livewire\Surat;
 
 use App\Models\Dokter;
+use App\Models\KolestrolRM;
 use App\Models\Pasien;
 use App\Models\PasienTerdaftar;
+use App\Models\PemeriksaanFisikRM;
 use App\Models\PoliKlinik;
 use App\Models\RekamMedis;
-use App\Models\TandaVitalRM;
-use App\Models\PemeriksaanFisikRM;
 use App\Models\SuratKeterangan;
+use App\Models\TandaVitalRM;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -125,6 +126,7 @@ class Store extends Component
         $pasienTerdaftar = $this->pasienTerdaftarCreate();
         $rekamMedis = $this->rekamMedisCreate($pasienTerdaftar);
         $tandaVital = $this->tandaVitalCreate($rekamMedis);
+        $kolestrol = $this->kolestrolCreate($rekamMedis);
         $pemeriksaanFisik = $this->PemeriksaanFisikCreate($rekamMedis);
         $noSurat = $this->generateNoSurat();
         $harga = (int) ($this->harga_surat ?? 0);
@@ -189,6 +191,17 @@ class Store extends Component
             'sistole'               => $this->sistole,
             'diastole'              => $this->diastole,
             'frekuensi_pernapasan'  => $this->frekuensi_pernapasan,
+        ]);
+    }
+
+    private function kolestrolCreate(RekamMedis $rekamMedis): KolestrolRM
+    {
+        return KolestrolRM::create([
+            'rekam_medis_id'        => $rekamMedis->id,
+            'kolestrol_hdl'         => $this->hdl,
+            'kolestrol_ldl'         => $this->ldl,
+            'trigliserida'          => $this->trigliserida,
+            'kolestrol_total'       => $this->kolestrol_total,
         ]);
     }
 
