@@ -433,7 +433,7 @@ class Detail extends Component
                     $selesaiBerlaku = $this->suratKeterangan->selesai_berlaku
                         ?? $tanggal->copy()->addDays((int) $this->masa_berlaku_surat)->toDateString();
     
-                    $sakit = $this->suratKeterangan->sakit ?? $rekamMedis->icdRM->first()?->name_id ?? null;
+                    $sakit = $this->sakit ?? $rekamMedis->icdRM->first()?->name_id ?? null;
     
                     $suratKeterangan = SuratKeterangan::create([
                         'pasien_terdaftar_id' => $this->pasienTerdaftar->id,
