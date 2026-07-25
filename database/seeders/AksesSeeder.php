@@ -367,7 +367,7 @@ class AksesSeeder extends Seeder
             ],
 
             // Surat Keterangan
-            33 => [
+            34 => [
                 'Surat Keterangan',
                 'Surat Keterangan Data',
                 'Surat Keterangan Tambah',
@@ -377,17 +377,17 @@ class AksesSeeder extends Seeder
             ],
 
             // Satu Sehat configuration
-            34 => [
+            35 => [
                 'Praktisi Satu Sehat',
                 'Tambah Praktisi Satu Sehat',
                 'Hapus Praktisi Satu Sehat',
             ],
 
-            35 => [
+            36 => [
                 'Lokasi Satu Sehat',
                 'Tambah Lokasi Satu Sehat',
             ],
-            36 => [
+            37 => [
                 'Organisasi Satu Sehat',
                 'Tambah Organisasi Satu Sehat',
             ],
