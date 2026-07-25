@@ -34,6 +34,7 @@ class Detail extends Component
             'rekamMedis.dataKesehatanRM',
             'rekamMedis.dataEstetikaRM',
             'rekamMedis.tandaVitalRM',
+            'rekamMedis.kolestrolRM',
             'rekamMedis.pemeriksaanFisikRM',
             'rekamMedis.pemeriksaanKulitRM',
             'rekamMedis.diagnosaRM',

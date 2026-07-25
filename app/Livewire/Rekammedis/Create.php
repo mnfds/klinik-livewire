@@ -14,6 +14,7 @@ use App\Models\KajianAwal;
 use App\Models\RekamMedis;
 use Illuminate\Support\Str;
 use App\Models\TandaVitalRM;
+use App\Models\KolestrolRM;
 use App\Models\ObatRacikanRM;
 use App\Models\ProdukDanObat;
 use App\Models\DataEstetikaRM;
@@ -139,6 +140,12 @@ class Create extends Component
             'sistole' => null,
             'diastole' => null,
             'frekuensi_pernapasan' => null,
+        ];
+        public $kolestrol = [
+            'kolestrol_hdl' => null,
+            'kolestrol_ldl' => null,
+            'trigliserida' => null,
+            'kolestrol_total' => null,
         ];
     //OBJECTIVE
 
@@ -371,6 +378,14 @@ class Create extends Component
                     'frekuensi_pernapasan' => $this->kajian->tandaVital->frekuensi_pernapasan,
                 ];
             }
+            if ($this->kajian && $this->kajian->kolestrol) {
+                $this->kolestrol = [
+                    'kolestrol_hdl' => $this->kajian->kolestrol->kolestrol_hdl,
+                    'kolestrol_ldl' => $this->kajian->kolestrol->kolestrol_ldl,
+                    'trigliserida' => $this->kajian->kolestrol->trigliserida,
+                    'kolestrol_total' => $this->kajian->kolestrol->kolestrol_total,
+                ];
+            }
             if ($this->kajian && $this->kajian->dataKesehatan) {
                 $this->data_kesehatan = [
                     'keluhan_utama' => $this->kajian->dataKesehatan->keluhan_utama,
@@ -432,6 +447,7 @@ class Create extends Component
             // $this->selected_forms_plan,
             // $this->pemeriksaan_fisik,
             // $this->tanda_vital,
+            // $this->kolestrol,
             // $this->data_kesehatan,
             // $this->tingkat_kesadaran,
             // $this->diagnosa,
@@ -714,6 +730,17 @@ class Create extends Component
                             );
                         }
                     }
+                }
+
+                // SIMPAN DATA KOLESTEROL REKAM MEDIS
+                if (in_array('kolestrol', $this->selected_forms_objective)) {
+                    $kolestrol = KolestrolRM::create([
+                        'rekam_medis_id' => $rekammedis->id,
+                        'kolestrol_hdl' => $this->kolestrol['kolestrol_hdl'],
+                        'kolestrol_ldl' => $this->kolestrol['kolestrol_ldl'],
+                        'trigliserida' => $this->kolestrol['trigliserida'],
+                        'kolestrol_total' => $this->kolestrol['kolestrol_total'],
+                    ]);
                 }
 
                 // SIMPAN DATA PEMERIKSAAN FISIK REKAM MEDIS

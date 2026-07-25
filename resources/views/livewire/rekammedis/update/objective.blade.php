@@ -122,6 +122,7 @@
                                                 <option value="pemeriksaan-estetika" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Kecantikan')>Pemeriksaan Kulit & Estetika</option>
                                             @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')
                                                 <option value="tanda-vital" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Tanda Vital Pasien</option>
+                                                <option value="kolestrol" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Kolesterol Pasien</option>
                                                 <option value="pemeriksaan-fisik" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Umum')>Pemeriksaan Fisik</option>
                                             @elseif($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')
                                                 <option value="tanda-vital" @selected($pasienTerdaftar?->poliklinik?->nama_poli == 'Poli Gigi')>Tanda Vital Pasien</option>
@@ -146,6 +147,10 @@
                                         <!-- Tanda Vital -->
                                         <div x-show="selectedFormsObjective.includes('tanda-vital')" style="display: none">
                                             <x-rekammedis.tandavital :tandaVital="$tanda_vital" wire:model="tanda_vital" />
+                                        </div>
+                                        <!-- Kolesterol -->
+                                        <div x-show="selectedFormsObjective.includes('kolestrol')" style="display: none">
+                                            <x-rekammedis.kolestrol :kolestrol="$kolestrol" wire:model="kolestrol" />
                                         </div>
                                         <!-- Data Fisik -->
                                         <div x-show="selectedFormsObjective.includes('pemeriksaan-fisik')" style="display: none">

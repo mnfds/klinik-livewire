@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Rekammedis\Update;
 
+use App\Models\KolestrolRM;
 use App\Models\PasienTerdaftar;
 use App\Models\PemeriksaanFisikRM;
 use App\Models\PemeriksaanKulitRM;
@@ -44,6 +45,12 @@ class Objective extends Component
             'diastole' => null,
             'frekuensi_pernapasan' => null,
         ];
+        public $kolestrol = [
+            'kolestrol_hdl' => null,
+            'kolestrol_ldl' => null,
+            'trigliserida' => null,
+            'kolestrol_total' => null,
+        ];
     //OBJECTIVE
 
     public function render()
@@ -60,6 +67,7 @@ class Objective extends Component
             'pasienTerdaftar.dokter',
             'pasienTerdaftar.poliklinik',
             'tandaVitalRM',
+            'kolestrolRM',
             'pemeriksaanFisikRM',
             'pemeriksaanKulitRM',
         ])->findOrFail($rekam_medis_id);
@@ -80,6 +88,17 @@ class Objective extends Component
                 'sistole'              => $tv->sistole,
                 'diastole'             => $tv->diastole,
                 'frekuensi_pernapasan' => $tv->frekuensi_pernapasan,
+            ];
+        }
+        // Objective: Kolesterol
+        if ($rm->kolestrolRM) {
+            $this->selected_forms_objective[] = 'kolestrol';
+            $kl = $rm->kolestrolRM;
+            $this->kolestrol = [
+                'kolestrol_hdl' => $kl->kolestrol_hdl,
+                'kolestrol_ldl' => $kl->kolestrol_ldl,
+                'trigliserida' => $kl->trigliserida,
+                'kolestrol_total' => $kl->kolestrol_total,
             ];
         }
 
@@ -150,6 +169,22 @@ class Objective extends Component
                         'sistole'              => $this->tanda_vital['sistole'],
                         'diastole'             => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
+                    ]
+                );
+            } else {
+                // User uncheck → hapus data lama
+                TandaVitalRM::where('rekam_medis_id', $rm->id)->delete();
+            }
+
+            // ── KOLESTEROL ──────────────────────────────────────
+            if (in_array('kolestrol', $this->selected_forms_objective)) {
+                KolestrolRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'kolestrol_hdl'     => $this->kolestrol['kolestrol_hdl'],
+                        'kolestrol_ldl'     => $this->kolestrol['kolestrol_ldl'],
+                        'trigliserida'      => $this->kolestrol['trigliserida'],
+                        'kolestrol_total'   => $this->kolestrol['kolestrol_total'],
                     ]
                 );
             } else {

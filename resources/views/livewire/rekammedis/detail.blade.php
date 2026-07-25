@@ -124,6 +124,19 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                    {{-- Kolesterol --}}
+                                    @if ($kajian->kolestrol)
+                                        <div class="mt-1">
+                                            <div class="font-semibold mb-1">Kolesterol</div>
+                                            <div class="space-y-1">
+                                                <div>kolesterol Baik (HDL) : {{ $kajian->kolestrol->kolestrol_hdl ?? '-'}} mm/dL</div>
+                                                <div>kolesterol Jahat (LDL) : {{ $kajian->kolestrol->kolestrol_ldl ?? '-'}} mm/dL</div>
+                                                <div>trigliserida : {{ $kajian->kolestrol->trigliserida ?? '-'}} mm/dL</div>
+                                                <div>kolesterol Total : {{ $kajian->kolestrol->kolestrol_total ?? '-'}} mm/dL</div>
+                                            </div>
+                                        </div>
+                                    @endif
     
                                     {{-- Data Kesehatan --}}
                                     @if ($kajian->dataKesehatan)
@@ -447,7 +460,7 @@
                             </div>
                             <div class="divider">Hasil Pemeriksaan Objective</div>
                             <div><span class="font-bold">Tingkat Kesadaran</span>: {{ $rekammedis->tingkat_kesadaran ?? '-' }}</div>
-                            @if ($rekammedis?->tandaVitalRM || $rekammedis?->pemeriksaanFisikRM || $rekammedis?->pemeriksaanKulitRM)
+                            @if ($rekammedis?->tandaVitalRM || $rekammedis?->kolestrolRM || $rekammedis?->pemeriksaanFisikRM || $rekammedis?->pemeriksaanKulitRM)
                                 @if ($rekammedis->tandaVitalRM)
                                     <div class="mt-2">
                                         <div class="font-semibold mb-1">Tanda Vital</div>
@@ -456,6 +469,18 @@
                                             <div>Nadi : {{ $rekammedis->tandaVitalRM->nadi ?? '-'}} bpm</div>
                                             <div>Tekanan Darah : {{ $rekammedis->tandaVitalRM->sistole ?? '-'}}/{{ $rekammedis->tandaVitalRM->diastole ?? '-'}} mmHg</div>
                                             <div>Frekuensi Napas : {{ $rekammedis->tandaVitalRM->frekuensi_pernapasan ?? '-'}} /menit</div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if ($rekammedis->kolestrolRM)
+                                    <div class="mt-2">
+                                        <div class="font-semibold mb-1">Kolesterol</div>
+                                        <div class="space-y-1">
+                                            <div>Kolesterol Baik (HDL) : {{ $rekammedis->kolestrolRM->kolestrol_hdl ?? '-' }} mm/dL</div>
+                                            <div>Kolesterol Jahat (LDL) : {{ $rekammedis->kolestrolRM->kolestrol_ldl ?? '-' }} mm/dL</div>
+                                            <div>trigliserida : {{ $rekammedis->kolestrolRM->trigliserida ?? '-' }} mm/dL</div>
+                                            <div>Kolesterol Total : {{ $rekammedis->kolestrolRM->kolestrol_total ?? '-' }} mm/dL</div>
                                         </div>
                                     </div>
                                 @endif

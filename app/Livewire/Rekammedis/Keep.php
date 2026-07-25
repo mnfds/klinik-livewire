@@ -14,6 +14,7 @@ use App\Models\KajianAwal;
 use App\Models\RekamMedis;
 use Illuminate\Support\Str;
 use App\Models\TandaVitalRM;
+use App\Models\KolestrolRM;
 use App\Models\ObatRacikanRM;
 use App\Models\ProdukDanObat;
 use App\Models\DataEstetikaRM;
@@ -141,6 +142,12 @@ class Keep extends Component
             'sistole' => null,
             'diastole' => null,
             'frekuensi_pernapasan' => null,
+        ];
+        public $kolestrol = [
+            'kolestrol_hdl' => null,
+            'kolestrol_ldl' => null,
+            'trigliserida' => null,
+            'kolestrol_total' => null,
         ];
     //OBJECTIVE
 
@@ -328,6 +335,7 @@ class Keep extends Component
             'dataKesehatanRM',
             'dataEstetikaRM',
             'tandaVitalRM',
+            'kolestrolRM',
             'pemeriksaanFisikRM',
             'pemeriksaanKulitRM',
             'diagnosaRM',
@@ -576,6 +584,18 @@ class Keep extends Component
                 'sistole'              => $tv->sistole,
                 'diastole'             => $tv->diastole,
                 'frekuensi_pernapasan' => $tv->frekuensi_pernapasan,
+            ];
+        }
+
+        // Objective: Kolesterol
+        if ($rm->kolestrolRM) {
+            $this->selected_forms_objective[] = 'kolestrol';
+            $kl = $rm->kolestrolRM;
+            $this->kolestrol = [
+                'kolestrol_hdl'     => $kl->kolestrol_hdl,
+                'kolestrol_ldl'     => $kl->kolestrol_ldl,
+                'trigliserida'      => $kl->trigliserida,
+                'kolestrol_total'   => $kl->kolestrol_total,
             ];
         }
 
@@ -921,6 +941,18 @@ class Keep extends Component
                         'sistole'              => $this->tanda_vital['sistole'],
                         'diastole'             => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
+                    ]
+                );
+            }
+
+            if (in_array('kolestrol', $this->selected_forms_objective)) {
+                KolestrolRM::updateOrCreate(
+                    ['rekam_medis_id' => $rm->id],
+                    [
+                        'kolestrol_hdl'     => $this->kolestrol['kolestrol_hdl'],
+                        'kolestrol_ldl'     => $this->kolestrol['kolestrol_ldl'],
+                        'trigliserida'      => $this->kolestrol['trigliserida'],
+                        'kolestrol_total'   => $this->kolestrol['kolestrol_total'],
                     ]
                 );
             }
