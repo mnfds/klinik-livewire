@@ -52,12 +52,14 @@ class Table extends Component
 
         if ($this->role === 'semua') {
             $this->users = User::with(['biodata', 'dokter', 'role'])
+                ->whereNotIn('id', [1]) // pengecuali user id
                 ->orderBy('role_id')
                 ->orderBy('name')
                 ->get();
         } else {
             $roleId = Role::where('nama_role', $this->role)->value('id');
             $this->users = User::where('role_id', $roleId)
+                ->whereNotIn('id', [1]) //pengecuali user id
                 ->with(['biodata', 'dokter', 'role'])
                 ->orderBy('name')
                 ->get();

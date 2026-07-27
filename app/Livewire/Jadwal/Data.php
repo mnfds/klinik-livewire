@@ -26,7 +26,9 @@ class Data extends Component
 
     public function mount()
     {
-        $this->role = Role::all();
+        // $this->role = Role::all();
+        $this->role = Role::whereNot('id', 1)->get(); //pengecuali untuk 1 role
+        // $this->role = Role::whereNotIn('id', [1, 5])->get(); //pengecuali untuk beberapa role
         $this->thisMonth = today()->format('Y-m');
     }
 }
