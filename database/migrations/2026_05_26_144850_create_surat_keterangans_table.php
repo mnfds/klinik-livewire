@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('harga_surat')->nullable();
             $table->enum('jenis_surat', ['standar', 'lengkap', 'sakit'])->default('standar');
             $table->string('sakit')->nullable(); //gejala sakit yang dialami
+            $table->string('perihal_alasan')->nullable(); //perihal kepentingan yang dialami untuk surat sehat
             $table->timestamps();
         });
     }

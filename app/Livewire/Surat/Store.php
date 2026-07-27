@@ -18,7 +18,7 @@ use Livewire\Component;
 class Store extends Component
 {
     // DATA SURAT (masuk DB)
-    public $no_surat, $mulai_berlaku, $selesai_berlaku, $tipe_ttd, $sakit;
+    public $no_surat, $mulai_berlaku, $selesai_berlaku, $tipe_ttd, $sakit, $perihal_alasan;
     public $harga_surat;
     // DATA PASIEN TERDAFTAR (masuk DB)
     public $pasien_id, $pasien_nama = '';
@@ -111,6 +111,7 @@ class Store extends Component
             'mulai_berlaku'   => 'required|date',
             'selesai_berlaku' => 'required|integer',
             'sakit'           => 'nullable|required_if:jenis_surat,sakit|string|max:255',
+            'perihal_alasan'  => 'nullable|required_if:jenis_surat,standar,lengkap|string|max:255',
         ]);
 
         if (! Gate::allows('akses', 'Surat Keterangan Tambah')) {
@@ -139,6 +140,7 @@ class Store extends Component
             'harga_surat'         => $harga,
             'jenis_surat'         => $this->jenis_surat,
             'sakit'               => $this->sakit,
+            'perihal_alasan'      => $this->perihal_alasan,
         ]);
 
         $this->dispatch('closeStoreModal');
@@ -147,7 +149,7 @@ class Store extends Component
             'message' => 'Surat berhasil ditambahkan.'
         ]);
         $this->reset([
-            'sakit', 'jenis_surat', 'mulai_berlaku', 'selesai_berlaku', 'tipe_ttd',
+            'sakit', 'perihal_alasan', 'jenis_surat', 'mulai_berlaku', 'selesai_berlaku', 'tipe_ttd',
             'pasien_id', 'pasien_nama', 'search_pasien', 'dokter_id'
         ]);
         return redirect()->route('surat.data');

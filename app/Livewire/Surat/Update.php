@@ -10,7 +10,7 @@ use Livewire\Component;
 class Update extends Component
 {
     public $suratId;
-    public $mulai_berlaku, $selesai_berlaku, $tipe_ttd, $harga_surat, $jenis_surat, $sakit;
+    public $mulai_berlaku, $selesai_berlaku, $tipe_ttd, $harga_surat, $jenis_surat, $sakit, $perihal_alasan;
     public $jumlah_hari_berlaku;
 
     #[\Livewire\Attributes\On('getupdatesurat')]
@@ -27,6 +27,7 @@ class Update extends Component
         $this->harga_surat     = $surat->harga_surat;
         $this->jenis_surat     = $surat->jenis_surat;
         $this->sakit           = $surat->sakit;
+        $this->perihal_alasan  = $surat->perihal_alasan;
 
         $this->dispatch('openUpdateModal');
     }
@@ -48,6 +49,7 @@ class Update extends Component
             'jumlah_hari_berlaku'   => 'required|integer',
             'harga_surat'           => 'nullable|numeric|min:0',
             'sakit'                 => 'nullable|required_if:jenis_surat,sakit|string|max:255',
+            'perihal_alasan'  => 'nullable|required_if:jenis_surat,standar,lengkap|string|max:255',
         ]);
         
         $this->selesai_berlaku = Carbon::parse($this->mulai_berlaku)
@@ -60,6 +62,7 @@ class Update extends Component
             'harga_surat'     => (int) ($this->harga_surat ?? 0),
             'jenis_surat'     => $this->jenis_surat,
             'sakit'           => $this->jenis_surat === 'sakit' ? $this->sakit : null,
+            'perihal_alasan'  => in_array($this->jenis_surat, ['standar', 'lengkap']) ? $this->perihal_alasan : null,
         ]);
 
         $this->dispatch('toast', [

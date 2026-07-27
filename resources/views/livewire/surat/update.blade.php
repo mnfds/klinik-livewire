@@ -66,6 +66,22 @@
                 @enderror
             </div>
             @endif
+            
+            {{-- Muncul hanya jika jenis_surat === 'standar || lengkap' --}}
+            @if(in_array($jenis_surat, ['standar', 'lengkap']))
+            <div wire:key="field-sehat">
+                <label class="label font-medium">Kepentingan <span class="text-error">*</span></label>
+                <textarea
+                    class="textarea textarea-bordered w-full @error('perihal_alasan') textarea-error @enderror"
+                    wire:model.lazy="perihal_alasan"
+                    rows="3"
+                    placeholder="Contoh: Melamar Pekerjaan, Syarat Perjalanan, Mendaftar Sekolah"
+                ></textarea>
+                @error('perihal_alasan')
+                    <span class="text-error text-sm mt-1">Mohon mengisi kepentingan</span>
+                @enderror
+            </div>
+            @endif
 
             <div>
                 <label class="label font-medium">Harga Surat</label>
