@@ -74,7 +74,7 @@ final class SuratTable extends PowerGridComponent
 
             ->add('nama_dokter')
 
-            ->add('kondisi', fn ($row) => $row->sakit ?? '-');
+            ->add('kondisi', fn ($row) => $row->sakit ?: ($row->perihal_alasan ?: '-'));
     }
 
     public function columns(): array
@@ -90,7 +90,7 @@ final class SuratTable extends PowerGridComponent
             Column::make('Selesai Berlaku', 'selesai_berlaku')->searchable()->hidden(),
             Column::make('Masa Berlaku', 'masa_berlaku')->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('kondisi', 'sakit'),
+            Column::make('kondisi', 'kondisi'),
 
             Column::action('Action') // untuk tombol edit/delete
         ];

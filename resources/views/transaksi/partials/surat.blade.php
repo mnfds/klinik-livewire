@@ -54,6 +54,16 @@
                 </div>
             </div>
             @endif
+            @if(in_array($jenis_surat, ['standar', 'lengkap']))
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="label font-medium">Kepentingan </label>
+                    <textarea class="textarea textarea-bordered w-full"
+                        wire:model.live="perihal_alasan" rows="3" placeholder="Contoh: Melamar Pekerjaan, Syarat Perjalanan, Mendaftar Sekolah">
+                    </textarea>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

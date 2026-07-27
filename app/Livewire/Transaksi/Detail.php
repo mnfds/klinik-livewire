@@ -65,6 +65,7 @@ class Detail extends Component
     public $jenis_surat;
     public $tipe_ttd;
     public $sakit;
+    public $perihal_alasan;
 
     public $diskon = 0;
     public $potongan = 0;
@@ -101,6 +102,7 @@ class Detail extends Component
             $this->jenis_surat = $this->suratKeterangan->jenis_surat;
             $this->tipe_ttd = $this->suratKeterangan->tipe_ttd;
             $this->sakit = $this->suratKeterangan->sakit;
+            $this->perihal_alasan = $this->suratKeterangan->perihal_alasan;
             $mulaiBerlaku = Carbon::parse($this->suratKeterangan->mulai_berlaku);
             $selesaiBerlaku = Carbon::parse($this->suratKeterangan->selesai_berlaku);
             $this->masa_berlaku_surat = $mulaiBerlaku->diffInDays($selesaiBerlaku);
@@ -433,7 +435,8 @@ class Detail extends Component
                     $selesaiBerlaku = $this->suratKeterangan->selesai_berlaku
                         ?? $tanggal->copy()->addDays((int) $this->masa_berlaku_surat)->toDateString();
     
-                    $sakit = $this->sakit ?? $rekamMedis->icdRM->first()?->name_id ?? null;
+                    $sakit = $this->sakit ?? null;
+                    $perihal_alasan = $this->perihal_alasan ?? null;
     
                     $suratKeterangan = SuratKeterangan::create([
                         'pasien_terdaftar_id' => $this->pasienTerdaftar->id,
@@ -444,6 +447,7 @@ class Detail extends Component
                         'harga_surat'         => $this->harga_surat,
                         'jenis_surat'         => $this->jenis_surat,
                         'sakit'               => $sakit,
+                        'perihal_alasan'      => $perihal_alasan,
                     ]);
                 } else {
                     // Ambil surat yang sudah ada

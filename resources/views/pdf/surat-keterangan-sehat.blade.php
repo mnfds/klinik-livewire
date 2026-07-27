@@ -238,7 +238,12 @@
         <div class="kesimpulan-box">
             <strong>Kesimpulan:</strong> Berdasarkan hasil pemeriksaan di atas, yang bersangkutan dinyatakan
             dalam kondisi <strong>sehat</strong> dan tidak ditemukan kelainan yang berarti, sehingga mampu
-            untuk melakukan aktivitas sehari-hari / bekerja secara normal.
+            untuk melakukan aktivitas sehari-hari / bekerja secara normal
+            @if(!empty($surat->perihal_alasan))
+                dalam rangka <strong>{{ $surat->perihal_alasan }}</strong>.
+            @else
+                .
+            @endif
         </div>
 
         <p>Demikian surat keterangan ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>
