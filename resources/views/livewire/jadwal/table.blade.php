@@ -35,7 +35,9 @@
         @endphp
 
         <div class="my-2">
+            @can('akses', 'Pengajuan Cuti')
             <p class="text-sm font-bold">Kuota Cuti Anda:<span class="{{ $sisaCutiSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $sisaCutiSaya }}/{{ $jatahCutiSaya }}</span></p>
+            @endcan
             <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}(+{{ $sisaCarryLiburSaya }})</span></p>
             <p class="text-xs text-gray-400">(Setiap Sisa Kuota Libur Akan Di Jumlahkan Ke Kuota Libur Bulan Berikutnya)</p>
         </div>
@@ -95,10 +97,12 @@
                                     $terpakaiCuti = $kuotaCutiTerpakai[$user->id] ?? 0;
                                     $sisaCuti = $jatahCuti - $terpakaiCuti;
                                 @endphp
+                                @can('akses', 'Pengajuan Cuti')
                                 <br>
                                 <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-base-content' }}">
                                     Cuti: {{ $sisaCuti }}/{{ $jatahCuti }}
                                 </span>
+                                @endcan
                                 <br>
                                 <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-base-content' }}">
                                     Libur: {{ $sisaLibur }}/{{ $jatahLibur }}+{{ $sisaCarryLibur }}
