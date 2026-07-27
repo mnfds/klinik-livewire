@@ -171,7 +171,7 @@
                             <img src="{{ public_path('/assets/aset/ttd_dokter.jpg') }}"
                                 style="width: 100px; height: auto; position: absolute; top: 10px; left: 0;">
                             <img src="{{ public_path('/assets/aset/test.png') }}"
-                                style="width: 90px; height: auto; position: absolute; top: 0; left: 20px;">
+                                style="width: 90px; height: auto; position: absolute; top: 0; left: 40px; opacity: 0.7;">
                         @elseif ($surat->tipe_ttd === 'basah')
                             <div style="height: 100px;"></div>
                         @endif
