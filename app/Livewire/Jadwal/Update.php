@@ -16,7 +16,7 @@ class Update extends Component
     public $nama_user;
     public $tanggal;
     public $jamKerjaList = [];
-    public $batasEditHari = 2;
+    public $batasEditHari = 1;
 
     public function mount()
     {

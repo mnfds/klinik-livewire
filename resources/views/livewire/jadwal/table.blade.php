@@ -46,9 +46,9 @@
         </div>
         <div class="schedule-scroll overflow-x-auto">
             <table class="jadwal w-full text-sm table">
-                <thead class="bg-primary text-base-primary text-xs uppercase">
+                <thead class="bg-sky-400 text-base-content text-xs uppercase">
                     <tr>
-                        <th class="sticky top-0 left-0 z-50 bg-primary px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
+                        <th class="sticky top-0 left-0 z-50 bg-sky-400 px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
                             Nama
                         </th>
                         @for ($day = 1; $day <= $tanggal->daysInMonth; $day++)
@@ -56,7 +56,7 @@
                                 $currentDate = $tanggal->copy()->day($day);
                                 $isWeekend = $currentDate->isWeekend();
                             @endphp
-                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-primary/70' : 'bg-primary' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
+                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-sky-400/70' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
                                 <span class="text-[11px] sm:text-base">{{ $day }}</span><br>
                                 <span class="normal-case text-[9px] sm:text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
                             </th>
@@ -67,7 +67,7 @@
                     @forelse ($users as $user)
                         @if ($loop->first || $user->role_id !== $users[$loop->index - 1]->role_id)
                             <tr>
-                                <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-primary border border-base-200 p-0">
+                                <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-sky-400 border border-base-200 p-0">
                                     <div class="sticky left-0 z-20 w-fit px-3 py-2 text-xs font-bold uppercase">
                                         {{ $user->role->nama_role ?? '-' }}
                                     </div>
@@ -76,7 +76,7 @@
                         @endif
                         @if (Gate::allows('akses','Jadwal Tabel'))
                         <tr class="hover:bg-base-200">
-                            <td class="sticky left-0 z-20 bg-primary px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
+                            <td class="sticky left-0 z-20 bg-sky-400 px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
                                 @if ($user->biodata)
                                     {{ $user->biodata->nama_lengkap ?? '-' }}
                                 @endif
