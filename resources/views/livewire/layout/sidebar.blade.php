@@ -164,7 +164,7 @@
                             <x-side-link href="{{ route('absen.data') }}" :active="request()->routeIs('absen.data', 'absen.detail')" wire:navigate>Absensi Staff</x-side-link>
                         </li>
                         @endif
-                        @if (Gate::allows('akses','Absen'))
+                        @if (Gate::allows('akses','Absen Scan Sistem'))
                         <li>
                             <x-side-link href="{{ route('absen.scansistem') }}" :active="request()->routeIs('absen.scansistem')" wire:navigate>Scan Absen</x-side-link>
                         </li>
