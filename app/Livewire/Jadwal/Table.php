@@ -31,7 +31,7 @@ class Table extends Component
     public $kuotaTerpakai = [];
     public $kuotaCuti = [];
     public $kuotaCutiTerpakai = [];
-    public $batasEditHari = 2;
+    public $batasEditHari = 1;
 
     public function render()
     {
@@ -159,9 +159,20 @@ class Table extends Component
             return true;
         }
 
-        // Dalam rentang N hari ke depan (termasuk hari ini)
-        if ($tglCell->lte($today->copy()->addDays($this->batasEditHari))) {
+        // Hari ini selalu terkunci
+        if ($tglCell->isSameDay($today)) {
             return true;
+        }
+
+        // Cek apakah hari ini termasuk awal bulan (tgl 1) atau akhir bulan (tgl terakhir)
+        $isAwalBulan  = $today->day === 1;
+        $isAkhirBulan = $today->day === $today->daysInMonth;
+
+        // Lookahead N hari ke depan HANYA berlaku kalau bukan di boundary awal/akhir bulan
+        if (!$isAwalBulan && !$isAkhirBulan) {
+            if ($tglCell->lte($today->copy()->addDays($this->batasEditHari))) {
+                return true;
+            }
         }
 
         // Bukan pemilik jadwal
