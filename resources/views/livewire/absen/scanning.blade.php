@@ -140,10 +140,10 @@
                     <span class="text-base-content/70">Masuk Terlambat</span>
                     <span class="font-semibold text-warning">{{ $jumlahTerlambat ?? 0 }} Hari</span>
                 </p>
-                <p class="flex justify-between gap-2">
+                {{-- <p class="flex justify-between gap-2">
                     <span class="text-base-content/70">Masuk Tepat Waktu</span>
                     <span class="font-semibold text-success">{{ $jumlahTepatWaktu ?? 0 }} Hari</span>
-                </p>
+                </p> --}}
                 <p class="flex justify-between gap-2">
                     <span class="text-base-content/70">Tidak Ada Absensi</span>
                     <span class="font-semibold">{{ $jumlahAlpha ?? 0 }} Hari</span>
