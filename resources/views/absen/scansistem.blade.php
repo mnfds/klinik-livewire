@@ -1,3 +1,3 @@
 <x-app-layout>
-    <livewire:absen.scansistem />
+    <livewire:absen.scanSistem />
 </x-app-layout>
