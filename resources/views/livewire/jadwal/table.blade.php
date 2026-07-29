@@ -10,12 +10,6 @@
             border-radius: 9999px;
         }
 
-        table.jadwal td:nth-child(1),
-        table.jadwal th:nth-child(1) {
-            position: sticky;
-            left: 0;
-            z-index: 20;
-        }
         .tooltip:before {
             white-space: pre-line;
             text-align: left;
@@ -44,9 +38,9 @@
         <div class="mb-4 text-center text-xl font-bold">
             {{ \Carbon\Carbon::parse($this->tanggal)->translatedFormat('F Y') }}
         </div>
-        <div class="schedule-scroll overflow-x-auto">
-            <table class="jadwal w-full text-sm table">
-                <thead class="bg-sky-400 text-base-content text-xs uppercase">
+        <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-lg">
+            <table class="jadwal w-full text-sm table" style="border-collapse: separate; border-spacing: 0;">
+                <thead class="bg-sky-400 text-base-content text-xs uppercase relative z-50">
                     <tr>
                         <th class="sticky top-0 left-0 z-50 bg-sky-400 px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
                             Nama
@@ -56,7 +50,7 @@
                                 $currentDate = $tanggal->copy()->day($day);
                                 $isWeekend = $currentDate->isWeekend();
                             @endphp
-                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-sky-400/70' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
+                            <th class="sticky top-0 z-40 {{ $isWeekend ? 'bg-sky-400' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
                                 <span class="text-[11px] sm:text-base">{{ $day }}</span><br>
                                 <span class="normal-case text-[9px] sm:text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
                             </th>
@@ -68,7 +62,7 @@
                         @if ($loop->first || $user->role_id !== $users[$loop->index - 1]->role_id)
                             <tr>
                                 <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-sky-400 border border-base-200 p-0">
-                                    <div class="sticky left-0 z-20 w-fit px-3 py-2 text-xs font-bold uppercase">
+                                    <div class="sticky top-[40px] sm:top-[52px] left-0 z-20 w-fit px-3 py-2 text-xs font-bold uppercase">
                                         {{ $user->role->nama_role ?? '-' }}
                                     </div>
                                 </td>
@@ -77,13 +71,13 @@
                         @if (Gate::allows('akses','Jadwal Tabel'))
                         <tr class="hover:bg-base-200">
                             <td class="sticky left-0 z-20 bg-sky-400 px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
-                                @if ($user->biodata)
+                                {{-- @if ($user->biodata)
                                     {{ $user->biodata->nama_lengkap ?? '-' }}
                                 @endif
                                 @if ($user->dokter)
                                     {{ $user->dokter->nama_dokter ?? '-' }}
-                                @endif
-                                @if ($user->biodata && $user->dokter)
+                                @endif --}}
+                                @if ($user->biodata || $user->dokter)
                                     {{ $user->name ?? '-' }}
                                 @endif
                                 @php
@@ -105,7 +99,7 @@
                                 @endcan
                                 <br>
                                 <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-base-content' }}">
-                                    Libur: {{ $sisaLibur }}/{{ $jatahLibur }}+{{ $sisaCarryLibur }}
+                                    Libur: {{ $sisaLibur }}/{{ $jatahLibur }}(+{{ $sisaCarryLibur }})
                                 </span>
                             </td>
 
@@ -182,13 +176,13 @@
 
                                         <div class="flex items-center justify-center gap-1 md:gap-2">
                                             @if ($terlambat || $pulangCepat || $AbsenTidakLengkap)
-                                                <span class="tooltip tooltip-left text-xs text-yellow-300" data-tip="{{ $tooltipText }}">
-                                                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                                                <span class="tooltip tooltip-left text-yellow-300" data-tip="{{ $tooltipText }}">
+                                                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 8px"></i>
                                                 </span>
                                             @endif
                                             @if ($terkunci)
-                                                <span class="tooltip tooltip-left text-xs text-neutral" data-tip="Jadwal Telah Terkunci">
-                                                    <i class="fa-solid fa-lock text-xs"></i>
+                                                <span class="tooltip tooltip-left text-neutral" data-tip="Jadwal Telah Terkunci">
+                                                    <i class="fa-solid fa-lock" style="font-size: 8px"></i>
                                                 </span>
                                             @endif
                                         </div>
