@@ -190,14 +190,14 @@ class Table extends Component
         return false;
     }
     
-    public function editShift($userId, $tanggal, $roleId)
-    {
-        $this->editUserId = $userId;
-        $this->editRoleId = $roleId;
-        $this->editTanggal = $tanggal;
-        $this->dispatch('getupdatejadwal', userId: $this->editUserId, tanggal: $this->editTanggal, roleId: $this->editRoleId)
-        ->to(\App\Livewire\Jadwal\Update::class);
-    }
+    // public function editShift($userId, $tanggal, $roleId)
+    // {
+    //     $this->editUserId = $userId;
+    //     $this->editRoleId = $roleId;
+    //     $this->editTanggal = $tanggal;
+    //     $this->dispatch('getupdatejadwal', userId: $this->editUserId, tanggal: $this->editTanggal, roleId: $this->editRoleId)
+    //     ->to(\App\Livewire\Jadwal\Update::class);
+    // }
 
     #[\Livewire\Attributes\On('shift-updated')]
     public function refreshShift($userId, $tanggal, $jadwal, $tipeShiftLama = null, $tipeShiftBaru = null)

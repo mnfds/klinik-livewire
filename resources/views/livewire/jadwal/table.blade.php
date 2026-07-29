@@ -123,8 +123,11 @@
                                         default => 'bg-neutral/50',
                                     };
                                 @endphp
-                                <td
-                                    wire:click="editShift({{ $user->id }}, '{{ $tglCell }}', '{{ $user->role->id }}')"
+                                <td x-on:click="$wire.dispatchTo('jadwal.update', 'getupdatejadwal', {
+                                        userId: {{ $user->id }},
+                                        tanggal: '{{ $tglCell }}',
+                                        roleId: {{ $user->role->id }}
+                                    })"
                                     class="editable text-center border border-base-200 px-1 py-2 sm:px-2 sm:py-3 cursor-pointer transition hover:brightness-95 hover:outline hover:outline-2 hover:outline-primary hover:-outline-offset-2 {{ $bgClass }}"
                                 >
                                     @php
