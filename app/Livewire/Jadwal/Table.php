@@ -144,6 +144,11 @@ class Table extends Component
             ->toArray();
 
         $this->jamKerjaList = JamKerja::all();
+
+        //generate kuota libur
+        if($today->day === 1){
+            $this->generateKuotaLibur();
+        }
     }
 
     private function isShiftTerkunci($tglCell, $userId): bool
@@ -237,5 +242,94 @@ class Table extends Component
             if ($tipeShiftBaru === 'cuti') $terpakaiCuti++;
             $this->kuotaCutiTerpakai[$userId] = max(0, $terpakaiCuti);
         }
+    }
+
+    private function hitungTerpakai($userId, $bulan, $tahun)
+    {
+        $today = today();
+        $bulanIni = Carbon::create($tahun, $bulan, 1);
+
+        $cutoff = match (true) {
+            $bulanIni->isSameMonth($today) && $bulanIni->isSameYear($today) => $today,
+            $bulanIni->lt($today) => $bulanIni->copy()->endOfMonth(),
+            default => $bulanIni->copy()->startOfMonth()->subDay(),
+        };
+
+        return Jadwal::where('user_id', $userId)
+            ->whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->whereDate('tanggal', '<=', $cutoff)
+            ->whereHas('jamkerja', fn ($q) => $q->where('tipe_shift', 'libur'))
+            ->count();
+    }
+
+    private function hitungSisaKuotaBulanLalu($userId, $bulan, $tahun)
+    {
+        $bulanDipilih = Carbon::create($tahun, $bulan, 1);
+        $bulanLalu = $bulanDipilih->copy()->subMonth();
+
+        $kuotaLalu = Kuotalibur::where('user_id', $userId)
+            ->where('bulan', $bulanLalu->month)
+            ->where('tahun', $bulanLalu->year)
+            ->first();
+
+        $dimilikiLalu = $kuotaLalu->kuota_dimiliki ?? 0;
+        $sisaCarryLalu = $kuotaLalu->kuota_sisa_bulan_sebelumnya ?? 0;
+        $totalLalu = $dimilikiLalu + $sisaCarryLalu;
+
+        $terpakaiLalu = $this->hitungTerpakai($userId, $bulanLalu->month, $bulanLalu->year);
+
+        return max(0, $totalLalu - $terpakaiLalu);
+    }
+    
+    private function generateKuotaLibur(): void
+    {
+        $bulanIni = today()->startOfMonth();
+        $bulan = $bulanIni->month;
+        $tahun = $bulanIni->year;
+
+        $jumlahMinggu = $this->hitungJumlahHariMinggu($bulanIni);
+
+        $userIds = User::whereNotIn('id', [1])
+            ->where('role_id', '!=', 2)
+            ->pluck('id');
+
+        // ambil user yang SUDAH punya kuota bulan ini, biar nggak diproses ulang
+        $sudahAda = Kuotalibur::whereIn('user_id', $userIds)
+            ->where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->pluck('user_id')
+            ->toArray();
+
+        foreach ($userIds as $userId) {
+            if (in_array($userId, $sudahAda)) {
+                continue; // sudah ada, skip
+            }
+
+            $sisaBulanLalu = $this->hitungSisaKuotaBulanLalu($userId, $bulan, $tahun);
+
+            Kuotalibur::create([
+                'user_id' => $userId,
+                'bulan'   => $bulan,
+                'tahun'   => $tahun,
+                'kuota_dimiliki' => $jumlahMinggu,
+                'kuota_sisa_bulan_sebelumnya' => $sisaBulanLalu,
+            ]);
+        }
+    }
+
+    private function hitungJumlahHariMinggu(Carbon $bulan): int
+    {
+        $awal = $bulan->copy()->startOfMonth();
+        $akhir = $bulan->copy()->endOfMonth();
+
+        $jumlah = 0;
+        for ($tanggal = $awal->copy(); $tanggal->lte($akhir); $tanggal->addDay()) {
+            if ($tanggal->isSunday()) {
+                $jumlah++;
+            }
+        }
+
+        return $jumlah;
     }
 }
