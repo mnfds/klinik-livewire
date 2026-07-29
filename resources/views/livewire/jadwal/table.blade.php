@@ -37,9 +37,9 @@
         </div>
         <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-lg">
             <table class="jadwal w-full text-sm table" style="border-collapse: separate; border-spacing: 0;">
-                <thead class="bg-sky-400 text-base-content text-xs uppercase relative z-50">
+                <thead class="bg-sky-400 text-base-content text-xs uppercase relative z-40">
                     <tr>
-                        <th class="sticky top-0 left-0 z-50 bg-sky-400 px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
+                        <th class="sticky top-0 left-0 z-40 bg-sky-400 px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
                             Nama
                         </th>
                         @for ($day = 1; $day <= $tanggal->daysInMonth; $day++)
@@ -47,7 +47,7 @@
                                 $currentDate = $tanggal->copy()->day($day);
                                 $isWeekend = $currentDate->isWeekend();
                             @endphp
-                            <th class="sticky top-0 z-40 {{ $isWeekend ? 'bg-sky-400' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
+                            <th class="sticky top-0 z-30 {{ $isWeekend ? 'bg-sky-400' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
                                 <span class="text-[11px] sm:text-base">{{ $day }}</span><br>
                                 <span class="normal-case text-[9px] sm:text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
                             </th>
