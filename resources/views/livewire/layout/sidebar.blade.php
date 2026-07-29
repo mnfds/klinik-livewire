@@ -699,8 +699,8 @@
     <!-- Overlay -->
     <div
         x-show="sidebarOpen && isMobile"
-        x-transition
-        class="fixed top-2 left-[260px] z-50 text-base-content hover:text-error transition sm:block"
+        x-transition.opacity
+        class="fixed inset-0 z-40 bg-black/50"
         @click="closeSidebar()">
     </div>
 </aside>
