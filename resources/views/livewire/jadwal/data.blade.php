@@ -54,6 +54,17 @@
                             </button>
                         </div>
                     </div>
+                    <div class="flex flex-row justify-between items-center gap-3 mb-4 text-xl font-bold">
+                        <button wire:click="previousMonth" class="btn btn-circle btn-primary btn-sm sm:btn-md" aria-label="Bulan sebelumnya">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div class="text-center text-base sm:text-xl">
+                            {{ \Carbon\Carbon::parse($this->thisMonth)->locale('id')->translatedFormat('F Y') }}
+                        </div>
+                        <button wire:click="nextMonth" class="btn btn-circle btn-primary btn-sm sm:btn-md" aria-label="Bulan berikutnya">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                     <livewire:jadwal.table :bulan="$thisMonth" :role="$selectedRole" :key="$thisMonth . $selectedRole" />
                     <livewire:jadwal.update />
                 </div>

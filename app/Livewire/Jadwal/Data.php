@@ -24,6 +24,20 @@ class Data extends Component
         return view('livewire.jadwal.data');
     }
 
+    public function previousMonth()
+    {
+        $this->thisMonth = \Carbon\Carbon::parse($this->thisMonth)
+            ->subMonth()
+            ->format('Y-m');
+    }
+
+    public function nextMonth()
+    {
+        $this->thisMonth = \Carbon\Carbon::parse($this->thisMonth)
+            ->addMonth()
+            ->format('Y-m');
+    }
+    
     public function mount()
     {
         // $this->role = Role::all();

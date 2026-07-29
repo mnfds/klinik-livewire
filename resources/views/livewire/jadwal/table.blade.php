@@ -35,9 +35,6 @@
             <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}(+{{ $sisaCarryLiburSaya }})</span></p>
             <p class="text-xs text-gray-400">(Setiap Sisa Kuota Libur Akan Di Jumlahkan Ke Kuota Libur Bulan Berikutnya)</p>
         </div>
-        <div class="mb-4 text-center text-xl font-bold">
-            {{ \Carbon\Carbon::parse($this->tanggal)->translatedFormat('F Y') }}
-        </div>
         <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-lg">
             <table class="jadwal w-full text-sm table" style="border-collapse: separate; border-spacing: 0;">
                 <thead class="bg-sky-400 text-base-content text-xs uppercase relative z-50">
