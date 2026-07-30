@@ -77,9 +77,11 @@
                                 @if ($user->biodata || $user->dokter)
                                     <div class="flex items-center justify-between gap-1">
                                         <span class="text-sm">{{ $user->name ?? '-' }}</span>
+                                        @can('akses', 'Absen')
                                         <span class="bg-success px-1.5 py-0.5 rounded-md text-success-content text-[10px] sm:text-xs shrink-0">
                                             {{ $absenCount[$user->id] ?? 0 }}
                                         </span>
+                                        @endcan
                                     </div>
                                 @endif
                                 @php
@@ -97,8 +99,8 @@
                                 <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-primary-content' }}">
                                     Cuti: {{ $sisaCuti }}/{{ $jatahCuti }}
                                 </span>
-                                @endcan
                                 <br>
+                                @endcan
                                 <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-primary-content' }}">
                                     Libur: {{ $sisaLibur }}/{{ $jatahLibur }}(+{{ $sisaCarryLibur }})
                                 </span>
