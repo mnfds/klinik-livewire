@@ -46,6 +46,7 @@
                             @endcan
                         </div>
                     </div>
+                    <span>{{ $hariIni->translatedFormat('l, d F Y') }}</span>
                     <livewire:Absen.Absen-Table />
                 </div>
             </div>

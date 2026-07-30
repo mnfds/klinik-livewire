@@ -47,7 +47,7 @@ class Store extends Component
             'user_id'        => $this->user_id,
             'tanggal_absen'  => $this->tanggal_absen,
             'jam_masuk'      => $this->jam_masuk,
-            'jam_pulang'     => $this->jam_pulang,
+            'jam_pulang'     => $this->jam_pulang ?: null,
             'keterangan'     => $this->keterangan,
         ]);
 

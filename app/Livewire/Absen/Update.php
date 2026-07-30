@@ -58,7 +58,7 @@ class Update extends Component
         $absen->update([
             'tanggal_absen'  => $this->tanggal_absen,
             'jam_masuk'      => $this->jam_masuk,
-            'jam_pulang'     => $this->jam_pulang,
+            'jam_pulang'     => $this->jam_pulang ?: null,
             'keterangan'     => $this->keterangan,
         ]);
 

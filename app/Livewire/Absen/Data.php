@@ -7,6 +7,13 @@ use Livewire\Component;
 
 class Data extends Component
 {
+    public $hariIni;
+
+    public function mount()
+    {
+        $this->hariIni = today();
+    }
+    
     public function render()
     {
         if (! Gate::allows('akses', 'Absen')) {
