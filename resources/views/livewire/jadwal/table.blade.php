@@ -35,11 +35,11 @@
             <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}(+{{ $sisaCarryLiburSaya }})</span></p>
             <p class="text-xs text-gray-400">(Setiap Sisa Kuota Libur Akan Di Jumlahkan Ke Kuota Libur Bulan Berikutnya)</p>
         </div>
-        <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-lg">
+        <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-xl">
             <table class="jadwal w-full text-sm table" style="border-collapse: separate; border-spacing: 0;">
-                <thead class="bg-sky-400 text-base-content text-xs uppercase relative z-30">
+                <thead class="bg-primary text-primary-content text-xs uppercase relative z-30">
                     <tr>
-                        <th class="sticky top-0 left-0 z-30 bg-sky-400 px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
+                        <th class="sticky top-0 left-0 z-30 bg-primary text-primary-content px-1.5 py-2 sm:px-3 sm:py-3 border border-base-200 text-left min-w-[100px] sm:min-w-[160px] whitespace-nowrap text-[11px] sm:text-xs">
                             Nama
                         </th>
                         @for ($day = 1; $day <= $tanggal->daysInMonth; $day++)
@@ -47,7 +47,7 @@
                                 $currentDate = $tanggal->copy()->day($day);
                                 $isWeekend = $currentDate->isWeekend();
                             @endphp
-                            <th class="sticky top-0 z-20 {{ $isWeekend ? 'bg-sky-400' : 'bg-sky-400' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
+                            <th class="sticky top-0 z-20 {{ $isWeekend ? 'bg-primary text-primary-content' : 'bg-primary text-primary-content' }} px-1 py-2 sm:px-2 sm:py-3 border border-base-200 text-center min-w-[48px] sm:min-w-[78px] whitespace-nowrap">
                                 <span class="text-[11px] sm:text-base">{{ $day }}</span><br>
                                 <span class="normal-case text-[9px] sm:text-[10px]">{{ $currentDate->locale('id')->isoFormat('ddd') }}</span>
                             </th>
@@ -58,7 +58,7 @@
                     @forelse ($users as $user)
                         @if ($loop->first || $user->role_id !== $users[$loop->index - 1]->role_id)
                             <tr>
-                                <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-sky-400 border border-base-200 p-0">
+                                <td colspan="{{ $tanggal->daysInMonth + 1 }}" class="bg-primary text-primary-content border border-base-200 p-0">
                                     <div class="sticky top-[40px] sm:top-[52px] left-0 z-20 w-fit px-3 py-2 text-xs font-bold uppercase">
                                         {{ $user->role->nama_role ?? '-' }}
                                     </div>
@@ -67,7 +67,7 @@
                         @endif
                         @if (Gate::allows('akses','Jadwal Tabel'))
                         <tr class="hover:bg-base-200">
-                            <td class="sticky left-0 z-20 bg-sky-400 px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
+                            <td class="sticky left-0 z-20 bg-primary text-primary-content px-1.5 py-2 sm:px-2 sm:py-3 border border-base-200 font-medium whitespace-nowrap text-[11px] sm:text-sm">
                                 {{-- @if ($user->biodata)
                                     {{ $user->biodata->nama_lengkap ?? '-' }}
                                 @endif
@@ -75,7 +75,12 @@
                                     {{ $user->dokter->nama_dokter ?? '-' }}
                                 @endif --}}
                                 @if ($user->biodata || $user->dokter)
-                                    {{ $user->name ?? '-' }}
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-sm">{{ $user->name ?? '-' }}</span>
+                                        <span class="bg-success px-1.5 py-0.5 rounded-md text-success-content text-[10px] sm:text-xs shrink-0">
+                                            {{ $absenCount[$user->id] ?? 0 }}
+                                        </span>
+                                    </div>
                                 @endif
                                 @php
                                     $jatahLibur = $kuotaLibur[$user->id] ?? 4;
@@ -89,13 +94,12 @@
                                     $sisaCuti = $jatahCuti - $terpakaiCuti;
                                 @endphp
                                 @can('akses', 'Pengajuan Cuti')
-                                <br>
-                                <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-base-content' }}">
+                                <span class="text-xs {{ $sisaCuti <= 0 ? 'text-error' : 'text-primary-content' }}">
                                     Cuti: {{ $sisaCuti }}/{{ $jatahCuti }}
                                 </span>
                                 @endcan
                                 <br>
-                                <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-base-content' }}">
+                                <span class="text-xs {{ $sisaLibur <= 0 ? 'text-error' : 'text-primary-content' }}">
                                     Libur: {{ $sisaLibur }}/{{ $jatahLibur }}(+{{ $sisaCarryLibur }})
                                 </span>
                             </td>
@@ -120,7 +124,7 @@
                                         $tipeShift === 'libur' => 'bg-error text-error-content',
                                         $tipeShift === 'cuti' => 'bg-error text-error-content',
                                         $namaShift !== null && $jamMasuk !== null => 'bg-success text-success-content',
-                                        default => 'bg-neutral/50',
+                                        default => 'bg-neutral/50 text-white',
                                     };
                                 @endphp
                                 <td x-on:click="$wire.dispatchTo('jadwal.update', 'getupdatejadwal', {

@@ -26,6 +26,7 @@ class Table extends Component
     public $editTanggal = null;
     public $jamKerjaList = [];
     public $absen = [];
+    public $absenCount = [];
     public $kuotaLibur = [];
     public $kuotaSisa = [];
     public $kuotaTerpakai = [];
@@ -86,6 +87,12 @@ class Table extends Component
             ->groupBy('user_id')
             ->map(fn ($items) => $items->keyBy(fn ($item) => $item->tanggal_absen->format('Y-m-d'))->toArray())
             ->toArray();
+
+        $this->absenCount = collect($this->absen)->map(function ($items) {
+            return collect($items)
+                ->filter(fn ($item) => !is_null($item['jam_masuk'] ?? null))
+                ->count();
+        })->toArray();
 
         // ambil kuota libur bulan ini per user
         $kuotaLiburRows = Kuotalibur::whereIn('user_id', $userIds)
