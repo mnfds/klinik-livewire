@@ -51,7 +51,7 @@ new #[Layout('layouts.guest')] class extends Component
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" wire:navigate
                     class="text-sm text-gray-600 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral">
-                        Forgot password?
+                        Lupa Password? Klik disini
                     </a>
                 @endif
             </div>
@@ -67,7 +67,7 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="form-control">
             <label class="label cursor-pointer justify-start space-x-2">
                 <input wire:model="form.remember" type="checkbox" class="checkbox checkbox-xs checkbox-success" id="remember" name="remember" />
-                <span class="label-text">Remember me</span>
+                <span class="label-text">Ingat Saya</span>
             </label>
         </div>
 

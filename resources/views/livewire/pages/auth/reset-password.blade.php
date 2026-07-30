@@ -91,7 +91,7 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Password -->
         <div class="form-control">
             <label for="password" class="label">
-                <span class="label-text">New Password</span>
+                <span class="label-text">Password Baru</span>
             </label>
             <input wire:model="password"
                    id="password"
@@ -106,7 +106,7 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Confirm Password -->
         <div class="form-control">
             <label for="password_confirmation" class="label">
-                <span class="label-text">Confirm Password</span>
+                <span class="label-text">Konfirmasi Password</span>
             </label>
             <input wire:model="password_confirmation"
                    id="password_confirmation"

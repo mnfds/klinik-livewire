@@ -17,8 +17,7 @@ class Auth
     public function handle(Request $request, Closure $next): Response
     {
         if (! AuthFacade::check()) {
-            return redirect()
-                ->route('login')
+            return redirect()->guest(route('login'))
                 ->with('toast', [
                     'type' => 'error',
                     'message' => 'Silakan login terlebih dahulu untuk melakukan akses.',

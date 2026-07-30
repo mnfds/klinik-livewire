@@ -76,7 +76,7 @@ new #[Layout('layouts.guest')] class extends Component
             Auth::login($user);
         });
 
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        $this->redirect(route('verification.notice', absolute: false), navigate: true);
     }
 
     private function generateUserCodeQr(string $model): string
@@ -159,7 +159,7 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="flex flex-col sm:flex-row justify-between items-center gap-2 pt-2">
             <a href="{{ route('login') }}" wire:navigate
                class="text-sm text-neutral hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral">
-                {{ __('Already registered?') }}
+                {{ __('Sudah Register?') }}
             </a>
             <button type="submit" class="btn btn-accent w-full sm:w-auto">
                 {{ __('Register') }}

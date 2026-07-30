@@ -35,7 +35,7 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+        {{ __('Ini adalah area aman pada aplikasi. Mohon konfirmasi password kamu sebelum melanjutkan.') }}
     </div>
 
     <form wire:submit="confirmPassword">
@@ -55,7 +55,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         <div class="flex justify-end mt-4">
             <x-primary-button>
-                {{ __('Confirm') }}
+                {{ __('Konfirmasi') }}
             </x-primary-button>
         </div>
     </form>

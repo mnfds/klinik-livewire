@@ -9,7 +9,7 @@ new #[Layout('layouts.guest')] class extends Component
     public string $email = '';
 
     /**
-     * Send a password reset link to the provided email address.
+     * Kirim tautan reset password ke alamat email yang diberikan.
      */
     public function sendPasswordResetLink(): void
     {
@@ -17,9 +17,9 @@ new #[Layout('layouts.guest')] class extends Component
             'email' => ['required', 'string', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
+        // Kita akan mengirim tautan reset password ke user ini. Setelah kita mencoba
+        // mengirim tautannya, kita akan memeriksa responsnya lalu melihat pesan yang
+        // perlu kita tampilkan ke user. Terakhir, kita akan mengirimkan respons yang sesuai.
         $status = Password::sendResetLink(
             $this->only('email')
         );
@@ -39,7 +39,7 @@ new #[Layout('layouts.guest')] class extends Component
 <div class="space-y-4">
     <!-- Deskripsi -->
     <div class="text-sm text-base-content">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+        {{ __('Lupa password kamu? Tidak masalah. Cukup beri tahu kami alamat email kamu dan kami akan mengirimkan tautan reset password yang memungkinkan kamu memilih password baru.') }}
     </div>
 
     <!-- Session Status -->
@@ -60,7 +60,7 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Submit -->
         <div class="flex justify-end">
             <button type="submit" class="btn btn-accent">
-                {{ __('Email Password Reset Link') }}
+                {{ __('Kirim Tautan Reset Password') }}
             </button>
         </div>
     </form>
