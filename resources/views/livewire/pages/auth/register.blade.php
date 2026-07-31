@@ -24,7 +24,9 @@ new #[Layout('layouts.guest')] class extends Component
     public function with(): array
     {
         return [
-            'roles' => Role::orderBy('nama_role')->get(),
+            'roles' => Role::whereNotIn('nama_role', ['Super Admin', 'Dokter'])
+                            ->orderBy('nama_role')
+                            ->get(),
         ];
     }
 
