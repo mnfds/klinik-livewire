@@ -33,7 +33,7 @@
         </div>
 
         <!-- Card -->
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-base-100 shadow-md rounded-box">
+        <div class="max-w-screen-xl mx-auto">
             {{ $slot }}
         </div>
     </div>

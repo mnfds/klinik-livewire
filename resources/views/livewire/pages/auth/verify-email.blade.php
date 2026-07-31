@@ -35,27 +35,49 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="max-w-md mx-auto p-6 bg-base-100 rounded-box space-y-4">
-    <div class="text-sm text-base-content">
-        {{ __('Terima kasih telah mendaftar! Sebelum memulai, mohon verifikasi alamat email kamu dengan mengklik tautan yang baru saja kami kirimkan. Jika kamu belum menerima emailnya, kami akan dengan senang hati mengirimkannya lagi.') }}
-    </div>
+<div class="flex items-center justify-center py-8">
+    <div class="w-full max-w-md">
+        <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6 sm:p-8 space-y-5">
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="alert alert-success text-sm font-medium">
-            {{ __('Tautan verifikasi baru telah dikirim ke alamat email yang kamu daftarkan.') }}
+            <div class="flex justify-center">
+                <div class="rounded-full bg-primary/10 p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="text-center space-y-1">
+                <h2 class="text-lg font-semibold text-base-content">
+                    {{ __('Verifikasi Alamat Email') }}
+                </h2>
+                <p class="text-sm text-base-content/70">
+                    {{ __('Terima kasih telah mendaftar! Sebelum memulai, mohon verifikasi alamat email kamu dengan mengklik tautan yang baru saja kami kirimkan. Jika kamu belum menerima emailnya, kami akan dengan senang hati mengirimkannya lagi.') }}
+                </p>
+            </div>
+
+            @if (session('status') == 'verification-link-sent')
+                <div class="alert alert-success text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ __('Tautan verifikasi baru telah dikirim ke alamat email yang kamu daftarkan.') }}</span>
+                </div>
+            @endif
+
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                <button wire:click="sendVerification" class="btn btn-primary w-full sm:w-auto">
+                    {{ __('Kirim Ulang Email Verifikasi') }}
+                </button>
+
+                <button wire:click="logout"
+                        type="submit"
+                        class="text-sm text-neutral underline hover:text-neutral-focus focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral">
+                    {{ __('Keluar') }}
+                </button>
+            </div>
+
         </div>
-    @endif
-
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
-        <button wire:click="sendVerification" class="btn btn-primary w-full sm:w-auto">
-            {{ __('Kirim Ulang Email Verifikasi') }}
-        </button>
-
-        <button wire:click="logout"
-                type="submit"
-                class="text-sm text-neutral underline hover:text-neutral-focus focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral">
-            {{ __('Keluar') }}
-        </button>
     </div>
 </div>
 
