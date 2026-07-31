@@ -74,6 +74,8 @@ final class UsersTable extends PowerGridComponent
             ->add('name') //column ini isinya username
             ->add('email')
             ->add('biodata.telepon')
+            ->add('status')
+            ->add('status_label', fn ($model) => $model->status === 1 ? 'Aktif' : 'Nonaktif')
             ->add('role.nama_role')
             ->add('role_id');
     }
@@ -92,6 +94,10 @@ final class UsersTable extends PowerGridComponent
             Column::make('Alamat Email', 'email')->searchable(),
 
             Column::make('Telepon', 'biodata.telepon'),
+            
+            Column::make('Status', 'status_label')->hidden(),
+            Column::make('Status Aktif', 'status')->toggleable(),
+
             Column::make('Role', 'role.nama_role', 'role_id'),
 
             Column::action('Action'),
@@ -393,7 +399,22 @@ final class UsersTable extends PowerGridComponent
         return $buttons;
     }
 
-    
+    public function onUpdatedToggleable(string|int $id, string $field, string $value): void 
+    {
+        $boolStatus = $value === 'true' || $value === '1';
+
+        User::find($id)->update([
+            $field => $boolStatus,
+        ]);
+
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => 'Status User berhasil diperbarui.'
+        ]);
+
+        // $this->skipRender();
+        $this->dispatch('pg:eventRefresh')->to(self::class);
+    }
     // public function actionRules($row): array
     // {
     //    return [

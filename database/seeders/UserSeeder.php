@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
             'role_id' => 1,
+            'status' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -32,6 +33,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('dokter123'),
             'role_id' => 2,
+            'status' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -42,6 +44,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('dokter321'),
             'role_id' => 2,
+            'status' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -53,6 +56,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('perawat123'),
             'role_id' => 3,
+            'status' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -63,6 +67,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('apotek123'),
             'role_id' => 4,
+            'status' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

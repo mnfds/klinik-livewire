@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Forms\LoginForm;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -17,6 +19,18 @@ new #[Layout('layouts.guest')] class extends Component
         $this->validate();
 
         $this->form->authenticate();
+
+        // Cek status aktif setelah berhasil login
+        if (Auth::user()->status != 1) {
+            Auth::logout();
+
+            // Session::invalidate();
+            // Session::regenerateToken();
+
+            throw ValidationException::withMessages([
+                'form.login' => 'Akun kamu tidak aktif. Silakan hubungi admin.',
+            ]);
+        }
 
         Session::regenerate();
 

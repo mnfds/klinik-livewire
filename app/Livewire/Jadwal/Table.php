@@ -55,6 +55,7 @@ class Table extends Component
             $this->users = User::with(['biodata', 'dokter', 'role'])
                 ->whereNotIn('id', [1]) // pengecuali user id
                 ->where('role_id', '!=', 2) // pengecuali role id
+                ->where('status', 1) //hanya user yang active
                 ->orderBy('role_id')
                 ->orderBy('name')
                 ->get();
@@ -63,6 +64,7 @@ class Table extends Component
             $this->users = User::where('role_id', $roleId)
                 ->whereNotIn('id', [1]) //pengecuali user id
                 ->where('role_id', '!=', 2) // pengecuali role id
+                ->where('status', 1) //hanya user yang active
                 ->with(['biodata', 'dokter', 'role'])
                 ->orderBy('name')
                 ->get();
