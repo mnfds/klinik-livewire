@@ -182,12 +182,12 @@
 
                                         <div class="flex items-center justify-center gap-1 md:gap-2">
                                             @if ($terlambat || $pulangCepat || $AbsenTidakLengkap)
-                                                <span class="tooltip tooltip-left text-yellow-300" data-tip="{{ $tooltipText }}">
+                                                <span class="tooltip tooltip-right text-yellow-300" data-tip="{{ $tooltipText }}">
                                                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 8px"></i>
                                                 </span>
                                             @endif
                                             @if ($terkunci)
-                                                <span class="tooltip tooltip-left text-neutral" data-tip="Jadwal Telah Terkunci">
+                                                <span class="tooltip tooltip-right text-neutral" data-tip="Jadwal Telah Terkunci">
                                                     <i class="fa-solid fa-lock" style="font-size: 8px"></i>
                                                 </span>
                                             @endif
