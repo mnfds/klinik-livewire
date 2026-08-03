@@ -182,13 +182,32 @@
 
                                         <div class="flex items-center justify-center gap-1 md:gap-2">
                                             @if ($terlambat || $pulangCepat || $AbsenTidakLengkap)
-                                                <span class="tooltip tooltip-right text-yellow-300" data-tip="{{ $tooltipText }}">
+                                                <span x-data="{ show: false, x: 0, y: 0 }"
+                                                    @mouseenter="show = true; const r = $el.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top"
+                                                    @mouseleave="show = false"
+                                                    class="relative text-yellow-300 cursor-help">
                                                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 8px"></i>
+                                                    <template x-teleport="body">
+                                                        <div x-show="show" x-cloak x-transition class="fixed z-[9999] bg-neutral text-neutral-content text-xs rounded-md px-2 py-1.5 whitespace-pre-line pointer-events-none shadow-lg max-w-[220px]"
+                                                            :style="`left:${x}px; top:${y}px; transform: translate(-50%, -110%);`">
+                                                            {{ $tooltipText }}
+                                                        </div>
+                                                    </template>
                                                 </span>
                                             @endif
                                             @if ($terkunci)
-                                                <span class="tooltip tooltip-right text-neutral" data-tip="Jadwal Telah Terkunci">
+                                                <span
+                                                    x-data="{ show: false, x: 0, y: 0 }"
+                                                    @mouseenter="show = true; const r = $el.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top"
+                                                    @mouseleave="show = false"
+                                                    class="relative text-neutral cursor-help">
                                                     <i class="fa-solid fa-lock" style="font-size: 8px"></i>
+                                                    <template x-teleport="body">
+                                                        <div x-show="show" x-cloak x-transition class="fixed z-[9999] bg-neutral text-neutral-content text-xs rounded-md px-2 py-1.5 whitespace-nowrap pointer-events-none shadow-lg"
+                                                            :style="`left:${x}px; top:${y}px; transform: translate(-50%, -110%);`">
+                                                            Jadwal Telah Terkunci
+                                                        </div>
+                                                    </template>
                                                 </span>
                                             @endif
                                         </div>
