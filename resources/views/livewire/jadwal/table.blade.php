@@ -35,7 +35,7 @@
             <p class="text-sm font-bold">Kuota Libur Anda:<span class="{{ $akhirLiburSaya <= 0 ? 'text-error' : 'text-success' }}">{{ $akhirLiburSaya }}/{{ $dimilikiLiburSaya }}(+{{ $sisaCarryLiburSaya }})</span></p>
             <p class="text-xs text-gray-400">(Setiap Sisa Kuota Libur Akan Di Jumlahkan Ke Kuota Libur Bulan Berikutnya)</p>
         </div>
-        <div class="schedule-scroll overflow-auto max-h-[70vh] border border-base-200 rounded-xl">
+        <div class="schedule-scroll overflow-x-auto border border-base-200 rounded-xl">
             <table class="jadwal w-full text-sm table" style="border-collapse: separate; border-spacing: 0;">
                 <thead class="bg-primary text-primary-content text-xs uppercase relative z-30">
                     <tr>
