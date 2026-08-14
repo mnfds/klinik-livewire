@@ -36,6 +36,6 @@ class KajianAwal extends Model
 
     public function kolestrol()
     {
-        return $this->hasOne(kolestrol::class);
+        return $this->hasOne(Kolestrol::class);
     }
 }
