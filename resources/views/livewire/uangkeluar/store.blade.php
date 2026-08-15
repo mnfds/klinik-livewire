@@ -21,6 +21,7 @@
                     <option value="Administrasi">Administrasi</option>
                     <option value="Marketing">Marketing</option>
                     <option value="Operasional">Operasional</option>
+                    <option value="Fasilitas Dan Bangunan">Fasilitas Dan Bangunan</option>
                     <option value="Rumah Tangga">Rumah Tangga</option>
                     <option value="Dll">Dll</option>
                 </select>
