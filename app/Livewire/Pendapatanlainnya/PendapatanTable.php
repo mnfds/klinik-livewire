@@ -59,18 +59,17 @@ final class PendapatanTable extends PowerGridComponent
         ->add('total_tagihan')
         ->add('status')
         ->add('total_dan_status', function ($row) {
-            $total = 'Rp ' . number_format($row->total_tagihan, 0, ',', '.');
-
-            $statusColor = match ($row->status_pembayaran) {
-                'Lunas' => 'text-success',
-                'Belum Lunas' => 'text-error',
+            $statusClass = match ($row->status) {
+                'lunas' => 'text-success',
+                'belum lunas' => 'text-warning',
+                'belum bayar', 'batal' => 'text-error',
                 default => 'text-gray-500',
             };
 
-            return $total . 
-                '<br><span class="text-sm ' . $statusColor . '">' . 
-                e($row->status_pembayaran) . 
-                '</span>';
+            return 'Rp ' . number_format($row->total_tagihan, 0, ',', '.')
+                . '<br><span class="text-sm ' . $statusClass . '">'
+                . ucfirst($row->status)
+                . '</span>';
         });
     }
 
