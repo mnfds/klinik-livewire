@@ -1,10 +1,4 @@
 <div x-data="{ now: new Date() }" x-init="setInterval(() => now = new Date(), 1000)">
-    {{-- Tanggal & Waktu (full width) --}}
-    <div class="flex justify-between items-center bg-base-100 shadow-md rounded-box border-t-2 border-top border-warning px-4 py-3 mb-2">
-        <span class="font-medium texl-xl" x-text="now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })"></span>
-        <span class="font-mono text-xl" x-text="now.toLocaleTimeString('id-ID')"></span>
-    </div>
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {{-- Card 1: Pindai --}}

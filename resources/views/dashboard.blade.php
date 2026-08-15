@@ -32,10 +32,28 @@
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
                 <div class="bg-base-200 overflow-hidden rounded-sm sm:rounded-lg">
                     <div class="p-6 text-base-content space-y-4">
+
                         {{-- <div class="flex flex-wrap gap-2">
                             <button class="btn btn-neutral" onclick="playNotif()">Klik Untuk Bunyi Bell</button>
                             <audio id="notifAudio" src="{{ asset('assets/music/bell.mp3') }}"></audio>
                         </div> --}}
+                        {{-- Tanggal & Waktu (full width) --}}
+                        <div x-data="{ now: new Date() }" x-init="setInterval(() => now = new Date(), 1000)" class="bg-base-100 shadow-md rounded-box border-t-2 border-top border-warning px-4 py-3 mb-2">
+                            @php
+                                $user = auth()->user();
+                            @endphp
+                            <div>
+                                <span class="font-medium"> Selamat Datang, <span class="text-success">{{ $user->role?->name === 'Dokter' ? $user->dokter?->nama_dokter : $user->biodata?->nama_lengkap }}</span></span>
+                            </div>
+                            <div>
+                                <span class="font-medium">Login Sebagai: <span class="text-warning">({{ $user->role?->nama_role }})</span></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium" x-text="now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })"></span>
+                                <span class="font-mono" x-text="now.toLocaleTimeString('id-ID')"></span>
+                            </div>
+                        </div>
+
                         @if (Gate::allows('akses','Absen Scan User') || Gate::allows('akses','Absen Button'))
                             <livewire:Absen.Scanning />
                         @endif
