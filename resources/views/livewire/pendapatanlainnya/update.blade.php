@@ -44,7 +44,7 @@
                         <option value="">Pilih</option>
                         <option value="belum lunas">Belum Lunas</option>
                         <option value="lunas">Lunas</option>
-                        <option value="belum bayar">Belum Bayar</option>
+                        {{-- <option value="belum bayar">Belum Bayar</option> --}}
                         {{-- <option value="batal">Batal</option> --}}
                     </select>
                     @error('status')
