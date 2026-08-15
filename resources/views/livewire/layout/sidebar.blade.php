@@ -10,7 +10,7 @@
                     <a href="#" class="flex items-center gap-2 text-base-content">
                         <!-- Kotak Logo -->
                         <div class="w-10 h-10 bg-transparent rounded-md flex items-center justify-center">
-                            <img src="{{ asset('assets/aset/logo-no-text.png') }}" alt="Logo" class="w-10 h-10 object-contain" />
+                            <img src="{{ asset('assets/aset/logoKlinik3D.svg') }}" alt="Logo" class="w-10 h-10 object-contain" />
                         </div>
 
                         <!-- Tulisan -->
