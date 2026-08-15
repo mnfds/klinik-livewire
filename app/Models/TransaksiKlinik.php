@@ -151,7 +151,7 @@ class TransaksiKlinik extends Model
         }
 
         // ======================
-        // PRODUK TAMBAHAN & BARANG TAMBAHAN
+        // PRODUK TAMBAHAN & BARANG TAMBAHAN & SURAT KETERANGAN
         // Ambil langsung dari tabel riwayat_transaksi_kliniks
         // ======================
         $fromDb = $this->riwayatTransaksi() // pakai () untuk query builder, bukan accessor

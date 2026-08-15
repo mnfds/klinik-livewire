@@ -970,6 +970,9 @@ class Detail extends Component
                 'rekammedis.rencanaBundlingRM.bundling.pelayananBundlingRM.pelayanan',
                 'rekammedis.rencanaBundlingRM.bundling.produkObatBundlingRM',
                 'rekammedis.rencanaBundlingRM.bundling.produkObatBundlingRM.produk',
+                'riwayatTransaksi' => function ($query) {
+                    $query->whereIn('jenis_item', ['produk_tambahan', 'barang_tambahan', 'surat_keterangan']);
+                },
             ])->findOrFail($transaksiId);
 
             $rm     = $data_transaksi->rekammedis;
@@ -980,6 +983,9 @@ class Detail extends Component
             $treatments = $rm?->rencanaTreatmentRM ?? collect();
             $produks    = $rm?->rencanaProdukRM ?? collect();
             $bundlings    = $rm?->rencanaBundlingRM ?? collect();
+            $itemTambahan = $data_transaksi->relationLoaded('riwayatTransaksi')
+            ? $data_transaksi->getRelation('riwayatTransaksi')
+            : collect();
             // dd($produks);
 
             /* ================= PRINTER ================= */
@@ -1142,6 +1148,23 @@ class Detail extends Component
                         $item->produk->nama_dagang ?? 'Produk',
                         $item->produk->harga_dasar ?? 0,
                         $item->jumlah_produk ?? 1,
+                        $item->diskon ?? 0,
+                        $item->potongan ?? 0,
+                        $subtotal
+                    );
+                }
+            }
+
+            /* ===== ITEM TAMBAHAN (Produk/Barang Tambahan & Surat Keterangan) ===== */
+            if ($itemTambahan->isNotEmpty()) {
+                foreach ($itemTambahan as $item) {
+                    $subtotal = $item->subtotal ?? 0;
+                    $grandTotal += $subtotal;
+
+                    $printItem(
+                        $item->nama_item,
+                        $item->harga,
+                        $item->qty,
                         $item->diskon ?? 0,
                         $item->potongan ?? 0,
                         $subtotal
