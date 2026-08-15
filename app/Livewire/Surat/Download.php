@@ -13,6 +13,7 @@ class Download extends Component
     public function getUnduh($rowId)
     {
         $surat = SuratKeterangan::with([
+            'pasienTerdaftar.dokter',
             'pasienTerdaftar.pasien',
             'pasienTerdaftar.rekamMedis.tandaVitalRM',
             'pasienTerdaftar.rekamMedis.pemeriksaanFisikRM',

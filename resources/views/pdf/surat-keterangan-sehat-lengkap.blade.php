@@ -258,7 +258,7 @@
                     Dokter Pemeriksa
                     <div class="ttd-space" style="position: relative; height: 100px; width: 180px; margin: 0 auto;">
                         @if ($surat->tipe_ttd === 'digital')
-                            <img src="{{ public_path('/assets/aset/ttd_dokter.jpg') }}"
+                            <img src="{{ public_path('storage/' . $dokter->ttd_digital) }}"
                                 style="width: 100px; height: auto; position: absolute; top: 10px; left: 0;">
                             <img src="{{ public_path('/assets/aset/test.png') }}"
                                 style="width: 90px; height: auto; position: absolute; top: 0; left: 40px; opacity: 0.7;">
