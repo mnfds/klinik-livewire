@@ -16,6 +16,11 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 final class AbsenTable extends PowerGridComponent
 {
     public string $tableName = 'absen-table-fjvn6z-table';
+    
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
 
     public function setUp(): array
     {
@@ -31,11 +36,24 @@ final class AbsenTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Absen::with(['user', 'user.biodata'])
-            ->whereIn('id', function ($query) {
-                $query->selectRaw('MAX(id)')
-                    ->from('absens')
-                    ->groupBy('user_id');
-            })
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q) {
+                    $range = $this->getTanggalFilter();
+
+                    $q->whereBetween('tanggal_absen', [
+                        $range['start'],
+                        $range['end'],
+                    ]);
+                },
+                function ($q) {
+                    $q->whereIn('id', function ($subQuery) {
+                        $subQuery->selectRaw('MAX(id)')
+                            ->from('absens')
+                            ->groupBy('user_id');
+                    });
+                }
+            )
             ->latest();
     }
 
@@ -89,6 +107,9 @@ final class AbsenTable extends PowerGridComponent
             Column::make('Keterangan', 'keterangan')
                 ->searchable(),
 
+            Column::make('Tanggal Absen', 'tanggal_absen')
+                ->hidden(),
+            
             Column::action('Action'),
         ];
     }
@@ -96,6 +117,7 @@ final class AbsenTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_absen', 'tanggal_absen'),
         ];
     }
 
@@ -171,6 +193,25 @@ final class AbsenTable extends PowerGridComponent
         ]);
     }
 
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_absen.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_absen.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_absen.end')
+            )->toDateString(),
+        ];
+    }
     /*
     public function actionRules($row): array
     {
