@@ -17,6 +17,12 @@ final class DetailabsenTable extends PowerGridComponent
 {
     public string $tableName = 'detailabsen-table-01hdh3-table';
     public $userId;
+
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         return [
@@ -31,8 +37,23 @@ final class DetailabsenTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Absen::query()
-        ->where('user_id', $this->userId)
-        ->latest();
+            ->where('user_id', $this->userId)
+            ->when(
+                $this->hasTanggalFilter(),
+                function ($q) {
+                    $range = $this->getTanggalFilter();
+
+                    $q->whereBetween('tanggal_absen', [
+                        $range['start'],
+                        $range['end'],
+                    ]);
+                },
+                function ($q) {
+                    $q->whereMonth('tanggal_absen', now()->month)
+                    ->whereYear('tanggal_absen', now()->year);
+                }
+            )
+            ->latest();
     }
 
     public function relationSearch(): array
@@ -53,6 +74,9 @@ final class DetailabsenTable extends PowerGridComponent
     public function columns(): array
     {
         return [
+            Column::make('Tanggal Absen', 'tanggal_absen')
+                ->hidden(),
+
             Column::make('Tanggal Absen', 'tanggal_absen_formatted')
                 ->sortable()
                 ->searchable(),
@@ -73,6 +97,7 @@ final class DetailabsenTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_absen', 'tanggal_absen'),
         ];
     }
 
@@ -138,6 +163,25 @@ final class DetailabsenTable extends PowerGridComponent
         ]);
     }
 
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_absen.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_absen.start')
+            )->toDateString(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_absen.end')
+            )->toDateString(),
+        ];
+    }
     /*
     public function actionRules($row): array
     {
