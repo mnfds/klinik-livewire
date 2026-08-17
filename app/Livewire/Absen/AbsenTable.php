@@ -30,8 +30,12 @@ final class AbsenTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Absen::with(['user','user.biodata'])
-            ->whereDate('tanggal_absen', today())
+        return Absen::with(['user', 'user.biodata'])
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('absens')
+                    ->groupBy('user_id');
+            })
             ->latest();
     }
 
@@ -46,8 +50,26 @@ final class AbsenTable extends PowerGridComponent
             ->add('nama_staff', function ($row){
                 return strtoupper($row->user->biodata->nama_lengkap);
             })
-            ->add('jam_masuk_formatted', fn($row) => $row->jam_masuk ? \Carbon\Carbon::parse($row->jam_masuk)->format('H:i') : '-')
-            ->add('jam_pulang_formatted', fn($row) => $row->jam_pulang ? \Carbon\Carbon::parse($row->jam_pulang)->format('H:i') : '-')
+            ->add('jam_masuk_formatted', function ($row) {
+                if (!$row->jam_masuk) {
+                    return '-';
+                }
+
+                return \Carbon\Carbon::parse($row->jam_masuk)->format('H:i')
+                    . '<br><span class="text-sm text-gray-500">'
+                    . \Carbon\Carbon::parse($row->tanggal_absen)->translatedFormat('l, d M Y')
+                    . '</span>';
+            })
+            ->add('jam_pulang_formatted', function ($row) {
+                if (!$row->jam_pulang) {
+                    return '-';
+                }
+
+                return \Carbon\Carbon::parse($row->jam_pulang)->format('H:i')
+                    . '<br><span class="text-sm text-gray-500">'
+                    . \Carbon\Carbon::parse($row->tanggal_absen)->translatedFormat('l, d M Y')
+                    . '</span>';
+            })
             ->add('keterangan');
     }
 
