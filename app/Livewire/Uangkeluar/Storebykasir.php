@@ -14,7 +14,20 @@ class Storebykasir extends Component
     public $diajukan_oleh, $role, $keterangan, $jumlah_uang, $jenis_pengeluaran, $unit_usaha;
     public $status = 'Disetujui';
     public $user_id;
+    public array $users = [];
 
+    public function mount(): void
+    {
+        $this->users = User::with(['biodata', 'role'])
+            ->get()
+            ->map(fn ($u) => [
+                'id'   => $u->id,
+                'name' => $u->biodata->nama_lengkap ?? $u->name,
+                'role' => $u->role->nama_role ?? '-',
+            ])
+            ->toArray();
+    }
+    
     public function store()
     {
         // dd($this->user_id);
@@ -68,6 +81,7 @@ class Storebykasir extends Component
         // return redirect()->route('uangkeluar.data');
         return redirect()->route('aruskas.data');
     }
+
     public function render()
     {
         return view('livewire.uangkeluar.storebykasir');

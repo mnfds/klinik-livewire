@@ -2,28 +2,48 @@
     Livewire.on('closestoreModalUangKeluarKasir', () => {
         document.getElementById('storeModalUangKeluarKasir')?.close()
     })
-">
+    ">
     <div class="modal-box w-full max-w-md">
         <h3 class="text-xl font-semibold mb-4">Pengeluaran</h3>
 
         <form wire:submit.prevent="store" class="space-y-4">
-            <div>
+            <div
+                x-data="{
+                    open: false,
+                    search: '',
+                    users: {{ \Illuminate\Support\Js::from($users) }},
+                    selectedId: @entangle('user_id'),
+                    get filtered() {
+                        return this.search === ''
+                            ? this.users
+                            : this.users.filter(u => u.name.toLowerCase().includes(this.search.toLowerCase()))
+                    },
+                    get selectedLabel() {
+                        let u = this.users.find(u => u.id == this.selectedId)
+                        return u ? u.name + ' (' + u.role + ')' : ''
+                    },
+                    choose(user) {
+                        this.selectedId = user.id
+                        this.search = user.name
+                        this.open = false
+                    }
+                }"
+                x-init="search = selectedLabel" @click.outside="open = false; search = selectedLabel" class="relative">
                 <label class="label font-medium">Karyawan Yang Mengajukan<span class="text-error">*</span></label>
-                @php
-                    $users = \App\Models\User::with(['biodata', 'role'])->get();
-                @endphp
-                <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.lazy="user_id">
-                    <option value="">Pilih Karyawan</option>
-                    @foreach ($users as $u)
-                        <option value="{{ $u->id }}">
-                            {{ $u->biodata->nama_lengkap ?? $u->name }}
-                            ({{ $u->role->nama_role ?? '-' }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('user_id')
-                    <span class="text-error text-sm">Mohon Memilih Karyawan Dengan Benar</span>
-                @enderror
+                <input type="text" x-model="search" @focus="open = true; search = ''" placeholder="Cari nama karyawan..." autocomplete="off" class="input input-bordered w-full @error('user_id') input-error @enderror">
+
+                <ul x-show="open" x-cloak class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                    <template x-for="user in filtered" :key="user.id">
+                        <li @click="choose(user)"
+                            class="px-4 py-2 cursor-pointer hover:bg-base-200"
+                            x-text="user.name + ' (' + user.role + ')'">
+                        </li>
+                    </template>
+                    <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                        Tidak ditemukan
+                    </li>
+                </ul>
+                @error('user_id')<span class="text-error text-sm">Mohon Memilih Karyawan Dengan Benar</span>@enderror
             </div>
 
             <div x-data="rupiahInput()">
