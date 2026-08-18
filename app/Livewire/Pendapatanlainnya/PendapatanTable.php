@@ -18,6 +18,9 @@ final class PendapatanTable extends PowerGridComponent
 {
     public string $tableName = 'pendapatan-table-fh6qyp-table';
 
+    public string $filterStatus = '';
+    public string $filterUnitUsaha = '';
+
     public function setUp(): array
     {
         // $this->showCheckBox();
@@ -33,7 +36,10 @@ final class PendapatanTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Pendapatanlainnya::query()->latest();
+        return Pendapatanlainnya::query()
+            ->latest()
+            ->when($this->filterStatus, fn (Builder $q) => $q->where('status', $this->filterStatus))
+            ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha));
     }
 
     public function relationSearch(): array
@@ -90,7 +96,7 @@ final class PendapatanTable extends PowerGridComponent
             Column::make('Tagihan ', 'total_tagihan')->searchable()->hidden(),
             Column::make('status ', 'status')->searchable()->hidden(),
             Column::make('Total & Status', 'total_dan_status')->sortable()->searchable(),
-            
+
             Column::action('Action')
         ];
     }
@@ -161,7 +167,15 @@ final class PendapatanTable extends PowerGridComponent
             'message' => 'Data berhasil dihapus.',
         ]);
     }
-    
+
+    #[\Livewire\Attributes\On('pendapatan-filter-updated')]
+    public function setFilters($status = '', $unitUsaha = ''): void
+    {
+        $this->filterStatus = $status;
+        $this->filterUnitUsaha = $unitUsaha;
+
+        $this->dispatch('pg:eventRefresh')->to(self::class);
+    }
     /*
     public function actionRules($row): array
     {
