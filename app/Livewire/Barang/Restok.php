@@ -21,7 +21,9 @@ class Restok extends Component
 
     public function mount(): void
     {
-        $this->barang = Barang::all();
+        $this->barang = Barang::all()
+            ->map(fn ($b) => ['id' => $b->id, 'nama' => $b->nama])
+            ->toArray();
     }
 
     public function render()
