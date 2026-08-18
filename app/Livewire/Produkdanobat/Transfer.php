@@ -16,11 +16,13 @@ class Transfer extends Component
     public array $items = [
         ['produk_id' => '', 'jumlah' => '', 'catatan' => ''],
     ];
-    public $produk = [];
+    public array $produkobat = [];
 
     public function mount(): void
     {
-        $this->produk = ProdukDanObat::all();
+        $this->produkobat = ProdukDanObat::all()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_dagang])
+            ->toArray();
     }
 
     public function render()

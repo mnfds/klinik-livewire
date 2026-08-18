@@ -17,11 +17,13 @@ class Instock extends Component
         ['produk_id' => '', 'jumlah' => '', 'catatan' => ''],
     ];
 
-    public $produkobat = [];
+    public array $produkobat = [];
 
     public function mount(): void
     {
-        $this->produkobat = ProdukDanObat::all();
+        $this->produkobat = ProdukDanObat::all()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_dagang])
+            ->toArray();
     }
 
     public function render()
