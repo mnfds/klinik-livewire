@@ -18,6 +18,10 @@ final class DiterimaTable extends PowerGridComponent
 {
     public string $tableName = 'diterima-table-cthdxg-table';
 
+    public string $filterJenis = '';
+    public string $filterUnitUsaha = '';
+    public string $filterMetodePembayaran = '';
+
     public function setUp(): array
     {
 
@@ -33,7 +37,10 @@ final class DiterimaTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Uangkeluar::query()
-            ->where('status', 'Disetujui')->latest();
+            ->where('status', 'Disetujui')->latest()
+            ->when($this->filterJenis, fn (Builder $q) => $q->where('jenis_pengeluaran', $this->filterJenis))
+            ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha))
+            ->when($this->filterMetodePembayaran, fn (Builder $q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran));
     }
 
     public function relationSearch(): array
@@ -189,6 +196,16 @@ final class DiterimaTable extends PowerGridComponent
     public function refreshDiterima()
     {
         $this->dispatch('pg:eventRefresh');
+    }
+
+    #[\Livewire\Attributes\On('uangkeluar-filter-updated')]
+    public function setFilters($jenis = '', $unitUsaha = '', $metodePembayaran = ''): void
+    {
+        $this->filterJenis = $jenis;
+        $this->filterUnitUsaha = $unitUsaha;
+        $this->filterMetodePembayaran = $metodePembayaran;
+
+        $this->dispatch('pg:eventRefresh')->to(self::class);
     }
     /*
     public function actionRules($row): array
