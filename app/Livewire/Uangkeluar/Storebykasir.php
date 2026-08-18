@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 
 class Storebykasir extends Component
 {
-    public $diajukan_oleh, $role, $keterangan, $jumlah_uang, $jenis_pengeluaran, $unit_usaha;
+    public $diajukan_oleh, $role, $keterangan, $jumlah_uang, $metode_pembayaran, $jenis_pengeluaran, $unit_usaha;
     public $status = 'Disetujui';
     public $user_id;
     public array $users = [];
@@ -34,6 +34,7 @@ class Storebykasir extends Component
         $this->validate([
             'user_id'           => 'required|numeric',
             'jumlah_uang'       => 'required',
+            'metode_pembayaran' => 'required',
             'jenis_pengeluaran' => 'required',
             'keterangan'        => 'required',
             'unit_usaha'        => 'required',
@@ -63,6 +64,7 @@ class Storebykasir extends Component
             'role'              => $this->role,
             'keterangan'        => $this->keterangan,
             'jumlah_uang'       => $this->jumlah_uang,
+            'metode_pembayaran' => $this->metode_pembayaran,
             'jenis_pengeluaran' => $this->jenis_pengeluaran,
             'unit_usaha'        => $this->unit_usaha,
             'status'            => $this->status,

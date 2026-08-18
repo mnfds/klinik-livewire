@@ -13,7 +13,24 @@
                     <label class="label font-medium">Jumlah Uang</label>
                     <input type="text" x-model="display" @input="onInput" inputmode="numeric" class="input input-bordered w-full">
                 </div>
-    
+                
+                <div>
+                    <label class="label font-medium">Pembayaran<span class="text-error">*</span></label>
+                    <select class="select select-bordered w-full @error('metode_pembayaran') input-error @enderror" wire:model.lazy="metode_pembayaran">
+                        <option value="">Pembayaran</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Qris">Qris</option>
+                        <option value="ShopeePay">ShopeePay</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
+                    </select>
+                    @error('metode_pembayaran')
+                        <span class="text-error text-sm">Mohon Memilih Metode Pembayaran Dengan Benar</span>
+                    @enderror
+                </div>
+
                 <div>
                     <label class="label font-medium">Kategori</label>
                     <select class="select select-bordered w-full" wire:model.defer="jenis_pengeluaran">
@@ -70,7 +87,24 @@
                         <span class="text-error text-sm">Mohon Mengisi Jumlah Uang Yang Keluar Dengan Benar</span>
                     @enderror
                 </div>
-    
+                
+                <div>
+                    <label class="label font-medium">Pembayaran<span class="text-error">*</span></label>
+                    <select class="select select-bordered w-full @error('metode_pembayaran') input-error @enderror" wire:model.lazy="metode_pembayaran">
+                        <option value="">Pembayaran</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Qris">Qris</option>
+                        <option value="ShopeePay">ShopeePay</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
+                    </select>
+                    @error('metode_pembayaran')
+                        <span class="text-error text-sm">Mohon Memilih Metode Pembayaran Dengan Benar</span>
+                    @enderror
+                </div>
+
                 <div>
                     <label class="label font-medium">Kategori<span class="text-error">*</span></label>
                     <select class="select select-bordered w-full @error('jenis_pengeluaran') input-error @enderror" wire:model.defer="jenis_pengeluaran">
@@ -137,7 +171,24 @@
                     <label class="label font-medium">Jumlah Uang</label>
                     <input type="text" x-model="display" @input="onInput" inputmode="numeric" class="input input-bordered w-full">
                 </div>
-    
+
+                <div>
+                    <label class="label font-medium">Pembayaran<span class="text-error">*</span></label>
+                    <select class="select select-bordered w-full @error('metode_pembayaran') input-error @enderror" wire:model.lazy="metode_pembayaran">
+                        <option value="">Pembayaran</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Qris">Qris</option>
+                        <option value="ShopeePay">ShopeePay</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
+                    </select>
+                    @error('metode_pembayaran')
+                        <span class="text-error text-sm">Mohon Memilih Metode Pembayaran Dengan Benar</span>
+                    @enderror
+                </div>
+
                 <div>
                     <label class="label font-medium">Kategori</label>
                     <select class="select select-bordered w-full" wire:model.defer="jenis_pengeluaran">

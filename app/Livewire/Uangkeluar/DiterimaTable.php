@@ -61,8 +61,10 @@ final class DiterimaTable extends PowerGridComponent
 
             ->add('jumlah_uang')
             ->add('jenis_pengeluaran')
-            ->add('jumlah_dan_jenis', fn ($row) => 
+            ->add('metode_pembayaran')
+            ->add('jumlah_dan_jenis_dan_metode_pembayaran', fn ($row) => 
                 'Rp ' . number_format($row->jumlah_uang, 0, ',', '.') .
+                ' (' . ucfirst($row->metode_pembayaran) . ')' .
                 '<br><span class="text-sm text-gray-500">' . 
                 $row->jenis_pengeluaran . 
                 '</span>'
@@ -85,7 +87,8 @@ final class DiterimaTable extends PowerGridComponent
 
             Column::make('Jumlah Uang ', 'jumlah_uang')->searchable()->hidden(),
             Column::make('Jenis ', 'jenis_pengeluaran')->searchable()->hidden(),
-            Column::make('Total & Kategori ', 'jumlah_dan_jenis')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Pembayaran ', 'metode_pembayaran')->searchable()->hidden(),
+            Column::make('Total & Kategori ', 'jumlah_dan_jenis_dan_metode_pembayaran')->bodyAttribute('whitespace-nowrap'),
 
             Column::action('Action'),
         ];

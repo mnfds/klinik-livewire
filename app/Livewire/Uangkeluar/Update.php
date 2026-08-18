@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Gate;
 class Update extends Component
 {
     public $pending_id, $diterima_id, $ditolak_id;
-    public $diajukan_oleh, $role, $keterangan, $jumlah_uang, $jenis_pengeluaran, $unit_usaha;
+    public $diajukan_oleh, $role, $keterangan, $jumlah_uang, $metode_pembayaran, $jenis_pengeluaran, $unit_usaha;
 
     public function render()
     {
@@ -24,6 +24,7 @@ class Update extends Component
         $pending = Uangkeluar::findOrFail($rowId);
 
         $this->jumlah_uang          = $pending->jumlah_uang;
+        $this->metode_pembayaran    = $pending->metode_pembayaran;
         $this->jenis_pengeluaran    = $pending->jenis_pengeluaran;
         $this->keterangan           = $pending->keterangan;
         $this->unit_usaha           = $pending->unit_usaha;
@@ -34,8 +35,10 @@ class Update extends Component
     public function updatepending()
     {
         $this->validate([
-            'jumlah_uang' => 'nullable',
-            'jenis_pengeluaran' => 'nullable',
+            'jumlah_uang' => 'required',
+            'metode_pembayaran' => 'required',
+            'jenis_pengeluaran' => 'required',
+            'unit_usaha' => 'usaha',
             'keterangan' => 'nullable',
         ]);
         if (! Gate::allows('akses', 'Pengajuan Pengeluaran Pending Edit')) {
@@ -48,6 +51,7 @@ class Update extends Component
 
         Uangkeluar::where('id', $this->pending_id)->update([
             'jumlah_uang' => $this->jumlah_uang,
+            'metode_pembayaran' => $this->metode_pembayaran,
             'jenis_pengeluaran' => $this->jenis_pengeluaran,
             'keterangan' => $this->keterangan,
             'unit_usaha' => $this->unit_usaha,
@@ -73,6 +77,7 @@ class Update extends Component
         $diterima = Uangkeluar::findOrFail($rowId);
 
         $this->jumlah_uang          = $diterima->jumlah_uang;
+        $this->metode_pembayaran   = $diterima->metode_pembayaran;
         $this->jenis_pengeluaran    = $diterima->jenis_pengeluaran;
         $this->keterangan           = $diterima->keterangan;
         $this->unit_usaha           = $diterima->unit_usaha;
@@ -84,9 +89,10 @@ class Update extends Component
     {
         $this->validate([
             'jumlah_uang' => 'required',
+            'metode_pembayaran' => 'required',
             'jenis_pengeluaran' => 'required',
-            'keterangan' => 'required',
             'unit_usaha' => 'required',
+            'keterangan' => 'nullable',
         ]);
         // if (! Gate::allows('akses', 'Pengajuan Pengeluaran Disetujui Edit')) {
         //     $this->dispatch('toast', [
@@ -104,6 +110,7 @@ class Update extends Component
         }
         Uangkeluar::where('id', $this->diterima_id)->update([
             'jumlah_uang' => $this->jumlah_uang,
+            'metode_pembayaran' => $this->metode_pembayaran,
             'jenis_pengeluaran' => $this->jenis_pengeluaran,
             'keterangan' => $this->keterangan,
             'unit_usaha' => $this->unit_usaha,
@@ -129,6 +136,7 @@ class Update extends Component
         $ditolak = Uangkeluar::findOrFail($rowId);
 
         $this->jumlah_uang          = $ditolak->jumlah_uang;
+        $this->metode_pembayaran   = $ditolak->metode_pembayaran;
         $this->jenis_pengeluaran    = $ditolak->jenis_pengeluaran;
         $this->keterangan           = $ditolak->keterangan;
         $this->unit_usaha           = $ditolak->unit_usaha;
@@ -139,8 +147,10 @@ class Update extends Component
     public function updateDitolak()
     {
         $this->validate([
-            'jumlah_uang' => 'nullable',
-            'jenis_pengeluaran' => 'nullable',
+            'jumlah_uang' => 'required',
+            'metode_pembayaran' => 'required',
+            'jenis_pengeluaran' => 'required',
+            'unit_usaha' => 'required',
             'keterangan' => 'nullable',
         ]);
         if (! Gate::allows('akses', 'Pengajuan Pengeluaran Ditolak Edit')) {
@@ -153,6 +163,7 @@ class Update extends Component
 
         Uangkeluar::where('id', $this->ditolak_id)->update([
             'jumlah_uang' => $this->jumlah_uang,
+            'metode_pembayaran' => $this->metode_pembayaran,
             'jenis_pengeluaran' => $this->jenis_pengeluaran,
             'keterangan' => $this->keterangan,
             'unit_usaha' => $this->unit_usaha,
