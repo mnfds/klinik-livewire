@@ -67,8 +67,8 @@
                             </span>
                         @endif
 
-                        @if($filterStatus || $filterUnitUsaha)
-                            <button wire:click="$set('filterStatus', ''); $set('filterUnitUsaha', '')" class="btn btn-xs">
+                        @if($filterStatus || $filterUnitUsaha || $filterMetodePembayaran)
+                            <button wire:click="$set('filterStatus', ''); $set('filterUnitUsaha', ''); $set('filterMetodePembayaran', '')" class="btn btn-xs">
                                 Clear all
                             </button>
                         @endif
