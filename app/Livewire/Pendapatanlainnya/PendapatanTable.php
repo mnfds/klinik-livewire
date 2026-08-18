@@ -22,6 +22,11 @@ final class PendapatanTable extends PowerGridComponent
     public string $filterUnitUsaha = '';
     public string $filterMetodePembayaran = '';
 
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
         // $this->showCheckBox();
@@ -41,7 +46,33 @@ final class PendapatanTable extends PowerGridComponent
             ->latest()
             ->when($this->filterStatus, fn (Builder $q) => $q->where('status', $this->filterStatus))
             ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha))
-            ->when($this->filterMetodePembayaran, fn (Builder $q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran));
+            ->when(
+                $this->hasTanggalFilter(),
+                function (Builder $q) {
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween('tanggal_transaksi', [$range['start'], $range['end']]);
+                }
+            );
+    }
+
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_transaksi.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_transaksi.start')
+            )->startOfDay(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_transaksi.end')
+            )->endOfDay(),
+        ];
     }
 
     public function relationSearch(): array
@@ -109,6 +140,7 @@ final class PendapatanTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_transaksi', 'tanggal_transaksi'),
         ];
     }
 

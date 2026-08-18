@@ -22,6 +22,11 @@ final class DiterimaTable extends PowerGridComponent
     public string $filterUnitUsaha = '';
     public string $filterMetodePembayaran = '';
 
+    public function boot(): void
+    {
+        config(['livewire-powergrid.filter' => 'outside']);
+    }
+
     public function setUp(): array
     {
 
@@ -40,7 +45,33 @@ final class DiterimaTable extends PowerGridComponent
             ->where('status', 'Disetujui')->latest()
             ->when($this->filterJenis, fn (Builder $q) => $q->where('jenis_pengeluaran', $this->filterJenis))
             ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha))
-            ->when($this->filterMetodePembayaran, fn (Builder $q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran));
+            ->when($this->filterMetodePembayaran, fn (Builder $q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
+            ->when(
+                $this->hasTanggalFilter(),
+                function (Builder $q) {
+                    $range = $this->getTanggalFilter();
+                    $q->whereBetween('tanggal_pengajuan', [$range['start'], $range['end']]);
+                }
+            );
+    }
+    protected function hasTanggalFilter(): bool
+    {
+        return ! empty(
+            data_get($this->filters, 'date.tanggal_pengajuan.start')
+        );
+    }
+
+    protected function getTanggalFilter(): array
+    {
+        return [
+            'start' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_pengajuan.start')
+            )->startOfDay(),
+
+            'end' => \Carbon\Carbon::parse(
+                data_get($this->filters, 'date.tanggal_pengajuan.end')
+            )->endOfDay(),
+        ];
     }
 
     public function relationSearch(): array
@@ -104,6 +135,7 @@ final class DiterimaTable extends PowerGridComponent
     public function filters(): array
     {
         return [
+            Filter::datepicker('tanggal_pengajuan', 'tanggal_pengajuan'),
         ];
     }
 
