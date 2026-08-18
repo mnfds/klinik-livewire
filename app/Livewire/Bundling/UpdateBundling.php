@@ -22,18 +22,47 @@ class UpdateBundling extends Component
     public $pelayananInputs = [];
     public $produkInputs = [];
 
-    public $treatmentList = [];
-    public $pelayananList = [];
-    public $produkObatList = [];
+    public array $treatmentList = [];
+    public array $pelayananList = [];
+    public array $produkObatList = [];
 
     public $potongan_show, $harga_show, $harga_bersih_show;
 
-    public function mount()
+    public function mount(Bundling $bundling)
     {
-        $this->treatmentList = Treatment::select('id', 'nama_treatment')->orderBy('nama_treatment')->get();
-        $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')->orderBy('nama_pelayanan')->get();
-        $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')->orderBy('nama_dagang')->get();
+        $this->treatmentList = Treatment::select('id', 'nama_treatment')
+            ->orderBy('nama_treatment')
+            ->get()
+            ->map(fn ($t) => ['id' => $t->id, 'nama' => $t->nama_treatment])
+            ->toArray();
 
+        $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')
+            ->orderBy('nama_pelayanan')
+            ->get()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_pelayanan])
+            ->toArray();
+
+        $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')
+            ->orderBy('nama_dagang')
+            ->get()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_dagang])
+            ->toArray();
+
+        // Isi ulang inputs dari data existing
+        $this->treatmentInputs = $bundling->treatmentBundlings->map(fn ($t) => [
+            'treatments_id' => $t->treatments_id,
+            'jumlah'        => $t->jumlah,
+        ])->toArray();
+
+        $this->pelayananInputs = $bundling->pelayananBundlings->map(fn ($p) => [
+            'pelayanan_id' => $p->pelayanan_id,
+            'jumlah'       => $p->jumlah,
+        ])->toArray();
+
+        $this->produkInputs = $bundling->produkObatBundlings->map(fn ($p) => [
+            'produk_id' => $p->produk_id,
+            'jumlah'    => $p->jumlah,
+        ])->toArray();
     }
 
     #[On('editBundling')]

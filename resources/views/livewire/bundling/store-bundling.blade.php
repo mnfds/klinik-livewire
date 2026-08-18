@@ -71,12 +71,54 @@
                 <div class="space-y-2">
                     @foreach ($pelayananInputs as $index => $row)
                         <div class="flex flex-col md:flex-row gap-2">
-                            <select class="select select-bordered w-full md:flex-1" wire:model.defer="pelayananInputs.{{ $index }}.pelayanan_id">
-                                <option value="">-- Pilih Pelayanan --</option>
-                                @foreach ($pelayananList as $item)
-                                    <option value="{{ $item->id }}">{{ $item->nama_pelayanan }}</option>
-                                @endforeach
-                            </select>
+                            <div
+                                wire:key="pelayanan-combobox-{{ $index }}"
+                                x-data="{
+                                    open: false,
+                                    search: '',
+                                    list: {{ \Illuminate\Support\Js::from($pelayananList) }},
+                                    selectedId: @entangle("pelayananInputs.{$index}.pelayanan_id"),
+                                    get filtered() {
+                                        return this.search === ''
+                                            ? this.list
+                                            : this.list.filter(x => x.nama.toLowerCase().includes(this.search.toLowerCase()))
+                                    },
+                                    get selectedLabel() {
+                                        let x = this.list.find(x => x.id == this.selectedId)
+                                        return x ? x.nama : ''
+                                    },
+                                    choose(item) {
+                                        this.selectedId = item.id
+                                        this.search = item.nama
+                                        this.open = false
+                                    }
+                                }"
+                                x-init="search = selectedLabel"
+                                @click.outside="open = false; search = selectedLabel"
+                                class="relative w-full md:flex-1"
+                            >
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true; search = ''"
+                                    placeholder="Cari pelayanan..."
+                                    autocomplete="off"
+                                    class="input input-bordered w-full"
+                                >
+                                <ul x-show="open" x-cloak
+                                    class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                                    <template x-for="item in filtered" :key="item.id">
+                                        <li @click="choose(item)"
+                                            class="px-4 py-2 cursor-pointer hover:bg-base-200"
+                                            x-text="item.nama">
+                                        </li>
+                                    </template>
+                                    <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                        Tidak ditemukan
+                                    </li>
+                                </ul>
+                            </div>
+
                             <input type="number" min="1" class="input input-bordered w-full md:w-28" placeholder="Jumlah"
                                 wire:model.defer="pelayananInputs.{{ $index }}.jumlah">
                             <button type="button" class="btn btn-error btn-sm" wire:click="removePelayananRow({{ $index }})">✕</button>
@@ -92,12 +134,54 @@
                 <div class="space-y-2">
                     @foreach ($treatmentInputs as $index => $row)
                         <div class="flex flex-col md:flex-row gap-2">
-                            <select class="select select-bordered w-full md:flex-1" wire:model.defer="treatmentInputs.{{ $index }}.treatments_id">
-                                <option value="">-- Pilih Pelayanan Estetika --</option>
-                                @foreach ($treatmentList as $item)
-                                    <option value="{{ $item->id }}">{{ $item->nama_treatment }}</option>
-                                @endforeach
-                            </select>
+                            <div
+                                wire:key="treatment-combobox-{{ $index }}"
+                                x-data="{
+                                    open: false,
+                                    search: '',
+                                    list: {{ \Illuminate\Support\Js::from($treatmentList) }},
+                                    selectedId: @entangle("treatmentInputs.{$index}.treatments_id"),
+                                    get filtered() {
+                                        return this.search === ''
+                                            ? this.list
+                                            : this.list.filter(x => x.nama.toLowerCase().includes(this.search.toLowerCase()))
+                                    },
+                                    get selectedLabel() {
+                                        let x = this.list.find(x => x.id == this.selectedId)
+                                        return x ? x.nama : ''
+                                    },
+                                    choose(item) {
+                                        this.selectedId = item.id
+                                        this.search = item.nama
+                                        this.open = false
+                                    }
+                                }"
+                                x-init="search = selectedLabel"
+                                @click.outside="open = false; search = selectedLabel"
+                                class="relative w-full md:flex-1"
+                            >
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true; search = ''"
+                                    placeholder="Cari pelayanan estetika..."
+                                    autocomplete="off"
+                                    class="input input-bordered w-full"
+                                >
+                                <ul x-show="open" x-cloak
+                                    class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                                    <template x-for="item in filtered" :key="item.id">
+                                        <li @click="choose(item)"
+                                            class="px-4 py-2 cursor-pointer hover:bg-base-200"
+                                            x-text="item.nama">
+                                        </li>
+                                    </template>
+                                    <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                        Tidak ditemukan
+                                    </li>
+                                </ul>
+                            </div>
+
                             <input type="number" min="1" class="input input-bordered w-full md:w-28" placeholder="Jumlah"
                                 wire:model.defer="treatmentInputs.{{ $index }}.jumlah">
                             <button type="button" class="btn btn-error btn-sm" wire:click="removeTreatmentRow({{ $index }})">✕</button>
@@ -113,12 +197,54 @@
                 <div class="space-y-2">
                     @foreach ($produkInputs as $index => $row)
                         <div class="flex flex-col md:flex-row gap-2">
-                            <select class="select select-bordered w-full md:flex-1" wire:model.defer="produkInputs.{{ $index }}.produk_id">
-                                <option value="">-- Pilih Produk / Obat --</option>
-                                @foreach ($produkObatList as $item)
-                                    <option value="{{ $item->id }}">{{ $item->nama_dagang }}</option>
-                                @endforeach
-                            </select>
+                            <div
+                                wire:key="produk-bundling-combobox-{{ $index }}"
+                                x-data="{
+                                    open: false,
+                                    search: '',
+                                    list: {{ \Illuminate\Support\Js::from($produkObatList) }},
+                                    selectedId: @entangle("produkInputs.{$index}.produk_id"),
+                                    get filtered() {
+                                        return this.search === ''
+                                            ? this.list
+                                            : this.list.filter(x => x.nama.toLowerCase().includes(this.search.toLowerCase()))
+                                    },
+                                    get selectedLabel() {
+                                        let x = this.list.find(x => x.id == this.selectedId)
+                                        return x ? x.nama : ''
+                                    },
+                                    choose(item) {
+                                        this.selectedId = item.id
+                                        this.search = item.nama
+                                        this.open = false
+                                    }
+                                }"
+                                x-init="search = selectedLabel"
+                                @click.outside="open = false; search = selectedLabel"
+                                class="relative w-full md:flex-1"
+                            >
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true; search = ''"
+                                    placeholder="Cari produk / obat..."
+                                    autocomplete="off"
+                                    class="input input-bordered w-full"
+                                >
+                                <ul x-show="open" x-cloak
+                                    class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                                    <template x-for="item in filtered" :key="item.id">
+                                        <li @click="choose(item)"
+                                            class="px-4 py-2 cursor-pointer hover:bg-base-200"
+                                            x-text="item.nama">
+                                        </li>
+                                    </template>
+                                    <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                        Tidak ditemukan
+                                    </li>
+                                </ul>
+                            </div>
+
                             <input type="number" min="1" class="input input-bordered w-full md:w-28" placeholder="Jumlah"
                                 wire:model.defer="produkInputs.{{ $index }}.jumlah">
                             <button type="button" class="btn btn-error btn-sm" wire:click="removeProdukRow({{ $index }})">✕</button>

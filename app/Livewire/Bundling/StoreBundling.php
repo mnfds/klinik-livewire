@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Gate;
 class StoreBundling extends Component
 {
     // List untuk pilihan select
-    public $treatmentList = [];
-    public $pelayananList = [];
-    public $produkObatList = [];
+    public array $treatmentList = [];
+    public array $pelayananList = [];
+    public array $produkObatList = [];
 
     // Input bundling utama
     public $nama;
@@ -31,9 +31,23 @@ class StoreBundling extends Component
 
     public function mount()
     {
-        $this->treatmentList = Treatment::select('id', 'nama_treatment')->orderBy('nama_treatment')->get();
-        $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')->orderBy('nama_pelayanan')->get();
-        $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')->orderBy('nama_dagang')->get();
+        $this->treatmentList = Treatment::select('id', 'nama_treatment')
+            ->orderBy('nama_treatment')
+            ->get()
+            ->map(fn ($t) => ['id' => $t->id, 'nama' => $t->nama_treatment])
+            ->toArray();
+
+        $this->pelayananList = Pelayanan::select('id', 'nama_pelayanan')
+            ->orderBy('nama_pelayanan')
+            ->get()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_pelayanan])
+            ->toArray();
+
+        $this->produkObatList = ProdukDanObat::select('id', 'nama_dagang')
+            ->orderBy('nama_dagang')
+            ->get()
+            ->map(fn ($p) => ['id' => $p->id, 'nama' => $p->nama_dagang])
+            ->toArray();
     }
 
     public function render()
