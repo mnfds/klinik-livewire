@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
-    public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $status;
+    public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $metode_pembayaran, $status;
     public $total_tagihan;
 
     public function render()
@@ -18,10 +18,11 @@ class Create extends Component
 
     public function storePendapatan(){
         $this->validate([
-            'total_tagihan'  => 'required',
-            'status'        => 'required',
-            'keterangan'    => 'required',
-            'unit_usaha'    => 'required',
+            'total_tagihan'         => 'required',
+            'status'                => 'required',
+            'keterangan'            => 'required',
+            'unit_usaha'            => 'required',
+            'metode_pembayaran'     => 'required',
         ]);
 
         $this->no_transaksi = 'TRX-' . now()->format('YmdHis');
@@ -52,6 +53,7 @@ class Create extends Component
             'keterangan'            => $this->keterangan,
             'total_tagihan'         => $this->total_tagihan,
             'unit_usaha'            => $this->unit_usaha,
+            'metode_pembayaran'     => $this->metode_pembayaran,
             'status'                => $this->status,
         ]);
         $this->dispatch('toast', [

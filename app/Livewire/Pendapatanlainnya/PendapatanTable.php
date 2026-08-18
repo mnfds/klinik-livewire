@@ -20,6 +20,7 @@ final class PendapatanTable extends PowerGridComponent
 
     public string $filterStatus = '';
     public string $filterUnitUsaha = '';
+    public string $filterMetodePembayaran = '';
 
     public function setUp(): array
     {
@@ -39,7 +40,8 @@ final class PendapatanTable extends PowerGridComponent
         return Pendapatanlainnya::query()
             ->latest()
             ->when($this->filterStatus, fn (Builder $q) => $q->where('status', $this->filterStatus))
-            ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha));
+            ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha))
+            ->when($this->filterMetodePembayaran, fn (Builder $q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran));
     }
 
     public function relationSearch(): array
@@ -64,7 +66,8 @@ final class PendapatanTable extends PowerGridComponent
 
         ->add('total_tagihan')
         ->add('status')
-        ->add('total_dan_status', function ($row) {
+        ->add('metode_pembayaran')
+        ->add('total_dan_status_dan_metode_pembayaran', function ($row) {
             $statusClass = match ($row->status) {
                 'lunas' => 'text-success',
                 'belum lunas' => 'text-warning',
@@ -75,7 +78,8 @@ final class PendapatanTable extends PowerGridComponent
             return 'Rp ' . number_format($row->total_tagihan, 0, ',', '.')
                 . '<br><span class="text-sm ' . $statusClass . '">'
                 . ucfirst($row->status)
-                . '</span>';
+                . '</span>'
+                . '</span> ('. ucfirst($row->metode_pembayaran) .')</span>';
         });
     }
 
@@ -95,7 +99,8 @@ final class PendapatanTable extends PowerGridComponent
             
             Column::make('Tagihan ', 'total_tagihan')->searchable()->hidden(),
             Column::make('status ', 'status')->searchable()->hidden(),
-            Column::make('Total & Status', 'total_dan_status')->sortable()->searchable(),
+            Column::make('metode_pembayaran ', 'metode_pembayaran')->searchable()->hidden(),
+            Column::make('Total & Status', 'total_dan_status_dan_metode_pembayaran')->sortable()->searchable(),
 
             Column::action('Action')
         ];
@@ -169,10 +174,11 @@ final class PendapatanTable extends PowerGridComponent
     }
 
     #[\Livewire\Attributes\On('pendapatan-filter-updated')]
-    public function setFilters($status = '', $unitUsaha = ''): void
+    public function setFilters($status = '', $unitUsaha = '', $metodePembayaran = ''): void
     {
         $this->filterStatus = $status;
         $this->filterUnitUsaha = $unitUsaha;
+        $this->filterMetodePembayaran = $metodePembayaran;
 
         $this->dispatch('pg:eventRefresh')->to(self::class);
     }

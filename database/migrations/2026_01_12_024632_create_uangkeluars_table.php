@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('jenis_pengeluaran',['SDM', 'Administrasi', 'Marketing', 'Operasional', 'Fasilitas Dan Bangunan', 'Rumah Tangga', 'Dll']);
             $table->enum('unit_usaha',['Klinik', 'Apotik', 'Dll']);
             $table->enum('status',['Menunggu', 'Disetujui', 'Ditolak']);
+            $table->enum('metode_pembayaran', ['Tunai','Qris', 'Shopeepay', 'Mandiri', 'BCA', 'BRI', 'BNI']);
             $table->dateTime('tanggal_pengajuan')->default(now());
             $table->timestamps();
         });

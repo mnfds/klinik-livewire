@@ -34,6 +34,16 @@
                             <option value="Coffeshop">Coffeshop</option>
                             <option value="Dll">Dll</option>
                         </select>
+                        <select wire:model.live="filterMetodePembayaran" class="select select-bordered">
+                            <option value="">Pembayaran</option>
+                            <option value="Tunai">Tunai</option>
+                            <option value="Qris">Qris</option>
+                            <option value="ShopeePay">ShopeePay</option>
+                            <option value="Mandiri">Mandiri</option>
+                            <option value="BCA">BCA</option>
+                            <option value="BRI">BRI</option>
+                            <option value="BNI">BNI</option>
+                        </select>
                     </div>
                     <div class="flex gap-2 mb-3">
                         @if($filterStatus)
@@ -47,6 +57,13 @@
                             <span class="badge badge-primary gap-1">
                                 Unit: {{ $filterUnitUsaha }}
                                 <button wire:click="$set('filterUnitUsaha', '')">✕</button>
+                            </span>
+                        @endif
+
+                        @if($filterMetodePembayaran)
+                            <span class="badge badge-primary gap-1">
+                                Pembayaran: {{ $filterMetodePembayaran }}
+                                <button wire:click="$set('filterMetodePembayaran', '')">✕</button>
                             </span>
                         @endif
 

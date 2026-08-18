@@ -39,6 +39,23 @@
             </div>
 
             <div>
+                <label class="label font-medium">Metode Pembayaran<span class="text-error">*</span></label>
+                <select class="select select-bordered w-full @error('metode_pembayaran') input-error @enderror" wire:model.lazy="metode_pembayaran">
+                        <option value="">Pembayaran</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Qris">Qris</option>
+                        <option value="ShopeePay">ShopeePay</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
+                </select>
+                @error('metode_pembayaran')
+                    <span class="text-error text-sm">Mohon Memilih Metode Pembayaran Dengan Benar</span>
+                @enderror
+            </div>
+
+            <div>
                 <label class="label font-medium">Status<span class="text-error">*</span></label>
                 <select class="select select-bordered w-full @error('status') input-error @enderror" wire:model.lazy="status">
                     <option value="">Pilih</option>

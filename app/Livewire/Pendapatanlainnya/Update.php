@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Update extends Component
 {
-    public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $status;
+    public $no_transaksi, $tanggal_transaksi, $keterangan, $unit_usaha, $metode_pembayaran, $status;
     public $total_tagihan;
     public $pendapatan_id;
 
@@ -27,6 +27,7 @@ class Update extends Component
         $this->total_tagihan        = $pendapatan->total_tagihan;
         $this->keterangan           = $pendapatan->keterangan;
         $this->unit_usaha           = $pendapatan->unit_usaha;
+        $this->metode_pembayaran    = $pendapatan->metode_pembayaran;
         $this->status               = $pendapatan->status;
         $this->dispatch('setJumlahPendapatan', $this->total_tagihan);
         $this->dispatch('openmodaleditpendapatan');
@@ -35,10 +36,11 @@ class Update extends Component
     public function updatePendapatan()
     {
         $this->validate([
-            'total_tagihan'  => 'required',
-            'status'        => 'required',
-            'keterangan'    => 'required',
-            'unit_usaha'    => 'required',
+            'total_tagihan'         => 'required',
+            'status'                => 'required',
+            'keterangan'            => 'required',
+            'unit_usaha'            => 'required',
+            'metode_pembayaran'     => 'required',
         ]);
         if (! Gate::allows('akses', 'Pendapatan Edit')) {
             $this->dispatch('toast', [
@@ -53,6 +55,7 @@ class Update extends Component
             'status' => $this->status,
             'keterangan' => $this->keterangan,
             'unit_usaha' => $this->unit_usaha,
+            'metode_pembayaran' => $this->metode_pembayaran,
         ]);
 
         $this->dispatch('toast', [

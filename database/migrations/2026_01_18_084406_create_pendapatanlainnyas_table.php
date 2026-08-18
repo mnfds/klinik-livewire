@@ -21,6 +21,7 @@ return new class extends Migration
 
             $table->enum('unit_usaha',['Klinik', 'Apotik', 'Sewa Multifunction', 'Coffeshop', 'Dll']);
             $table->enum('status', ['belum lunas','lunas', 'belum bayar', 'batal'])->default('belum bayar');
+            $table->enum('metode_pembayaran', ['Tunai','Qris', 'Shopeepay', 'Mandiri', 'BCA', 'BRI', 'BNI']);
             $table->timestamps();
         });
     }
