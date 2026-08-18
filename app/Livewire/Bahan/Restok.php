@@ -18,11 +18,13 @@ class Restok extends Component
         ['bahan_baku_id' => '', 'jenis_keluar' => 'besar', 'jumlah' => '', 'catatan' => ''],
     ];
 
-    public $bahan = [];
+    public array $bahan = [];
 
     public function mount(): void
     {
-        $this->bahan = BahanBaku::all();
+        $this->bahan = BahanBaku::all()
+            ->map(fn ($b) => ['id' => $b->id, 'nama' => $b->nama])
+            ->toArray();
     }
 
     public function render()

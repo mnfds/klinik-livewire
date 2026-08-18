@@ -33,16 +33,58 @@
             @foreach ($items as $i => $item)
                 <div @class(['hidden' => $activeTab !== $i, 'space-y-4' => true])>
                     {{-- Nama Bahan Baku --}}
-                    <div>
+                    <div
+                        wire:key="bahan-combobox-{{ $i }}"
+                        x-data="{
+                            open: false,
+                            search: '',
+                            bahan: {{ \Illuminate\Support\Js::from($bahan) }},
+                            selectedId: @entangle("items.{$i}.bahan_baku_id"),
+                            get filtered() {
+                                return this.search === ''
+                                    ? this.bahan
+                                    : this.bahan.filter(b => b.nama.toLowerCase().includes(this.search.toLowerCase()))
+                            },
+                            get selectedLabel() {
+                                let b = this.bahan.find(b => b.id == this.selectedId)
+                                return b ? b.nama : ''
+                            },
+                            choose(item) {
+                                this.selectedId = item.id
+                                this.search = item.nama
+                                this.open = false
+                            }
+                        }"
+                        x-init="search = selectedLabel"
+                        @click.outside="open = false; search = selectedLabel"
+                        class="relative"
+                        >
                         <label class="label font-medium">
                             Nama Bahan Baku <span class="text-error">*</span>
                         </label>
-                        <select class="select select-bordered w-full @error("items.$i.bahan_baku_id") select-error @enderror" wire:model.lazy="items.{{ $i }}.bahan_baku_id">
-                            <option value="">Pilih Bahan Baku</option>
-                            @foreach ($bahan as $b)
-                                <option value="{{ $b->id }}">{{ $b->nama }}</option>
-                            @endforeach
-                        </select>
+
+                        <input
+                            type="text"
+                            x-model="search"
+                            @focus="open = true; search = ''"
+                            placeholder="Cari nama bahan baku..."
+                            autocomplete="off"
+                            class="input input-bordered w-full @error("items.$i.bahan_baku_id") input-error @enderror"
+                        >
+
+                        <ul x-show="open" x-cloak
+                            class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                            <template x-for="item in filtered" :key="item.id">
+                                <li @click="choose(item)"
+                                    class="px-4 py-2 cursor-pointer hover:bg-base-200"
+                                    x-text="item.nama">
+                                </li>
+                            </template>
+                            <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                Tidak ditemukan
+                            </li>
+                        </ul>
+
                         @error("items.$i.bahan_baku_id")
                             <span class="text-error text-sm">{{ $message }}</span>
                         @enderror
