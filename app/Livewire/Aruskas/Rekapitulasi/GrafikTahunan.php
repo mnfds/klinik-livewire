@@ -11,6 +11,18 @@ use App\Models\Pendapatanlainnya;
 
 class GrafikTahunan extends Component
 {
+    // Filter aktif
+    public string $tipe = '';
+    public string $filterUnitUsaha = '';
+    public string $filterMetodePembayaran = '';
+    public string $filterJenisPengeluaran = '';
+
+    // Draft (dipakai di dalam modal)
+    public string $draftTipe = '';
+    public string $draftUnitUsaha = '';
+    public string $draftMetodePembayaran = '';
+    public string $draftJenisPengeluaran = '';
+
     public function loadGrafik()
     {
         [$rekapBarMasuk, $rekapBarKeluar] = $this->hitungRekapBarTahunan();
@@ -25,6 +37,31 @@ class GrafikTahunan extends Component
         ]);
     }
 
+    public function openFilterModal(): void
+    {
+        $this->draftTipe = $this->tipe;
+        $this->draftUnitUsaha = $this->filterUnitUsaha;
+        $this->draftMetodePembayaran = $this->filterMetodePembayaran;
+        $this->draftJenisPengeluaran = $this->filterJenisPengeluaran;
+    }
+
+    public function filter(): void
+    {
+        $this->tipe = $this->draftTipe;
+        $this->filterUnitUsaha = $this->draftUnitUsaha;
+        $this->filterMetodePembayaran = $this->draftMetodePembayaran;
+        $this->filterJenisPengeluaran = $this->tipe === 'keluar' ? $this->draftJenisPengeluaran : '';
+
+        $this->loadGrafik();
+    }
+
+    public function resetAll(): void
+    {
+        $this->reset(['tipe', 'filterUnitUsaha', 'filterMetodePembayaran', 'filterJenisPengeluaran',
+                       'draftTipe', 'draftUnitUsaha', 'draftMetodePembayaran', 'draftJenisPengeluaran']);
+        $this->loadGrafik();
+    }
+
     private function hitungRekapBarTahunan(): array
     {
         $startYear = 2024;
@@ -37,22 +74,42 @@ class GrafikTahunan extends Component
             $start = Carbon::create($year, 1, 1)->startOfDay();
             $end   = Carbon::create($year, 12, 31)->endOfDay();
 
-            $masukKlinik = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
-                ->sum('total_tagihan_bersih');
+            $totalKlinik = 0;
+            $totalApotik = 0;
 
-            $masukApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
-                ->sum('total_harga');
+            if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Klinik')) {
+                $totalKlinik = TransaksiKlinik::whereBetween('tanggal_transaksi', [$start, $end])
+                    ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
+                    ->sum('total_tagihan_bersih');
+            }
 
-            $masukLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
-                ->whereIn('status', ['lunas', 'belum lunas'])
-                ->sum('total_tagihan');
+            if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
+                $totalApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
+                    ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
+                    ->sum('total_harga');
+            }
 
-            $keluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
-                ->where('status', 'Disetujui')
-                ->sum('jumlah_uang');
+            $totalLainnya = 0;
+            if ($this->tipe !== 'keluar') {
+                $totalLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
+                    ->whereIn('status', ['lunas', 'belum lunas'])
+                    ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
+                    ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
+                    ->sum('total_tagihan');
+            }
 
-            $rekapMasuk[]  = (int) ($masukKlinik + $masukApotik + $masukLainnya);
-            $rekapKeluar[] = (int) $keluar;
+            $totalKeluar = 0;
+            if ($this->tipe !== 'masuk') {
+                $totalKeluar = Uangkeluar::whereBetween('tanggal_pengajuan', [$start, $end])
+                    ->where('status', 'Disetujui')
+                    ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
+                    ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
+                    ->when($this->filterJenisPengeluaran, fn ($q) => $q->where('jenis_pengeluaran', $this->filterJenisPengeluaran))
+                    ->sum('jumlah_uang');
+            }
+
+            $rekapMasuk[]  = (int) ($totalKlinik + $totalApotik + $totalLainnya);
+            $rekapKeluar[] = (int) $totalKeluar;
         }
 
         return [$rekapMasuk, $rekapKeluar];
