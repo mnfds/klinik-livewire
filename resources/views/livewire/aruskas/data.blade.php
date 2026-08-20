@@ -178,9 +178,22 @@
                 </div>
 
                 <input type="radio" name="my_tabs_3" class="tab bg-transparent text-base-content" aria-label="Table" style="background-image: none;" />
-                <div class="tab-content bg-base-200 p-1">
+                <div class="tab-content bg-base-100 shadow-md border border-neutral/50 rounded-2xl p-1">
                     @can('akses', 'Arus Kas Table')
-                    <livewire:Aruskas.Rekapitulasi.TableRekap />
+                    <div class="tabs tabs-border p-2">
+                        <input type="radio" name="table_tabs" class="tab bg-transparent text-base-content" aria-label="Harian" style="background-image: none;"/>
+                        <div class="tab-content bg-base-1 p-1">
+                            <livewire:Aruskas.Rekapitulasi.TableRekap />
+                        </div>
+                        <input type="radio" name="table_tabs" class="tab bg-transparent text-base-content" aria-label="Bulanan" style="background-image: none;"/>
+                        <div class="tab-content bg-base-100 p-1">
+                            <livewire:Aruskas.Rekapitulasi.TableRekapBulanan />
+                        </div>
+                        <input type="radio" name="table_tabs" class="tab bg-transparent text-base-content" aria-label="Tahunan" style="background-image: none;"/>
+                        <div class="tab-content bg-base-100 p-1">
+                            <livewire:Aruskas.Rekapitulasi.TableRekapTahunan />
+                        </div>
+                    </div>
                     @endcan
                     @if (!Gate::allows('akses','Arus Kas Table'))
                         <div class="flex items-center justify-center min-h-[300px]">
