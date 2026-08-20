@@ -181,7 +181,7 @@
                 <div class="tab-content bg-base-100 shadow-md border border-neutral/50 rounded-2xl p-1">
                     @can('akses', 'Arus Kas Table')
                     <div class="tabs tabs-border p-2">
-                        <input type="radio" name="table_tabs" class="tab bg-transparent text-base-content" aria-label="Harian" style="background-image: none;"/>
+                        <input type="radio" name="table_tabs" class="tab bg-transparent text-base-content" aria-label="Harian" style="background-image: none;" checked/>
                         <div class="tab-content bg-base-1 p-1">
                             <livewire:Aruskas.Rekapitulasi.TableRekap />
                         </div>
