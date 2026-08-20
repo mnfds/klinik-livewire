@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Harian</title>
+    <title>Laporan Perbulan</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;

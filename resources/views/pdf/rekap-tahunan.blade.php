@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Harian</title>
+    <title>Laporan Pertahun</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
@@ -34,7 +34,7 @@
     </style>
 </head>
 <body>
-    <h2>Laporan Arus Kas Tahunan</h2>
+    <h2>Laporan Pendapatan & Pengeluaran Tahunan</h2>
     <h2 class="text-error">
         Tahun {{ $tahun }}
     </h2>
