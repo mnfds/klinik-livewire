@@ -92,7 +92,7 @@
                                                 @endcan
                                                 @can('akses', 'Arus Kas Detail')
                                                 <button
-                                                    wire:click="showDetail({{ $row['tahun_raw'] }})"
+                                                    wire:click="showDetailTahun({{ $row['tahun_raw'] }})"
                                                     class="btn btn-primary btn-sm w-full sm:w-auto">
                                                     <i class="fa-solid fa-eye"></i>
                                                     <span class="hidden sm:inline">Detail</span>
@@ -212,23 +212,83 @@
         </div>
     </dialog>
 
-    {{-- MODAL DETAIL — placeholder, akan disempurnakan --}}
+    {{-- MODAL DETAIL --}}
     <div
         x-data="{ open: false }"
         x-on:open-detail-modal-tahunan.window="open = true"
         x-show="open"
         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-        <div class="bg-base-100 w-11/12 max-w-4xl rounded-box pb-6 px-6 overflow-y-auto max-h-[90vh]">
+        <div class="bg-base-100 w-11/12 max-w-3xl rounded-box pb-6 px-6 overflow-y-auto max-h-[90vh]">
+
             <div class="flex justify-between items-center mb-4 sticky top-0 z-10 bg-base-100 py-3 border-b">
                 <h2 class="text-xl font-bold">
-                    Detail Keuangan Tahun {{ $detailTahun }}
+                    Detail Bulanan — {{ $detailLabelTahun }}
                 </h2>
                 <button class="btn btn-sm" @click="open=false">✕</button>
             </div>
 
-            {{-- Placeholder — struktur detail akan disempurnakan bersama fitur unduh --}}
-            <p class="text-sm text-base-content/60">Konten detail menyusul.</p>
+            <div class="overflow-x-auto rounded-box border border-base-content/5">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Tanggal</th>
+                            <th class="text-success">Uang Masuk (Rp)</th>
+                            <th class="text-error">Uang Keluar (Rp)</th>
+                            <th class="text-info">Uang Tersisa (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($detailPerBulan as $row)
+                            <tr>
+                                <th>{{ $row['no'] }}</th>
+                                <td>{{ $row['bulan'] }}</td>
+
+                                <td class="text-success font-semibold">
+                                    + Rp {{ number_format($row['masuk'],0,',','.') }}
+                                </td>
+
+                                <td class="text-error font-semibold">
+                                    - Rp {{ number_format($row['keluar'],0,',','.') }}
+                                </td>
+
+                                <td class="text-info font-semibold">
+                                    Rp {{ number_format($row['sisa'],0,',','.') }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-6">
+                                    Tidak ada data pada tahun ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 bg-base-100 p-4 space-y-2 max-w-sm ml-auto">
+                <div class="flex justify-between">
+                    <span class="font-medium">Total Uang Masuk</span>
+                    <span class="font-bold text-success">
+                        + Rp {{ number_format($detailTotalMasuk, 0, ',', '.') }}
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Total Uang Keluar</span>
+                    <span class="font-bold text-error">
+                        - Rp {{ number_format($detailTotalKeluar, 0, ',', '.') }}
+                    </span>
+                </div>
+                <div class="divider my-1"></div>
+                <div class="flex justify-between text-lg">
+                    <span class="font-semibold">Total Uang Tersisa</span>
+                    <span class="font-bold text-info">
+                        Rp {{ number_format($detailSisa, 0, ',', '.') }}
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -32,15 +32,20 @@ class TableRekapTahunan extends Component
 
     // Detail
     public $detailTahun;
-    public $detailMasuk = [];
-    public $detailKeluar = [];
+    public $detailLabelTahun;
+    public $detailPerBulan = [];
     public $detailTotalMasuk = 0;
     public $detailTotalKeluar = 0;
     public $detailSisa = 0;
 
     protected int $startYear = 2024;
     protected int $endYear = 2035;
-
+    protected array $namaBulan = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+    ];
+    
     public function render()
     {
         return view('livewire.aruskas.rekapitulasi.table-rekap-tahunan');
@@ -142,32 +147,158 @@ class TableRekapTahunan extends Component
         $this->totalSisa    = $totalMasukSemua - $totalKeluarSemua;
     }
 
-    // DETAIL — versi dasar, akan disempurnakan
-    public function showDetail($tahun)
+    public function showDetailTahun($tahun)
     {
         $this->detailTahun = $tahun;
+        $this->detailLabelTahun = "Tahun {$tahun}";
 
-        $start = Carbon::create((int) $tahun, 1, 1)->startOfYear();
-        $end   = Carbon::create((int) $tahun, 12, 31)->endOfYear();
+        $start = Carbon::create($tahun, 1, 1)->startOfYear();
+        $end   = Carbon::create($tahun, 12, 31)->endOfYear();
 
-        [$klinik, $apotik, $lainnya, $keluar] = $this->ambilData($start, $end);
+        $this->detailPerBulan = $this->hitungRekapBulananDalamTahun(
+            $start,
+            $end,
+            $tahun
+        );
 
-        $this->detailMasuk = [
-            'klinik'  => $klinik,
-            'apotik'  => $apotik,
-            'lainnya' => $lainnya,
-        ];
-        $this->detailKeluar = $keluar;
-
-        $totalKlinik  = $klinik->sum('total_tagihan_bersih');
-        $totalApotik  = $apotik->sum('total_harga');
-        $totalLainnya = $lainnya->sum('total_tagihan');
-
-        $this->detailTotalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
-        $this->detailTotalKeluar = $keluar->sum('jumlah_uang');
-        $this->detailSisa        = $this->detailTotalMasuk - $this->detailTotalKeluar;
+        $this->detailTotalMasuk = collect($this->detailPerBulan)->sum('masuk');
+        $this->detailTotalKeluar = collect($this->detailPerBulan)->sum('keluar');
+        $this->detailSisa = $this->detailTotalMasuk - $this->detailTotalKeluar;
 
         $this->dispatch('open-detail-modal-tahunan');
+    }
+
+    private function hitungRekapBulananDalamTahun(Carbon $start, Carbon $end, int $tahun): array {
+
+        $masukKlinik = collect();
+        $masukApotik = collect();
+        $masukLainnya = collect();
+        $keluar = collect();
+
+        if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Klinik')) {
+            $masukKlinik = TransaksiKlinik::whereBetween(
+                    'tanggal_transaksi',
+                    [$start, $end]
+                )
+                ->when(
+                    $this->filterMetodePembayaran,
+                    fn ($q) => $q->where(
+                        'metode_pembayaran',
+                        $this->filterMetodePembayaran
+                    )
+                )
+                ->selectRaw(
+                    'MONTH(tanggal_transaksi) bulan,
+                    SUM(total_tagihan_bersih) total'
+                )
+                ->groupBy('bulan')
+                ->pluck('total', 'bulan');
+        }
+
+        if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
+            $masukApotik = TransaksiApotik::whereBetween(
+                    'tanggal',
+                    [$start, $end]
+                )
+                ->when(
+                    $this->filterMetodePembayaran,
+                    fn ($q) => $q->where(
+                        'metode_pembayaran',
+                        $this->filterMetodePembayaran
+                    )
+                )
+                ->selectRaw(
+                    'MONTH(tanggal) bulan,
+                    SUM(total_harga) total'
+                )
+                ->groupBy('bulan')
+                ->pluck('total', 'bulan');
+        }
+
+        if ($this->tipe !== 'keluar') {
+            $masukLainnya = Pendapatanlainnya::whereBetween(
+                    'tanggal_transaksi',
+                    [$start, $end]
+                )
+                ->whereIn('status', ['lunas', 'belum lunas'])
+                ->when(
+                    $this->filterUnitUsaha,
+                    fn ($q) => $q->where(
+                        'unit_usaha',
+                        $this->filterUnitUsaha
+                    )
+                )
+                ->when(
+                    $this->filterMetodePembayaran,
+                    fn ($q) => $q->where(
+                        'metode_pembayaran',
+                        $this->filterMetodePembayaran
+                    )
+                )
+                ->selectRaw(
+                    'MONTH(tanggal_transaksi) bulan,
+                    SUM(total_tagihan) total'
+                )
+                ->groupBy('bulan')
+                ->pluck('total', 'bulan');
+        }
+
+        if ($this->tipe !== 'masuk') {
+            $keluar = Uangkeluar::whereBetween(
+                    'tanggal_pengajuan',
+                    [$start, $end]
+                )
+                ->where('status', 'Disetujui')
+                ->when(
+                    $this->filterUnitUsaha,
+                    fn ($q) => $q->where(
+                        'unit_usaha',
+                        $this->filterUnitUsaha
+                    )
+                )
+                ->when(
+                    $this->filterMetodePembayaran,
+                    fn ($q) => $q->where(
+                        'metode_pembayaran',
+                        $this->filterMetodePembayaran
+                    )
+                )
+                ->when(
+                    $this->filterJenisPengeluaran,
+                    fn ($q) => $q->where(
+                        'jenis_pengeluaran',
+                        $this->filterJenisPengeluaran
+                    )
+                )
+                ->selectRaw(
+                    'MONTH(tanggal_pengajuan) bulan,
+                    SUM(jumlah_uang) total'
+                )
+                ->groupBy('bulan')
+                ->pluck('total', 'bulan');
+        }
+
+        $hasil = [];
+
+        for ($bulan = 1; $bulan <= 12; $bulan++) {
+
+            $masuk =
+                ($masukKlinik[$bulan] ?? 0)
+                + ($masukApotik[$bulan] ?? 0)
+                + ($masukLainnya[$bulan] ?? 0);
+
+            $keluarValue = $keluar[$bulan] ?? 0;
+
+            $hasil[] = [
+                'no' => $bulan,
+                'bulan' => $this->namaBulan[$bulan],
+                'masuk' => $masuk,
+                'keluar' => $keluarValue,
+                'sisa' => $masuk - $keluarValue,
+            ];
+        }
+
+        return $hasil;
     }
 
     // UNDUH — versi dasar, akan disempurnakan
