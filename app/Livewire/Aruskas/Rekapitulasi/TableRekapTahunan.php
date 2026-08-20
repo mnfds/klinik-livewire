@@ -301,34 +301,27 @@ class TableRekapTahunan extends Component
         return $hasil;
     }
 
-    // UNDUH — versi dasar, akan disempurnakan
-    public function unduh($tahun)
+    public function unduhTahun($tahun)
     {
-        $start = Carbon::create((int) $tahun, 1, 1)->startOfYear();
-        $end   = Carbon::create((int) $tahun, 12, 31)->endOfYear();
+        $start = Carbon::create($tahun, 1, 1)->startOfYear();
+        $end   = Carbon::create($tahun, 12, 31)->endOfYear();
 
-        [$klinik, $apotik, $lainnya, $keluar] = $this->ambilData($start, $end, withPasien: true);
+        $detailPerBulan = $this->hitungRekapBulananDalamTahun(
+            $start,
+            $end,
+            $tahun
+        );
 
-        $totalKlinik  = $klinik->sum('total_tagihan_bersih');
-        $totalApotik  = $apotik->sum('total_harga');
-        $totalLainnya = $lainnya->sum('total_tagihan');
-
-        $totalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
-        $totalKeluar = $keluar->sum('jumlah_uang');
-        $sisa        = $totalMasuk - $totalKeluar;
+        $totalMasuk = collect($detailPerBulan)->sum('masuk');
+        $totalKeluar = collect($detailPerBulan)->sum('keluar');
+        $sisa = $totalMasuk - $totalKeluar;
 
         $pdf = Pdf::loadView('pdf.rekap-tahunan', [
-            'tahun'        => $tahun,
-            'klinik'       => $klinik,
-            'apotik'       => $apotik,
-            'lainnya'      => $lainnya,
-            'keluar'       => $keluar,
-            'totalKlinik'  => $totalKlinik,
-            'totalApotik'  => $totalApotik,
-            'totalLainnya' => $totalLainnya,
-            'totalMasuk'   => $totalMasuk,
-            'totalKeluar'  => $totalKeluar,
-            'sisa'         => $sisa,
+            'tahun' => $tahun,
+            'detailPerBulan' => $detailPerBulan,
+            'totalMasuk' => $totalMasuk,
+            'totalKeluar' => $totalKeluar,
+            'sisa' => $sisa,
         ])->setPaper('a4', 'portrait');
 
         return response()->streamDownload(

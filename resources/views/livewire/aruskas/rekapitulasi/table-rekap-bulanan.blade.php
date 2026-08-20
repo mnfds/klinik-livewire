@@ -90,7 +90,7 @@
                                         <td>
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 @can('akses', 'Arus Kas Unduh')
-                                                <button wire:click="unduh({{ $row['bulan_raw'] }})"
+                                                <button wire:click="unduhBulanan({{ $row['bulan_raw'] }})"
                                                     class="btn btn-info btn-sm w-full sm:w-auto">
                                                     <i class="fa-solid fa-download"></i>
                                                     <span class="hidden sm:inline">Unduh</span>

@@ -257,36 +257,30 @@ class TableRekapBulanan extends Component
         return $rekapHarian;
     }
 
-    public function unduh($bulan)
+    public function unduhBulanan($bulan)
     {
         $year = (int) $this->tahun;
+
         $labelBulan = $this->namaBulan[$bulan] . ' ' . $year;
 
         $start = Carbon::create($year, $bulan, 1)->startOfMonth();
         $end   = Carbon::create($year, $bulan, 1)->endOfMonth();
 
-        [$klinik, $apotik, $lainnya, $keluar] = $this->ambilData($start, $end, withPasien: true);
+        $detailPerHari = $this->hitungRekapHarianDalamBulan(
+            $start,
+            $end
+        );
 
-        $totalKlinik  = $klinik->sum('total_tagihan_bersih');
-        $totalApotik  = $apotik->sum('total_harga');
-        $totalLainnya = $lainnya->sum('total_tagihan');
-
-        $totalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
-        $totalKeluar = $keluar->sum('jumlah_uang');
-        $sisa        = $totalMasuk - $totalKeluar;
+        $totalMasuk = collect($detailPerHari)->sum('masuk');
+        $totalKeluar = collect($detailPerHari)->sum('keluar');
+        $sisa = $totalMasuk - $totalKeluar;
 
         $pdf = Pdf::loadView('pdf.rekap-bulanan', [
-            'labelBulan'   => $labelBulan,
-            'klinik'       => $klinik,
-            'apotik'       => $apotik,
-            'lainnya'      => $lainnya,
-            'keluar'       => $keluar,
-            'totalKlinik'  => $totalKlinik,
-            'totalApotik'  => $totalApotik,
-            'totalLainnya' => $totalLainnya,
-            'totalMasuk'   => $totalMasuk,
-            'totalKeluar'  => $totalKeluar,
-            'sisa'         => $sisa,
+            'labelBulan' => $labelBulan,
+            'detailPerHari' => $detailPerHari,
+            'totalMasuk' => $totalMasuk,
+            'totalKeluar' => $totalKeluar,
+            'sisa' => $sisa,
         ])->setPaper('a4', 'portrait');
 
         return response()->streamDownload(
