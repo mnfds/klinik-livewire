@@ -82,10 +82,10 @@ class Pelunasan extends Component
 
         $totalDibayarkanBaru = $rootRow->total_dibayarkan_group + $this->nominal_pelunasan;
         $status = $totalDibayarkanBaru >= $rootRow->total_tagihan ? 'lunas' : 'belum lunas';
-
+        $noTransaksiPelunasan = 'TRX-' . now()->format('YmdHis');
         Pendapatanlainnya::create([
             'parent_id'          => $this->root_id,
-            'no_transaksi'       => $this->no_transaksi,
+            'no_transaksi'       => $noTransaksiPelunasan,
             'tanggal_transaksi'  => now(),
             'keterangan'         => $this->keterangan,
             'total_tagihan'      => $rootRow->total_tagihan,

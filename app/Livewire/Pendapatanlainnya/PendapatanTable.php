@@ -61,46 +61,46 @@ final class PendapatanTable extends PowerGridComponent
     public function fields(): PowerGridFields
     {
         return PowerGrid::fields()
-        ->add('no_transaksi')
-        ->add('tanggal_transaksi', fn ($row) => \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i'))
-        ->add('no_dan_tanggal', function($row){
-            return ucfirst($row->no_transaksi) . '<br><span class="text-sm text-gray-500">' . \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i') . '</span>';
-        })
+            ->add('no_transaksi')
+            ->add('tanggal_transaksi', fn ($row) => \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i'))
+            ->add('no_dan_tanggal', function($row){
+                return ucfirst($row->no_transaksi) . '<br><span class="text-sm text-gray-500">' . \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d M Y H:i') . '</span>';
+            })
 
-        ->add('keterangan')
-        ->add('unit_usaha')
-        ->add('keterangan_dan_unit', function($row){
-            return ucfirst($row->keterangan) . '<br><span class="text-sm text-gray-500">Unit Usaha : ' . $row->unit_usaha . '</span>';
-        })
+            ->add('keterangan')
+            ->add('unit_usaha')
+            ->add('keterangan_dan_unit', function($row){
+                return ucfirst($row->keterangan) . '<br><span class="text-sm text-gray-500">Unit Usaha : ' . $row->unit_usaha . '</span>';
+            })
 
-        ->add('total_tagihan')
-        ->add('total_dibayarkan')
-        ->add('sisa_tagihan', fn ($row) => $row->sisa_tagihan)
-        ->add('status')
-        ->add('metode_pembayaran')
-        ->add('total_dan_status_dan_metode_pembayaran', function ($row) {
-            $statusClass = match ($row->status) {
-                'lunas' => 'text-success',
-                'belum lunas' => 'text-warning',
-                'belum bayar', 'batal' => 'text-error',
-                default => 'text-gray-500',
-            };
+            ->add('total_tagihan')
+            ->add('total_dibayarkan')
+            ->add('sisa_tagihan', fn ($row) => $row->sisa_tagihan)
+            ->add('status')
+            ->add('metode_pembayaran')
+            ->add('total_dan_status_dan_metode_pembayaran', function ($row) {
+                $statusClass = match ($row->status) {
+                    'lunas' => 'text-success',
+                    'belum lunas' => 'text-warning',
+                    'belum bayar', 'batal' => 'text-error',
+                    default => 'text-gray-500',
+                };
 
-            $html = 'Tagihan: Rp ' . number_format($row->total_tagihan, 0, ',', '.')
-                . '<br><span class="text-sm text-gray-500">Dibayar (baris ini): Rp ' . number_format($row->total_dibayarkan, 0, ',', '.') . '</span>';
+                $html = 'Tagihan: Rp ' . number_format($row->total_tagihan, 0, ',', '.')
+                    . '<br><span class="text-sm text-success">Dibayarkan (baris ini): Rp ' . number_format($row->total_dibayarkan, 0, ',', '.') . '</span>';
 
-            // sisa tagihan hanya relevan ditampilkan kalau grup masih belum lunas
-            if (! $row->is_lunas_group) {
-                $html .= '<br><span class="text-sm text-error">Sisa: Rp ' . number_format($row->sisa_tagihan, 0, ',', '.') . '</span>';
-            }
+                // sisa tagihan hanya relevan ditampilkan kalau grup masih belum lunas
+                if (! $row->is_lunas_group) {
+                    $html .= '<br><span class="text-sm text-error">Sisa: Rp ' . number_format($row->sisa_tagihan, 0, ',', '.') . '</span>';
+                }
 
-            $html .= '<br><span class="text-sm ' . $statusClass . '">'
-                . ucfirst($row->status)
-                . '</span>'
-                . ' (' . ucfirst($row->metode_pembayaran) . ')';
+                $html .= '<br><span class="text-sm ' . $statusClass . '">'
+                    . ucfirst($row->status)
+                    . '</span>'
+                    . ' (' . ucfirst($row->metode_pembayaran) . ')';
 
-            return $html;
-        });
+                return $html;
+            });
     }
 
     public function columns(): array
