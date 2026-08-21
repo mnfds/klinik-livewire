@@ -142,7 +142,10 @@
                                         $AbsenTidakLengkap = false;
 
                                         if ($jamMasuk && $jamMulai) {
-                                            $terlambat = \Carbon\Carbon::parse($jamMasuk)->format('H:i:s') > \Carbon\Carbon::parse($jamMulai)->format('H:i:s');
+                                            // KODE TANPA ADA TOLERANSI WAKTU TERLAMBAT
+                                            // $terlambat = \Carbon\Carbon::parse($jamMasuk)->format('H:i:s') > \Carbon\Carbon::parse($jamMulai)->format('H:i:s');
+                                            // KODE DENGAN TOLERANSI (addMinutes)
+                                            $terlambat = Carbon\Carbon::parse($jamMasuk)->gt(Carbon\Carbon::parse($jamMulai)->addMinutes(1));
                                         }
 
                                         if ($jamPulang && $jamSelesai) {

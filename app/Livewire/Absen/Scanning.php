@@ -28,10 +28,10 @@ class Scanning extends Component
     public $jumlahAlpha = 0;
 
     //LOCATION
-    // -3.3268461920669985, 114.61689013356387 KLINIK GATOT
-    public $lokasiKerjaLat = -3.3268461920669985; // ganti dengan latitude kantor
-    public $lokasiKerjaLng = 114.61689013356387; // ganti dengan longitude kantor
-    public $radiusMaksimal = 50; // dalam meter
+    // -3.3269130448397943, 114.61693185498646 KLINIK GATOT
+    public $lokasiKerjaLat = -3.3269130448397943; // ganti dengan latitude kantor
+    public $lokasiKerjaLng = 114.61693185498646; // ganti dengan longitude kantor
+    public $radiusMaksimal = 10; // dalam meter
 
     public $userLat = null;
     public $userLng = null;
