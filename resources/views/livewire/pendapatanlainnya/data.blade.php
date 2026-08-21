@@ -19,14 +19,16 @@
                     </h2>
                     <div class="divider my-2"></div>
                     @can('akses', 'Pendapatan')
-                    <div class="flex gap-3 mb-4">
-                        <select wire:model.live="filterStatus" class="select select-bordered">
+                    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-4">
+                        <select wire:model.live="filterStatus"
+                            class="select select-bordered select-primary w-full sm:w-auto">
                             <option value="">Status</option>
                             <option value="belum lunas">Belum Lunas</option>
                             <option value="lunas">Lunas</option>
                         </select>
 
-                        <select wire:model.live="filterUnitUsaha" class="select select-bordered">
+                        <select wire:model.live="filterUnitUsaha"
+                            class="select select-bordered select-primary w-full sm:w-auto">
                             <option value="">Unit</option>
                             <option value="Klinik">Klinik</option>
                             <option value="Apotik">Apotik</option>
@@ -34,7 +36,9 @@
                             <option value="Coffeshop">Coffeshop</option>
                             <option value="Dll">Dll</option>
                         </select>
-                        <select wire:model.live="filterMetodePembayaran" class="select select-bordered">
+
+                        <select wire:model.live="filterMetodePembayaran"
+                            class="select select-bordered select-primary w-full sm:w-auto">
                             <option value="">Pembayaran</option>
                             <option value="Tunai">Tunai</option>
                             <option value="Qris">Qris</option>
@@ -44,31 +48,61 @@
                             <option value="BRI">BRI</option>
                             <option value="BNI">BNI</option>
                         </select>
+
+                        <div wire:ignore x-data="{ picker: null }"
+                            class="w-full sm:w-auto"
+                            x-init="
+                                picker = flatpickr($refs.range, {
+                                    mode: 'range',
+                                    dateFormat: 'Y-m-d',
+                                    onChange(selectedDates, dateStr, instance) {
+                                        if (selectedDates.length === 2) {
+                                            @this.set('startDate', instance.formatDate(selectedDates[0], 'Y-m-d'))
+                                            @this.set('endDate', instance.formatDate(selectedDates[1], 'Y-m-d'))
+                                            @this.call('tanggalDipilih')
+                                        }
+                                    }
+                                });
+
+                                $wire.on('reset-flatpickr', () => picker.clear());
+                            "
+                            >
+                            <input x-ref="range" type="text" readonly
+                                class="input input-bordered input-primary w-full sm:w-40"
+                                placeholder="Pilih rentang tanggal">
+                        </div>
                     </div>
-                    <div class="flex gap-2 mb-3">
+                    <div class="flex flex-wrap gap-2 mb-3">
                         @if($filterStatus)
                             <span class="badge badge-primary gap-1">
                                 status: {{ $filterStatus }}
-                                <button wire:click="$set('filterStatus', '')">✕</button>
+                                <button wire:click="clearFilter('filterStatus')">✕</button>
                             </span>
                         @endif
 
                         @if($filterUnitUsaha)
                             <span class="badge badge-primary gap-1">
                                 Unit: {{ $filterUnitUsaha }}
-                                <button wire:click="$set('filterUnitUsaha', '')">✕</button>
+                                <button wire:click="clearFilter('filterUnitUsaha')">✕</button>
                             </span>
                         @endif
 
                         @if($filterMetodePembayaran)
                             <span class="badge badge-primary gap-1">
                                 Pembayaran: {{ $filterMetodePembayaran }}
-                                <button wire:click="$set('filterMetodePembayaran', '')">✕</button>
+                                <button wire:click="clearFilter('filterMetodePembayaran')">✕</button>
                             </span>
                         @endif
 
-                        @if($filterStatus || $filterUnitUsaha || $filterMetodePembayaran)
-                            <button wire:click="$set('filterStatus', ''); $set('filterUnitUsaha', ''); $set('filterMetodePembayaran', '')" class="btn btn-xs">
+                        @if($startDate && $endDate)
+                            <span class="badge badge-primary gap-1">
+                                Tanggal: {{ $startDate }} - {{ $endDate }}
+                                <button wire:click="clearTanggal">✕</button>
+                            </span>
+                        @endif
+
+                        @if($filterStatus || $filterUnitUsaha || $filterMetodePembayaran || $startDate || $endDate)
+                            <button wire:click="clearAll" class="btn btn-xs">
                                 Clear all
                             </button>
                         @endif
