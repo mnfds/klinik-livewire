@@ -167,10 +167,17 @@ final class PendapatanTable extends PowerGridComponent
     #[\Livewire\Attributes\On('modaldeletependapatan')]
     public function modaldeletependapatan($rowId): void
     {
+        $row = Pendapatanlainnya::findOrFail($rowId);
+        $isRootWithChildren = is_null($row->parent_id) && $row->children()->exists();
+
+        $text = $isRootWithChildren
+            ? 'Data ini memiliki riwayat pelunasan. Menghapus data ini akan menghapus SELURUH riwayat pelunasannya juga!'
+            : 'Data ini tidak bisa dikembalikan!';
+
         $this->js(<<<JS
             Swal.fire({
                 title: 'Yakin ingin menghapus?',
-                text: 'Data ini tidak bisa dikembalikan!',
+                text: '{$text}',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -194,7 +201,24 @@ final class PendapatanTable extends PowerGridComponent
             ]);
             return;
         }
-        Pendapatanlainnya::findOrFail($rowId)->delete();
+
+        $row = Pendapatanlainnya::findOrFail($rowId);
+        $rootId = $row->root_id; // simpan dulu SEBELUM di-delete
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($row, $rootId) {
+            if (is_null($row->parent_id)) {
+                // hapus root = hapus seluruh grup, tidak perlu resync (grup sudah tidak ada)
+                $row->children()->delete();
+                $row->delete();
+                return;
+            }
+
+            // hapus row anak (riwayat pelunasan) — grup masih ada, wajib resync
+            $row->delete();
+
+            $rootRow = Pendapatanlainnya::find($rootId);
+            $rootRow?->resyncGroupStatus();
+        });
 
         $this->dispatch('pg:eventRefresh')->to(self::class);
 

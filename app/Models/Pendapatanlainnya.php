@@ -49,4 +49,23 @@ class Pendapatanlainnya extends Model
     {
         return static::grup($this->root_id)->where('status', 'lunas')->exists();
     }
+
+    // Model Pendapatanlainnya.php — tambahkan method ini
+    public function resyncGroupStatus(): void
+    {
+        $rootId = $this->root_id;
+
+        $totalDibayarkan = static::grup($rootId)->sum('total_dibayarkan');
+        $totalTagihan     = static::grup($rootId)->value('total_tagihan') ?? $this->total_tagihan;
+
+        $isLunas = $totalDibayarkan >= $totalTagihan;
+
+        // reset semua row grup ke 'belum lunas' dulu
+        static::grup($rootId)->update(['status' => 'belum lunas']);
+
+        // kalau sudah lunas, tandai HANYA row paling terakhir (terbaru) sebagai 'lunas'
+        if ($isLunas) {
+            static::grup($rootId)->latest('id')->first()?->update(['status' => 'lunas']);
+        }
+    }
 }
