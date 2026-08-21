@@ -109,7 +109,7 @@ class GrafikBulanan extends Component
                 ->whereIn('status', ['lunas', 'belum lunas'])
                 ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->selectRaw('MONTH(tanggal_transaksi) as bulan, SUM(total_tagihan) as total')
+                ->selectRaw('MONTH(tanggal_transaksi) as bulan, SUM(total_dibayarkan) as total')
                 ->groupBy('bulan')
                 ->pluck('total', 'bulan');
         }

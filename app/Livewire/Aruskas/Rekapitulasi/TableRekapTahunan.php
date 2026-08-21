@@ -112,7 +112,7 @@ class TableRekapTahunan extends Component
                     ->whereIn('status', ['lunas', 'belum lunas'])
                     ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
                     ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                    ->sum('total_tagihan');
+                    ->sum('total_dibayarkan');
             }
 
             $totalKeluar = 0;
@@ -237,7 +237,7 @@ class TableRekapTahunan extends Component
                 )
                 ->selectRaw(
                     'MONTH(tanggal_transaksi) bulan,
-                    SUM(total_tagihan) total'
+                    SUM(total_dibayarkan) total'
                 )
                 ->groupBy('bulan')
                 ->pluck('total', 'bulan');

@@ -136,7 +136,7 @@ class TableRekap extends Component
                 ->whereIn('status', ['lunas', 'belum lunas'])
                 ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->selectRaw('DATE(tanggal_transaksi) as tanggal, SUM(total_tagihan) as total')
+                ->selectRaw('DATE(tanggal_transaksi) as tanggal, SUM(total_dibayarkan) as total')
                 ->groupBy('tanggal')
                 ->pluck('total', 'tanggal');
         }
@@ -264,7 +264,7 @@ class TableRekap extends Component
         // =====================
         $totalKlinik  = $klinik->sum('total_tagihan_bersih');
         $totalApotik  = $apotik->sum('total_harga');
-        $totalLainnya = $lainnya->sum('total_tagihan');
+        $totalLainnya = $lainnya->sum('total_dibayarkan');
 
         $this->detailTotalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
         $this->detailTotalKeluar = $keluar->sum('jumlah_uang');
@@ -332,7 +332,7 @@ class TableRekap extends Component
 
         $totalKlinik  = $klinik->sum('total_tagihan_bersih');
         $totalApotik  = $apotik->sum('total_harga');
-        $totalLainnya = $lainnya->sum('total_tagihan');
+        $totalLainnya = $lainnya->sum('total_dibayarkan');
 
         $totalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
         $totalKeluar = $keluar->sum('jumlah_uang');

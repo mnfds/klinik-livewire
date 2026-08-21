@@ -95,7 +95,7 @@ class GrafikTahunan extends Component
                     ->whereIn('status', ['lunas', 'belum lunas'])
                     ->when($this->filterUnitUsaha, fn ($q) => $q->where('unit_usaha', $this->filterUnitUsaha))
                     ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                    ->sum('total_tagihan');
+                    ->sum('total_dibayarkan');
             }
 
             $totalKeluar = 0;
