@@ -7,11 +7,19 @@
         <h3 class="text-xl font-semibold mb-4">Pendapatan</h3>
 
         <form wire:submit.prevent="storePendapatan" class="space-y-4">
-            <div x-data="rupiahInputFormat()">
-                <label class="label font-medium">Jumlah Uang<span class="text-error">*</span></label>
-                <input type="text" x-model="display" @input="onInputUang" inputmode="numeric" class="input input-bordered w-full @error('total_tagihan') input-error @enderror">
+            <div x-data="rupiahInputFormat('total_tagihan')">
+                <label class="label font-medium">Total Tagihan<span class="text-error">*</span></label>
+                <input type="text" x-model="display" @input="onInput" inputmode="numeric" class="input input-bordered w-full @error('total_tagihan') input-error @enderror">
                 @error('total_tagihan')
-                    <span class="text-error text-sm">Mohon Mengisi Jumlah Uang Yang Didapat Dengan Benar</span>
+                    <span class="text-error text-sm">Mohon Mengisi Total Tagihan Dengan Benar</span>
+                @enderror
+            </div>
+
+            <div x-data="rupiahInputFormat('total_dibayarkan')">
+                <label class="label font-medium">Jumlah Dibayarkan<span class="text-error">*</span></label>
+                <input type="text" x-model="display" @input="onInput" inputmode="numeric" class="input input-bordered w-full @error('total_dibayarkan') input-error @enderror">
+                @error('total_dibayarkan')
+                    <span class="text-error text-sm">Mohon Mengisi Jumlah Dibayarkan Dengan Benar (tidak boleh lebih dari total tagihan)</span>
                 @enderror
             </div>
 
@@ -55,20 +63,6 @@
                 @enderror
             </div>
 
-            <div>
-                <label class="label font-medium">Status<span class="text-error">*</span></label>
-                <select class="select select-bordered w-full @error('status') input-error @enderror" wire:model.lazy="status">
-                    <option value="">Pilih</option>
-                    <option value="belum lunas">Belum Lunas</option>
-                    <option value="lunas">Lunas</option>
-                    {{-- <option value="belum bayar">Belum Bayar</option> --}}
-                    {{-- <option value="batal">Batal</option> --}}
-                </select>
-                @error('status')
-                    <span class="text-error text-sm"> Mohon Mengisi Status Dengan Benar</span>
-                @enderror
-            </div>
-
             <div class="modal-action justify-end pt-4">
                 @can('akses', 'Pendapatan Tambah')
                 <button type="submit" class="btn btn-primary">Simpan</button>
@@ -79,24 +73,22 @@
     </div>
 </dialog>
 <script>
-    function rupiahInputFormat() {
+    function rupiahInputFormat(field) {
         return {
             display: '',
+            field: field,
 
-            onInputUang() {
-                let angkaUang = this.display.replace(/[^0-9]/g, '')
+            onInput() {
+                let angka = this.display.replace(/[^0-9]/g, '')
 
-                this.$wire.set(
-                    'total_tagihan',
-                    angkaUang === '' ? null : Number(angkaUang)
-                )
+                this.$wire.set(this.field, angka === '' ? null : Number(angka))
 
-                this.display = this.formatRupiahUang(angkaUang)
+                this.display = this.formatRupiah(angka)
             },
 
-            formatRupiahUang(angkaUang) {
-                if (!angkaUang) return ''
-                return 'Rp ' + angkaUang.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+            formatRupiah(angka) {
+                if (!angka) return ''
+                return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
             }
         }
     }

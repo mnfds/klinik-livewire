@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('pendapatanlainnyas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('parent_id')->nullable()->constrained('pendapatanlainnyas')->nullOnDelete();
             $table->string('no_transaksi')->unique();
             $table->dateTime('tanggal_transaksi')->default(now());
 
             $table->unsignedBigInteger('total_tagihan')->default(0);
+            $table->unsignedBigInteger('total_dibayarkan')->default(0);
             $table->text('keterangan');
 
             $table->enum('unit_usaha',['Klinik', 'Apotik', 'Sewa Multifunction', 'Coffeshop', 'Dll']);

@@ -111,6 +111,7 @@
                     @endcan
                     <livewire:Pendapatanlainnya.Create />
                     <livewire:Pendapatanlainnya.Update />
+                    <livewire:Pendapatanlainnya.Pelunasan />
                     @if (!Gate::allows('akses','Pendapatan'))
                         <div class="flex items-center justify-center min-h-[300px]">
                             <div class="card bg-base-100 shadow-xl max-w-md w-full">

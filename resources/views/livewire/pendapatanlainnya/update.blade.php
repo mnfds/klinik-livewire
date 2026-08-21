@@ -5,13 +5,26 @@
         })">
         <div class="modal-box w-full max-w-md">
             <h3 class="text-xl font-semibold mb-4">Edit Pendapatan</h3>
-       
+
             <form wire:submit.prevent="updatePendapatan" class="space-y-4">
-                <div x-data="rupiahInputPendapatan()" x-init="init()">
-                    <label class="label font-medium">Jumlah Uang<span class="text-error">*</span></label>
-                    <input type="text" x-model="display" @input="onInputPendapatan" inputmode="numeric" class="input input-bordered w-full @error('total_tagihan') input-error @enderror">
+                <div x-data="rupiahInputPendapatan('total_tagihan', 'setJumlahPendapatan')" x-init="init()">
+                    <label class="label font-medium">Total Tagihan<span class="text-error">*</span></label>
+                    <input type="text" x-model="display" @input="onInput" inputmode="numeric"
+                        @disabled($isPartOfGroup)
+                        class="input input-bordered w-full @error('total_tagihan') input-error @enderror">
+                    @if ($isPartOfGroup)
+                        <span class="text-xs text-gray-500">Total tagihan tidak bisa diubah karena transaksi ini sudah memiliki riwayat pelunasan.</span>
+                    @endif
                     @error('total_tagihan')
-                        <span class="text-error text-sm">Mohon Mengisi Jumlah Uang Yang Didapat Dengan Benar</span>
+                        <span class="text-error text-sm">Mohon Mengisi Total Tagihan Dengan Benar</span>
+                    @enderror
+                </div>
+
+                <div x-data="rupiahInputPendapatan('total_dibayarkan', 'setJumlahDibayarkanPendapatan')" x-init="init()">
+                    <label class="label font-medium">Jumlah Dibayarkan (baris ini)<span class="text-error">*</span></label>
+                    <input type="text" x-model="display" @input="onInput" inputmode="numeric" class="input input-bordered w-full @error('total_dibayarkan') input-error @enderror">
+                    @error('total_dibayarkan')
+                        <span class="text-error text-sm">Mohon Mengisi Jumlah Dibayarkan Dengan Benar</span>
                     @enderror
                 </div>
 
@@ -55,20 +68,6 @@
                     @enderror
                 </div>
 
-                <div>
-                    <label class="label font-medium">Status<span class="text-error">*</span></label>
-                    <select class="select select-bordered w-full @error('status') input-error @enderror" wire:model.defer="status">
-                        <option value="">Pilih</option>
-                        <option value="belum lunas">Belum Lunas</option>
-                        <option value="lunas">Lunas</option>
-                        {{-- <option value="belum bayar">Belum Bayar</option> --}}
-                        {{-- <option value="batal">Batal</option> --}}
-                    </select>
-                    @error('status')
-                        <span class="text-error text-sm"> Mohon Mengisi Status Dengan Benar</span>
-                    @enderror
-                </div>
-                
                 <div class="modal-action justify-end pt-4">
                     @can('akses', 'Pendapatan Edit')
                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -80,31 +79,29 @@
     </dialog>
 </div>
 <script>
-    function rupiahInputPendapatan() {
+    function rupiahInputPendapatan(field, eventName) {
         return {
             display: '',
+            field: field,
+            eventName: eventName,
 
             init() {
-                // saat modal edit dibuka
-                Livewire.on('setJumlahPendapatan', value => {
-                    this.display = this.formatRupiahUangPendapatan(value)
+                Livewire.on(this.eventName, value => {
+                    this.display = this.formatRupiah(value)
                 })
             },
 
-            onInputPendapatan() {
-                let angkaPendapatan = this.display.replace(/[^0-9]/g, '')
+            onInput() {
+                let angka = this.display.replace(/[^0-9]/g, '')
 
-                this.$wire.set(
-                    'total_tagihan',
-                    angkaPendapatan === '' ? null : Number(angkaPendapatan)
-                )
+                this.$wire.set(this.field, angka === '' ? null : Number(angka))
 
-                this.display = this.formatRupiahUangPendapatan(angkaPendapatan)
+                this.display = this.formatRupiah(angka)
             },
 
-            formatRupiahUangPendapatan(angkaPendapatan) {
-                if (!angkaPendapatan) return ''
-                return 'Rp ' + angkaPendapatan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+            formatRupiah(angka) {
+                if (!angka) return ''
+                return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
             }
         }
     }

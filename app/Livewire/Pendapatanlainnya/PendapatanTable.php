@@ -26,8 +26,6 @@ final class PendapatanTable extends PowerGridComponent
 
     public function setUp(): array
     {
-        // $this->showCheckBox();
-
         return [
             PowerGrid::header()
                 ->showSearchInput(),
@@ -76,6 +74,8 @@ final class PendapatanTable extends PowerGridComponent
         })
 
         ->add('total_tagihan')
+        ->add('total_dibayarkan')
+        ->add('sisa_tagihan', fn ($row) => $row->sisa_tagihan)
         ->add('status')
         ->add('metode_pembayaran')
         ->add('total_dan_status_dan_metode_pembayaran', function ($row) {
@@ -86,11 +86,20 @@ final class PendapatanTable extends PowerGridComponent
                 default => 'text-gray-500',
             };
 
-            return 'Rp ' . number_format($row->total_tagihan, 0, ',', '.')
-                . '<br><span class="text-sm ' . $statusClass . '">'
+            $html = 'Tagihan: Rp ' . number_format($row->total_tagihan, 0, ',', '.')
+                . '<br><span class="text-sm text-gray-500">Dibayar (baris ini): Rp ' . number_format($row->total_dibayarkan, 0, ',', '.') . '</span>';
+
+            // sisa tagihan hanya relevan ditampilkan kalau grup masih belum lunas
+            if (! $row->is_lunas_group) {
+                $html .= '<br><span class="text-sm text-error">Sisa: Rp ' . number_format($row->sisa_tagihan, 0, ',', '.') . '</span>';
+            }
+
+            $html .= '<br><span class="text-sm ' . $statusClass . '">'
                 . ucfirst($row->status)
                 . '</span>'
-                . '</span> ('. ucfirst($row->metode_pembayaran) .')</span>';
+                . ' (' . ucfirst($row->metode_pembayaran) . ')';
+
+            return $html;
         });
     }
 
@@ -102,13 +111,14 @@ final class PendapatanTable extends PowerGridComponent
             Column::make('No. Transaksi', 'no_transaksi')->searchable()->hidden(),
             Column::make('Tanggal', 'tanggal_transaksi')->searchable()->hidden(),
             Column::make('Tanggal ', 'no_dan_tanggal')->bodyAttribute('whitespace-nowrap'),
-            
 
             Column::make('Ket ', 'keterangan')->searchable()->hidden(),
             Column::make('Unit ', 'unit_usaha')->searchable()->hidden(),
             Column::make('keterangan ', 'keterangan_dan_unit')->bodyAttribute('whitespace-nowrap'),
-            
+
             Column::make('Tagihan ', 'total_tagihan')->searchable()->hidden(),
+            Column::make('Dibayarkan ', 'total_dibayarkan')->searchable()->hidden(),
+            Column::make('Sisa ', 'sisa_tagihan')->hidden(),
             Column::make('status ', 'status')->searchable()->hidden(),
             Column::make('metode_pembayaran ', 'metode_pembayaran')->searchable()->hidden(),
             Column::make('Total & Status', 'total_dan_status_dan_metode_pembayaran')->sortable()->searchable(),
@@ -125,8 +135,19 @@ final class PendapatanTable extends PowerGridComponent
     public function actions(Pendapatanlainnya $row): array
     {
         $pendapatanLainnya = [];
+
+        // Tombol Pelunasan: hanya muncul kalau grup tagihan ini BELUM lunas
+        Gate::allows('akses', 'Pendapatan Edit') && ! $row->is_lunas_group && $pendapatanLainnya[] =
+        Button::add('pelunasanpendapatan')
+            ->slot('<i class="fa-solid fa-money-bill-wave"></i> Pelunasan')
+            ->attributes([
+                'onclick' => 'modalpelunasanpendapatan.showModal()',
+                'class' => 'btn btn-success btn-sm'
+            ])
+        ->dispatchTo('pendapatanlainnya.pelunasan', 'getpelunasan', ['rowId' => $row->id]);
+
         Gate::allows('akses', 'Pendapatan Edit') && $pendapatanLainnya[] =
-        Button::add('updatependapatan')  
+        Button::add('updatependapatan')
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
                 'onclick' => 'modaleditpendapatan.showModal()',
@@ -175,12 +196,19 @@ final class PendapatanTable extends PowerGridComponent
         }
         Pendapatanlainnya::findOrFail($rowId)->delete();
 
-        $this->dispatch('pg:eventRefresh')->to(self::class); // refresh PowerGrid
+        $this->dispatch('pg:eventRefresh')->to(self::class);
 
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data berhasil dihapus.',
         ]);
+    }
+
+    // dipanggil dari component Pelunasan setelah berhasil store, supaya table refresh
+    #[\Livewire\Attributes\On('pg:eventRefresh')]
+    public function refreshTable(): void
+    {
+        // no-op, biar Livewire listener terdaftar; PowerGrid sudah handle refresh via event ini
     }
 
     #[\Livewire\Attributes\On('pendapatan-filter-updated')]
@@ -193,15 +221,4 @@ final class PendapatanTable extends PowerGridComponent
 
         $this->dispatch('pg:eventRefresh')->to(self::class);
     }
-    /*
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }
