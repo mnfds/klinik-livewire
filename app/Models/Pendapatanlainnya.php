@@ -60,10 +60,8 @@ class Pendapatanlainnya extends Model
 
         $isLunas = $totalDibayarkan >= $totalTagihan;
 
-        // reset semua row grup ke 'belum lunas' dulu
         static::grup($rootId)->update(['status' => 'belum lunas']);
 
-        // kalau sudah lunas, tandai HANYA row paling terakhir (terbaru) sebagai 'lunas'
         if ($isLunas) {
             static::grup($rootId)->latest('id')->first()?->update(['status' => 'lunas']);
         }

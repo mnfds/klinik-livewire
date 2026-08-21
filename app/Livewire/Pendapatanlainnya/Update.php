@@ -62,37 +62,34 @@ class Update extends Component
         }
 
         $pendapatan = Pendapatanlainnya::findOrFail($this->pendapatan_id);
+        $rootId = $pendapatan->root_id;
 
-        // status dihitung ulang otomatis berdasarkan total dibayarkan kumulatif se-grup
-        $rootId = $pendapatan->parent_id ?? $pendapatan->id;
-        $totalDibayarkanGrupLain = Pendapatanlainnya::grup($rootId)
-            ->where('id', '!=', $pendapatan->id)
-            ->sum('total_dibayarkan');
+        \Illuminate\Support\Facades\DB::transaction(function () use ($pendapatan, $rootId) {
+            $updateData = [
+                'total_dibayarkan'  => $this->total_dibayarkan,
+                'keterangan'        => $this->keterangan,
+                'unit_usaha'        => $this->unit_usaha,
+                'metode_pembayaran' => $this->metode_pembayaran,
+            ];
 
-        $status = ($totalDibayarkanGrupLain + $this->total_dibayarkan) >= $this->total_tagihan
-            ? 'lunas'
-            : 'belum lunas';
+            // total_tagihan hanya boleh diubah kalau row belum bagian dari cicilan (grup masih 1 row)
+            if (! $this->isPartOfGroup) {
+                $updateData['total_tagihan'] = $this->total_tagihan;
+            }
 
-        $updateData = [
-            'total_dibayarkan'  => $this->total_dibayarkan,
-            'status'            => $status,
-            'keterangan'        => $this->keterangan,
-            'unit_usaha'        => $this->unit_usaha,
-            'metode_pembayaran' => $this->metode_pembayaran,
-        ];
+            $pendapatan->update($updateData);
 
-        // total_tagihan hanya boleh diubah kalau row belum bagian dari cicilan (grup masih 1 row)
-        if (! $this->isPartOfGroup) {
-            $updateData['total_tagihan'] = $this->total_tagihan;
-        }
-
-        $pendapatan->update($updateData);
+            // resync status SELURUH grup, bukan cuma row ini —
+            // supaya tidak ada row lain yang statusnya jadi basi (misal masih 'lunas' padahal sisa berubah)
+            $pendapatan->fresh()->resyncGroupStatus();
+        });
 
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Data berhasil diperbarui.'
         ]);
         $this->dispatch('closemodaleditpendapatan');
+        $this->dispatch('pg:eventRefresh')->to(\App\Livewire\Pendapatanlainnya\PendapatanTable::class);
         $this->reset();
         return redirect()->route('aruskas.data');
     }
