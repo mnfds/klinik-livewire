@@ -456,7 +456,7 @@
                     <div class="border rounded p-2 mb-2">
                         <div class="flex justify-between font-semibold">
                             <span>No: {{ $item->no_transaksi }}</span>
-                            <span>Rp {{ number_format($item->total_tagihan,0,',','.') }}</span>
+                            <span>Rp {{ number_format($item->total_dibayarkan,0,',','.') }}</span>
                         </div>
                         {{-- Detail --}}
                         <div class="flex justify-between text-sm ml-4">

@@ -241,7 +241,7 @@
                 Status: {{ ucfirst($item->status) }}
             </td>
             <td class="text-right">
-                Rp {{ number_format($item->total_tagihan,0,',','.') }}
+                Rp {{ number_format($item->total_dibayarkan,0,',','.') }}
             </td>
         </tr>
     @endforeach
