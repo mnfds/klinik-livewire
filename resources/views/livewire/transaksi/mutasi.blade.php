@@ -266,6 +266,11 @@
                                         Rp {{ number_format($transaksi->total_tagihan_bersih, 0, ',', '.') }}
                                     </span>
                                 </div>
+                                <div class="flex justify-end font-bold text-base">
+                                    <span>
+                                        {{ $transaksi->metode_pembayaran }}
+                                    </span>
+                                </div>
 
                             </div>
                         </div>
