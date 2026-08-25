@@ -264,6 +264,7 @@ class Invoice extends Component
             $printLR("Disc", number_format($data_transaksi->diskon) . " %");
             $printLR("Pot", "Rp " . number_format($data_transaksi->potongan));
             $printLR("TOTAL", "Rp " . number_format($grandTotalBersih));
+            $printLR(" ", " " .$data_transaksi->metode_pembayaran);
             $printer->setEmphasis(false);
 
             /* ================= FOOTER ================= */
