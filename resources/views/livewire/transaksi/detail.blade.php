@@ -799,9 +799,27 @@
                                                     "
                                                 >
                                             </div>
+
                                             <div class="mb-1">
                                                 <label class="label font-medium">Catatan</label>
                                                 <input type="text" class="input input-bordered w-full" wire:model.live="note">
+                                            </div>
+
+                                            <div class="mb-1">
+                                                <label class="label font-medium">Metode Pembayaran <span class="text-error">*</span></label>
+                                                <select required class="select select-bordered w-full @error('metode_pembayaran') input-error @enderror" wire:model.live="metode_pembayaran">
+                                                    <option value="">Pembayaran</option>
+                                                    <option value="Tunai">Tunai</option>
+                                                    <option value="Qris">Qris</option>
+                                                    <option value="ShopeePay">ShopeePay</option>
+                                                    <option value="Mandiri">Mandiri</option>
+                                                    <option value="BCA">BCA</option>
+                                                    <option value="BRI">BRI</option>
+                                                    <option value="BNI">BNI</option>
+                                                </select>
+                                                @error('metode_pembayaran')
+                                                    <span class="text-error text-sm">Mohon Memilih Metode Pembayaran Dengan Benar</span>
+                                                @enderror
                                             </div>
 
                                             <button wire:click="create"

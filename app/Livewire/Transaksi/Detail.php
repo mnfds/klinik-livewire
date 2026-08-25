@@ -70,6 +70,7 @@ class Detail extends Component
     public $diskon = 0;
     public $potongan = 0;
     public $note;
+    public $metode_pembayaran;
 
     public function mount($id)
     {
@@ -212,6 +213,11 @@ class Detail extends Component
 
     public function create()
     {
+        $this->validate([
+            'metode_pembayaran' => 'required',
+        ], [
+            'metode_pembayaran.required' => 'Mohon memilih metode pembayaran.',
+        ]);
         if (! Gate::allows('akses', 'Transaksi Klinik Selesai')) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -317,6 +323,7 @@ class Detail extends Component
                 'total_tagihan' => 0, // akan di-update setelah item disimpan
                 'status' => 'belum_bayar',
                 'note' => $this->note,
+                'metode_pembayaran' => $this->metode_pembayaran,
             ]);
 
             $totalTagihan = 0;

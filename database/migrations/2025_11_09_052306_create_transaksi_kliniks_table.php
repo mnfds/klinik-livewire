@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('rekam_medis_id')->constrained('rekam_medis')->onDelete('cascade');
             $table->string('no_transaksi')->unique();
             $table->string('note')->nullable();
+            $table->enum('metode_pembayaran', ['Tunai','Qris', 'Shopeepay', 'Mandiri', 'BCA', 'BRI', 'BNI']);
             $table->dateTime('tanggal_transaksi')->default(now());
             $table->unsignedBigInteger('total_tagihan')->default(0);
             $table->unsignedBigInteger('diskon')->nullable()->default(0);
