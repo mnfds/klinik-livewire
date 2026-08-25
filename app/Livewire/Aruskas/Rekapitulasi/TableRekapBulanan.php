@@ -110,7 +110,7 @@ class TableRekapBulanan extends Component
         if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
             $masukApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->selectRaw('MONTH(tanggal) as bulan, SUM(total_harga) as total')
+                ->selectRaw('MONTH(tanggal) as bulan, SUM(total_tagihan_bersih) as total')
                 ->groupBy('bulan')
                 ->pluck('total', 'bulan');
         }
@@ -208,7 +208,7 @@ class TableRekapBulanan extends Component
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
                 ->get()
                 ->groupBy(fn ($item) => Carbon::parse($item->tanggal)->format('Y-m-d'))
-                ->map(fn ($items) => $items->sum('total_harga'));
+                ->map(fn ($items) => $items->sum('total_tagihan_bersih'));
         }
 
         $masukLainnya = collect();

@@ -127,7 +127,7 @@ class TableRekap extends Component
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
                 ->get()
                 ->groupBy(fn ($item) => Carbon::parse($item->tanggal)->format('Y-m-d'))
-                ->map(fn ($items) => $items->sum('total_harga'));
+                ->map(fn ($items) => $items->sum('total_tagihan_bersih'));
         }
 
         $masukLainnya = collect();
@@ -263,7 +263,7 @@ class TableRekap extends Component
         // TOTAL
         // =====================
         $totalKlinik  = $klinik->sum('total_tagihan_bersih');
-        $totalApotik  = $apotik->sum('total_harga');
+        $totalApotik  = $apotik->sum('total_tagihan_bersih');
         $totalLainnya = $lainnya->sum('total_dibayarkan');
 
         $this->detailTotalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;
@@ -331,7 +331,7 @@ class TableRekap extends Component
         }
 
         $totalKlinik  = $klinik->sum('total_tagihan_bersih');
-        $totalApotik  = $apotik->sum('total_harga');
+        $totalApotik  = $apotik->sum('total_tagihan_bersih');
         $totalLainnya = $lainnya->sum('total_dibayarkan');
 
         $totalMasuk  = $totalKlinik + $totalApotik + $totalLainnya;

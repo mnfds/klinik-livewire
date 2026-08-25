@@ -108,7 +108,7 @@ class GrafikHarian extends Component
         if ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik') {
             $totalApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->sum('total_harga');
+                ->sum('total_tagihan_bersih');
         }
 
         $totalLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])
@@ -148,7 +148,7 @@ class GrafikHarian extends Component
         if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
             $masukApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->selectRaw('DATE(tanggal) as tanggal, SUM(total_harga) as total')
+                ->selectRaw('DATE(tanggal) as tanggal, SUM(total_tagihan_bersih) as total')
                 ->groupBy('tanggal')
                 ->pluck('total', 'tanggal');
         }

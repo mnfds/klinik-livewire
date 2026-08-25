@@ -86,7 +86,7 @@ class GrafikTahunan extends Component
             if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
                 $totalApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                     ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                    ->sum('total_harga');
+                    ->sum('total_tagihan_bersih');
             }
 
             $totalLainnya = 0;

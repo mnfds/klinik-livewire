@@ -98,7 +98,7 @@ class GrafikBulanan extends Component
         if ($this->tipe !== 'keluar' && ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik')) {
             $masukApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->selectRaw('MONTH(tanggal) as bulan, SUM(total_harga) as total')
+                ->selectRaw('MONTH(tanggal) as bulan, SUM(total_tagihan_bersih) as total')
                 ->groupBy('bulan')
                 ->pluck('total', 'bulan');
         }

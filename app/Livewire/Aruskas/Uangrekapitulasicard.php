@@ -93,7 +93,7 @@ class Uangrekapitulasicard extends Component
         if ($this->filterUnitUsaha === '' || $this->filterUnitUsaha === 'Apotik') {
             $totalApotik = TransaksiApotik::whereBetween('tanggal', [$start, $end])
                 ->when($this->filterMetodePembayaran, fn ($q) => $q->where('metode_pembayaran', $this->filterMetodePembayaran))
-                ->sum('total_harga');
+                ->sum('total_tagihan_bersih');
         }
 
         $totalLainnya = Pendapatanlainnya::whereBetween('tanggal_transaksi', [$start, $end])

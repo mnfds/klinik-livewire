@@ -212,7 +212,7 @@
                 @endforeach
             </td>
             <td class="text-right">
-                Rp {{ number_format($trx->total_harga,0,',','.') }}
+                Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
             </td>
         </tr>
     @endforeach
