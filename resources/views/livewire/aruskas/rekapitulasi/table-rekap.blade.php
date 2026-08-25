@@ -168,7 +168,7 @@
             <div class="mb-4">
                 <h4 class="font-medium mb-2">Transaksi Klinik</h4>
                 @foreach($detailMasuk['klinik'] ?? [] as $trx)
-                    <div class="border rounded p-3 mb-3 bg-base-100">
+                    <div class="border border-black rounded p-3 mb-3 bg-base-100">
                         {{-- HEADER TRANSAKSI --}}
                         <div class="flex justify-between font-semibold text-base">
                             <span>No: {{ $trx->no_transaksi }}</span>
@@ -352,7 +352,7 @@
             <div class="mb-4">
                 <h4 class="font-medium">Transaksi Apotik</h4>
                 @foreach($detailMasuk['apotik'] ?? [] as $trx)
-                    <div class="border rounded p-2 mb-2">
+                    <div class="border border-black rounded p-2 mb-2">
                         <div class="flex justify-between font-semibold">
                             <span>No: {{ $trx->no_transaksi }}</span>
                             <span>{{ $trx->pasien->nama ?? '-'}}</span>
@@ -496,7 +496,7 @@
             <div class="mb-4">
                 <h4 class="font-medium">Lainnya</h4>
                 @foreach($detailMasuk['lainnya'] ?? [] as $item)
-                    <div class="border rounded p-2 mb-2">
+                    <div class="border border-black rounded p-2 mb-2">
                         <div class="flex justify-between font-semibold">
                             <span>No: {{ $item->no_transaksi }}</span>
                             <span>Rp {{ number_format($item->total_dibayarkan,0,',','.') }}</span>
@@ -529,7 +529,7 @@
             {{-- ================= KELUAR ================= --}}
             <div class="divider divider-error text-error font-semibold mt-6 mb-2">Uang Keluar</div>
             @foreach($detailKeluar as $item)
-                <div class="border rounded p-2 mb-2">
+                <div class="border border-black rounded p-2 mb-2">
                     <div class="flex justify-between font-semibold">
                         <span>Kategori: {{ $item->jenis_pengeluaran }}</span>
                         <span>Rp {{ number_format($item->jumlah_uang,0,',','.') }}</span>

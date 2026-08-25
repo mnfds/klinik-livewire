@@ -157,7 +157,8 @@
                 Rp {{ number_format($trx->total_tagihan,0,',','.') }}<br>
                 (-) {{ $trx->diskon }}%<br>
                 (-) Rp {{ number_format($trx->potongan,0,',','.') }}<br>
-                Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}<br>
+                <span style="font-weight:bold">Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}</span><br>
+                {{ $trx->metode_pembayaran }}
             </td>
         </tr>
     @endforeach
@@ -212,7 +213,11 @@
                 @endforeach
             </td>
             <td class="text-right">
-                Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
+                Rp {{ number_format($trx->total_tagihan,0,',','.') }}<br>
+                (-) {{ $trx->diskon }}%<br>
+                (-) Rp {{ number_format($trx->potongan,0,',','.') }}<br>
+                <span style="font-weight:bold">Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}</span><br>
+                {{ $trx->metode_pembayaran }}
             </td>
         </tr>
     @endforeach
