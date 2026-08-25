@@ -297,7 +297,7 @@
                                 </div>
                             </div>
                         @endif
-                                                {{-- RINGKASAN TOTAL TRANSAKSI --}}
+                        {{-- RINGKASAN TOTAL TRANSAKSI --}}
                         <div class="mt-2 text-sm space-y-1 ml-4">
                             @if ($trx->diskon > 0 || $trx->potongan > 0)
                                 <div class="flex justify-between">
@@ -438,49 +438,53 @@
 
                                         </div>
                                     @endforeach
-                                    {{-- Subtotal per jenis --}}
-                                    @if ($items->diskon > 0 || $items->potongan > 0)
-                                    <div class="flex justify-between mt-1 text-sm">
-                                        <span>Total Tagihan {{ $labels[$jenis] ?? ucfirst($jenis) }}</span>
-                                        <span>
-                                            Rp {{ number_format($items->sum('subtotal'),0,',','.') }}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    @if ($items->diskon > 0)
-                                    <div class="flex justify-between text-sm text-error">
-                                        <span>Diskon</span>
-                                        <span>
-                                            - {{ number_format($items->diskon,0,',','.') }}%
-                                        </span>
-                                    </div>
-                                    @endif
-                                    @if ($items->potongan > 0)
-                                    <div class="flex justify-between text-sm text-error">
-                                        <span>Potongan</span>
-                                        <span>
-                                            - Rp {{ number_format($items->potongan,0,',','.') }}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    @if ($items->diskon > 0 || $items->potongan > 0)
-                                    <div class="flex justify-between font-semibold text-base">
-                                        <span>Total Bersih</span>
-                                        <span>
-                                            - Rp {{ number_format($items->potongan,0,',','.') }}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    @if ($items->diskon > 0 || $items->potongan > 0)
-                                    <div class="flex justify-end mt-1 text-sm">
-                                        <span>
-                                            - Rp {{ $items->metoed_pembayaran }}
-                                        </span>
-                                    </div>
-                                    @endif
                                 </div>
                                 <div class="border-t my-1"></div>
                             @endforeach
+                        </div>
+                        <div class="mt-2 text-sm space-y-1 ml-4">
+                            @if ($trx->diskon > 0 || $trx->potongan > 0)
+                                <div class="flex justify-between">
+                                    <span>Total Tagihan</span>
+                                    <span>
+                                        Rp {{ number_format($trx->total_harga,0,',','.') }}
+                                    </span>
+                                </div>
+                            @endif
+                            {{-- Diskon Transaksi --}}
+                            @if($trx->diskon > 0)
+                                <div class="flex justify-between text-error">
+                                    <span>Diskon</span>
+                                    <span>
+                                        - {{ number_format($trx->diskon,0,',','.') }}%
+                                    </span>
+                                </div>
+                            @endif
+                            {{-- Potongan Transaksi --}}
+                            @if($trx->potongan > 0)
+                                <div class="flex justify-between text-error">
+                                    <span>Potongan</span>
+                                    <span>
+                                        - Rp {{ number_format($trx->potongan,0,',','.') }}
+                                    </span>
+                                </div>
+                            @endif
+                            @if($trx->diskon > 0 || $trx->potongan > 0)
+                                <div class="flex justify-between font-semibold text-base">
+                                    <span>Total Bersih</span>
+                                    <span>
+                                        Rp {{ number_format($trx->total_tagihan_bersih,0,',','.') }}
+                                    </span>
+                                </div>
+                            @endif
+                            @if($trx->metode_pembayaran !== null)
+                                <div class="flex justify-end">
+                                    <span>
+                                        {{ $trx->metode_pembayaran }}
+                                    </span>
+                                </div>
+                                <div class="border-t my-1"></div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
