@@ -137,6 +137,16 @@ final class TransaksiTable extends PowerGridComponent
                 'class' => 'btn btn-primary'
             ]);
 
+        $transaksiApotikButton[] =
+        Button::add('invoice')
+            ->slot('<i class="fa-solid fa-print"></i>Print')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Print Invoice Transaksi',
+                'class' => 'btn btn-accent',
+            ])
+            ->dispatchTo('apotik.invoice', 'print', ['rowId' => $row->id]);
+
         Gate::allows('akses', 'Transaksi Apotik Edit') && $transaksiApotikButton[] =
         Button::add('update')
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
