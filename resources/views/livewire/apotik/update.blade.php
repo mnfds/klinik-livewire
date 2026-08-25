@@ -34,7 +34,7 @@
         <main class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-6 gap-6 relative">
 
-                {{-- Kolom Kanan: Form Dinamis --}}
+                {{-- Kolom Kiri: Form Dinamis --}}
                 <div class="lg:col-span-4 space-y-6">
                     <form wire:submit.prevent="update" class="space-y-6">
                         @if ($showProduk)  
@@ -216,7 +216,7 @@
                     @endif
                 </div>
 
-                {{-- Kolom Kiri: Invoice --}}
+                {{-- Kolom Kanan: Invoice --}}
                 <div class="lg:col-span-2">
                     <div class="sticky top-20 space-y-6">
                         <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm p-4 space-y-4">
@@ -345,14 +345,64 @@
                             </div>
 
                             @can('akses', 'Transaksi Apotik Edit')
-                            @if ($showProduk || $showBarang)
-                            <button wire:click.prevent="update"
-                                    class="btn btn-success w-full mt-4"
-                                    wire:loading.attr="disabled">
-                                <span wire:loading.remove><i class="fa-solid fa-pen-to-square"></i> Update</span>
-                                <span wire:loading.inline>Loading...</span>
-                            </button>
-                            @endif
+                                @if (($showProduk || $showBarang) && !$showPaymentForm)
+                                    <button wire:click.prevent="openPayment"
+                                        class="btn btn-success w-full mt-4">
+                                        <i class="fa-solid fa-money-bill"></i> Lanjut ke Pembayaran
+                                    </button>
+                                @endif
+
+                                @if ($showPaymentForm)
+                                    <div class="border-t border-base-300 mt-4 pt-4 space-y-3">
+                                        <div class="form-control">
+                                            <label class="label font-medium text-sm">Diskon (%)</label>
+                                            <input type="number" min="0" max="100" wire:model.live="diskon"
+                                                class="input input-bordered input-md w-full">
+                                            @error('diskon') <span class="text-error text-xs">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div class="form-control">
+                                            <label class="label font-medium text-sm">Potongan (Rp)</label>
+                                            <input type="number" min="0" wire:model.live="potongan"
+                                                class="input input-bordered input-md w-full">
+                                            @error('potongan') <span class="text-error text-xs">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div class="form-control">
+                                            <label class="label font-medium text-sm">Catatan</label>
+                                            <input wire:model="note" class="input input-bordered w-full">
+                                            @error('note') <span class="text-error text-xs">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div class="form-control">
+                                            <label class="label font-medium text-sm">Metode Pembayaran <span class="text-error">*</span></label>
+                                            <select wire:model="metode_pembayaran" class="select select-bordered select-md w-full">
+                                                <option value="">-- Pilih Metode --</option>
+                                                <option value="Tunai">Tunai</option>
+                                                <option value="Qris">Qris</option>
+                                                <option value="Shopeepay">Shopeepay</option>
+                                                <option value="Mandiri">Mandiri</option>
+                                                <option value="BCA">BCA</option>
+                                                <option value="BRI">BRI</option>
+                                                <option value="BNI">BNI</option>
+                                            </select>
+                                            @error('metode_pembayaran') <span class="text-error text-xs">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div class="flex justify-between font-bold text-base border-t pt-2">
+                                            <span>Total Bersih:</span>
+                                            <span class="text-success">Rp {{ number_format($this->totalBersih, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <button wire:click.prevent="update" class="btn btn-success w-full" wire:loading.attr="disabled">
+                                            <span wire:loading.remove><i class="fa-solid fa-pen-to-square"></i> Update Transaksi</span>
+                                            <span wire:loading.inline>Loading...</span>
+                                        </button>
+                                        <button wire:click="closePayment" class="btn btn-error w-full">
+                                            <i class="fa-solid fa-xmark"></i> Batal
+                                        </button>
+                                    </div>
+                                @endif
                             @endcan
                         </div>
                     </div>

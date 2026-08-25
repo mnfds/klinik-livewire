@@ -73,8 +73,8 @@ final class TransaksiTable extends PowerGridComponent
         ->add('kasir_nama')
         // ->add('total_potongan', fn ($row) => number_format($row->riwayat->sum('potongan'), 0, ',', '.'))
         // ->add('total_diskon', fn ($row) => $row->riwayat->sum('diskon') ? $row->riwayat->sum('diskon') . '%' : '0%')
-        ->add('total_harga')
-        ->add('total_harga_format', fn ($row) =>'Rp ' . number_format($row->total_harga, 0, ',', '.'))
+        ->add('total_tagihan_bersih')
+        ->add('total_tagihan_bersih_format', fn ($row) =>'Rp ' . number_format($row->total_tagihan_bersih, 0, ',', '.'))
         // ->add('total_harga_format', fn ($row) => Number::currency($row->total_harga, in: 'IDR', locale: 'id_ID', precision: 0))
         ->add('tanggal', fn ($row) => \Carbon\Carbon::parse($row->tanggal)->format('d M Y H:i'));
     }
@@ -97,7 +97,7 @@ final class TransaksiTable extends PowerGridComponent
             // Column::make('Diskon', 'total_diskon')
             //     ->sortable(),
 
-            Column::make('Bayar', 'total_harga_format', 'total_harga')
+            Column::make('Bayar', 'total_tagihan_bersih_format', 'total_tagihan_bersih')
                 ->withSum('Total', header: false, footer: true)
                 ->sortable(),
 
@@ -112,7 +112,7 @@ final class TransaksiTable extends PowerGridComponent
     public function summarizeFormat(): array
     {
         return [
-            'total_harga.{sum}' => fn ($value) => Number::currency($value, in: 'IDR', locale: 'id_ID', precision : 0),
+            'total_tagihan_bersih.{sum}' => fn ($value) => Number::currency($value, in: 'IDR', locale: 'id_ID', precision : 0),
         ];
     }
 

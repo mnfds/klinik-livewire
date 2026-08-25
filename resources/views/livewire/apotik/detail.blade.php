@@ -32,7 +32,7 @@
         </div>
 
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-6 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-7 gap-6">
                 
                 {{-- Kolom Kiri: Detail Produk --}}
                 <div class="lg:col-span-4 space-y-6">
@@ -65,7 +65,7 @@
                                             </span>
                                         @else
                                             <span class="font-semibold">
-                                                Rp {{ number_format($item->produk->harga_dasar, 0, ',', '.') }}
+                                                Rp {{ number_format($harga_total, 0, ',', '.') }}
                                             </span>
                                         @endif
                                     </div>
@@ -78,8 +78,8 @@
                                             @if($item->potongan)
                                                 <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
                                             @endif
-                                            <div class="font-semibold text-base-content">
-                                                Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            <div class="font-semibold text-success">
+                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                                             </div>
                                         </div>
                                     @endif
@@ -113,8 +113,8 @@
                                             @if($item->potongan)
                                                 <div class="text-error">- Rp {{ number_format($item->potongan, 0, ',', '.') }}</div>
                                             @endif
-                                            <div class="font-semibold text-base-content">
-                                                Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            <div class="font-semibold text-success">
+                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                                             </div>
                                         </div>
                                     @endif
@@ -125,7 +125,7 @@
                 </div>
 
                 {{-- Kolom Kanan: Invoice --}}
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-3">
                     <div class="sticky top-20 space-y-6">
                         <div class="bg-base-100 shadow rounded-box p-4">
                             <h3 class="font-semibold mb-4">Invoice</h3>
@@ -144,9 +144,39 @@
                                     </div>
                                 @endforeach
 
-                                <div class="flex justify-between font-bold my-4">
-                                    <span>Total:</span>
+                                <div class="flex justify-between font-semibold text-sm border-t mt-2">
+                                    <span>Subtotal:</span>
                                     <span>Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</span>
+                                </div>
+                                {{-- DISKON --}}
+                                @if($transaksi->diskon > 0)
+                                    <div class="flex justify-between text-error text-sm">
+                                    <span>Diskon</span>
+                                        <span>
+                                            - {{ number_format($transaksi->diskon, 0, ',', '.') }}%
+                                        </span>
+                                    </div>
+                                @endif
+                                {{-- POTONGAN --}}
+                                @if($transaksi->potongan > 0)
+                                    <div class="flex justify-between text-error text-sm">
+                                    <span>Potongan</span>
+                                        <span>
+                                            - Rp {{ number_format($transaksi->potongan, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+                                @endif
+                                {{-- TOTAL BERSIH --}}
+                                <div class="flex justify-between font-bold text-base border-t mt-2">
+                                    <span>Total Bayar</span>
+                                    <span>
+                                        Rp {{ number_format($transaksi->total_tagihan_bersih, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-end font-bold text-base">
+                                    <span>
+                                        {{ $transaksi->metode_pembayaran }}
+                                    </span>
                                 </div>
                             </div>
                         </div>

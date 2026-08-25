@@ -26,6 +26,12 @@ class Create extends Component
     public bool $showProduk = true; // form terbuka
     public bool $showBarang = false; // form tertutup
 
+    public bool $showPaymentForm = false;
+    public $metode_pembayaran = null;
+    public $diskon = 0;
+    public $potongan = 0;
+    public $note = null;
+
     public function mount()
     {
         $this->produk = ProdukDanObat::all();
@@ -37,152 +43,202 @@ class Create extends Component
         $this->barang_terjual[$uid] = $this->emptyRowWithUidBarang($uid);
     }
 
-// FUNCTION DINAMIS PRODUK OBAT/SKINCARE (PARACETAMOL, SUNSCREEN, DLL)
-    private function emptyRowWithUuid($uuid)
+
+
+    // FUNCTION DINAMIS PRODUK OBAT/SKINCARE (PARACETAMOL, SUNSCREEN, DLL)
+        private function emptyRowWithUuid($uuid)
+        {
+            return [
+                'produk_id' => null,
+                'jumlah_produk' => 1,
+                'harga_satuan' => 0,
+                'potongan' => 0,
+                'diskon' => 0,
+                // 'harga_asli' => 0,
+                'subtotal' => 0,
+                'uuid' => $uuid,
+            ];
+        }
+
+        public function addRow()
+        {
+            $uuid = (string) Str::uuid();
+            $this->obat_estetika[$uuid] = $this->emptyRowWithUuid($uuid);
+        }
+
+        public function removeRow($uuid)
+        {
+            unset($this->obat_estetika[$uuid]);
+        }
+
+        public function updatedObatEstetika($value, $key)
+        {
+            [$uuid, $field] = explode('.', $key);
+
+            if (!isset($this->obat_estetika[$uuid])) return;
+
+            $row = $this->obat_estetika[$uuid];
+
+            // hanya respon field penting
+            if (!in_array($field, ['produk_id', 'jumlah_produk', 'potongan', 'diskon'])) {
+                return;
+            }
+
+            if (!$row['produk_id']) {
+                $this->obat_estetika[$uuid]['harga_satuan'] = 0;
+                $this->obat_estetika[$uuid]['subtotal'] = 0;
+                return;
+            }
+
+            $produk = $this->produk->find($row['produk_id']);
+            if (!$produk) return;
+
+            // ✅ Ambil dari DB
+            $hargaSatuan = (int) ($produk->harga_dasar ?? 0);
+            $defaultDiskon = (float) ($produk->diskon ?? 0);
+            $defaultPotongan = (int) ($produk->potongan ?? 0);
+
+            // 🔥 HANYA set default saat produk dipilih
+            if ($field === 'produk_id') {
+                $this->obat_estetika[$uuid]['diskon'] = $defaultDiskon;
+                $this->obat_estetika[$uuid]['potongan'] = $defaultPotongan;
+            }
+
+            $jumlah   = (int) ($this->obat_estetika[$uuid]['jumlah_produk'] ?? 1);
+            $potongan = (int) ($this->obat_estetika[$uuid]['potongan'] ?? 0);
+            $diskon   = (float) ($this->obat_estetika[$uuid]['diskon'] ?? 0);
+
+            $total = $hargaSatuan * $jumlah;
+            $total -= ($total * $diskon / 100);
+            $total -= $potongan;
+
+            $this->obat_estetika[$uuid]['harga_satuan'] = $hargaSatuan;
+            $this->obat_estetika[$uuid]['subtotal'] = max(0, (int) $total);
+            // dd($this->obat_estetika);
+        }
+    // FUNCTION DINAMIS PRODUK OBAT/SKINCARE (PARACETAMOL, SUNSCREEN, DLL)
+        
+    // FUNCTION DINAMIS BARANG TERJUAL (THUMBLER, TAS, DLL)
+        private function emptyRowWithUidBarang($uid)
+        {
+            return [
+                'barang_id' => null,
+                'jumlah_barang' => 1,
+                'harga_satuan' => 0,
+                'potongan' => 0,
+                'diskon' => 0,
+                // 'harga_asli' => 0,
+                'subtotal' => 0,
+                'uid' => $uid,
+            ];
+        }
+
+        public function addRowBarang()
+        {
+            $uid = (string) Str::uuid();
+            $this->barang_terjual[$uid] = $this->emptyRowWithUidBarang($uid);
+        }
+
+        public function removeRowBarang($uid)
+        {
+            unset($this->barang_terjual[$uid]);
+        }
+
+        public function updatedBarangTerjual($value, $key)
+        {
+            [$uid, $field] = explode('.', $key);
+
+            if (!isset($this->barang_terjual[$uid])) return;
+
+            $row = $this->barang_terjual[$uid];
+
+            // hanya respon field penting
+            if (!in_array($field, ['barang_id', 'jumlah_barang', 'potongan', 'diskon'])) {
+                return;
+            }
+
+            if (!$row['barang_id']) {
+                $this->barang_terjual[$uid]['harga_satuan'] = 0;
+                $this->barang_terjual[$uid]['subtotal'] = 0;
+                return;
+            }
+
+            $barang = $this->barang->find($row['barang_id']);
+            if (!$barang) return;
+
+            // ✅ Ambil dari DB
+            $hargaSatuan = (int) ($barang->harga_dasar ?? 0);
+            $defaultDiskon = (float) ($barang->diskon ?? 0);
+            $defaultPotongan = (int) ($barang->potongan ?? 0);
+
+            // 🔥 HANYA set default saat barang dipilih
+            if ($field === 'barang_id') {
+                $this->barang_terjual[$uid]['diskon'] = $defaultDiskon;
+                $this->barang_terjual[$uid]['potongan'] = $defaultPotongan;
+            }
+
+            $jumlah   = (int) ($this->barang_terjual[$uid]['jumlah_barang'] ?? 1);
+            $potongan = (int) ($this->barang_terjual[$uid]['potongan'] ?? 0);
+            $diskon   = (float) ($this->barang_terjual[$uid]['diskon'] ?? 0);
+
+            $total = $hargaSatuan * $jumlah;
+            $total -= ($total * $diskon / 100);
+            $total -= $potongan;
+
+            $this->barang_terjual[$uid]['harga_satuan'] = $hargaSatuan;
+            $this->barang_terjual[$uid]['subtotal'] = max(0, (int) $total);
+            // dd($this->barang_terjual);
+        }
+    // FUNCTION DINAMIS BARANG TERJUAL (THUMBLER, TAS, DLL)
+
+    public function getTotalKotorProperty()
+    {
+        $totalProduk = collect($this->obat_estetika)->sum(fn($item) => (int) ($item['subtotal'] ?? 0));
+        $totalBarang = collect($this->barang_terjual)->sum(fn($item) => (int) ($item['subtotal'] ?? 0));
+        return $totalProduk + $totalBarang;
+    }
+
+    public function getTotalBersihProperty()
+    {
+        $total = $this->totalKotor;
+        $diskonRp = $total * ((float) ($this->diskon ?: 0) / 100);
+        $bersih = $total - $diskonRp - (int) ($this->potongan ?: 0);
+        return max(0, (int) $bersih);
+    }
+
+    public function openPayment()
+    {
+        if ($this->totalKotor <= 0) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Belum ada item transaksi yang ditambahkan.',
+            ]);
+            return;
+        }
+
+        $this->diskon = 0;
+        $this->potongan = 0;
+        $this->metode_pembayaran = null;
+        $this->note = null;
+        $this->showPaymentForm = true;
+    }
+
+    public function closePayment()
+    {
+        $this->showPaymentForm = false;
+        $this->reset(['metode_pembayaran', 'diskon', 'potongan', 'note']);
+    }
+
+    protected function rulesPayment()
     {
         return [
-            'produk_id' => null,
-            'jumlah_produk' => 1,
-            'harga_satuan' => 0,
-            'potongan' => 0,
-            'diskon' => 0,
-            // 'harga_asli' => 0,
-            'subtotal' => 0,
-            'uuid' => $uuid,
+            'metode_pembayaran' => 'required|in:Tunai,Qris,Shopeepay,Mandiri,BCA,BRI,BNI',
+            'diskon'            => 'nullable|numeric|min:0|max:100',
+            'potongan'          => 'nullable|numeric|min:0',
+            'note'              => 'nullable|string|max:255',
         ];
     }
 
-    public function addRow()
-    {
-        $uuid = (string) Str::uuid();
-        $this->obat_estetika[$uuid] = $this->emptyRowWithUuid($uuid);
-    }
-
-    public function removeRow($uuid)
-    {
-        unset($this->obat_estetika[$uuid]);
-    }
-
-    public function updatedObatEstetika($value, $key)
-    {
-        [$uuid, $field] = explode('.', $key);
-
-        if (!isset($this->obat_estetika[$uuid])) return;
-
-        $row = $this->obat_estetika[$uuid];
-
-        // hanya respon field penting
-        if (!in_array($field, ['produk_id', 'jumlah_produk', 'potongan', 'diskon'])) {
-            return;
-        }
-
-        if (!$row['produk_id']) {
-            $this->obat_estetika[$uuid]['harga_satuan'] = 0;
-            $this->obat_estetika[$uuid]['subtotal'] = 0;
-            return;
-        }
-
-        $produk = $this->produk->find($row['produk_id']);
-        if (!$produk) return;
-
-        // ✅ Ambil dari DB
-        $hargaSatuan = (int) ($produk->harga_dasar ?? 0);
-        $defaultDiskon = (float) ($produk->diskon ?? 0);
-        $defaultPotongan = (int) ($produk->potongan ?? 0);
-
-        // 🔥 HANYA set default saat produk dipilih
-        if ($field === 'produk_id') {
-            $this->obat_estetika[$uuid]['diskon'] = $defaultDiskon;
-            $this->obat_estetika[$uuid]['potongan'] = $defaultPotongan;
-        }
-
-        $jumlah   = (int) ($this->obat_estetika[$uuid]['jumlah_produk'] ?? 1);
-        $potongan = (int) ($this->obat_estetika[$uuid]['potongan'] ?? 0);
-        $diskon   = (float) ($this->obat_estetika[$uuid]['diskon'] ?? 0);
-
-        $total = $hargaSatuan * $jumlah;
-        $total -= ($total * $diskon / 100);
-        $total -= $potongan;
-
-        $this->obat_estetika[$uuid]['harga_satuan'] = $hargaSatuan;
-        $this->obat_estetika[$uuid]['subtotal'] = max(0, (int) $total);
-        // dd($this->obat_estetika);
-    }
-// FUNCTION DINAMIS PRODUK OBAT/SKINCARE (PARACETAMOL, SUNSCREEN, DLL)
-    
-// FUNCTION DINAMIS BARANG TERJUAL (THUMBLER, TAS, DLL)
-    private function emptyRowWithUidBarang($uid)
-    {
-        return [
-            'barang_id' => null,
-            'jumlah_barang' => 1,
-            'harga_satuan' => 0,
-            'potongan' => 0,
-            'diskon' => 0,
-            // 'harga_asli' => 0,
-            'subtotal' => 0,
-            'uid' => $uid,
-        ];
-    }
-
-    public function addRowBarang()
-    {
-        $uid = (string) Str::uuid();
-        $this->barang_terjual[$uid] = $this->emptyRowWithUidBarang($uid);
-    }
-
-    public function removeRowBarang($uid)
-    {
-        unset($this->barang_terjual[$uid]);
-    }
-
-    public function updatedBarangTerjual($value, $key)
-    {
-        [$uid, $field] = explode('.', $key);
-
-        if (!isset($this->barang_terjual[$uid])) return;
-
-        $row = $this->barang_terjual[$uid];
-
-        // hanya respon field penting
-        if (!in_array($field, ['barang_id', 'jumlah_barang', 'potongan', 'diskon'])) {
-            return;
-        }
-
-        if (!$row['barang_id']) {
-            $this->barang_terjual[$uid]['harga_satuan'] = 0;
-            $this->barang_terjual[$uid]['subtotal'] = 0;
-            return;
-        }
-
-        $barang = $this->barang->find($row['barang_id']);
-        if (!$barang) return;
-
-        // ✅ Ambil dari DB
-        $hargaSatuan = (int) ($barang->harga_dasar ?? 0);
-        $defaultDiskon = (float) ($barang->diskon ?? 0);
-        $defaultPotongan = (int) ($barang->potongan ?? 0);
-
-        // 🔥 HANYA set default saat barang dipilih
-        if ($field === 'barang_id') {
-            $this->barang_terjual[$uid]['diskon'] = $defaultDiskon;
-            $this->barang_terjual[$uid]['potongan'] = $defaultPotongan;
-        }
-
-        $jumlah   = (int) ($this->barang_terjual[$uid]['jumlah_barang'] ?? 1);
-        $potongan = (int) ($this->barang_terjual[$uid]['potongan'] ?? 0);
-        $diskon   = (float) ($this->barang_terjual[$uid]['diskon'] ?? 0);
-
-        $total = $hargaSatuan * $jumlah;
-        $total -= ($total * $diskon / 100);
-        $total -= $potongan;
-
-        $this->barang_terjual[$uid]['harga_satuan'] = $hargaSatuan;
-        $this->barang_terjual[$uid]['subtotal'] = max(0, (int) $total);
-        // dd($this->barang_terjual);
-    }
-// FUNCTION DINAMIS BARANG TERJUAL (THUMBLER, TAS, DLL)
-    
     public function create()
     {
         if (! Gate::allows('akses', 'Transaksi Apotik Tambah')) {
@@ -192,7 +248,9 @@ class Create extends Component
             ]);
             return;
         }
-
+        
+        $this->validate($this->rulesPayment());
+        
         DB::transaction(function () {
             // dd([
             //     "obat" => $this->obat_estetika,
@@ -202,19 +260,28 @@ class Create extends Component
             $totalproduk = collect($this->obat_estetika)->sum(fn($item) => (int) $item['subtotal']);
             $totalbarang = collect($this->barang_terjual)->sum(fn($item) => (int) $item['subtotal']);
             $total = $totalproduk + $totalbarang;
-            
+
+            $diskonRp = (int) ($total * ((float) ($this->diskon ?: 0) / 100));
+            $potongan = (int) ($this->potongan ?: 0);
+            $totalBersih = max(0, $total - $diskonRp - $potongan);
+
             // Generate no_transaksi unik
             $noTransaksi = 'TRX-' . now()->format('YmdHis');
 
             // Simpan transaksi utama
             $transaksi = TransaksiApotik::create([
-                'no_transaksi' => $noTransaksi,
-                'kasir_nama'   => Auth::user()->biodata?->nama_lengkap 
-                                ?? Auth::user()->name 
-                                ?? 'Kasir Apotik',
-                'tanggal'      => now(),
-                'total_harga'  => $total,
-                'pasien_id'    => $this->pasien_id,
+                'no_transaksi'          => $noTransaksi,
+                'kasir_nama'            => Auth::user()->biodata?->nama_lengkap
+                                            ?? Auth::user()->name
+                                            ?? 'Kasir Apotik',
+                'tanggal'               => now(),
+                'total_harga'           => $total,
+                'metode_pembayaran'     => $this->metode_pembayaran,
+                'diskon'                => (int) ($this->diskon ?: 0),
+                'potongan'              => $potongan,
+                'total_tagihan_bersih'  => $totalBersih,
+                'note'                  => $this->note,
+                'pasien_id'             => $this->pasien_id,
             ]);
 
             // Simpan detail
@@ -252,6 +319,7 @@ class Create extends Component
 
             // Reset form
             $this->reset('obat_estetika');
+            $this->closePayment();
         });
 
         $this->dispatch('toast', [

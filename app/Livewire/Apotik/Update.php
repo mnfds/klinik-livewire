@@ -12,14 +12,20 @@ class Update extends Component
 {
     public $transaksi;
     public $produk;
-    public $obat_estetika = []; // array dinamis untuk row
+    public $obat_estetika = [];
 
-    public $barang_list = []; // data master barang
-    public $barang_transaksi = []; // array dinamis row barang
+    public $barang_list = [];
+    public $barang_transaksi = [];
 
-    // Simpan Value Boolean Form Ditampilkan(True) atau Hide (false)
     public bool $showProduk = false;
     public bool $showBarang = false;
+
+    // === TAMBAHAN: form pembayaran ===
+    public bool $showPaymentForm = false;
+    public $metode_pembayaran = null;
+    public $diskon = 0;
+    public $potongan = 0;
+    public $note = null;
 
     public function mount($id)
     {
@@ -27,7 +33,6 @@ class Update extends Component
         $this->barang_list = Barang::all();
         $this->transaksi = TransaksiApotik::with('riwayat.produk')->findOrFail($id);
 
-        // isi $obat_estetika berdasarkan riwayat transaksi
         foreach ($this->transaksi->riwayat as $item) {
             $this->obat_estetika[] = [
                 'uuid' => uniqid(),
@@ -56,71 +61,72 @@ class Update extends Component
         if(!empty($this->barang_transaksi)) {
             $this->showBarang = true;
         }
+
+        // === TAMBAHAN: prefill data pembayaran dari transaksi ===
+        $this->metode_pembayaran = $this->transaksi->metode_pembayaran;
+        $this->diskon            = $this->transaksi->diskon ?? 0;
+        $this->potongan          = $this->transaksi->potongan ?? 0;
+        $this->note              = $this->transaksi->note;
     }
 
-    public function addRow()
+    // ... addRow(), removeRow(), addRowBarang(), removeRowBarang() tetap sama ...
+
+    protected function rulesPayment()
     {
-        $this->obat_estetika[] = [
-            'uuid' => uniqid(),
-            'produk_id' => null,
-            'jumlah_produk' => 1,
-            'harga_asli' => 0,
-            'potongan' => 0,
-            'diskon' => 0,
-            'subtotal' => 0
+        return [
+            'metode_pembayaran' => 'required|in:Tunai,Qris,Shopeepay,Mandiri,BCA,BRI,BNI',
+            'diskon'            => 'nullable|numeric|min:0|max:100',
+            'potongan'          => 'nullable|numeric|min:0',
+            'note'              => 'nullable|string|max:255',
         ];
     }
 
-    public function removeRow($uuid)
+    public function getTotalKotorProperty()
     {
-        $this->obat_estetika = array_filter(
-            $this->obat_estetika,
-            fn($row) => $row['uuid'] !== $uuid
-        );
-        $this->obat_estetika = array_values($this->obat_estetika);
+        $totalProduk = $this->showProduk
+            ? collect($this->obat_estetika)->sum(fn($item) => (float) ($item['subtotal'] ?? 0))
+            : 0;
+        $totalBarang = $this->showBarang
+            ? collect($this->barang_transaksi)->sum(fn($item) => (float) ($item['subtotal'] ?? 0))
+            : 0;
+        return $totalProduk + $totalBarang;
     }
 
-    public function addRowBarang()
+    public function getTotalBersihProperty()
     {
-        $this->barang_transaksi[] = [
-            'uuid'       => uniqid(),
-            'barang_id'  => null,
-            'jumlah'     => 1,
-            'harga_asli' => 0,
-            'potongan'   => 0,
-            'diskon'     => 0,
-            'subtotal'   => 0,
-        ];
+        $total = $this->totalKotor;
+        $diskonRp = $total * ((float) ($this->diskon ?: 0) / 100);
+        $bersih = $total - $diskonRp - (float) ($this->potongan ?: 0);
+        return max(0, round($bersih));
     }
 
-    public function removeRowBarang($uuid)
+    public function openPayment()
     {
-        $this->barang_transaksi = array_filter(
-            $this->barang_transaksi,
-            fn($row) => $row['uuid'] !== $uuid
-        );
-        $this->barang_transaksi = array_values($this->barang_transaksi);
+        if ($this->totalKotor <= 0) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Belum ada item transaksi.',
+            ]);
+            return;
+        }
+        $this->showPaymentForm = true;
     }
 
-    // public function updatedObatEstetika($value, $key)
-    // {
-    //     // misal key = "0.jumlah_produk", kita bisa hitung subtotal
-    //     list($index, $field) = explode('.', $key);
-    //     $row = &$this->obat_estetika[$index];
-
-    //     if ($field == 'jumlah_produk' || $field == 'harga_asli' || $field == 'diskon') {
-    //         $row['subtotal'] = ($row['harga_asli'] * $row['jumlah_produk']) - $row['diskon'];
-    //     }
-    // }
+    public function closePayment()
+    {
+        $this->showPaymentForm = false;
+    }
 
     public function update()
     {
         $this->validate([
             'obat_estetika.*.produk_id' => 'required|exists:produk_dan_obats,id',
             'obat_estetika.*.jumlah_produk' => 'required|integer|min:1',
-            'barang_transaksi.*.barang_id' => 'nullable|exists:barangs,id', // nullable jika section kosong
+            'barang_transaksi.*.barang_id' => 'nullable|exists:barangs,id',
             'barang_transaksi.*.jumlah'    => 'nullable|integer|min:1',
         ]);
+        $this->validate($this->rulesPayment());
+
         if (! Gate::allows('akses', 'Transaksi Apotik Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -130,48 +136,44 @@ class Update extends Component
         }
 
         $totalHarga = 0;
-        // Hapus riwayat lama dulu kalau form di close waktu submit
+
         if (!$this->showProduk) {
             $this->transaksi->riwayat()->delete();
         }
         if($this->showProduk){
-            // Hapus riwayat lama dulu
             $this->transaksi->riwayat()->delete();
             foreach ($this->obat_estetika as $item) {
                 $harga_asli    = (float) ($item['harga_asli'] ?? 0);
                 $diskon        = (float) ($item['diskon']     ?? 0);
                 $potongan      = (float) ($item['potongan']   ?? 0);
                 $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
-    
-                // Simpan riwayat baru
+
                 $this->transaksi->riwayat()->create([
                     'produk_id' => $item['produk_id'],
                     'jumlah_produk' => $item['jumlah_produk'],
                     'harga_asli' => $harga_asli,
                     'potongan' => $potongan,
                     'diskon' => $diskon,
-                    'subtotal' => round($subtotalFinal), // dibulatkan ke integer
+                    'subtotal' => round($subtotalFinal),
                 ]);
-    
+
                 $totalHarga += $subtotalFinal;
             }
         }
 
-        // Hapus riwayat barang lama dulu kalau form di close waktu submit
         if (!$this->showBarang) {
             $this->transaksi->riwayatBarang()->delete();
         }
         if($this->showBarang){
-            // Hapus riwayat barang lama
             $this->transaksi->riwayatBarang()->delete();
             foreach ($this->barang_transaksi as $item) {
-                if (empty($item['barang_id'])) continue; // skip row kosong
-    
+                if (empty($item['barang_id'])) continue;
+
                 $harga_asli    = (float) ($item['harga_asli'] ?? 0);
                 $diskon        = (float) ($item['diskon']     ?? 0);
                 $potongan      = (float) ($item['potongan']   ?? 0);
                 $subtotalFinal = $this->hitungSubtotal($harga_asli, $diskon, $potongan);
-    
+
                 $this->transaksi->riwayatBarang()->create([
                     'barang_id'     => $item['barang_id'],
                     'jumlah_barang' => $item['jumlah'],
@@ -180,14 +182,22 @@ class Update extends Component
                     'diskon'        => $diskon,
                     'subtotal'      => round($subtotalFinal),
                 ]);
-    
+
                 $totalHarga += $subtotalFinal;
             }
         }
 
-        // Update total harga transaksi
+        // === TAMBAHAN: hitung ulang total_tagihan_bersih pakai diskon/potongan transaksi ===
+        $diskonRp = $totalHarga * ((float) ($this->diskon ?: 0) / 100);
+        $totalBersih = max(0, round($totalHarga - $diskonRp - (float) ($this->potongan ?: 0)));
+
         $this->transaksi->update([
-            'total_harga' => round($totalHarga),
+            'total_harga'          => round($totalHarga),
+            'metode_pembayaran'    => $this->metode_pembayaran,
+            'diskon'               => (int) ($this->diskon ?: 0),
+            'potongan'             => (int) ($this->potongan ?: 0),
+            'total_tagihan_bersih' => $totalBersih,
+            'note'                 => $this->note,
         ]);
 
         $this->dispatch('toast', [
@@ -212,7 +222,7 @@ class Update extends Component
     {
         $this->showBarang = true;
     }
-    
+
     public function render()
     {
         if (! Gate::allows('akses', 'Transaksi Apotik Edit')) {

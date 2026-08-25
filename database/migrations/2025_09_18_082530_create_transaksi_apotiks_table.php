@@ -18,6 +18,11 @@ return new class extends Migration
             $table->string('kasir_nama');
             $table->dateTime('tanggal')->default(now());
             $table->integer('total_harga');
+            $table->enum('metode_pembayaran', ['Tunai','Qris', 'Shopeepay', 'Mandiri', 'BCA', 'BRI', 'BNI']);
+            $table->unsignedBigInteger('diskon')->nullable()->default(0);
+            $table->unsignedBigInteger('potongan')->nullable()->default(0);
+            $table->unsignedBigInteger('total_tagihan_bersih')->default(0);
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
