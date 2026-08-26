@@ -38,6 +38,16 @@ final class PendapatanTable extends PowerGridComponent
     public function datasource(): Builder
     {
         return Pendapatanlainnya::query()
+            ->orderByRaw("
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM pendapatanlainnyas AS grp
+                    WHERE (
+                        grp.id = COALESCE(pendapatanlainnyas.parent_id, pendapatanlainnyas.id)
+                        OR grp.parent_id = COALESCE(pendapatanlainnyas.parent_id, pendapatanlainnyas.id)
+                    )
+                    AND grp.status = 'lunas'
+                ) THEN 1 ELSE 0 END
+            ")
             ->latest()
             ->when($this->filterStatus, fn (Builder $q) => $q->where('status', $this->filterStatus))
             ->when($this->filterUnitUsaha, fn (Builder $q) => $q->where('unit_usaha', $this->filterUnitUsaha))
