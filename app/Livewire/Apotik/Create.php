@@ -314,10 +314,10 @@ class Create extends Component
             }
 
             // Kurangi stok + catat mutasi
-            if($this->showBarang){
+            if($this->showProduk){
                 $this->kurangiStokApotik($transaksi, $this->obat_estetika);
             }
-            if($this->showProduk){
+            if($this->showBarang){
                 $this->kurangiStokBarang($transaksi, $this->barang_terjual);
             }
             //cetak invoice
