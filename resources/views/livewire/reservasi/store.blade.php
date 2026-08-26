@@ -81,26 +81,6 @@
                 @error('jam_reservasi') <span class="text-error text-sm">{{ $message }}</span> @enderror
             </div>
 
-            {{-- Status --}}
-            <div>
-                <label class="label font-semibold">Status Reservasi</label>
-                <select class="select select-bordered w-full" wire:model="status">
-                    <option value="belum bayar">Belum Bayar</option>
-                    <option value="belum lunas">Belum Lunas</option>
-                    <option value="lunas">Lunas</option>
-                    <option value="selesai">Selesai</option>
-                    <option value="batal">Batal</option>
-                </select>
-                @error('status') <span class="text-error text-sm">{{ $message }}</span> @enderror
-            </div>
-
-            {{-- Nominal Pembayaran --}}
-            <div>
-                <label class="label font-semibold">Nominal Pembayaran</label>
-                <input type="number" min="0" class="input input-bordered w-full" wire:model="nominal_pembayaran" placeholder="Contoh: 150000">
-                @error('nominal_pembayaran') <span class="text-error text-sm">{{ $message }}</span> @enderror
-            </div>
-
             {{-- Catatan --}}
             <div class="sm:col-span-2">
                 <label class="label font-semibold">Catatan</label>

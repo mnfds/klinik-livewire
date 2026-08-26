@@ -7,6 +7,7 @@ use App\Models\Pasien;
 use Livewire\Component;
 use App\Models\PoliKlinik;
 use App\Models\NomorAntrian;
+use App\Models\Reservasi;
 use Livewire\WithFileUploads;
 use App\Models\PasienTerdaftar;
 use App\Services\StoreEncounter;
@@ -23,6 +24,9 @@ class Create extends Component
     public $antrian;
     public $poli;
     public $dokter;
+    public $tanggal_reservasi;
+    public ?int $reservasi_id = null;
+    public $reservasi;
 
     public $dokter_satusehat;
     public $pasien_satusehat;
@@ -38,10 +42,11 @@ class Create extends Component
     public $poli_id, $dokter_id;
     public $foto_pasien_preview; //show
 
-    public function mount($pasien_id = null, $antrian_id = null)
+    public function mount($pasien_id = null, $antrian_id = null, $reservasi_id = null)
     {
         $this->pasien_id = $pasien_id;
         $this->antrian_id = $antrian_id;
+        $this->reservasi_id = $reservasi_id;
 
         $this->poli = PoliKlinik::where('status', true)->get();
         $this->dokter = Dokter::all();
@@ -66,11 +71,20 @@ class Create extends Component
             }
         }
         if ($this->antrian_id) {
-            $this->antrian = \App\Models\NomorAntrian::with('poli')->find($this->antrian_id);
+            $this->antrian = NomorAntrian::with('poli')->find($this->antrian_id);
 
             if ($this->antrian) {
                 $this->poli_id = $this->antrian->poli_id;
                 $this->tanggal_kunjungan = $this->antrian->created_at->toDateString(); // atau pakai now()->toDateString()
+            }
+        }
+        if ($this->reservasi_id) {
+            $this->reservasi = Reservasi::find($this->reservasi_id);
+
+            if ($this->reservasi) {
+                $this->poli_id = $this->reservasi->poli_id;
+                $this->dokter_id = $this->reservasi->dokter_id;
+                $this->tanggal_kunjungan = $this->reservasi->tanggal_reservasi;
             }
         }
     }
@@ -156,6 +170,9 @@ class Create extends Component
 
         if ($success && $this->antrian) {
             NomorAntrian::findOrFail($this->antrian->id)->update(['status' => 'nonaktif']);
+        }
+        if ($success && $this->reservasi){
+            Reservasi::findOrFail($this->reservasi->id)->update(['status' => 'selesai']);        
         }
 
         if($kirimDataKeSatusehat){

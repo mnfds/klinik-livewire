@@ -19,10 +19,8 @@ return new class extends Migration
             $table->foreignId('dokter_id')->nullable()->constrained('dokters')->nullOnDelete();
             $table->date('tanggal_reservasi');
             $table->time('jam_reservasi')->nullable();
-            $table->enum('status', ['belum bayar', 'belum lunas', 'lunas', 'selesai', 'batal'])->default('belum bayar');
-            $table->unsignedBigInteger('nominal_pembayaran')->nullable();
+            $table->enum('status', ['belum datang','selesai', 'batal'])->default('belum datang');
             $table->text('catatan')->nullable();
-            
             $table->timestamps();
         });
     }

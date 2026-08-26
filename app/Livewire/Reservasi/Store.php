@@ -17,7 +17,7 @@ class Store extends Component
     public $dokter_id;
     public $tanggal_reservasi;
     public $jam_reservasi;
-    public $status = 'belum bayar';
+    public $status = 'belum datang';
     public $nominal_pembayaran;
     public $catatan;
 
@@ -39,8 +39,6 @@ class Store extends Component
             'dokter_id' => 'nullable|exists:dokters,id',
             'tanggal_reservasi' => 'required|date',
             'jam_reservasi' => 'nullable|date_format:H:i',
-            'status' => 'required|in:belum bayar,belum lunas,lunas,selesai,batal',
-            'nominal_pembayaran' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
         ]);
 
@@ -51,9 +49,9 @@ class Store extends Component
         $this->reset([
             'pasien_id', 'poli_id', 'dokter_id',
             'tanggal_reservasi', 'jam_reservasi',
-            'status', 'nominal_pembayaran', 'catatan',
+            'status', 'catatan',
         ]);
-        $this->status = 'belum bayar';
+        $this->status = 'belum datang';
 
         // ✅ Kirim notifikasi ke frontend (toast + tutup modal)
         $this->dispatch('toast', [

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
@@ -59,10 +60,8 @@ final class ReservasiTable extends PowerGridComponent
             })
             ->add('status', fn ($row) =>
                 match ($row->status) {
-                    'belum bayar' => '<span class="badge badge-accent px-2 whitespace-nowrap">Belum Bayar</span>',
-                    'belum lunas' => '<span class="badge badge-secondary px-2 whitespace-nowrap">Belum Lunas</span>',
-                    'lunas' => '<span class="badge badge-success px-2 whitespace-nowrap">Lunas</span>',
-                    'selesai' => '<span class="badge badge-primary px-2 whitespace-nowrap">Selesai</span>',
+                    'belum datang' => '<span class="badge badge-primary px-2 whitespace-nowrap">Belum Datang</span>',
+                    'selesai' => '<span class="badge badge-success px-2 whitespace-nowrap">Selesai</span>',
                     'batal' => '<span class="badge badge-error px-2 whitespace-nowrap">Batal</span>',
                     default => '<span class="badge">-</span>',
                 }
@@ -125,7 +124,7 @@ final class ReservasiTable extends PowerGridComponent
                 ->tag('button')
                 ->attributes([
                     'title' => 'Pendaftaran Pasien',
-                    'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id,] )."')",
+                    'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id, 'tanggal_reservasi' => $row->tanggal_reservasi, 'reservasi_id' => $row->id,] )."')",
                     'class' => 'btn btn-secondary'
                 ]),
 
@@ -176,15 +175,14 @@ final class ReservasiTable extends PowerGridComponent
             'message' => 'Data berhasil dihapus.',
         ]);
     }
-    /*
+
     public function actionRules($row): array
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
+        return [
+            Rule::button('pendaftaranButton')
+                ->when(fn($row) => $row->status !== 'belum datang')
                 ->hide(),
         ];
     }
-    */
+
 }

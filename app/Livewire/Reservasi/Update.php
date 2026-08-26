@@ -12,7 +12,7 @@ class Update extends Component
 {
     public $reservasi_id;
     public $pasien_id, $poli_id, $dokter_id, $tanggal_reservasi;
-    public $jam_reservasi, $status, $nominal_pembayaran, $catatan;
+    public $jam_reservasi, $status, $catatan;
     
     public $nama_pasien;
     public $polis = [];
@@ -38,7 +38,6 @@ class Update extends Component
         $this->tanggal_reservasi = $reservasi->tanggal_reservasi;
         $this->jam_reservasi = $reservasi->jam_reservasi;
         $this->status = $reservasi->status;
-        $this->nominal_pembayaran = $reservasi->nominal_pembayaran;
         $this->catatan = $reservasi->catatan;
 
         $this->dispatch('openModal');
@@ -52,8 +51,7 @@ class Update extends Component
             'dokter_id'             => 'nullable|exists:dokters,id',
             'tanggal_reservasi'     => 'required',
             'jam_reservasi'         => 'nullable',
-            'status'                => 'required|in:belum bayar,belum lunas,lunas,selesai,batal',
-            'nominal_pembayaran'    => 'nullable|numeric|min:0',
+            'status'                => 'required|in:belum datang,selesai,batal',
             'catatan'               => 'nullable|string',
         ]);
 
@@ -64,7 +62,6 @@ class Update extends Component
             'tanggal_reservasi'  => $this->tanggal_reservasi,
             'jam_reservasi'      => $this->jam_reservasi,
             'status'             => $this->status,
-            'nominal_pembayaran' => $this->nominal_pembayaran,
             'catatan'            => $this->catatan,
         ]);
 

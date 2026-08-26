@@ -480,10 +480,10 @@
                     // use Illuminate\Support\Carbon;
 
                     $hariIni = Carbon::today();
-                    $duaHariKedepan = Carbon::today()->addDays(1);
+                    $duaHariKedepan = Carbon::today()->addDays(2);
 
                     $reservasiCount = Reservasi::whereDate('tanggal_reservasi', '<=', $duaHariKedepan)
-                        ->whereIn('status', ['belum bayar', 'belum lunas', 'selesai', 'batal'])
+                        ->where('status', 'belum datang')
                         ->count();
                 @endphp
 
