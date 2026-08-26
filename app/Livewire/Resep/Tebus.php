@@ -142,7 +142,8 @@ class Tebus extends Component
         ->toArray();
         
         //mapping data produk/obat transaksi tambahan
-        $this->produkObatTambahan =$this->pasienTerdaftar->rekamMedis->transaksi->riwayatTransaksi
+        $this->produkObatTambahan =$this->pasienTerdaftar->rekamMedis->transaksi
+                ->getRelation('riwayatTransaksi')
                 ->where('jenis_item', 'produk_tambahan')
                 ->map(fn ($item) => [
                     'id' => $item->id,

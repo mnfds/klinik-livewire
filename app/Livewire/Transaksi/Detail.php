@@ -3,30 +3,31 @@
 namespace App\Livewire\Transaksi;
 
 use App\Models\Barang;
-use Livewire\Component;
 use App\Models\Bundling;
 use App\Models\ObatFinal;
-use App\Models\RekamMedis;
-use Mike42\Escpos\Printer;
-use Illuminate\Support\Str;
-use App\Models\ProdukDanObat;
-use Illuminate\Support\Carbon;
-use App\Models\PasienTerdaftar;
-use App\Models\RencanaProdukRM;
-use App\Models\TransaksiKlinik;
-use App\Models\ObatRacikanFinal;
-use App\Models\RencanaLayananRM;
-use App\Models\RencanaTreatmentRM;
-use Illuminate\Support\Facades\DB;
 use App\Models\ObatNonRacikanFinal;
+use App\Models\ObatRacikanFinal;
+use App\Models\PasienTerdaftar;
+use App\Models\ProdukBundlingUsage;
+use App\Models\ProdukDanObat;
+use App\Models\RekamMedis;
+use App\Models\RencanaLayananRM;
 use App\Models\RencananaBundlingRM;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Mike42\Escpos\CapabilityProfile;
+use App\Models\RencanaProdukRM;
+use App\Models\RencanaTreatmentRM;
 use App\Models\RiwayatTransaksiKlinik;
 use App\Models\SuratKeterangan;
+use App\Models\TransaksiKlinik;
 use App\Services\PutInFinishedEncounter;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class Detail extends Component
 {
@@ -239,6 +240,8 @@ class Detail extends Component
             $nonRacikanIds = $this->selectedObat;
             $racikanIds = $this->selectedRacikan;
 
+            $adaObat = !empty($nonRacikanIds) || !empty($racikanIds);
+
             // Update konfirmasi obat
             if (!empty($nonRacikanIds)) {
                 ObatNonRacikanFinal::whereIn('id', $nonRacikanIds)
@@ -373,6 +376,7 @@ class Detail extends Component
             }
 
             // --- Produk Tambahan ---
+            $adaProdukTambahan = false;
             if($this->showTambahanItem === true){
                 foreach ($this->produktambahan ?? [] as $item) {
                     // SKIP JIKA TIDAK ADA PRODUK / DIBATALKAN
@@ -382,6 +386,7 @@ class Detail extends Component
                     ) {
                         continue;
                     }
+                    $adaProdukTambahan = true;
                     $produkDitambah = $this->produksearch->firstWhere('id', $item['produk_id']);
                     $subtotalProdukDiTambah = (int) $item['subtotal'];
                     RiwayatTransaksiKlinik::create([
@@ -564,7 +569,11 @@ class Detail extends Component
             ]);
 
             // ✅ 4. Update status pasien + kurangi stok
-            PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => 'lunas']);
+            $adaProdukDariBundling = ProdukBundlingUsage::where('rekam_medis_id', $this->rekammedis_id)
+                ->where('jumlah_dipakai', '>', 0)
+                ->exists();
+            $statusTerdaftar = ($this->produk->isNotEmpty() || $adaProdukTambahan || $adaProdukDariBundling || $adaObat) ? 'lunas' : 'selesai';
+            PasienTerdaftar::findOrFail($this->pasien_terdaftar_id)->update(['status_terdaftar' => $statusTerdaftar]);
             $this->kurangiStokProduk($transaksi->no_transaksi);
             // $this->kurangiStokBahanBaku();
             $this->invoice($transaksi->id);
