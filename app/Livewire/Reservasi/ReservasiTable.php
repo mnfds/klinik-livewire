@@ -32,7 +32,10 @@ final class ReservasiTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Reservasi::with(['pasien', 'poliklinik', 'dokter']);
+        return Reservasi::with(['pasien', 'poliklinik', 'dokter'])
+            ->orderByRaw("CASE WHEN status = 'belum datang' THEN 0 ELSE 1 END")
+            ->orderBy('tanggal_reservasi', 'asc')
+            ->orderBy('jam_reservasi', 'asc');
     }
 
     public function relationSearch(): array
@@ -118,6 +121,18 @@ final class ReservasiTable extends PowerGridComponent
 
     public function actions(Reservasi $row): array
     {
+        $noHp = preg_replace('/[^0-9]/', '', $row->pasien->no_telp ?? '');
+        if (str_starts_with($noHp, '0')) {
+            $noHp = '62' . substr($noHp, 1);
+        }
+
+        $pesanWa = "Halo {$row->pasien->nama}, mengingatkan reservasi Anda di klinik pada "
+            . \Carbon\Carbon::parse($row->tanggal_reservasi)->translatedFormat('d F Y')
+            . ($row->jam_reservasi ? ' pukul ' . \Carbon\Carbon::parse($row->jam_reservasi)->format('H:i') : '')
+            . ". Terima kasih.";
+
+        $waUrl = 'https://wa.me/' . $noHp . '?text=' . urlencode($pesanWa);
+
         return [
             Button::add('pendaftaranButton')
                 ->slot('<i class="fa-solid fa-notes-medical"></i> Daftar')
@@ -126,6 +141,16 @@ final class ReservasiTable extends PowerGridComponent
                     'title' => 'Pendaftaran Pasien',
                     'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id, 'tanggal_reservasi' => $row->tanggal_reservasi, 'reservasi_id' => $row->id,] )."')",
                     'class' => 'btn btn-secondary'
+                ]),
+
+            Button::add('waReservasi')
+                ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
+                ->tag('a')
+                ->attributes([
+                    'href' => $waUrl,
+                    'target' => '_blank',
+                    'title' => 'Hubungi via WhatsApp',
+                    'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
                 ]),
 
             Button::add('editReservasi')  
@@ -180,6 +205,9 @@ final class ReservasiTable extends PowerGridComponent
     {
         return [
             Rule::button('pendaftaranButton')
+                ->when(fn($row) => $row->status !== 'belum datang')
+                ->hide(),
+            Rule::button('waReservasi')
                 ->when(fn($row) => $row->status !== 'belum datang')
                 ->hide(),
         ];
