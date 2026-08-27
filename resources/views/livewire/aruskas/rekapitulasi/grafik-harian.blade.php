@@ -48,10 +48,21 @@
                         </button>
                     </div>
 
-                    @if ($tipe || $filterUnitUsaha || $filterMetodePembayaran || $filterJenisPengeluaran)
-                        <div class="flex flex-wrap items-center justify-end gap-2 text-sm bg-base-200/60 px-3 py-1.5 rounded-lg">
+                    <div class="flex flex-wrap items-center justify-end gap-2 text-sm bg-base-200/60 px-3 py-1.5 rounded-lg">
+                        <span class="text-base-content/60 text-xs">Tanggal:</span>
+                        @if ($startDate != $endDate)
+                            <span class="badge badge-primary badge-sm">
+                                {{ $startDate ? \Carbon\Carbon::parse($startDate)->locale('id')->translatedFormat('j M Y') : '-' }}
+                                    -
+                                {{ $endDate ? \Carbon\Carbon::parse($endDate)->locale('id')->translatedFormat('j M Y') : '-' }}
+                            </span>
+                        @else
+                            <span class="badge badge-primary badge-sm">
+                                {{ $startDate ? \Carbon\Carbon::parse($startDate)->locale('id')->translatedFormat('j M Y') : '-' }}
+                            </span>
+                        @endif
+                        @if ($tipe || $filterUnitUsaha || $filterMetodePembayaran || $filterJenisPengeluaran)
                             <span class="text-base-content/60 text-xs">Filter aktif:</span>
-
                             @if ($tipe)
                                 <span class="badge badge-primary badge-sm">{{ $tipe === 'masuk' ? 'Uang Masuk' : 'Uang Keluar' }}</span>
                             @endif
@@ -64,8 +75,8 @@
                             @if ($filterJenisPengeluaran)
                                 <span class="badge badge-primary badge-sm">{{ $filterJenisPengeluaran }}</span>
                             @endif
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
