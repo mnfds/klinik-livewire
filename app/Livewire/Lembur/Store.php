@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class Store extends Component
 {
-    public $user_id, $tanggal_lembur, $jam_mulai, $keperluan, $disetujui_oleh;
+    public $user_id, $tanggal_lembur, $perkiraan_durasi, $keperluan, $disetujui_oleh;
     public $status = 'pending';
     public $users;
 
@@ -22,19 +22,18 @@ class Store extends Component
     
     public function mount(){
         $this->users = User::with(['dokter', 'biodata', 'role'])->get();
+        $this->user_id = Auth::user()->id;
     }
 
     public function store()
     {
-        $this->disetujui_oleh = Auth::user()->id;
 
         $this->validate([
-            'user_id'       => 'required',
-            'tanggal_lembur'=> 'required',
-            'jam_mulai'     => 'required',
-            'keperluan'     => 'required',
-            'disetujui_oleh'=> 'required',
-            'status'        => 'required',
+            'user_id'           => 'required',
+            'tanggal_lembur'    => 'required',
+            'perkiraan_durasi' => 'required',
+            'keperluan'         => 'required',
+            'status'            => 'required',
         ]);
         
         if (! Gate::allows('akses', 'Pengajuan Lembur Tambah')) {
@@ -46,13 +45,13 @@ class Store extends Component
         }
 
         $data = Lembur::create([
-            'user_id'       => $this->user_id,
-            'tanggal_lembur'=> Carbon::now(),
-            'jam_mulai'     => $this->jam_mulai,
-            'jam_kembali'   => null,
-            'keperluan'     => $this->keperluan,
-            'status'        => $this->status,
-            'disetujui_oleh'=> $this->disetujui_oleh,
+            'user_id'           => $this->user_id,
+            'tanggal_lembur'    => Carbon::now(),
+            'perkiraan_durasi' => (int)$this->perkiraan_durasi,
+            'durasi'            => null,
+            'keperluan'         => $this->keperluan,
+            'status'            => $this->status,
+            'disetujui_oleh'    => $this->disetujui_oleh,
         ]);
 
         $this->dispatch('toast', [

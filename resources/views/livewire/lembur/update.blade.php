@@ -6,7 +6,7 @@
         })
         ">
         <div class="modal-box w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Lembur</h3>
+            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Lembur Pending</h3>
     
             <form wire:submit.prevent="updatePending" class="space-y-4">
                 <div>
@@ -14,7 +14,7 @@
                     @php
                         $users = \App\Models\User::with(['biodata', 'role'])->get();
                     @endphp
-                    <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.defer="user_id">
+                    <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.defer="user_id" @disabled(!Gate::allows('akses', 'Riwayat Pengajuan Lembur'))>
                         <option value="">Pilih Karyawan</option>
                         @foreach ($users as $u)
                             <option value="{{ $u->id }}">
@@ -43,11 +43,11 @@
                             @enderror
                         </div>
                         <div>
-                            <input type="time" class="input input-bordered w-full @error('jam_mulai') input-error @enderror" wire:model.defer="jam_mulai" >
-                            <span class="text-xs text-gray-500 ml-1">Jam Mulai Lembur</span><br>
-                            @error('jam_mulai')
+                            <input type="number" min="1" max="6" class="input input-bordered w-full @error('perkiraan_durasi') input-error @enderror" wire:model.defer="perkiraan_durasi" >
+                            <span class="text-xs text-gray-500 ml-1">Durasi Lembur</span><br>
+                            @error('perkiraan_durasi')
                                 <span class="text-error text-sm">
-                                    Mohon Mengisi Jam Mulai Lembur Dengan Benar
+                                    Mohon Mengisi Durasi Lembur Dengan Benar
                                 </span>
                             @enderror
                         </div>
@@ -82,7 +82,7 @@
         })
         ">
         <div class="modal-box w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Lembur</h3>
+            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Lembur Karyawan</h3>
     
             <form wire:submit.prevent="updateApprove" class="space-y-4">
                 <div>
@@ -119,11 +119,11 @@
                             @enderror
                         </div>
                         <div>
-                            <input type="time" class="input input-bordered w-full @error('jam_mulai') input-error @enderror" wire:model.defer="jam_mulai" >
-                            <span class="text-xs text-gray-500 ml-1">Jam Mulai Lembur</span><br>
-                            @error('jam_mulai')
+                            <input type="number" min="1" max="6" class="input input-bordered w-full @error('perkiraan_durasi') input-error @enderror" wire:model.defer="perkiraan_durasi" >
+                            <span class="text-xs text-gray-500 ml-1">Durasi Lembur</span><br>
+                            @error('perkiraan_durasi')
                                 <span class="text-error text-sm">
-                                    Mohon Mengisi Jam Mulai Lembur Dengan Benar
+                                    Mohon Mengisi Durasi Lembur Dengan Benar
                                 </span>
                             @enderror
                         </div>
@@ -158,7 +158,7 @@
         })
         ">
         <div class="modal-box w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Edit Pengajuan Lembur</h3>
+            <h3 class="text-xl font-semibold mb-4">Edit Riwayat Pengajuan Lembur</h3>
     
             <form wire:submit.prevent="updateHistory" class="space-y-4">
                 <div>
@@ -184,7 +184,7 @@
 
                 <div class="space-y-2">
                     <label class="label font-medium"><span class="label-text">Tanggal & Waktu Lembur<span class="text-error">*</span></span></label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <input type="date" class="input input-bordered w-full @error('tanggal_lembur') input-error @enderror" wire:model.defer="tanggal_lembur">
                             <span class="text-xs text-gray-500 ml-1">Tanggal Lembur</span><br>
@@ -195,20 +195,11 @@
                             @enderror
                         </div>
                         <div>
-                            <input type="time" class="input input-bordered w-full @error('jam_mulai') input-error @enderror" wire:model.defer="jam_mulai">
-                            <span class="text-xs text-gray-500 ml-1">Jam Mulai Lembur</span><br>
-                            @error('jam_mulai')
+                            <input type="number" min="1" max="6" class="input input-bordered w-full @error('perkiraan_durasi') input-error @enderror" wire:model.defer="perkiraan_durasi">
+                            <span class="text-xs text-gray-500 ml-1">Durasi Lembur</span><br>
+                            @error('perkiraan_durasi')
                                 <span class="text-error text-sm">
-                                    Mohon Mengisi Jam Mulai Lembur Dengan Benar
-                                </span>
-                            @enderror
-                        </div>
-                        <div>
-                            <input type="time" class="input input-bordered w-full @error('jam_selesai') input-error @enderror" wire:model.defer="jam_selesai">
-                            <span class="text-xs text-gray-500 ml-1">Jam Selesai Lembur</span><br>
-                            @error('jam_selesai')
-                                <span class="text-error text-sm">
-                                    Mohon Mengisi Jam Selesai Lembur Dengan Benar
+                                    Mohon Mengisi Durasi Lembur Dengan Benar
                                 </span>
                             @enderror
                         </div>
@@ -224,7 +215,28 @@
                         </span>
                     @enderror
                 </div>
-    
+
+                <div>
+                    <label class="label font-medium">Disetujui Oleh<span class="text-error">*</span></label>
+                    @php
+                        $users = \App\Models\User::with(['biodata', 'role'])->get();
+                    @endphp
+                    <select class="select select-bordered w-full @error('disetujui_oleh') input-error @enderror" wire:model.defer="disetujui_oleh">
+                        <option value="">Pilih Karyawan</option>
+                        @foreach ($users as $u)
+                            <option value="{{ $u->id }}">
+                                {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter }}
+                                {{ $u->role->nama_role ?? '-' }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('disetujui_oleh')
+                        <span class="text-error text-sm">
+                            Mohon Memilih Karyawan Dengan Benar
+                        </span>
+                    @enderror
+                </div>
+
                 <div class="modal-action justify-end pt-4">
                     @can('akses', 'Pengajuan Lembur Edit')
                     <button type="submit" class="btn btn-primary">Simpan</button>

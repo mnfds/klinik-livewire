@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
             $table->date('tanggal_lembur');
-            $table->time('jam_mulai');
-            $table->time('jam_selesai')->nullable();
+            $table->time('durasi')->nullable(); // selisih dari absen_pulang dikurang jam_selesai jam kerja
+            $table->unsignedBigInteger('perkiraan_durasi');
 
             $table->text('keperluan')->nullable();
             $table->enum('status', ['pending', 'disetujui', 'ditolak', 'selesai'])->default('pending');

@@ -9,7 +9,7 @@
         <form wire:submit.prevent="store" class="space-y-4">
             <div>
                 <label class="label font-medium">Karyawan<span class="text-error">*</span></label>
-                <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.lazy="user_id">
+                <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.lazy="user_id" @disabled(!Gate::allows('akses', 'Riwayat Pengajuan Lembur'))>
                     <option value="">Pilih Karyawan</option>
                     @foreach ($users as $u)
                         <option value="{{ $u->id }}">
@@ -38,11 +38,11 @@
                         @enderror
                     </div>
                     <div>
-                        <input type="time" class="input input-bordered w-full @error('jam_mulai') input-error @enderror" wire:model.lazy="jam_mulai" >
-                        <span class="text-xs text-gray-500 ml-1">Jam Mulai Lembur</span><br>
-                        @error('jam_mulai')
+                        <input max="6" min="1" type="number" class="input input-bordered w-full @error('perkiraan_durasi') input-error @enderror" wire:model.lazy="perkiraan_durasi" >
+                        <span class="text-xs text-gray-500 ml-1">Durasi Lembur</span><br>
+                        @error('perkiraan_durasi')
                             <span class="text-error text-sm">
-                                Mohon Mengisi Jam Mulai Lembur Dengan Benar
+                                Mohon Mengisi Waktu Lembur Dengan Benar
                             </span>
                         @enderror
                     </div>

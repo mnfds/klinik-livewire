@@ -6,6 +6,7 @@ use App\Models\Lembur;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
@@ -30,7 +31,8 @@ final class PendingTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Lembur::with(['user','user.biodata'])
+        return Lembur::with(['user', 'user.biodata'])
+            ->where('user_id', Auth::id())
             ->where('status', 'pending')
             ->latest();
     }
@@ -47,14 +49,16 @@ final class PendingTable extends PowerGridComponent
             ->add('tanggal_izin',fn ($row) => \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y'))
 
             ->add('user_id')
-            ->add('jam_mulai')
+            ->add('perkiraan_durasi', function ($row) {
+                return $row->perkiraan_durasi . ' Jam';
+            })
             ->add('nama_dan_jam', function ($row) {
                 return strtoupper($row->user->biodata->nama_lengkap ?? $row->user->dokter->nama_dokter) .
-                 '<br><span class="text-sm text-gray-500">' . \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y') . ', </span>' .
-                 '<br><span class="text-sm text-gray-500">' . $row->jam_mulai . '</span>';
+                 '<br><span class="text-sm text-gray-500">' . \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y') . ', </span>';
             })
 
-            ->add('keperluan');
+            ->add('keperluan')
+            ->add('status');
     }
 
     public function columns(): array
@@ -63,10 +67,11 @@ final class PendingTable extends PowerGridComponent
             Column::make('#', '')->index(),
 
             Column::make('Nama', 'user_id')->searchable()->hidden(),
-            Column::make('Jam Keluar', 'jam_mulai')->searchable()->hidden(),
             Column::make('Karyawan Terkait', 'nama_dan_jam'),
             
+            Column::make('Waktu Lembur', 'perkiraan_durasi'),
             Column::make('Keperluan', 'keperluan'),
+            Column::make('Status', 'status'),
             
             Column::action('Action')
         ];
@@ -75,22 +80,6 @@ final class PendingTable extends PowerGridComponent
     public function actions(Lembur $row): array
     {
         $pendingTable = [];
-
-        Gate::allows('akses', 'Persetujuan Ajuan Lembur') && $pendingTable[] =
-        Button::add('setujui')  
-        ->slot('<i class="fa-solid fa-circle-check"></i> Setujui')
-        ->attributes([
-            'class' => 'btn btn-success btn-sm'
-            ])
-        ->dispatch('setujui', ['rowId' => $row->id]);
-        
-        Gate::allows('akses', 'Persetujuan Ajuan Lembur') && $pendingTable[] =
-        Button::add('tolak')  
-            ->slot('<i class="fa-solid fa-circle-xmark"></i> Tolak')
-            ->attributes([
-                'class' => 'btn btn-error btn-sm'
-            ])
-        ->dispatch('tolak', ['rowId' => $row->id]);
 
         Gate::allows('akses', 'Pengajuan Lembur Edit') && $pendingTable[] =
         Button::add('updatePendingLembur')  
@@ -108,48 +97,6 @@ final class PendingTable extends PowerGridComponent
         ->dispatch('modalDeletePending', ['rowId' => $row->id]);
 
         return $pendingTable;
-    }
-
-    #[\Livewire\Attributes\On('setujui')]
-    public function setujui($rowId)
-    {
-        if (! Gate::allows('akses', 'Persetujuan Ajuan Lembur')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
-            return;
-        }
-        Lembur::where('id', $rowId)->update([
-            'status' => 'disetujui',
-        ]);
-        $this->dispatch('pg:eventRefresh');
-        $this->dispatch('refresh-ApproveTable');
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Pengajuan Telah Berhasil Disetujui',
-        ]);
-    }
-
-    #[\Livewire\Attributes\On('tolak')]
-    public function tolak($rowId)
-    {
-        if (! Gate::allows('akses', 'Persetujuan Ajuan Lembur')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
-            return;
-        }
-        Lembur::where('id', $rowId)->update([
-            'status' => 'ditolak',
-        ]);
-        $this->dispatch('pg:eventRefresh');
-        $this->dispatch('refresh-HistoryTable');
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Pengajuan Telah Berhasil Ditolak',
-        ]);
     }
 
     #[\Livewire\Attributes\On('modalDeletePending')]

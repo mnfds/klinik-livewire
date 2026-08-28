@@ -30,11 +30,19 @@ final class HistoryTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Lembur::with(['user','user.biodata'])
+        $query = Lembur::with(['user', 'user.biodata', 'approver.biodata',])
             ->whereIn('status', [
-                'selesai', 'ditolak'
-            ])
-            ->latest();
+                'disetujui',
+                'ditolak',
+            ]);
+
+        // Jika memiliki akses, tampilkan semua data
+        if (! Gate::allows('akses', 'Riwayat Pengajuan Lembur')) {
+            // Jika tidak memiliki akses, hanya tampilkan data milik sendiri
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query->latest();
     }
 
     public function relationSearch(): array
@@ -46,21 +54,31 @@ final class HistoryTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('#')
-            ->add('tanggal_izin',fn ($row) => \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y'))
+            ->add('tanggal_lembur',fn ($row) => \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y'))
 
             ->add('Staff', function ($row){
                 return strtoupper($row->user->biodata->nama_lengkap ?? $row->user->dokter->nama_dokter);
             })
 
-            ->add('jam_mulai')
-            ->add('jam_selesai')
+            ->add('perkiraan_durasi')
             ->add('waktu_lembur', function ($row) {
                 return
                  '<br><span>' . \Carbon\Carbon::parse($row->tanggal_lembur)->format('d M Y') . ', </span>' .
-                 '<br><span>' . ($row->jam_mulai . ' - ' . ($row->jam_selesai ?? '??')) . '</span>';
+                 '<br><span>' . ($row->jam_mulai . ' - ' . ($row->perkiraan_durasi ?? '??')) . ' Jam</span>';
             })
+            
+            ->add('keperluan')
+            ->add('disetujui_oleh')
+            ->add('status')
+            ->add('persetujuan', function ($row) {
+                $nama = $row->approver?->biodata?->nama_lengkap
+                    ?? $row->approver?->dokter?->nama_dokter
+                    ?? '-';
 
-            ->add('keperluan');
+                return
+                    '<br><span>' . ucfirst($row->status) . ' oleh</span>' .
+                    '<span class="font-semibold ml-1">' . strtoupper($nama) . '</span>';
+            });
     }
 
     public function columns(): array
@@ -70,12 +88,13 @@ final class HistoryTable extends PowerGridComponent
 
             Column::make('Nama', 'Staff')->searchable(),
             
-            Column::make('Jam Mulai', 'jam_mulai')->searchable()->hidden(),
-            Column::make('Jam Selesai', 'jam_selesai')->searchable()->hidden(),
+            Column::make('perkiraan_durasi', 'perkiraan_durasi')->searchable()->hidden(),
             Column::make('Waktu Lembur', 'waktu_lembur'),
             
             
             Column::make('Keperluan', 'keperluan'),
+            Column::make('stat', 'status')->searchable()->hidden(),
+            Column::make('Status', 'persetujuan'),
             
             Column::action('Action')
         ];
@@ -85,7 +104,7 @@ final class HistoryTable extends PowerGridComponent
     {
         $historyTable = [];
 
-        Gate::allows('akses', 'Pengajuan Riwayat Lembur Edit') && $historyTable[] =
+        Gate::allows('akses', 'Riwayat Pengajuan Lembur Edit') && $historyTable[] =
         Button::add('updateHistoryLembur')  
             ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
             ->attributes([
@@ -94,7 +113,7 @@ final class HistoryTable extends PowerGridComponent
             ])
         ->dispatchTo('lembur.update', 'getHistoryLembur', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Riwayat Lembur Hapus') && $historyTable[] =
+        Gate::allows('akses', 'Riwayat Pengajuan Lembur Hapus') && $historyTable[] =
         Button::add('deleteHistoryLembur')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error btn-sm')

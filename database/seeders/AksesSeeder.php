@@ -258,13 +258,12 @@ class AksesSeeder extends Seeder
                 'Pengajuan Lembur Tambah',
                 'Pengajuan Lembur Hapus',
                 'Pengajuan Lembur Edit',
-
-                'Pengajuan Riwayat Lembur',
-                'Pengajuan Riwayat Lembur Hapus',
-                'Pengajuan Riwayat Lembur Edit',
+                
+                'Riwayat Pengajuan Lembur',
+                'Riwayat Pengajuan Lembur Hapus',
+                'Riwayat Pengajuan Lembur Edit',
 
                 'Persetujuan Ajuan Lembur',
-                'Pengajuan Lembur Selesai',
             ],
             
             // Inventaris

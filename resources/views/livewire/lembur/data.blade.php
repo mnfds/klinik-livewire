@@ -48,44 +48,53 @@
                         </div>
                     </div>
                     <div class="space-y-8">
-                        @can('akses', 'Pengajuan Izin Keluar')
-                        {{-- TABLE PENGAJUAN LEMBUR --}}
-                        <div class="card bg-base-100 shadow">
-                            <div class="card-body">
-                                <h2 class="text-lg font-semibold text-primary flex items-center gap-2">
-                                    <i class="fa-solid fa-hourglass-half"></i> Pengajuan Lembur Karyawan
-                                </h2>
-                                <div class="divider my-2"></div>
-                                <livewire:Lembur.Pending-Table />
+                        <div class="tabs tabs-border">
+                            @can('akses', 'Pengajuan Lembur')
+                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Lembur Anda" style="background-image: none;" checked/>
+                            <div class="tab-content p-1">
+                                {{-- TABLE PENGAJUAN LEMBUR --}}
+                                <div class="card bg-base-100 shadow">
+                                    <div class="card-body">
+                                        <h2 class="text-lg font-semibold text-primary flex items-center gap-2">
+                                            <i class="fa-solid fa-hourglass-half"></i> Pengajuan Lembur Anda
+                                        </h2>
+                                        <div class="divider my-2"></div>
+                                        <livewire:Lembur.Pending-Table />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        @endcan
-
-                        @can('akses', 'Pengajuan Riwayat Izin Keluar')
-                        {{-- TABLE KARYAWAN YANG DISETUJUI UNTUK LEMBUR --}}
-                        <div class="card bg-base-100 shadow">
-                            <div class="card-body">
-                                <h2 class="text-lg font-semibold text-success flex items-center gap-2">
-                                    <i class="fa-solid fa-circle-check"></i> Karyawan Disetujui Untuk Lembur
-                                </h2>
-                                <div class="divider my-2"></div>
-                                <livewire:Lembur.Approve-Table />
+                            @endcan
+                            @can('akses', 'Persetujuan Ajuan Lembur')
+                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Daftar Ajuan Lembur" style="background-image: none;"/>
+                            <div class="tab-content p-1">
+                                {{-- TABLE KARYAWAN YANG DISETUJUI UNTUK LEMBUR --}}
+                                <div class="card bg-base-100 shadow">
+                                    <div class="card-body">
+                                        <h2 class="text-lg font-semibold text-success flex items-center gap-2">
+                                            <i class="fa-solid fa-circle-check"></i> Pengajuan Lembur Karyawan
+                                        </h2>
+                                        <div class="divider my-2"></div>
+                                        <livewire:Lembur.Approve-Table />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        @endcan
-
-                        @can('akses', 'Pengajuan Riwayat Izin Keluar')
-                        {{-- RIWAYAT PENGAJUAN --}}
-                        <div class="card bg-base-100 shadow">
-                            <div class="card-body">
-                                <h2 class="text-lg font-semibold text-warning flex items-center gap-2">
-                                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pengajuan Karyawan Untuk Lembur
-                                </h2>
-                                <div class="divider my-2"></div>
-                                <livewire:Lembur.History-Table />
+                            @endcan
+                            @can('akses', 'Riwayat Pengajuan Lembur')
+                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Riwayat Pengajuan" style="background-image: none;"/>
+                            <div class="tab-content p-1">
+                                {{-- RIWAYAT PENGAJUAN --}}
+                                <div class="card bg-base-100 shadow">
+                                    <div class="card-body">
+                                        <h2 class="text-lg font-semibold text-warning flex items-center gap-2">
+                                            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pengajuan Lembur
+                                        </h2>
+                                        <div class="divider my-2"></div>
+                                        <livewire:Lembur.History-Table />
+                                    </div>
+                                </div>
                             </div>
+                            @endcan
                         </div>
-                        @endcan
                     </div>
                 </div>
             </div>

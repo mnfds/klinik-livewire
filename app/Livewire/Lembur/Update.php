@@ -10,7 +10,7 @@ use Livewire\Component;
 class Update extends Component
 {
     public $pending_id, $approve_id, $history_id;
-    public $user_id, $tanggal_lembur, $jam_mulai, $jam_selesai, $keperluan, $status, $disetujui_oleh;
+    public $user_id, $tanggal_lembur, $perkiraan_durasi, $keperluan, $status, $disetujui_oleh;
     public $users;
 
     public function render()
@@ -29,20 +29,20 @@ class Update extends Component
 
         $pending = Lembur::findOrFail($rowId);
 
-        $this->user_id         = $pending->user_id;
-        $this->tanggal_lembur  = $pending->tanggal_lembur;
-        $this->jam_mulai       = $pending->jam_mulai;
-        $this->keperluan       = $pending->keperluan;
+        $this->user_id          = $pending->user_id;
+        $this->tanggal_lembur   = $pending->tanggal_lembur;
+        $this->perkiraan_durasi = $pending->perkiraan_durasi;
+        $this->keperluan        = $pending->keperluan;
         $this->dispatch('openModal');
     }
 
     public function updatePending()
     {
         $this->validate([
-            'user_id'        => 'required',
-            'tanggal_lembur' => 'required',
-            'jam_mulai'      => 'required',
-            'keperluan'      => 'required',
+            'user_id'          => 'required',
+            'tanggal_lembur'   => 'required',
+            'perkiraan_durasi' => 'required',
+            'keperluan'        => 'required',
         ]);
         if (! Gate::allows('akses', 'Pengajuan Lembur Edit')) {
             $this->dispatch('toast', [
@@ -55,7 +55,7 @@ class Update extends Component
         Lembur::where('id', $this->pending_id)->update([
             'user_id' => $this->user_id,
             'tanggal_lembur' => $this->tanggal_lembur,
-            'jam_mulai' => $this->jam_mulai,
+            'perkiraan_durasi' => $this->perkiraan_durasi,
             'keperluan' => $this->keperluan,
         ]);
 
@@ -79,7 +79,7 @@ class Update extends Component
 
         $this->user_id         = $approve->user_id;
         $this->tanggal_lembur  = $approve->tanggal_lembur;
-        $this->jam_mulai       = $approve->jam_mulai;
+        $this->perkiraan_durasi = $approve->perkiraan_durasi;
         $this->keperluan       = $approve->keperluan;
         $this->dispatch('openModal');
     }    
@@ -89,7 +89,7 @@ class Update extends Component
         $this->validate([
             'user_id'        => 'required',
             'tanggal_lembur' => 'required',
-            'jam_mulai'      => 'required',
+            'perkiraan_durasi' => 'required',
             'keperluan'      => 'required',
         ]);
         if (! Gate::allows('akses', 'Pengajuan Lembur Edit')) {
@@ -103,7 +103,7 @@ class Update extends Component
         Lembur::where('id', $this->approve_id)->update([
             'user_id' => $this->user_id,
             'tanggal_lembur' => $this->tanggal_lembur,
-            'jam_mulai' => $this->jam_mulai,
+            'perkiraan_durasi' => $this->perkiraan_durasi,
             'keperluan' => $this->keperluan,
         ]);
 
@@ -128,9 +128,9 @@ class Update extends Component
 
         $this->user_id         = $history->user_id;
         $this->tanggal_lembur  = $history->tanggal_lembur;
-        $this->jam_mulai       = $history->jam_mulai;
-        $this->jam_selesai     = $history->jam_selesai;
+        $this->perkiraan_durasi = $history->perkiraan_durasi;
         $this->keperluan       = $history->keperluan;
+        $this->disetujui_oleh  = $history->disetujui_oleh;
         $this->dispatch('openModal');
     }    
 
@@ -139,11 +139,11 @@ class Update extends Component
         $this->validate([
             'user_id'        => 'required',
             'tanggal_lembur' => 'required',
-            'jam_mulai'      => 'required',
-            'jam_selesai'    => 'required',
+            'perkiraan_durasi' => 'required',
             'keperluan'      => 'required',
+            'disetujui_oleh'      => 'required',
         ]);
-        if (! Gate::allows('akses', 'Pengajuan Riwayat Lembur Edit')) {
+        if (! Gate::allows('akses', 'Riwayat Pengajuan Lembur Edit')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
@@ -154,9 +154,9 @@ class Update extends Component
         Lembur::where('id', $this->history_id)->update([
             'user_id' => $this->user_id,
             'tanggal_lembur' => $this->tanggal_lembur,
-            'jam_mulai' => $this->jam_mulai,
-            'jam_selesai' => $this->jam_selesai,
+            'perkiraan_durasi' => $this->perkiraan_durasi,
             'keperluan' => $this->keperluan,
+            'disetujui_oleh' => $this->disetujui_oleh,
         ]);
 
         $this->dispatch('toast', [
