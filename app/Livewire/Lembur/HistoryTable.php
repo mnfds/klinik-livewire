@@ -86,7 +86,7 @@ final class HistoryTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Nama', 'Staff')->searchable(),
+            Column::make('Karyawan Terkait', 'Staff')->searchable(),
             
             Column::make('perkiraan_durasi', 'perkiraan_durasi')->searchable()->hidden(),
             Column::make('Waktu Lembur', 'waktu_lembur'),
