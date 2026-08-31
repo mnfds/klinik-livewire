@@ -11,7 +11,7 @@
                     @if ($item->antrians->isNotEmpty())
                         <div class="text-center bg-blue-50 rounded-lg py-4 mb-3">
                             <p class="text-xl font-bold text-blue-600 truncate px-2">
-                                {{ $item->antrians->first()->nama_pengantri }}
+                                {{ $item->antrians->first()->nama_pengantri }} {{ $item->antrians->first()->kode }} {{ $item->antrians->first()->nomor_antrian }}
                             </p>
                             <p class="text-xs text-gray-500 mb-1">Sedang Dilayani</p>
                         </div>
