@@ -464,6 +464,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/lembur', 'lembur.data')->name('lembur.data');    
     // ====== PENGAJUAN LEMBUR ====== //
 
+    // ====== PENGAJUAN LEMBUR ====== //
+    Route::view('/cuti', 'cuti.data')->name('cuti.data');    
+    // ====== PENGAJUAN LEMBUR ====== //
+
     // ====== INVENTARIS ====== //
     Route::view('/inventaris', 'inventaris.data')->name('inventaris.data');    
     // ====== INVENTARIS ====== //

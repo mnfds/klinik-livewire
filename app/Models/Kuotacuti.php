@@ -15,4 +15,8 @@ class Kuotacuti extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function getKuotaSisaAttribute(): int
+    {
+        return $this->kuota_dimiliki - $this->kuota_terpakai;
+    }
 }

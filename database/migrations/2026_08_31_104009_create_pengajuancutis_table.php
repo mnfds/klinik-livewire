@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kuotacutis', function (Blueprint $table) {
+        Schema::create('pengajuancutis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->unsignedSmallInteger('tahun');
-            $table->unsignedTinyInteger('kuota_dimiliki')->default(12);
-            $table->unsignedTinyInteger('kuota_terpakai')->default(0);
+            $table->text('alasan');
+            $table->enum('status', ['diajukan', 'disetujui', 'ditolak', 'dibatalkan'])->default('diajukan');
+            $table->text('catatan_admin')->nullable(); // alasan tolak / catatan approve
+            $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('approved_at')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'tahun']); // cegah duplikat per user per tahun
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kuotacutis');
+        Schema::dropIfExists('pengajuancutis');
     }
 };

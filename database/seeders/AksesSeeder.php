@@ -249,7 +249,15 @@ class AksesSeeder extends Seeder
 
             // Pengajuan Cuti
             20 => [
-                'Pengajuan Cuti'
+                'Pengajuan Cuti',
+                'Pengajuan Cuti Tambah',
+                'Pengajuan Cuti Hapus',
+                'Pengajuan Cuti Edit',
+
+                'Riwayat Pengajuan Cuti',
+                'Riwayat Pengajuan Cuti Hapus',
+
+                'Persetujuan Pengajuan Cuti',
             ],
 
             // Pengajuan Lembur

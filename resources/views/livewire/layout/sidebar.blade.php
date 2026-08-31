@@ -357,7 +357,7 @@
                 @endif
                  
                 @if (Gate::allows('akses','Pengajuan Izin Keluar') || Gate::allows('akses','Pengajuan Cuti') || Gate::allows('akses','Pengajuan Lembur'))   
-                <li x-data="{ open: {{ request()->routeIs('izinkeluar.*') || request()->routeIs('lembur.*') || request()->routeIs('izinkeluar.*') ? 'true' : 'false' }} }">
+                <li x-data="{ open: {{ request()->routeIs('izinkeluar.*') || request()->routeIs('lembur.*') || request()->routeIs('cuti.*') ? 'true' : 'false' }} }">
                     <x-side-link @click.prevent="open = !open" class="cursor-pointer" :active="request()->routeIs('izinkeluar.*') || request()->routeIs('lembur.*') || request()->routeIs('cuti.*')">
                         <i class="fa-solid fa-folder-open"></i>
                         <span class="flex-1 ml-3 text-left">Pengajuan</span>
@@ -374,7 +374,11 @@
                             <x-side-link href="{{ route('lembur.data') }}" :active="request()->routeIs('lembur.*')" wire:navigate>Lembur</x-side-link>
                         </li>
                         @endcan
-                        <li><x-side-link href="#" wire:navigate>Cuti</x-side-link></li>
+                        @can('akses', 'Pengajuan Cuti')
+                        <li>
+                            <x-side-link href="{{ route('cuti.data') }}" :active="request()->routeIs('cuti.*')" wire:navigate>Cuti</x-side-link>
+                        </li>
+                        @endcan
                     </ul>
                 </li>
                 @endif
