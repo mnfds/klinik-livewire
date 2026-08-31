@@ -62,6 +62,18 @@
                                         <livewire:Lembur.Pending-Table />
                                     </div>
                                 </div>
+                                @cannot('akses', 'Persetujuan Ajuan Lembur')
+                                {{-- RIWAYAT PENGAJUAN --}}
+                                <div class="card bg-base-100 shadow">
+                                    <div class="card-body">
+                                        <h2 class="text-lg font-semibold text-warning flex items-center gap-2">
+                                            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pengajuan Lembur
+                                        </h2>
+                                        <div class="divider my-2"></div>
+                                        <livewire:Lembur.History-Table />
+                                    </div>
+                                </div>
+                                @endcannot
                             </div>
                             @endcan
                             @can('akses', 'Persetujuan Ajuan Lembur')
@@ -79,7 +91,7 @@
                                 </div>
                             </div>
                             @endcan
-                            @can('akses', 'Riwayat Pengajuan Lembur')
+                            @if(Gate::allows('akses', 'Riwayat Pengajuan Lembur') && Gate::allows('akses', 'Persetujuan Ajuan Lembur'))
                             <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Riwayat Pengajuan" style="background-image: none;"/>
                             <div class="tab-content p-1">
                                 {{-- RIWAYAT PENGAJUAN --}}
@@ -93,7 +105,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @endcan
+                            @endif
                         </div>
                     </div>
                 </div>

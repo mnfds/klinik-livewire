@@ -37,7 +37,7 @@ final class HistoryTable extends PowerGridComponent
             ]);
 
         // Jika memiliki akses, tampilkan semua data
-        if (! Gate::allows('akses', 'Riwayat Pengajuan Lembur')) {
+        if (! Gate::allows('akses', 'Persetujuan Ajuan Lembur')) {
             // Jika tidak memiliki akses, hanya tampilkan data milik sendiri
             $query->where('user_id', auth()->id());
         }
