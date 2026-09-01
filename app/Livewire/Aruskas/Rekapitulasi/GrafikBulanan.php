@@ -38,12 +38,14 @@ class GrafikBulanan extends Component
     public function loadGrafik()
     {
         $year = (int) $this->tahun;
-        [$rekapBarMasuk, $rekapBarKeluar] = $this->hitungRekapBarBulanan($year);
+        [$rekapBarMasuk, $rekapBarKeluar, $rekapBarSisa] = $this->hitungRekapBarBulanan($year);
 
         $this->dispatch('update-rekap-bulanan-bar', [
             'labelsBulan' => ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
             'rekapBulananBarMasuk'  => $rekapBarMasuk,
             'rekapBulananBarKeluar' => $rekapBarKeluar,
+            'rekapBulananBarSisa'   => $rekapBarSisa,
+            'tampilkanSisa'         => $this->tipe === '',
         ]);
     }
 
@@ -130,16 +132,21 @@ class GrafikBulanan extends Component
         // === SUSUN JAN–DES ===
         $rekapBarMasuk  = [];
         $rekapBarKeluar = [];
+        $rekapBarSisa   = [];
 
         for ($bulan = 1; $bulan <= 12; $bulan++) {
-            $rekapBarMasuk[] = (int) (
+            $totalMasuk = (int) (
                 ($masukKlinik[$bulan] ?? 0)
-              + ($masukApotik[$bulan] ?? 0)
-              + ($masukLainnya[$bulan] ?? 0));
+            + ($masukApotik[$bulan] ?? 0)
+            + ($masukLainnya[$bulan] ?? 0));
 
-            $rekapBarKeluar[] = (int) ($keluar[$bulan] ?? 0);
+            $totalKeluar = (int) ($keluar[$bulan] ?? 0);
+
+            $rekapBarMasuk[]  = $totalMasuk;
+            $rekapBarKeluar[] = $totalKeluar;
+            $rekapBarSisa[]   = $totalMasuk - $totalKeluar;
         }
 
-        return [$rekapBarMasuk, $rekapBarKeluar];
+        return [$rekapBarMasuk, $rekapBarKeluar, $rekapBarSisa];
     }
 }
