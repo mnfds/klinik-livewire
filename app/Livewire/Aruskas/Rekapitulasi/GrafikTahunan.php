@@ -25,7 +25,7 @@ class GrafikTahunan extends Component
 
     public function loadGrafik()
     {
-        [$rekapBarMasuk, $rekapBarKeluar] = $this->hitungRekapBarTahunan();
+        [$rekapBarMasuk, $rekapBarKeluar, $rekapBarSisa] = $this->hitungRekapBarTahunan();
 
         $this->dispatch('update-rekap-tahunan-bar', [
             'labelsTahunan' => [
@@ -34,6 +34,8 @@ class GrafikTahunan extends Component
             ],
             'rekapTahunanBarMasuk'  => $rekapBarMasuk,
             'rekapTahunanBarKeluar' => $rekapBarKeluar,
+            'rekapTahunanBarSisa'   => $rekapBarSisa,
+            'tampilkanSisa'         => $this->tipe === '',
         ]);
     }
 
@@ -69,6 +71,7 @@ class GrafikTahunan extends Component
 
         $rekapMasuk  = [];
         $rekapKeluar = [];
+        $rekapSisa   = [];
 
         for ($year = $startYear; $year <= $endYear; $year++) {
             $start = Carbon::create($year, 1, 1)->startOfDay();
@@ -108,11 +111,15 @@ class GrafikTahunan extends Component
                     ->sum('jumlah_uang');
             }
 
-            $rekapMasuk[]  = (int) ($totalKlinik + $totalApotik + $totalLainnya);
-            $rekapKeluar[] = (int) $totalKeluar;
+            $totalMasuk = (int) ($totalKlinik + $totalApotik + $totalLainnya);
+            $totalKeluarInt = (int) $totalKeluar;
+
+            $rekapMasuk[]  = $totalMasuk;
+            $rekapKeluar[] = $totalKeluarInt;
+            $rekapSisa[]   = $totalMasuk - $totalKeluarInt;
         }
 
-        return [$rekapMasuk, $rekapKeluar];
+        return [$rekapMasuk, $rekapKeluar, $rekapSisa];
     }
 
     public function render()

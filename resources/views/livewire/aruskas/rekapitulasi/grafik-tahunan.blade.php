@@ -163,30 +163,44 @@
 
             if (dataRekapTahunanBar) dataRekapTahunanBar.destroy();
 
+            const datasets = [
+                {
+                    label: 'Pendapatan',
+                    data: payload.rekapTahunanBarMasuk,
+                    backgroundColor: 'rgba(34,197,94,0.6)',
+                    borderColor: 'rgba(34,197,94,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    maxBarThickness: 50
+                },
+                {
+                    label: 'Pengeluaran',
+                    data: payload.rekapTahunanBarKeluar,
+                    backgroundColor: 'rgba(239,68,68,0.6)',
+                    borderColor: 'rgba(239,68,68,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    maxBarThickness: 50
+                }
+            ];
+
+            if (payload.tampilkanSisa) {
+                datasets.push({
+                    label: 'Uang Tersisa',
+                    data: payload.rekapTahunanBarSisa,
+                    backgroundColor: 'rgba(59,130,246,0.6)',
+                    borderColor: 'rgba(59,130,246,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    maxBarThickness: 50
+                });
+            }
+
             dataRekapTahunanBar = new Chart(ctxBar, {
                 type: 'bar',
                 data: {
                     labels: payload.labelsTahunan,
-                    datasets: [
-                        {
-                            label: 'Pendapatan',
-                            data: payload.rekapTahunanBarMasuk,
-                            backgroundColor: 'rgba(34,197,94,0.6)',
-                            borderColor: 'rgba(34,197,94,1)',
-                            borderWidth: 2,
-                            borderRadius: 3,
-                            maxBarThickness: 50
-                        },
-                        {
-                            label: 'Pengeluaran',
-                            data: payload.rekapTahunanBarKeluar,
-                            backgroundColor: 'rgba(239,68,68,0.6)',
-                            borderColor: 'rgba(239,68,68,1)',
-                            borderWidth: 2,
-                            borderRadius: 3,
-                            maxBarThickness: 50
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
