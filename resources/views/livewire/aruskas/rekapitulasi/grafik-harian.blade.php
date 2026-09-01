@@ -205,34 +205,50 @@
 
             if (dataRekapHarianBar) dataRekapHarianBar.destroy();
 
+            const datasets = [
+                {
+                    label: 'Pendapatan',
+                    data: payload.rekapHarianBarMasuk,
+                    backgroundColor: 'rgba(34,197,94,0.6)',
+                    borderColor: 'rgba(34,197,94,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    barPercentage: 1,
+                    categoryPercentage: 0.8,
+                    maxBarThickness: 50
+                },
+                {
+                    label: 'Pengeluaran',
+                    data: payload.rekapHarianBarKeluar,
+                    backgroundColor: 'rgba(255, 26, 63, 0.6)',
+                    borderColor: 'rgba(239,68,68,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    barPercentage: 1,
+                    categoryPercentage: 0.8,
+                    maxBarThickness: 50
+                }
+            ];
+
+            if (payload.tampilkanSisa) {
+                datasets.push({
+                    label: 'Uang Tersisa',
+                    data: payload.rekapHarianBarSisa,
+                    backgroundColor: 'rgba(59,130,246,0.6)',
+                    borderColor: 'rgba(59,130,246,1)',
+                    borderWidth: 2,
+                    borderRadius: 3,
+                    barPercentage: 1,
+                    categoryPercentage: 0.8,
+                    maxBarThickness: 50
+                });
+            }
+
             dataRekapHarianBar = new Chart(ctxBar, {
                 type: 'bar',
                 data: {
                     labels: payload.labelstanggal,
-                    datasets: [
-                        {
-                            label: 'Pendapatan',
-                            data: payload.rekapHarianBarMasuk,
-                            backgroundColor: 'rgba(34,197,94,0.6)',
-                            borderColor: 'rgba(34,197,94,1)',
-                            borderWidth: 2,
-                            borderRadius: 3,
-                            barPercentage: 1,
-                            categoryPercentage: 0.8,
-                            maxBarThickness: 50
-                        },
-                        {
-                            label: 'Pengeluaran',
-                            data: payload.rekapHarianBarKeluar,
-                            backgroundColor: 'rgba(255, 26, 63, 0.6)',
-                            borderColor: 'rgba(239,68,68,1)',
-                            borderWidth: 2,
-                            borderRadius: 3,
-                            barPercentage: 1,
-                            categoryPercentage: 0.8,
-                            maxBarThickness: 50
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,

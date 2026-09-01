@@ -42,7 +42,7 @@ class GrafikHarian extends Component
         $end   = Carbon::parse($this->endDate)->endOfDay();
 
         $this->hitungRekapPieHarian($start, $end);
-        [$labelsTanggal, $rekapBarMasuk, $rekapBarKeluar] = $this->hitungRekapBarHarian($start, $end);
+        [$labelsTanggal, $rekapBarMasuk, $rekapBarKeluar, $rekapBarSisa] = $this->hitungRekapBarHarian($start, $end);
 
         $this->dispatch('update-rekap-harian-pie', [
             'rekapHarianPieMasuk'  => $this->rekapPieMasuk,
@@ -53,6 +53,8 @@ class GrafikHarian extends Component
             'labelstanggal'        => $labelsTanggal,
             'rekapHarianBarMasuk'  => $rekapBarMasuk,
             'rekapHarianBarKeluar' => $rekapBarKeluar,
+            'rekapHarianBarSisa'   => $rekapBarSisa,
+            'tampilkanSisa'        => $this->tipe === '',
         ]);
     }
 
@@ -179,15 +181,21 @@ class GrafikHarian extends Component
         $labelsTanggal  = [];
         $rekapBarMasuk  = [];
         $rekapBarKeluar = [];
+        $rekapBarSisa   = [];
 
         foreach ($period as $date) {
             $tglKey = $date->format('Y-m-d');
+
+            $totalMasuk  = ($masukKlinik[$tglKey] ?? 0) + ($masukApotik[$tglKey] ?? 0) + ($masukLainnya[$tglKey] ?? 0);
+            $totalKeluar = $keluar[$tglKey] ?? 0;
+
             $labelsTanggal[]  = $date->format('d');
-            $rekapBarMasuk[]  = ($masukKlinik[$tglKey] ?? 0) + ($masukApotik[$tglKey] ?? 0) + ($masukLainnya[$tglKey] ?? 0);
-            $rekapBarKeluar[] = $keluar[$tglKey] ?? 0;
+            $rekapBarMasuk[]  = $totalMasuk;
+            $rekapBarKeluar[] = $totalKeluar;
+            $rekapBarSisa[]   = $totalMasuk - $totalKeluar;
         }
 
-        return [$labelsTanggal, $rekapBarMasuk, $rekapBarKeluar];
+        return [$labelsTanggal, $rekapBarMasuk, $rekapBarKeluar, $rekapBarSisa];
     }
 
     public function render()
