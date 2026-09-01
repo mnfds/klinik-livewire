@@ -50,7 +50,7 @@
                     <div class="space-y-8">
                         <div class="tabs tabs-border">
                             @can('akses', 'Pengajuan Lembur')
-                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Lembur Anda" style="background-image: none;" checked/>
+                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Lembur Anda" style="background-image: none;" @checked(!auth()->user()->can('akses', 'Persetujuan Ajuan Lembur'))/>
                             <div class="tab-content p-1">
                                 {{-- TABLE PENGAJUAN LEMBUR --}}
                                 <div class="card bg-base-100 shadow">
@@ -77,7 +77,7 @@
                             </div>
                             @endcan
                             @can('akses', 'Persetujuan Ajuan Lembur')
-                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Daftar Ajuan Lembur" style="background-image: none;"/>
+                            <input type="radio" name="tabs_lembur" class="tab bg-transparent text-base-content" aria-label="Daftar Ajuan Lembur" style="background-image: none;" @checked(auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti'))/>
                             <div class="tab-content p-1">
                                 {{-- TABLE KARYAWAN YANG DISETUJUI UNTUK LEMBUR --}}
                                 <div class="card bg-base-100 shadow">
