@@ -131,7 +131,7 @@ class Approval extends Component
         $this->selesai('Pengajuan Cuti Ditolak');
     }
 
-    protected function selesai(string $pesan): void
+    protected function selesai(string $pesan)
     {
         $this->dispatch('toast', [
             'type' => 'success',
@@ -139,6 +139,7 @@ class Approval extends Component
         ]);
         $this->dispatch('closemodalapprovalpengajuancuti');
         $this->reset(['pengajuan', 'mode', 'catatan_admin']);
+        return redirect()->route('cuti.data');
     }
 
     public function render()
