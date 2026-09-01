@@ -2,15 +2,15 @@
 
 namespace App\Livewire\Cuti;
 
+use App\Models\Kuotacuti;
 use App\Models\Pengajuancuti;
 use App\Models\Pengajuancutitanggal;
 use App\Models\User;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
-class Store extends Component   
+class Store extends Component
 {
     public int $activeTab = 0;
 
@@ -58,8 +58,13 @@ class Store extends Component
         ]);
 
         // expand tiap tab jadi daftar tanggal harian, sekaligus cek bentrok
-        // sebelum ada satupun yang disimpan ke DB
+        // dan cek kuota sebelum ada satupun yang disimpan ke DB
         $tanggalPerItem = [];
+
+        // cache sisa kuota per user+tahun, dan akumulasi kebutuhan lintas tab
+        // dalam submit yang sama (satu user bisa punya beberapa tab)
+        $kuotaSisaCache = [];
+        $kebutuhanKumulatif = [];
 
         foreach ($this->items as $i => $item) {
             $periode = Carbon::parse($item['tanggal_mulai'])->toPeriod($item['tanggal_selesai']);
@@ -84,6 +89,31 @@ class Store extends Component
                 $this->addError("items.$i.tanggal_mulai", 'Terdapat tanggal yang sudah diajukan/disetujui sebelumnya untuk karyawan ini.');
                 $this->activeTab = $i;
                 return;
+            }
+
+            // cek kuota cuti, dikelompokkan per tahun (rentang bisa melewati pergantian tahun)
+            $perTahun = $tanggals->groupBy(fn ($t) => Carbon::parse($t)->year)->map->count();
+
+            foreach ($perTahun as $tahun => $jumlahHari) {
+                $key = $item['user_id'].'-'.$tahun;
+
+                if (! array_key_exists($key, $kuotaSisaCache)) {
+                    $kuota = Kuotacuti::where('user_id', $item['user_id'])
+                        ->where('tahun', $tahun)
+                        ->first();
+                    $kuotaSisaCache[$key] = $kuota->kuota_sisa ?? 0;
+                }
+
+                $kebutuhanKumulatif[$key] = ($kebutuhanKumulatif[$key] ?? 0) + $jumlahHari;
+
+                if ($kebutuhanKumulatif[$key] > $kuotaSisaCache[$key]) {
+                    $this->addError(
+                        "items.$i.tanggal_mulai",
+                        "Kuota cuti tahun {$tahun} tidak mencukupi (sisa {$kuotaSisaCache[$key]} hari)."
+                    );
+                    $this->activeTab = $i;
+                    return;
+                }
             }
 
             $tanggalPerItem[$i] = ['user_id' => $item['user_id'], 'tanggals' => $tanggals];

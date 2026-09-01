@@ -64,14 +64,14 @@
                         <input type="text" x-ref="input" readonly autocomplete="off"
                             placeholder="Pilih rentang tanggal"
                             class="input input-bordered w-full @error("items.$i.tanggal_mulai") input-error @enderror">
-                        @error("items.$i.tanggal_mulai")
-                            <span class="text-error text-sm">{{ $message }}</span>
-                        @enderror
-                        @error("items.$i.tanggal_selesai")
-                            <span class="text-error text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
-
+                    @error("items.$i.tanggal_mulai")
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                    @error("items.$i.tanggal_selesai")
+                        <span class="text-error text-sm">{{ $message }}</span>
+                    @enderror
+                        
                     {{-- Combobox Nama Karyawan --}}
                     <div
                         wire:key="user-combobox-{{ $i }}"
