@@ -29,11 +29,16 @@ class Store extends Component
                     ?? $user->dokter?->nama_dokter
                     ?? '-',])
         ->toArray();
+
+        if (!auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti')) {
+            $this->items[0]['user_id'] = auth()->id();
+        }
     }
 
     public function addTab(): void
     {
-        $this->items[] = ['user_id' => '', 'tanggal_mulai' => '', 'tanggal_selesai' => '', 'alasan' => ''];
+        $userId = auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti') ? '' : auth()->id();
+        $this->items[] = ['user_id' => $userId, 'tanggal_mulai' => '', 'tanggal_selesai' => '', 'alasan' => ''];
         $this->activeTab = count($this->items) - 1;
     }
 
@@ -50,6 +55,12 @@ class Store extends Component
 
     public function store()
     {
+        if (!auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti')) {
+            foreach ($this->items as $i => $item) {
+                $this->items[$i]['user_id'] = auth()->id();
+            }
+        }
+
         $this->validate([
             'items.*.user_id' => 'required|exists:users,id',
             'items.*.tanggal_mulai' => 'required|date',
@@ -135,7 +146,6 @@ class Store extends Component
 
         $this->reset(['items', 'activeTab']);
         $this->items = [['user_id' => '', 'tanggal_mulai' => '', 'tanggal_selesai' => '', 'alasan' => '']];
-        $this->reset();
 
         $this->dispatch('toast', [
             'type' => 'success',

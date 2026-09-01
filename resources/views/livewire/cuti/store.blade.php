@@ -72,58 +72,66 @@
                         <span class="text-error text-sm">{{ $message }}</span>
                     @enderror
                         
-                    {{-- Combobox Nama Karyawan --}}
+                    {{-- Nama Karyawan --}}
                     <div
                         wire:key="user-combobox-{{ $i }}"
-                        x-data="{
-                            open: false,
-                            search: '',
-                            users: {{ \Illuminate\Support\Js::from($users) }},
-                            selectedId: @entangle("items.{$i}.user_id"),
-                            get filtered() {
-                                return this.search === ''
-                                    ? this.users
-                                    : this.users.filter(b => b.nama.toLowerCase().includes(this.search.toLowerCase()))
-                            },
-                            get selectedLabel() {
-                                let b = this.users.find(b => b.id == this.selectedId)
-                                return b ? b.nama : ''
-                            },
-                            choose(item) {
-                                this.selectedId = item.id
-                                this.search = item.nama
-                                this.open = false
-                            }
-                        }"
-                        x-init="search = selectedLabel"
-                        @click.outside="open = false; search = selectedLabel"
                         class="relative"
                         >
-                        <label class="label font-medium">
-                            Nama Karyawan <span class="text-error">*</span>
-                        </label>
+                        <label class="label font-medium">Nama Karyawan <span class="text-error">*</span></label>
+                        @can('akses', 'Persetujuan Pengajuan Cuti')
+                            {{-- Jika memiliki akses: bisa memilih karyawan --}}
+                            <div
+                                x-data="{
+                                    open: false,
+                                    search: '',
+                                    users: {{ \Illuminate\Support\Js::from($users) }},
+                                    selectedId: @entangle("items.{$i}.user_id"),
 
-                        <input
-                            type="text"
-                            x-model="search"
-                            @focus="open = true; search = ''"
-                            placeholder="Cari nama karyawan..."
-                            autocomplete="off"
-                            class="input input-bordered w-full @error("items.$i.user_id") input-error @enderror"
-                        >
+                                    get filtered() {
+                                        return this.search === ''
+                                            ? this.users
+                                            : this.users.filter(b =>
+                                                b.nama.toLowerCase().includes(this.search.toLowerCase())
+                                            )
+                                    },
 
-                        <ul x-show="open" x-cloak
-                            class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
-                            <template x-for="item in filtered" :key="item.id">
-                                <li @click="choose(item)"
-                                    class="px-4 py-2 cursor-pointer hover:bg-base-200"
-                                    x-text="item.nama">
-                                </li>
-                            </template>
-                            <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
-                                Tidak ditemukan
-                            </li>
-                        </ul>
+                                    get selectedLabel() {
+                                        let b = this.users.find(b => b.id == this.selectedId)
+                                        return b ? b.nama : ''
+                                    },
+
+                                    choose(item) {
+                                        this.selectedId = item.id
+                                        this.search = item.nama
+                                        this.open = false
+                                    }
+                                }"
+                                x-init="search = selectedLabel"
+                                @click.outside="open = false; search = selectedLabel"
+                                >
+                                <input type="text" x-model="search" @focus="open = true; search = ''" placeholder="Cari nama karyawan..." autocomplete="off" class="input input-bordered w-full @error("items.$i.user_id") input-error @enderror">
+
+                                <ul x-show="open" x-cloak class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                                    <template x-for="item in filtered" :key="item.id">
+                                        <li @click="choose(item)" class="px-4 py-2 cursor-pointer hover:bg-base-200" x-text="item.nama"></li>
+                                    </template>
+                                    <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                        Tidak ditemukan
+                                    </li>
+                                </ul>
+                            </div>
+
+                        @else
+
+                            {{-- Jika tidak memiliki akses: hanya bisa menggunakan akun sendiri --}}
+                            <input
+                                type="text"
+                                value="{{ $users[array_search(auth()->id(), array_column($users, 'id'))]['nama'] ?? '-' }}"
+                                readonly
+                                class="input input-bordered w-full bg-base-200 cursor-not-allowed"
+                            >
+
+                        @endcan
 
                         @error("items.$i.user_id")
                             <span class="text-error text-sm">{{ $message }}</span>
