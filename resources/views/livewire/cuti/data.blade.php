@@ -49,7 +49,7 @@
                     <div class="space-y-8">
                         <div class="tabs tabs-border">
                             @can('akses', 'Pengajuan Cuti Tambah')
-                            <input type="radio" name="tabs_cuti" class="tab bg-transparent text-base-content" aria-label="Cuti Anda" style="background-image: none;" checked/>
+                            <input type="radio" name="tabs_cuti" class="tab bg-transparent text-base-content" aria-label="Cuti Anda" style="background-image: none;" @checked(!auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti'))/>
                             <div class="tab-content p-1">
                                 <div class="card bg-base-100 shadow">
                                     <div class="card-body">
@@ -60,10 +60,21 @@
                                         <livewire:cuti.pengajuan-saya-table />
                                     </div>
                                 </div>
+                                @cannot('akses', 'Riwayat Pengajuan Cuti')
+                                <div class="card bg-base-100 shadow">
+                                    <div class="card-body">
+                                        <h2 class="text-lg font-semibold text-warning flex items-center gap-2">
+                                            <i class="fa-solid fa-clock-rotate-left"></i>Riwayat Cuti
+                                        </h2>
+                                        <div class="divider my-2"></div>
+                                        <livewire:cuti.riwayat-pengajuan-table />
+                                    </div>
+                                </div>
+                                @endcannot
                             </div>
                             @endcan
                             @can('akses', 'Persetujuan Pengajuan Cuti')
-                            <input type="radio" name="tabs_cuti" class="tab bg-transparent text-base-content" aria-label="Daftar Cuti Karyawan" style="background-image: none;"/>
+                            <input type="radio" name="tabs_cuti" class="tab bg-transparent text-base-content" aria-label="Daftar Cuti Karyawan" style="background-image: none;" @checked(auth()->user()->can('akses', 'Persetujuan Pengajuan Cuti'))/>
                             <div class="tab-content p-1">
                                 <div class="card bg-base-100 shadow">
                                     <div class="card-body">
@@ -76,7 +87,7 @@
                                 </div>
                             </div>
                             @endcan
-                            {{-- @can('akses', 'Riwayat Pengajuan Cuti') --}}
+                            @can('akses', 'Riwayat Pengajuan Cuti')
                             <input type="radio" name="tabs_cuti" class="tab bg-transparent text-base-content" aria-label="Riwayat Pengajuan Cuti" style="background-image: none;"/>
                             <div class="tab-content p-1">
                                 <div class="card bg-base-100 shadow">
@@ -89,7 +100,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- @endcan --}}
+                            @endcan
                         </div>
                     </div>
                 </div>

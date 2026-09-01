@@ -255,8 +255,6 @@ class AksesSeeder extends Seeder
                 'Pengajuan Cuti Edit',
 
                 'Riwayat Pengajuan Cuti',
-                'Riwayat Pengajuan Cuti Hapus',
-
                 'Persetujuan Pengajuan Cuti',
             ],
 

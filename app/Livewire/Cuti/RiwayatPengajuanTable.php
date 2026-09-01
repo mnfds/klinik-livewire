@@ -80,7 +80,7 @@ final class RiwayatPengajuanTable extends PowerGridComponent
             Column::make('Status', 'status_label')->sortable('status'),
             Column::make('Diproses Oleh', 'diproses_oleh'),
             Column::make('Catatan', 'catatan_admin'),
-            Column::Action('Action'),
+            // Column::Action('Action'),
         ];
     }
 
@@ -97,18 +97,18 @@ final class RiwayatPengajuanTable extends PowerGridComponent
         ];
     }
 
-    public function actions(Pengajuancuti $row): array
-    {
-        $riwayatPengajuanButton = [];
+    // public function actions(Pengajuancuti $row): array
+    // {
+    //     $riwayatPengajuanButton = [];
 
-        Gate::allows('akses', 'Pengajuan Cuti Hapus') && $riwayatPengajuanButton[] =
-        Button::add('deleteriwayatpengajuan')
-            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-            ->class('btn btn-error btn-sm')
-        ->dispatch('modaldeleteriwayatpengajuan', ['rowId' => $row->id]);
+    //     Gate::allows('akses', 'Pengajuan Cuti Hapus') && $riwayatPengajuanButton[] =
+    //     Button::add('deleteriwayatpengajuan')
+    //         ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+    //         ->class('btn btn-error btn-sm')
+    //     ->dispatch('modaldeleteriwayatpengajuan', ['rowId' => $row->id]);
 
-        return $riwayatPengajuanButton;
-    }
+    //     return $riwayatPengajuanButton;
+    // }
     #[\Livewire\Attributes\On('modaldeleteriwayatpengajuan')]
     public function modaldeleteriwayatpengajuan($rowId): void
     {
