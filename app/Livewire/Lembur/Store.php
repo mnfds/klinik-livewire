@@ -13,16 +13,29 @@ class Store extends Component
 {
     public $user_id, $tanggal_lembur, $perkiraan_durasi, $keperluan, $disetujui_oleh;
     public $status = 'pending';
-    public $users;
+    public $users = [];
 
     public function render()
     {
         return view('livewire.lembur.store');
     }
     
-    public function mount(){
-        $this->users = User::with(['dokter', 'biodata', 'role'])->get();
+    public function mount()
+    {
+        $this->users = User::with(['biodata', 'dokter'])->get()
+            ->map(fn ($user) => [
+                'id' => $user->id,
+                'nama' => $user->biodata?->nama_lengkap
+                    ?? $user->dokter?->nama_dokter
+                    ?? '-',
+            ])
+            ->toArray();
+
         $this->user_id = Auth::user()->id;
+
+        if (!auth()->user()->can('akses', 'Persetujuan Ajuan Lembur')) {
+            $this->user_id = auth()->id();
+        }
     }
 
     public function store()

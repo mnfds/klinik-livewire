@@ -7,21 +7,55 @@
         <h3 class="text-xl font-semibold mb-4">Pengajuan Lembur</h3>
 
         <form wire:submit.prevent="store" class="space-y-4">
-            <div>
-                <label class="label font-medium">Karyawan<span class="text-error">*</span></label>
-                <select class="select select-bordered w-full @error('user_id') input-error @enderror" wire:model.lazy="user_id" @disabled(!Gate::allows('akses', 'Riwayat Pengajuan Lembur'))>
-                    <option value="">Pilih Karyawan</option>
-                    @foreach ($users as $u)
-                        <option value="{{ $u->id }}">
-                            {{ $u->biodata->nama_lengkap ?? $u->dokter->nama_dokter ?? '-' }}
-                            ({{ $u->role->nama_role ?? '-' }})
-                        </option>
-                    @endforeach
-                </select>
+            {{-- Nama Karyawan --}}
+            <div x-data="{ open: false }" class="relative">
+                <label class="label font-medium">Karyawan <span class="text-error">*</span></label>
+                @can('akses', 'Persetujuan Ajuan Lembur')
+                    <div
+                        x-data="{
+                            open: false,
+                            search: '',
+                            users: {{ \Illuminate\Support\Js::from($users) }},
+                            selectedId: @entangle('user_id'),
+
+                            get filtered() {
+                                return this.search === ''
+                                    ? this.users
+                                    : this.users.filter(b =>
+                                        b.nama.toLowerCase().includes(this.search.toLowerCase())
+                                    )
+                            },
+
+                            get selectedLabel() {
+                                let b = this.users.find(b => b.id == this.selectedId)
+                                return b ? b.nama : ''
+                            },
+
+                            choose(item) {
+                                this.selectedId = item.id
+                                this.search = item.nama
+                                this.open = false
+                            }
+                        }"
+                        x-init="search = selectedLabel"
+                        @click.outside="open = false; search = selectedLabel"
+                        >
+                        <input type="text" x-model="search" @focus="open = true; search = ''" placeholder="Cari nama karyawan..." autocomplete="off" class="input input-bordered w-full @error('user_id') input-error @enderror">
+
+                        <ul x-show="open" x-cloak class="absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded-box shadow">
+                            <template x-for="item in filtered" :key="item.id">
+                                <li @click="choose(item)" class="px-4 py-2 cursor-pointer hover:bg-base-200" x-text="item.nama"></li>
+                            </template>
+                            <li x-show="filtered.length === 0" class="px-4 py-2 text-gray-400 text-sm">
+                                Tidak ditemukan
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <input type="text" value="{{ $users[array_search(auth()->id(), array_column($users, 'id'))]['nama'] ?? '-' }}" readonly class="input input-bordered w-full bg-base-200 cursor-not-allowed">
+                @endcan
                 @error('user_id')
-                    <span class="text-error text-sm">
-                        Mohon Memilih Karyawan Dengan Benar
-                    </span>
+                    <span class="text-error text-sm">Mohon Memilih Karyawan Dengan Benar</span>
                 @enderror
             </div>
 
