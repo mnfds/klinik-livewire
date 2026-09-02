@@ -13,6 +13,12 @@ class PermintaanReservasi extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'tanggal_reservasi' => 'date',
+        'jam_reservasi' => 'datetime:H:i',
+        'pasien_baru' => 'boolean',
+    ];
+
     public function poliklinik()
     {
         return $this->belongsTo(PoliKlinik::class, 'poli_id');
