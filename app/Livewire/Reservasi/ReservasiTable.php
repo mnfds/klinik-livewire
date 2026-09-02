@@ -61,6 +61,7 @@ final class ReservasiTable extends PowerGridComponent
             ->add('dokter_dan_poli', function($row){
                 return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
             })
+            ->add('no_telp', fn ($row) => $row->pasien->no_telp ?? '-')
             ->add('status', fn ($row) =>
                 match ($row->status) {
                     'belum datang' => '<span class="badge badge-primary px-2 whitespace-nowrap">Belum Datang</span>',
@@ -99,11 +100,14 @@ final class ReservasiTable extends PowerGridComponent
             Column::make('Dokter', 'dokter.nama_dokter')
                 ->searchable()
                 ->hidden(),
-
+            
             Column::make('Poli dan Dokter', 'dokter_dan_poli')
                 ->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Catatan', 'catatan')
+                ->searchable(),
+
+            Column::make('No Telpon', 'no_telp')
                 ->searchable(),
 
             Column::make('status', 'status')
@@ -143,15 +147,15 @@ final class ReservasiTable extends PowerGridComponent
                     'class' => 'btn btn-secondary'
                 ]),
 
-            Button::add('waReservasi')
-                ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
-                ->tag('a')
-                ->attributes([
-                    'href' => $waUrl,
-                    'target' => '_blank',
-                    'title' => 'Hubungi via WhatsApp',
-                    'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
-                ]),
+            // Button::add('waReservasi')
+            //     ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
+            //     ->tag('a')
+            //     ->attributes([
+            //         'href' => $waUrl,
+            //         'target' => '_blank',
+            //         'title' => 'Hubungi via WhatsApp',
+            //         'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
+            //     ]),
 
             Button::add('editReservasi')  
                 ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')

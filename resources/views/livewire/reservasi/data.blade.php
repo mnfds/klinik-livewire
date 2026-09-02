@@ -35,6 +35,7 @@
                         <button onclick="document.getElementById('storeModalReservasi').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Reservasi</button>
                     </div>
                     <livewire:Reservasi.Reservasi-Table />
+                    <livewire:Reservasi.Permintaan-Table />
                 </div>
             </div>
         </div>
