@@ -86,7 +86,18 @@ final class ReservasiTable extends PowerGridComponent
                 }
             )
 
-            ->add('catatan', fn ($row) => $row->catatan ?? '-')
+            ->add('catatan', function ($row) {
+                $catatan = $row->catatan ?? '-';
+                $escaped = e($catatan);
+
+                return '<span
+                            x-data="{ expanded: false }"
+                            x-on:click="expanded = !expanded"
+                            x-bind:class="expanded ? \'whitespace-normal\' : \'max-w-[220px] truncate\'"
+                            class="block cursor-pointer hover:text-primary"
+                            title="Klik untuk lihat selengkapnya"
+                        >' . $escaped . '</span>';
+            })
 
             ->add('tanggal_jam', function ($row) {
                 $tanggal = $row->tanggal_reservasi
