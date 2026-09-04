@@ -205,6 +205,12 @@ final class ReservasiTable extends PowerGridComponent
         ]);
     }
 
+    #[\Livewire\Attributes\On('refresh-ReservasiTable')]
+    public function refreshReservasi()
+    {
+        $this->dispatch('pg:eventRefresh');
+    }
+
     public function actionRules($row): array
     {
         return [

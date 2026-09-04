@@ -78,7 +78,7 @@ class Approval extends Component
         ]);
         $this->dispatch('closemodalsetujuireservasi');
         $this->dispatch('refresh-PermintaanTable');
-        $this->reset(['permintaan', 'pasien_id', 'poli_id', 'dokter_id', 'tanggal_reservasi', 'jam_reservasi', 'catatan']);
+        $this->dispatch('refresh-ReservasiTable');
     }
 
     public function render()

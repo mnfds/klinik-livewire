@@ -1,8 +1,4 @@
-<dialog id="modalsetujuireservasi" class="modal" wire:ignore.self x-data x-init="
-    Livewire.on('closemodalsetujuireservasi', () => {
-        document.getElementById('modalsetujuireservasi')?.close()
-    })
-">
+<dialog id="modalsetujuireservasi" class="modal" wire:ignore.self x-data x-on:closemodalsetujuireservasi.window="$el.close()">
     <div class="modal-box w-full max-w-4xl">
         @if ($permintaan)
             <h3 class="text-xl font-semibold mb-1">Setujui & Simpan Reservasi</h3>
