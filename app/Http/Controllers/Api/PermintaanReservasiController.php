@@ -42,6 +42,7 @@ class PermintaanReservasiController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'no_telp' => ['required', 'string', 'max:20'],
+            'nik' => ['nullable', 'string', 'max:255'],
             'no_register' => ['nullable', 'string', 'max:255'],
             'catatan' => ['nullable', 'string'],
             'poli_id' => ['required', 'exists:poli_kliniks,id'],
