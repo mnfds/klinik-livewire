@@ -481,14 +481,17 @@
 
                 @php
                     use App\Models\Reservasi;
+                    use App\Models\PermintaanReservasi;
                     // use Illuminate\Support\Carbon;
 
                     $hariIni = Carbon::today();
-                    $duaHariKedepan = Carbon::today()->addDays(2);
+                    $duaHariKedepan = Carbon::today()->addDays(1);
 
                     $reservasiCount = Reservasi::whereDate('tanggal_reservasi', '<=', $duaHariKedepan)
                         ->where('status', 'belum datang')
                         ->count();
+                    $permintaanCount = PermintaanReservasi::where('status', 'menunggu')->count();
+                    $totalNotif = $reservasiCount + $permintaanCount;
                 @endphp
 
                 @if (
@@ -505,7 +508,7 @@
                             <i class="fa-solid fa-notes-medical"></i>
                             <span class="flex-1 ml-3 text-left">Rawat Jalan</span>
     
-                            <template x-if="!open && {{ $reservasiCount }} > 0">
+                            <template x-if="!open && {{ $totalNotif }} > 0">
                                 <span class="bg-accent-content text-warning p-1 py-0.5 rounded-full flex items-center gap-1">
                                     <i class="fa-solid fa-bell"></i>
                                 </span>
@@ -531,7 +534,7 @@
                                     :active="request()->routeIs('reservasi.*')"  
                                     wire:navigate>
                                     Reservasi
-                                    @if ($reservasiCount > 0)
+                                    @if ($totalNotif > 0)
                                         <span class="ml-auto rounded-full text-warning bg-accent-content">
                                             <i class="fa-solid fa-bell ml-auto rounded-full text-warning p-1 bg-accent-content"></i>
                                         </span>
