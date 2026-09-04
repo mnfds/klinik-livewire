@@ -52,26 +52,52 @@ final class ReservasiTable extends PowerGridComponent
         return PowerGrid::fields()
             ->add('#') // untuk nomor urut
             ->add('pasien.nama', fn ($row) => $row->pasien->nama ?? '-') // Nama Pasien
-            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No 
-            ->add('nama_dan_register', function($row){
-                return strtoupper($row->pasien->nama) . '<br><span class="text-sm text-gray-500">' . $row->pasien->no_register . '</span>';
+            ->add('pasien.no_register', fn ($row) => $row->pasien->no_register ?? '-') // No RM
+            ->add('nama_dan_register', function ($row) {
+                $nama = strtoupper($row->pasien?->nama ?? '-');
+                $noRegister = $row->pasien?->no_register ?? '-';
+                return $nama .
+                    '<br><span class="text-sm text-gray-500">' . $noRegister . '</span>';
             })
+
             ->add('poliklinik.nama_poli', fn ($row) => $row->poliklinik->nama_poli ?? '-') // Nama Poli
             ->add('dokter.nama_dokter', fn ($row) => $row->dokter->nama_dokter ?? '-') // Dokter yang menangani
-            ->add('dokter_dan_poli', function($row){
-                return strtoupper($row->poliklinik->nama_poli) . '<br><span class="text-sm text-gray-500">' . $row->dokter->nama_dokter . '</span>';
+            ->add('dokter_dan_poli', function ($row) {
+                $dokter = strtoupper($row->dokter?->nama_dokter ?? '-');
+                $poli = $row->poliklinik?->nama_poli ?? '-';
+                return $dokter . '<br><span class="text-sm text-gray-500">' . $poli . '</span>';
             })
+
+            ->add('pasien.nik', fn ($row) => $row->pasien->nik ?? '-')
             ->add('no_telp', fn ($row) => $row->pasien->no_telp ?? '-')
+            ->add('telp_nik', function ($row) {
+                $telp = strtoupper($row->pasien?->no_telp ?? '-');
+                $nik = $row->pasien?->nik ?? '-';
+                return $telp .
+                    '<br><span class="text-sm text-gray-500">NIK: ' . $nik . '</span>';
+            })
+
             ->add('status', fn ($row) =>
-                match ($row->status) {
+                match ($row->status ?? null) {
                     'belum datang' => '<span class="badge badge-primary px-2 whitespace-nowrap">Belum Datang</span>',
                     'selesai' => '<span class="badge badge-success px-2 whitespace-nowrap">Selesai</span>',
                     'batal' => '<span class="badge badge-error px-2 whitespace-nowrap">Batal</span>',
                     default => '<span class="badge">-</span>',
                 }
             )
-            ->add('catatan')
-            ->add('tanggal_reservasi');
+
+            ->add('catatan', fn ($row) => $row->catatan ?? '-')
+
+            ->add('tanggal_jam', function ($row) {
+                $tanggal = $row->tanggal_reservasi
+                    ? \Carbon\Carbon::parse($row->tanggal_reservasi)->format('d M Y')
+                    : '-';
+                $jam = $row->jam_reservasi
+                    ? \Carbon\Carbon::parse($row->jam_reservasi)->format('H:i') . ' WITA'
+                    : '-';
+                return strtoupper($tanggal) .
+                    '<br><span class="text-sm text-gray-500">' . $jam . '</span>';
+            });
     }
 
     public function columns(): array
@@ -79,39 +105,25 @@ final class ReservasiTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Tanggal Reservasi', 'tanggal_reservasi')
-                ->sortable(),
+            Column::make('Tanggal Reservasi', 'tanggal_jam')->sortable(),
+            Column::make('Tanggal', 'tanggal_reservasi')->sortable()->hidden(),
+            Column::make('Jam', 'jam_reservasi')->sortable()->hidden(),
 
-            Column::make('Nama Pasien', 'pasien.nama')
-                ->searchable()
-                ->hidden(),
+            Column::make('Nama Pasien', 'pasien.nama')->searchable()->hidden(),
+            Column::make('No. Register', 'pasien.no_register')->searchable()->hidden(),
+            Column::make('Pasien', 'nama_dan_register')->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('No. Register', 'pasien.no_register')
-                ->searchable()
-                ->hidden(),
+            Column::make('NIK', 'pasien.nik')->searchable()->hidden(),
+            Column::make('No Telpon', 'pasien.no_telp')->searchable()->hidden(),
+            Column::make('Telp & NIK', 'telp_nik')->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Pasien', 'nama_dan_register')
-                ->bodyAttribute('whitespace-nowrap'),
+            Column::make('Poli Tujuan', 'poliklinik.nama_poli')->searchable()->hidden(),
+            Column::make('Dokter', 'dokter.nama_dokter')->searchable()->hidden(),
+            Column::make('Dokter & Poli', 'dokter_dan_poli')->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Poli Tujuan', 'poliklinik.nama_poli')
-                ->searchable()
-                ->hidden(),
+            Column::make('Keluhan', 'catatan'),
 
-            Column::make('Dokter', 'dokter.nama_dokter')
-                ->searchable()
-                ->hidden(),
-            
-            Column::make('Poli dan Dokter', 'dokter_dan_poli')
-                ->bodyAttribute('whitespace-nowrap'),
-
-            Column::make('Catatan', 'catatan')
-                ->searchable(),
-
-            Column::make('No Telpon', 'no_telp')
-                ->searchable(),
-
-            Column::make('status', 'status')
-                ->searchable(),
+            Column::make('status', 'status')->searchable(),
 
             Column::action('Action') // untuk tombol edit/delete
         ];

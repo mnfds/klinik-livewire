@@ -58,13 +58,26 @@ final class PermintaanTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('#')
-            ->add('nama_dan_telp', function ($row) {
-                return strtoupper($row->nama) .
-                    '<br><span class="text-sm text-gray-500">' . $row->no_telp . '</span>';
+            ->add('nama_register', function ($row) {
+                $nama = strtoupper($row->nama ?? '-');
+                $noRegister = $row->no_register ?? '-';
+                return $nama .
+                    '<br><span class="text-sm text-gray-500">' . $noRegister . '</span>';
+            })
+
+            ->add('nik', fn ($row) => $row->nik ?? '-')
+            ->add('no_telp', fn ($row) => $row->no_telp ?? '-')
+            ->add('telp_nik', function ($row) {
+                $telp = strtoupper($row->no_telp ?? '-');
+                $nik = $row->nik ?? '-';
+                return $telp .
+                    '<br><span class="text-sm text-gray-500">NIK: ' . $nik . '</span>';
             })
 
             ->add('tanggal_jam', function ($row) {
-                $tanggal = \Carbon\Carbon::parse($row->tanggal_reservasi)->format('d M Y');
+                $tanggal = $row->tanggal_reservasi
+                    ? \Carbon\Carbon::parse($row->tanggal_reservasi)->format('d M Y')
+                    : '-';
                 $jam = $row->jam_reservasi
                     ? \Carbon\Carbon::parse($row->jam_reservasi)->format('H:i') . ' WITA'
                     : '-';
@@ -73,24 +86,25 @@ final class PermintaanTable extends PowerGridComponent
             })
 
             ->add('dokter_poli', function ($row) {
-                $dokter = $row->dokter->nama_dokter ?? 'Tanpa Dokter Spesifik';
-                $poli = $row->poliklinik->nama_poli ?? '-';
+                $dokter = $row->dokter?->nama_dokter ?? 'Tanpa Dokter Spesifik';
+                $poli = $row->poliklinik?->nama_poli ?? '-';
                 return strtoupper($dokter) .
                     '<br><span class="text-sm text-gray-500">' . $poli . '</span>';
             })
 
             ->add('tipe_status', function ($row) {
                 $tipe = $row->pasien_baru ? 'Pasien Baru' : 'Pasien Lama';
-                $badge = match ($row->status) {
+                $status = $row->status ?? '-';
+                $badge = match ($status) {
                     'menunggu' => '<span class="badge badge-warning badge-sm">Menunggu</span>',
                     'disetujui' => '<span class="badge badge-success badge-sm">Disetujui</span>',
                     'ditolak' => '<span class="badge badge-error badge-sm">Ditolak</span>',
-                    default => '<span class="badge badge-sm">' . ucfirst($row->status) . '</span>',
+                    default => '<span class="badge badge-sm">' . ucfirst($status) . '</span>',
                 };
                 return strtoupper($tipe) . '<br>' . $badge;
             })
 
-            ->add('catatan');
+            ->add('catatan', fn ($row) => $row->catatan ?? '-');
     }
 
     public function columns(): array
@@ -98,21 +112,27 @@ final class PermintaanTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Tanggal Reservasi', 'tanggal_jam')->sortable(),
+            Column::make('Tanggal Reservasi', 'tanggal_jam')->bodyAttribute('whitespace-nowrap'),
             Column::make('Tanggal', 'tanggal_reservasi')->sortable()->hidden(),
             Column::make('Jam', 'jam_reservasi')->sortable()->hidden(),
 
             Column::make('Nama', 'nama')->sortable()->searchable()->hidden(),
             Column::make('No. Telp', 'no_telp')->sortable()->searchable()->hidden(),
-            Column::make('Pasien', 'nama_dan_telp')->sortable()->searchable(),
+            Column::make('Pasien', 'nama_register')->bodyAttribute('whitespace-nowrap'),
+
+            Column::make('NIK', 'pasien.nik')->searchable()->hidden(),
+            Column::make('No Telpon', 'pasien.no_telp')->searchable()->hidden(),
+            Column::make('Telp & NIK', 'telp_nik')->bodyAttribute('whitespace-nowrap'),
 
             Column::make('Poliklinik', 'poli_nama')->hidden(),
             Column::make('Dokter', 'dokter_nama')->hidden(),
-            Column::make('Dokter & Poli', 'dokter_poli'),
+            Column::make('Dokter & Poli', 'dokter_poli')->bodyAttribute('whitespace-nowrap'),
 
+            Column::make('Keluhan', 'catatan'),
+            
             Column::make('Tipe', 'pasien_baru_label')->sortable()->hidden(),
             Column::make('Status', 'status')->sortable()->hidden(),
-            Column::make('Tipe & Status', 'tipe_status'),
+            Column::make('Tipe & Status', 'tipe_status')->bodyAttribute('whitespace-nowrap'),
 
             Column::action('Action'),
         ];
@@ -140,7 +160,7 @@ final class PermintaanTable extends PowerGridComponent
             ->slot('<i class="fa-solid fa-circle-check"></i> Setujui')
             ->attributes([
                 'onclick' => 'modalsetujuireservasi.showModal()',
-                'class' => 'btn btn-success btn-sm'
+                'class' => 'btn btn-success'
             ])
         ->dispatchTo('reservasi.approval', 'getapprove', ['rowId' => $row->id]);
 
@@ -148,14 +168,14 @@ final class PermintaanTable extends PowerGridComponent
         Button::add('tolak')  
             ->slot('<i class="fa-solid fa-circle-xmark"></i> Tolak')
             ->attributes([
-                'class' => 'btn btn-warning btn-sm'
+                'class' => 'btn btn-warning'
             ])
         ->dispatch('tolak', ['rowId' => $row->id]);
 
         Gate::allows('akses', 'Pengajuan Lembur Hapus') && $permintaanReservasi[] =
         Button::add('deletePermintaan')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-            ->class('btn btn-error btn-sm')
+            ->class('btn btn-error')
         ->dispatch('modalDeletePermintaan', ['rowId' => $row->id]);
 
         return $permintaanReservasi;
