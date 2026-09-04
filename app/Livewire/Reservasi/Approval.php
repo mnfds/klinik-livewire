@@ -64,7 +64,14 @@ class Approval extends Component
         DB::transaction(function () use ($validated) {
             Reservasi::create($validated);
 
-            $this->permintaan->update(['status' => 'disetujui']);
+            $this->permintaan->update([
+                'poli_id' => $validated['poli_id'],
+                'dokter_id' => $validated['dokter_id'],
+                'tanggal_reservasi' => $validated['tanggal_reservasi'],
+                'jam_reservasi' => $validated['jam_reservasi'],
+                'catatan' => $validated['catatan'],
+                'status' => 'disetujui',
+            ]);
         });
 
         $this->selesai('Reservasi berhasil disetujui dan disimpan.');
