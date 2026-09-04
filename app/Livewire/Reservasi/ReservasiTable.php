@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Responsive;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
@@ -27,6 +28,8 @@ final class ReservasiTable extends PowerGridComponent
             PowerGrid::footer()
                 ->showPerPage()
                 ->showRecordCount(),
+            PowerGrid::Responsive()
+                ->fixedColumns('pasien.nama', 'actions'),
         ];
     }
 
@@ -116,27 +119,29 @@ final class ReservasiTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Tanggal Reservasi', 'tanggal_jam')->sortable(),
-            Column::make('Tanggal', 'tanggal_reservasi')->sortable()->hidden(),
-            Column::make('Jam', 'jam_reservasi')->sortable()->hidden(),
+            Column::make('Tanggal Reservasi', 'tanggal_jam', 'tanggal_reservasi')
+                ->sortable(),
 
-            Column::make('Nama Pasien', 'pasien.nama')->searchable()->hidden(),
-            Column::make('No. Register', 'pasien.no_register')->searchable()->hidden(),
-            Column::make('Pasien', 'nama_dan_register')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Pasien', 'nama_dan_register', 'pasien.nama')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('NIK', 'pasien.nik')->searchable()->hidden(),
-            Column::make('No Telpon', 'pasien.no_telp')->searchable()->hidden(),
-            Column::make('Telp & NIK', 'telp_nik')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Telp & NIK', 'telp_nik', 'pasien.no_telp')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Poli Tujuan', 'poliklinik.nama_poli')->searchable()->hidden(),
-            Column::make('Dokter', 'dokter.nama_dokter')->searchable()->hidden(),
-            Column::make('Dokter & Poli', 'dokter_dan_poli')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Dokter & Poli', 'dokter_dan_poli', 'dokter.nama_dokter')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Keluhan', 'catatan'),
+            Column::make('Keluhan', 'catatan')->searchable(),
 
             Column::make('status', 'status')->searchable(),
 
-            Column::action('Action') // untuk tombol edit/delete
+            Column::action('Action')
         ];
     }
 

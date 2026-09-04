@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Responsive;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\Facades\Rule;
@@ -29,6 +30,8 @@ final class PermintaanTable extends PowerGridComponent
             PowerGrid::footer()
                 ->showPerPage()
                 ->showRecordCount(),
+            PowerGrid::Responsive()
+                ->fixedColumns('nama', 'actions'),
         ];
     }
 
@@ -58,6 +61,8 @@ final class PermintaanTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('#')
+            ->add('nama', fn ($row) => $row->nama ?? '-')
+            ->add('no_register', fn ($row) => $row->no_register ?? '-')
             ->add('nama_register', function ($row) {
                 $nama = strtoupper($row->nama ?? '-');
                 $noRegister = $row->no_register ?? '-';
@@ -123,27 +128,28 @@ final class PermintaanTable extends PowerGridComponent
         return [
             Column::make('#', '')->index(),
 
-            Column::make('Tanggal Reservasi', 'tanggal_jam')->bodyAttribute('whitespace-nowrap'),
-            Column::make('Tanggal', 'tanggal_reservasi')->sortable()->hidden(),
-            Column::make('Jam', 'jam_reservasi')->sortable()->hidden(),
+            Column::make('Tanggal Reservasi', 'tanggal_jam', 'tanggal_reservasi')
+                ->sortable()
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Nama', 'nama')->sortable()->searchable()->hidden(),
-            Column::make('No. Telp', 'no_telp')->sortable()->searchable()->hidden(),
-            Column::make('Pasien', 'nama_register')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Pasien', 'nama_register', 'nama')
+                ->sortable()
+                ->searchable()
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('NIK', 'pasien.nik')->searchable()->hidden(),
-            Column::make('No Telpon', 'pasien.no_telp')->searchable()->hidden(),
-            Column::make('Telp & NIK', 'telp_nik')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Telp & NIK', 'telp_nik', 'no_telp')
+                ->sortable()
+                ->searchableRaw('(no_telp like ? or nik like ?)')
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Poliklinik', 'poli_nama')->hidden(),
-            Column::make('Dokter', 'dokter_nama')->hidden(),
-            Column::make('Dokter & Poli', 'dokter_poli')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Dokter & Poli', 'dokter_poli', 'dokter_nama')
+                ->bodyAttribute('whitespace-nowrap'),
 
-            Column::make('Keluhan', 'catatan'),
-            
-            Column::make('Tipe', 'pasien_baru_label')->sortable()->hidden(),
-            Column::make('Status', 'status')->sortable()->hidden(),
-            Column::make('Tipe & Status', 'tipe_status')->bodyAttribute('whitespace-nowrap'),
+            Column::make('Keluhan', 'catatan')->searchable(),
+
+            Column::make('Tipe & Status', 'tipe_status', 'status')
+                ->sortable()
+                ->bodyAttribute('whitespace-nowrap'),
 
             Column::action('Action'),
         ];
