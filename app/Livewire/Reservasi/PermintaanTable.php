@@ -44,9 +44,12 @@ final class PermintaanTable extends PowerGridComponent
                     WHEN 'menunggu' THEN 1
                     WHEN 'disetujui' THEN 2
                     WHEN 'ditolak' THEN 3
+                    ELSE 4
                 END
             ")
-            ->orderBy('tanggal_reservasi');
+            ->orderByRaw("CASE WHEN status = 'menunggu' THEN tanggal_reservasi END ASC")
+            ->orderByRaw("CASE WHEN status != 'menunggu' THEN tanggal_reservasi END DESC")
+            ->orderBy('id', 'desc');
     }
 
     public function relationSearch(): array
