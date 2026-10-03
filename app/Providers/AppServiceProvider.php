@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('id');
         Gate::define('akses', function ($user, string $akses) {
             return $user->hasAkses($akses);
+        });
+        RateLimiter::for('reservasi', function (Request $request) {
+            return Limit::perMinute(3)->by($request->ip());
         });
     }
 }

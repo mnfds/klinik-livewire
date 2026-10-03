@@ -11,5 +11,5 @@ Route::get('/user', function (Request $request) {
 Route::prefix('reservasi')->group(function () {
     Route::get('/poliklinik', [PermintaanReservasiController::class, 'poliklinik']);
     Route::get('/dokter', [PermintaanReservasiController::class, 'dokter']); // ?poli_id=1
-    Route::post('/', [PermintaanReservasiController::class, 'store']);
+    Route::post('/', [PermintaanReservasiController::class, 'store'])->middleware('throttle:reservasi');
 });

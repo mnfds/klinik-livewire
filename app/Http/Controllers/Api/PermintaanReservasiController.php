@@ -8,6 +8,7 @@ use App\Models\PermintaanReservasi;
 use App\Models\PoliKlinik;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PermintaanReservasiController extends Controller
 {
@@ -42,12 +43,12 @@ class PermintaanReservasiController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'no_telp' => ['required', 'string', 'max:20'],
-            'nik' => ['nullable', 'string', 'max:255'],
+            'nik' => ['nullable', 'digits:16'],
             'no_register' => ['nullable', 'string', 'max:255'],
-            'catatan' => ['nullable', 'string'],
+            'catatan' => ['nullable', 'string', 'max:1000'],
             'poli_id' => ['required', 'exists:poli_kliniks,id'],
-            'dokter_id' => ['nullable', 'exists:dokters,id'],
-            'tanggal_reservasi' => ['required', 'date', 'after_or_equal:today'],
+            'dokter_id' => ['nullable',Rule::exists(DokterPoli::class, 'dokter_id')->where('poli_id', $request->poli_id),],
+            'tanggal_reservasi' => ['required', 'date', 'after_or_equal:today', 'before_or_equal:' . now()->addMonths(2)->toDateString()],
             'jam_reservasi' => ['nullable', 'date_format:H:i'],
             'pasien_baru' => ['required', 'boolean'],
         ], [
