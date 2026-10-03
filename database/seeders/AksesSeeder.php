@@ -323,6 +323,11 @@ class AksesSeeder extends Seeder
             // Reservasi Pasien
             27 => [
                 'Reservasi',
+                'Reservasi Data',
+                'Reservasi Tambah',
+                'Reservasi Hapus',
+                'Reservasi Edit',
+                'Persetujuan Reservasi',
             ],
 
             // Pasien Tindakan Lanjutan 

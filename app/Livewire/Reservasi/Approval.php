@@ -47,7 +47,13 @@ class Approval extends Component
 
     public function confirm(): void
     {
-        // Gate::authorize('akses', 'Persetujuan Reservasi');
+        if (! Gate::allows('akses', 'Persetujuan Reservasi')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         $validated = $this->validate([
             'pasien_id' => 'required|exists:pasiens,id',

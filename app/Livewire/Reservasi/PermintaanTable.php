@@ -175,7 +175,7 @@ final class PermintaanTable extends PowerGridComponent
     public function actions(PermintaanReservasi $row): array
     {
         $permintaanReservasi = [];
-        Gate::allows('akses', 'Persetujuan Ajuan Lembur') && $permintaanReservasi[] =
+        Gate::allows('akses', 'Persetujuan Reservasi') && $permintaanReservasi[] =
         Button::add('setujui')
             ->slot('<i class="fa-solid fa-circle-check"></i> Setujui')
             ->attributes([
@@ -184,7 +184,7 @@ final class PermintaanTable extends PowerGridComponent
             ])
         ->dispatchTo('reservasi.approval', 'getapprove', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Persetujuan Ajuan Lembur') && $permintaanReservasi[] =
+        Gate::allows('akses', 'Persetujuan Reservasi') && $permintaanReservasi[] =
         Button::add('tolak')  
             ->slot('<i class="fa-solid fa-circle-xmark"></i> Tolak')
             ->attributes([
@@ -192,7 +192,7 @@ final class PermintaanTable extends PowerGridComponent
             ])
         ->dispatch('tolak', ['rowId' => $row->id]);
 
-        Gate::allows('akses', 'Pengajuan Lembur Hapus') && $permintaanReservasi[] =
+        Gate::allows('akses', 'Reservasi Hapus') && $permintaanReservasi[] =
         Button::add('deletePermintaan')
             ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
             ->class('btn btn-error')
@@ -204,7 +204,7 @@ final class PermintaanTable extends PowerGridComponent
     #[\Livewire\Attributes\On('tolak')]
     public function tolak($rowId)
     {
-        if (! Gate::allows('akses', 'Persetujuan Ajuan Lembur')) {
+        if (! Gate::allows('akses', 'Persetujuan Reservasi')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',
@@ -245,7 +245,7 @@ final class PermintaanTable extends PowerGridComponent
     #[\Livewire\Attributes\On('konfirmasiDeletePermintaan')]
     public function konfirmasiDeletePermintaan($rowId): void
     {
-        if (! Gate::allows('akses', 'Pengajuan Lembur Hapus')) {
+        if (! Gate::allows('akses', 'Reservasi Hapus')) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Anda tidak memiliki akses.',

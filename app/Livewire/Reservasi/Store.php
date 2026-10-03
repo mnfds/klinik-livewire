@@ -4,10 +4,11 @@ namespace App\Livewire\Reservasi;
 
 use App\Models\Dokter;
 use App\Models\Pasien;
-use Livewire\Component;
-use App\Models\Reservasi;
 use App\Models\PoliKlinik;
+use App\Models\Reservasi;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class Store extends Component
 {
@@ -41,6 +42,14 @@ class Store extends Component
             'jam_reservasi' => 'nullable|date_format:H:i',
             'catatan' => 'nullable|string',
         ]);
+
+        if (! Gate::allows('akses', 'Reservasi Tambah')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
 
         // ✅ Simpan ke database
         Reservasi::create($validated);

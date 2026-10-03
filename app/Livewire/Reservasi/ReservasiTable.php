@@ -4,6 +4,7 @@ namespace App\Livewire\Reservasi;
 
 use App\Models\Reservasi;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -165,39 +166,42 @@ final class ReservasiTable extends PowerGridComponent
 
         $waUrl = 'https://wa.me/' . $noHp . '?text=' . urlencode($pesanWa);
 
-        return [
-            Button::add('pendaftaranButton')
-                ->slot('<i class="fa-solid fa-notes-medical"></i> Daftar')
-                ->tag('button')
-                ->attributes([
-                    'title' => 'Pendaftaran Pasien',
-                    'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id, 'tanggal_reservasi' => $row->tanggal_reservasi, 'reservasi_id' => $row->id,] )."')",
-                    'class' => 'btn btn-secondary'
-                ]),
+        $reservasiButton = [];
+        Gate::allows('akses', 'Reservasi Data') && $reservasiButton[] =
+        Button::add('pendaftaranButton')
+            ->slot('<i class="fa-solid fa-notes-medical"></i> Daftar')
+            ->tag('button')
+            ->attributes([
+                'title' => 'Pendaftaran Pasien',
+                'onclick' => "Livewire.navigate('".route('pendaftaran.create', ['pasien_id' => $row->pasien->id, 'poli_id' => $row->poliklinik->id, 'dokter_id' => $row->dokter->id, 'tanggal_reservasi' => $row->tanggal_reservasi, 'reservasi_id' => $row->id,] )."')",
+                'class' => 'btn btn-secondary'
+        ]);
+        Gate::allows('akses', 'Reservasi Data') && $reservasiButton[] =
+        Button::add('waReservasi')
+            ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
+            ->tag('a')
+            ->attributes([
+                'href' => $waUrl,
+                'target' => '_blank',
+                'title' => 'Hubungi via WhatsApp',
+                'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
+        ]);
+        Gate::allows('akses', 'Reservasi Edit') && $reservasiButton[] =
+        Button::add('editReservasi')  
+            ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
+            ->attributes([
+                'onclick' => 'modaleditreservasi.showModal()',
+                'class' => 'btn btn-primary'
+            ])
+        ->dispatchTo('reservasi.update', 'editreservasi', ['rowId' => $row->id]);
+          
+        Gate::allows('akses', 'Reservasi Hapus') && $reservasiButton[] =
+        Button::add('deleteReservasi')
+            ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
+            ->class('btn btn-error')
+        ->dispatch('deleteModalReservasi', ['rowId' => $row->id]);
 
-            // Button::add('waReservasi')
-            //     ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
-            //     ->tag('a')
-            //     ->attributes([
-            //         'href' => $waUrl,
-            //         'target' => '_blank',
-            //         'title' => 'Hubungi via WhatsApp',
-            //         'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
-            //     ]),
-
-            Button::add('editReservasi')  
-                ->slot('<i class="fa-solid fa-pen-clip"></i> Edit')
-                ->attributes([
-                    'onclick' => 'modaleditreservasi.showModal()',
-                    'class' => 'btn btn-primary'
-                ])
-                ->dispatchTo('reservasi.update', 'editreservasi', ['rowId' => $row->id]),
-            
-            Button::add('deleteReservasi')
-                ->slot('<i class="fa-solid fa-eraser"></i> Hapus')
-                ->class('btn btn-error')
-                ->dispatch('deleteModalReservasi', ['rowId' => $row->id]),
-        ];
+        return $reservasiButton;
     }
 
     #[\Livewire\Attributes\On('deleteModalReservasi')]

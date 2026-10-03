@@ -4,9 +4,10 @@ namespace App\Livewire\Reservasi;
 
 use App\Models\Dokter;
 use App\Models\Pasien;
-use Livewire\Component;
-use App\Models\Reservasi;
 use App\Models\PoliKlinik;
+use App\Models\Reservasi;
+use Illuminate\Support\Facades\Gate;
+use Livewire\Component;
 
 class Update extends Component
 {
@@ -45,6 +46,13 @@ class Update extends Component
 
     public function update()
     {
+        if (! Gate::allows('akses', 'Reservasi Edit')) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Anda tidak memiliki akses.',
+            ]);
+            return;
+        }
         $this->validate([
             'pasien_id'             => 'required|exists:pasiens,id',
             'poli_id'               => 'required|exists:poli_kliniks,id',
