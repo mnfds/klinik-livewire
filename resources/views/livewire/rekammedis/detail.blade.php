@@ -121,6 +121,7 @@
                                                 <div>Nadi : {{ $kajian->tandaVital->nadi ?? '-'}} bpm</div>
                                                 <div>Tekanan Darah : {{ $kajian->tandaVital->sistole ?? '-'}}/{{ $kajian->tandaVital->diastole ?? '-'}} mmHg</div>
                                                 <div>Frekuensi Napas : {{ $kajian->tandaVital->frekuensi_pernapasan ?? '-'}} /menit</div>
+                                                <div>Saturasi Oksigen : {{ $kajian->tandaVital->saturasi_oksigen ?? '-'}} %</div>
                                             </div>
                                         </div>
                                     @endif
@@ -469,6 +470,7 @@
                                             <div>Nadi : {{ $rekammedis->tandaVitalRM->nadi ?? '-'}} bpm</div>
                                             <div>Tekanan Darah : {{ $rekammedis->tandaVitalRM->sistole ?? '-'}}/{{ $rekammedis->tandaVitalRM->diastole ?? '-'}} mmHg</div>
                                             <div>Frekuensi Napas : {{ $rekammedis->tandaVitalRM->frekuensi_pernapasan ?? '-'}} /menit</div>
+                                            <div>Saturasi Oksigen : {{ $rekammedis->tandaVitalRM->saturasi_oksigen ?? '-'}} %</div>
                                         </div>
                                     </div>
                                 @endif
