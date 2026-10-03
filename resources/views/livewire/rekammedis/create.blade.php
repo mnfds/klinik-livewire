@@ -144,6 +144,7 @@
                                                     <div>Nadi</div><div>: {{ $kajian->tandaVital->nadi }} bpm</div>
                                                     <div>Tekanan Darah</div><div>: {{ $kajian->tandaVital->sistole }}/{{ $kajian->tandaVital->diastole }} mmHg</div>
                                                     <div>Frekuensi Napas</div><div>: {{ $kajian->tandaVital->frekuensi_pernapasan }} /menit</div>
+                                                    <div>Saturasi Oksigen</div><div>: {{ $kajian->tandaVital->saturasi_oksigen }} %</div>
                                                 </div>
                                             </div>
                                         @endif

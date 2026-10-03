@@ -26,7 +26,7 @@ class Update extends Component
     public array $selected_forms = [];
 
     // --- TANDA VITAL ---
-    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan;
+    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan, $saturasi_oksigen;
 
     // --- PEMERIKSAAN FISIK ---
     public $tinggi_badan, $berat_badan, $imt;
@@ -85,6 +85,7 @@ class Update extends Component
                 $this->sistole              = $this->kajian->tandaVital->sistole;
                 $this->diastole             = $this->kajian->tandaVital->diastole;
                 $this->frekuensi_pernapasan = $this->kajian->tandaVital->frekuensi_pernapasan;
+                $this->saturasi_oksigen = $this->kajian->tandaVital->saturasi_oksigen;
             }
 
             // Pre-fill pemeriksaan fisik
@@ -165,6 +166,7 @@ class Update extends Component
                         'sistole'              => $this->sistole,
                         'diastole'             => $this->diastole,
                         'frekuensi_pernapasan' => $this->frekuensi_pernapasan,
+                        'saturasi_oksigen' => $this->saturasi_oksigen,
                     ]
                 );
             }

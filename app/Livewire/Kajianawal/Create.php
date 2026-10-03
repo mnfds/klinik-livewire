@@ -44,7 +44,7 @@ class Create extends Component
     //***DINAMIS FORM VARIABEL***//
     
     // --- TANDA VITAL -- //
-    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan;
+    public $suhu_tubuh, $nadi, $sistole, $diastole, $frekuensi_pernapasan, $saturasi_oksigen;
     // --- KOLESTROL -- //
     public $kolestrol_hdl, $kolestrol_ldl, $trigliserida, $kolestrol_total;
     // --- PEMERIKSAAN FISIK -- //
@@ -103,6 +103,7 @@ class Create extends Component
             // $rules['sistole'] = 'required';
             // $rules['diastole'] = 'required';
             // $rules['frekuensi_pernapasan'] = 'required';
+            // $rules['saturasi_oksigen'] = 'required';
         }
         if (in_array('kolestrol', $this->selected_forms)) {
             // $rules['kolestrol_hdl'] = 'required';
@@ -169,6 +170,7 @@ class Create extends Component
                     'sistole' => $this->sistole,
                     'diastole' => $this->diastole,
                     'frekuensi_pernapasan' => $this->frekuensi_pernapasan,
+                    'saturasi_oksigen' => $this->saturasi_oksigen,
                 ]);
             }
 

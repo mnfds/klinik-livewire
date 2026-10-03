@@ -140,6 +140,7 @@ class Create extends Component
             'sistole' => null,
             'diastole' => null,
             'frekuensi_pernapasan' => null,
+            'saturasi_oksigen' => null,
         ];
         public $kolestrol = [
             'kolestrol_hdl' => null,
@@ -376,6 +377,7 @@ class Create extends Component
                     'sistole' => $this->kajian->tandaVital->sistole,
                     'diastole' => $this->kajian->tandaVital->diastole,
                     'frekuensi_pernapasan' => $this->kajian->tandaVital->frekuensi_pernapasan,
+                    'saturasi_oksigen' => $this->kajian->tandaVital->saturasi_oksigen,
                 ];
             }
             if ($this->kajian && $this->kajian->kolestrol) {
@@ -709,6 +711,7 @@ class Create extends Component
                         'sistole' => $this->tanda_vital['sistole'],
                         'diastole' => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
+                        'saturasi_oksigen' => $this->tanda_vital['saturasi_oksigen'],
                     ]);
                     
                     if($kirimsatusehat){

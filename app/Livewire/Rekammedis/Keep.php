@@ -142,6 +142,7 @@ class Keep extends Component
             'sistole' => null,
             'diastole' => null,
             'frekuensi_pernapasan' => null,
+            'saturasi_oksigen' => null,
         ];
         public $kolestrol = [
             'kolestrol_hdl' => null,
@@ -584,6 +585,7 @@ class Keep extends Component
                 'sistole'              => $tv->sistole,
                 'diastole'             => $tv->diastole,
                 'frekuensi_pernapasan' => $tv->frekuensi_pernapasan,
+                'saturasi_oksigen'     => $tv->saturasi_oksigen,
             ];
         }
 
@@ -941,6 +943,7 @@ class Keep extends Component
                         'sistole'              => $this->tanda_vital['sistole'],
                         'diastole'             => $this->tanda_vital['diastole'],
                         'frekuensi_pernapasan' => $this->tanda_vital['frekuensi_pernapasan'],
+                        'saturasi_oksigen'     => $this->tanda_vital['saturasi_oksigen'],
                     ]
                 );
             }

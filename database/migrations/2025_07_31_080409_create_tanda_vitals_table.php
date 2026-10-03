@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('sistole')->nullable();                   // ex: 120 mmHg
             $table->integer('diastole')->nullable();                  // ex: 80 mmHg
             $table->integer('frekuensi_pernapasan')->nullable();      // ex: 18 per menit
+            $table->integer('saturasi_oksigen')->nullable();          // ex: 98 %
 
             $table->timestamps();
         });

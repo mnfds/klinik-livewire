@@ -6,6 +6,7 @@
         'sistole' => null,
         'diastole' => null,
         'frekuensi_pernapasan' => null,
+        'saturasi_oksigen' => null,
     ]
 ])
 
@@ -31,9 +32,14 @@
             <span class="label">mmHg</span>
         </label>
 
-        <label class="input input-bordered flex items-center gap-2 md:col-span-2">
+        <label class="input input-bordered flex items-center gap-2">
             <input type="number" value="{{ $tandaVital['frekuensi_pernapasan'] }}" wire:model="tanda_vital.frekuensi_pernapasan" placeholder="Frekuensi Pernapasan" class="grow" />
             <span class="label">kali/menit</span>
+        </label>
+
+        <label class="input input-bordered flex items-center gap-2">
+            <input type="number" value="{{ $tandaVital['saturasi_oksigen'] }}" wire:model="tanda_vital.saturasi_oksigen" placeholder="Saturasi Oksigen" class="grow" />
+            <span class="label">%</span>
         </label>
     </div>
 </div>
