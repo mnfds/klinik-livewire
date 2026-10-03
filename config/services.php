@@ -42,4 +42,8 @@ return [
         'client_secret' => env('SATUSEHAT_CLIENT_SECRET'),
         'org_id' => env('SATUSEHAT_ORG_ID'),
     ],
+
+    'landing' => [
+        'key' => env('LANDING_API_KEY'),
+    ],
 ];

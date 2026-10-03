@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasAkses($akses);
         });
         RateLimiter::for('reservasi', function (Request $request) {
-            return Limit::perMinute(3)->by($request->ip());
+            return Limit::perMinute(3)->by($request->header('X-Client-Ip', $request->ip()));
         });
     }
 }
