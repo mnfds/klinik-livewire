@@ -939,6 +939,59 @@
                                 </div>
                             @endif
                         </div>
+                        <!-- CPPT (CATATAN PERKEMBANGAN PASIEN TERINTEGRASI) -->
+                        @php
+                            $kunjungans = $pasienTerdaftar?->pasien
+                                ?->kunjungan()
+                                ->where('id', '!=', $pasienTerdaftar->id)
+                                ->whereHas('rekamMedis')
+                                ->with(['poliklinik', 'dokter'])
+                                ->latest()
+                                ->paginate(3, ['*'], 'cppt')
+                                ->withQueryString();
+                        @endphp
+
+                        <div class="bg-base-100 shadow rounded-box p-4 pb-7">
+                            <h3 class="font-semibold mb-4">Catatan Perkembangan Pasien</h3>
+                            @can('akses', 'Riwayat Rekam Medis')
+                                @if ($kunjungans && $kunjungans->isNotEmpty())
+                                    <ul class="list">
+                                        @foreach ($kunjungans as $kunjungan)
+                                            <li class="list-row px-0 items-center" wire:key="cppt-{{ $kunjungan->id }}">
+                                                <div class="list-col-grow">
+                                                    <div class="text-xs text-base-content/60">
+                                                        {{ $kunjungan->created_at->translatedFormat('d M Y') }}
+                                                    </div>
+                                                    <div class="font-medium">{{ $kunjungan->poliklinik?->nama_poli ?? '-' }}</div>
+                                                    <div class="text-sm text-base-content/70">{{ $kunjungan->dokter?->nama_dokter ?? '-' }}</div>
+                                                </div>
+                                                <a
+                                                    href="{{ route('rekam-medis-pasien.detail', ['pasien_terdaftar_id' => $kunjungan->id]) }}"
+                                                    class="btn btn-square btn-primary btn-sm" title="Lihat detail" target="_blank">
+                                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                    @if ($kunjungans->hasPages())
+                                        <div class="join flex justify-center mt-4">
+                                            <a href="{{ $kunjungans->previousPageUrl() ?? '#' }}"
+                                                class="join-item btn btn-sm {{ $kunjungans->onFirstPage() ? 'btn-disabled' : '' }}">«</a>
+                                            <span class="join-item btn btn-sm btn-active pointer-events-none">
+                                                {{ $kunjungans->currentPage() }} / {{ $kunjungans->lastPage() }}
+                                            </span>
+                                            <a href="{{ $kunjungans->nextPageUrl() ?? '#' }}"
+                                                class="join-item btn btn-sm {{ $kunjungans->hasMorePages() ? '' : 'btn-disabled' }}">»</a>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="text-center text-sm text-base-content/60 py-6">
+                                        Belum ada catatan perkembangan pasien.
+                                    </div>
+                                @endif
+                            @endcan
+                        </div>
                     </div>
                 </div>
                 
