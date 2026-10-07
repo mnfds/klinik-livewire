@@ -174,7 +174,32 @@ final class PermintaanTable extends PowerGridComponent
 
     public function actions(PermintaanReservasi $row): array
     {
+
+        $noHp = preg_replace('/[^0-9]/', '', $row->no_telp ?? '');
+        if (str_starts_with($noHp, '0')) {
+            $noHp = '62' . substr($noHp, 1);
+        }
+
+        $pesanWa = "Halo {$row->nama}, mengingatkan reservasi Anda di klinik pada "
+            . \Carbon\Carbon::parse($row->tanggal_reservasi)->translatedFormat('d F Y')
+            . ($row->jam_reservasi ? ' pukul ' . \Carbon\Carbon::parse($row->jam_reservasi)->format('H:i') : '')
+            . ". Terima kasih.";
+
+        $waUrl = 'https://wa.me/' . $noHp . '?text=' . urlencode($pesanWa);
+
         $permintaanReservasi = [];
+
+        Gate::allows('akses', 'Reservasi Data') && $permintaanReservasi[] =
+        Button::add('waReservasi')
+            ->slot('<i class="fa-brands fa-whatsapp"></i> WA')
+            ->tag('a')
+            ->attributes([
+                'href' => $waUrl,
+                'target' => '_blank',
+                'title' => 'Hubungi via WhatsApp',
+                'class' => 'btn btn-success' . ($noHp === '' ? ' btn-disabled' : ''),
+        ]);
+
         Gate::allows('akses', 'Persetujuan Reservasi') && $permintaanReservasi[] =
         Button::add('setujui')
             ->slot('<i class="fa-solid fa-circle-check"></i> Setujui')
