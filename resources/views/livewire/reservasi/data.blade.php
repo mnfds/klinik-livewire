@@ -62,7 +62,7 @@
                             <button onclick="document.getElementById('storeModalReservasi').showModal()" class="btn btn-success"><i class="fa-solid fa-plus"></i> Reservasi</button>
                         @endcan
                         @can('akses', 'Pasien Tambah')
-                            <a href="{{ route('pasien.create') }}" class="btn btn-success mx-1">
+                            <a href="{{ route('pasien.create') }}" target="_blank" class="btn btn-success mx-1">
                                 <i class="fa-solid fa-plus"></i> Pasien
                             </a>
                         @endcan
