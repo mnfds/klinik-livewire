@@ -25,6 +25,7 @@ return new class extends Migration
             $table->time('jam_reservasi')->nullable();
             $table->boolean('pasien_baru')->default(false);
             $table->enum('status', ['menunggu','disetujui', 'ditolak'])->default('menunggu');
+            $table->text('alasan_penolakan')->nullable();
             $table->timestamps();
         });
     }

@@ -113,8 +113,14 @@ final class PermintaanTable extends PowerGridComponent
                     default => '<span class="badge badge-sm">' . e(ucfirst($status)) . '</span>',
                 };
 
-                return '<div class="flex flex-col items-start gap-1">' . $tipe . $badge . '</div>';
-            })
+                    $alasan = '';
+                    if ($status === 'ditolak' && $row->alasan_penolakan) {
+                        $label = Rejection::ALASAN[$row->alasan_penolakan] ?? $row->alasan_penolakan;
+                        $alasan = '<span class="text-xs text-error whitespace-normal max-w-[200px]">Alasan: ' . e($label) . '</span>';
+                    }
+
+                    return '<div class="flex flex-col items-start gap-1">' . $tipe . $badge . $alasan . '</div>';
+                })
 
             ->add('catatan', function ($row) {
                 $catatan = $row->catatan ?? '-';
@@ -217,9 +223,10 @@ final class PermintaanTable extends PowerGridComponent
         Button::add('tolak')  
             ->slot('<i class="fa-solid fa-circle-xmark"></i> Tolak')
             ->attributes([
+                'onclick' => 'modaltolakreservasi.showModal()',
                 'class' => 'btn btn-warning'
             ])
-        ->dispatch('tolak', ['rowId' => $row->id]);
+        ->dispatchTo('reservasi.rejection', 'gettolak', ['rowId' => $row->id]);
 
         Gate::allows('akses', 'Reservasi Hapus') && $permintaanReservasi[] =
         Button::add('deletePermintaan')
@@ -230,26 +237,26 @@ final class PermintaanTable extends PowerGridComponent
         return $permintaanReservasi;
     }
 
-    #[\Livewire\Attributes\On('tolak')]
-    public function tolak($rowId)
-    {
-        if (! Gate::allows('akses', 'Persetujuan Reservasi')) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Anda tidak memiliki akses.',
-            ]);
-            return;
-        }
-        PermintaanReservasi::where('id', $rowId)->update([
-            'status' => 'ditolak',
-        ]);
-        $this->dispatch('pg:eventRefresh');
-        $this->dispatch('refresh-PermintaanTable');
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Reservasi Telah Berhasil Ditolak',
-        ]);
-    }
+    // #[\Livewire\Attributes\On('tolak')]
+    // public function tolak($rowId)
+    // {
+    //     if (! Gate::allows('akses', 'Persetujuan Reservasi')) {
+    //         $this->dispatch('toast', [
+    //             'type' => 'error',
+    //             'message' => 'Anda tidak memiliki akses.',
+    //         ]);
+    //         return;
+    //     }
+    //     PermintaanReservasi::where('id', $rowId)->update([
+    //         'status' => 'ditolak',
+    //     ]);
+    //     $this->dispatch('pg:eventRefresh');
+    //     $this->dispatch('refresh-PermintaanTable');
+    //     $this->dispatch('toast', [
+    //         'type' => 'success',
+    //         'message' => 'Reservasi Telah Berhasil Ditolak',
+    //     ]);
+    // }
 
     #[\Livewire\Attributes\On('modalDeletePermintaan')]
     public function modalDeletePermintaan($rowId): void
