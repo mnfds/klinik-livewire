@@ -78,7 +78,7 @@ final class PermintaanTable extends PowerGridComponent
             ->add('telp_nik', function ($row) {
                 $telp = strtoupper($row->no_telp ?? '-');
                 $nik = $row->nik ?? '-';
-                return $telp .
+                return '<span class="text-sm text-gray-500">Telp: </span>' . $telp .
                     '<br><span class="text-sm text-gray-500">NIK: ' . $nik . '</span>';
             })
 
@@ -101,15 +101,19 @@ final class PermintaanTable extends PowerGridComponent
             })
 
             ->add('tipe_status', function ($row) {
-                $tipe = $row->pasien_baru ? 'Pasien Baru' : 'Pasien Lama';
+                $tipe = $row->pasien_baru
+                    ? '<span class="badge badge-info badge-sm">PASIEN BARU</span>'
+                    : '<span class="badge badge-neutral badge-sm">PASIEN LAMA</span>';
+
                 $status = $row->status ?? '-';
                 $badge = match ($status) {
                     'menunggu' => '<span class="badge badge-warning badge-sm">Menunggu</span>',
                     'disetujui' => '<span class="badge badge-success badge-sm">Disetujui</span>',
                     'ditolak' => '<span class="badge badge-error badge-sm">Ditolak</span>',
-                    default => '<span class="badge badge-sm">' . ucfirst($status) . '</span>',
+                    default => '<span class="badge badge-sm">' . e(ucfirst($status)) . '</span>',
                 };
-                return strtoupper($tipe) . '<br>' . $badge;
+
+                return '<div class="flex flex-col items-start gap-1">' . $tipe . $badge . '</div>';
             })
 
             ->add('catatan', function ($row) {
@@ -296,6 +300,14 @@ final class PermintaanTable extends PowerGridComponent
     public function actionRules($row): array
     {
         return [
+            Rule::rows()
+            ->when(fn ($row) => $row->status === 'menunggu')
+            ->setAttribute('class', '!bg-base-100 font-semibold'),
+
+            Rule::rows()
+                ->when(fn ($row) => $row->status !== 'menunggu')
+                ->setAttribute('class', '!bg-base-200/60 text-base-content/60'),
+
             Rule::button('deletePermintaan')
                 ->when(fn ($row) => $row->status === 'menunggu')
                 ->hide(),
