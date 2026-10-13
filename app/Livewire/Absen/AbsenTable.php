@@ -54,7 +54,8 @@ final class AbsenTable extends PowerGridComponent
                     });
                 }
             )
-            ->latest();
+            ->orderByDesc('tanggal_absen')
+            ->orderByDesc('id');
     }
 
     public function relationSearch(): array
@@ -95,14 +96,14 @@ final class AbsenTable extends PowerGridComponent
     {
         return [
             Column::make('Nama Staff', 'nama_staff')
-                ->sortable()
+                // ->sortable()
                 ->searchable(),
 
-            Column::make('Jam Masuk', 'jam_masuk_formatted')
-                ->sortable(),
+            Column::make('Jam Masuk', 'jam_masuk_formatted'),
+                // ->sortable(),
 
-            Column::make('Jam Pulang', 'jam_pulang_formatted')
-                ->sortable(),
+            Column::make('Jam Pulang', 'jam_pulang_formatted'),
+                // ->sortable(),
 
             Column::make('Keterangan', 'keterangan')
                 ->searchable(),
