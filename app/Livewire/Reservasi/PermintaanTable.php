@@ -308,12 +308,12 @@ final class PermintaanTable extends PowerGridComponent
     {
         return [
             Rule::rows()
-            ->when(fn ($row) => $row->status === 'menunggu')
-            ->setAttribute('class', '!bg-base-100 font-semibold'),
+                ->when(fn ($row) => $row->status === 'menunggu')
+                ->setAttribute('class', '!bg-base-100 font-semibold row-unread'),
 
             Rule::rows()
                 ->when(fn ($row) => $row->status !== 'menunggu')
-                ->setAttribute('class', '!bg-base-200/60 text-base-content/60'),
+                ->setAttribute('class', '!bg-gray-400/60 text-base-content/60 row-read'),
 
             Rule::button('deletePermintaan')
                 ->when(fn ($row) => $row->status === 'menunggu')

@@ -24,6 +24,20 @@
             font-size: 0.875rem;
             line-height: 1.4;
         }
+
+        /* Sudah diproses (read): isi expand ikut redup */
+        tbody:has(> tr.row-read) + tbody[expand] td {
+            background-color: rgb(156 163 175 / 0.6) !important; /* gray-400/60 */
+            color: color-mix(in oklab, currentColor 60%, transparent);
+        }
+
+        /* Belum dibuka (unread): isi expand ikut terang */
+        tbody:has(> tr.row-unread) + tbody[expand] td {
+            background-color: var(--color-base-100) !important;
+        }
+        tbody:has(> tr.row-unread) + tbody[expand] .responsive-row-expand-item-value {
+            font-weight: 600;
+        }
     </style>
     <div class="max-w-full mx-auto sm:px-6 lg:px-8 space-y-6">
         <!-- Breadcrumbs (hanya muncul di layar lg ke atas) -->
