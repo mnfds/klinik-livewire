@@ -77,12 +77,12 @@ php artisan serve
 
 ### Operasional Klinik
 - [x] Sistem Antrian
-- [ ] Pasien Reservasi
+- [x] Pasien Reservasi terhubung dengan company profile
 - [x] Pendaftaran Pasien
 - [x] Kajian Awal & Rekam Medis dengan Metode SOAP
 - [x] Manajemen CPPT-O dan CPPT (Kajian Awal + SOAP)
 - [x] Transaksi Klinik & Apotik
-- [ ] Print Out Surat Keterangan Sehat & Sakit
+- [x] Print Out Surat Keterangan Sehat & Sakit
 - [ ] E-Resep
 
 ### Inventori & Laporan
@@ -93,8 +93,8 @@ php artisan serve
 
 ### SDM & Integrasi
 - [x] Integrasi SatuSehat API
-- [ ] Manajemen Jadwal & Absensi Staff Klinik
-- [ ] Pengajuan Cuti, Lembur, Libur, Izin Keluar
+- [x] Manajemen Jadwal & Absensi Staff Klinik
+- [x] Pengajuan Cuti, Lembur, Libur, Izin Keluar
 - [ ] Manajemen KPI SDMK
 
 ---
