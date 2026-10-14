@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
@@ -213,15 +214,14 @@ final class AbsenTable extends PowerGridComponent
             )->toDateString(),
         ];
     }
-    /*
-    public function actionRules($row): array
+
+    public function actionRules(): array
     {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
+        return [
+            Rule::rows()
+                ->when(fn ($row) => Carbon::parse($row->tanggal_absen)->lt(Carbon::today()))
+                ->setAttribute('class', 'text-red-600'),
         ];
     }
-    */
+
 }
